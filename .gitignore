@@ -1,0 +1,42 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Next.js
+.next/
+out/
+.turbo/
+
+# Env
+.env
+.env.local
+.env*.local
+
+# Research / reference (not part of deployed site)
+reference/
+docs/
+prompts/
+scripts/
+tools/
+claude/
+AGENTS.md
+Website-Replication-Strategy-chatgpt-chat.md
+
+# Agent / IDE
+.cursor/
+
+# Python (pdf-extractor venv)
+.venv/
+tools/pdf-extractor/.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+
+# OS / editors
+.DS_Store
+.idea/
+.vscode/
+
+# Debug
+npm-debug.log*
+pnpm-debug.log*

@@ -24,8 +24,23 @@ export function ServiceRow({ card, index, isActive, isDimmed, onActivate }: Serv
   return (
     <Link
       href={`/services/${card.slug}`}
-      onMouseEnter={() => onActivate(index)}
+      // Mouse hover + keyboard focus reveal immediately. Touch is handled in onClick so a
+      // synthetic pointerenter can't pre-activate the row.
+      onPointerEnter={(e) => {
+        if (e.pointerType === 'mouse') onActivate(index);
+      }}
       onFocus={() => onActivate(index)}
+      onClick={(e) => {
+        // Touch (no hover): first tap reveals the work, second tap on the active row navigates.
+        if (
+          !isActive &&
+          typeof window !== 'undefined' &&
+          window.matchMedia('(hover: none)').matches
+        ) {
+          e.preventDefault();
+          onActivate(index);
+        }
+      }}
       className={cn(
         'group/row flex items-center justify-between gap-4 border-b border-white/12 py-1.5 outline-none md:py-2',
         'transition-[opacity,color] duration-300 ease-out',

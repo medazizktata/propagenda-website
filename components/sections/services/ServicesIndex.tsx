@@ -89,9 +89,13 @@ export function ServicesIndex() {
                   )}
                   style={{
                     transitionProperty: 'opacity, transform',
-                    transitionDuration: '450ms, 5000ms',
+                    transitionDuration: reducedMotion ? '200ms, 0ms' : '450ms, 5000ms',
                     transitionTimingFunction: 'cubic-bezier(0.215,0.61,0.355,1), ease-out',
-                    transform: active === i ? 'scale(1.16)' : 'scale(1.04)',
+                    transform: reducedMotion
+                      ? 'scale(1.02)'
+                      : active === i
+                        ? 'scale(1.16)'
+                        : 'scale(1.04)',
                   }}
                 />
               ) : null,

@@ -21,13 +21,25 @@ export const serviceNav: NavItem[] = [
 ];
 
 export const socialLinks: SocialLink[] = [
-  { label: 'Facebook', href: 'https://facebook.com/', platform: 'facebook' },
-  { label: 'Threads', href: 'https://threads.net/', platform: 'threads' },
-  { label: 'TikTok', href: 'https://tiktok.com/', platform: 'tiktok' },
   {
     label: 'Instagram',
-    href: 'https://instagram.com/propagenda_marketing',
+    href: 'https://www.instagram.com/propagenda_marketing/',
     platform: 'instagram',
+  },
+  {
+    label: 'Threads',
+    href: 'https://www.threads.net/@propagenda_marketing',
+    platform: 'threads',
+  },
+  {
+    label: 'TikTok',
+    href: 'https://www.tiktok.com/@propagenda_marketing',
+    platform: 'tiktok',
+  },
+  {
+    label: 'LinkedIn',
+    href: 'https://www.linkedin.com/company/propagenda-marketing',
+    platform: 'linkedin',
   },
 ];
 

@@ -5,6 +5,7 @@ import { clientLogos } from '@/content/home';
 import { gsap } from '@/lib/motion/gsap';
 import { useReducedMotion } from '@/lib/motion/useReducedMotion';
 import { cn } from '@/components/ui/cn';
+import { BrandPattern } from '@/components/ui/BrandPattern';
 
 // Temporary placeholder logos each name morphs into on hover — mainstream, instantly
 // recognizable marks so the effect is easy to read. All are monochrome WHITE SVGs (same
@@ -89,6 +90,9 @@ export function ClientLogoGrid() {
   return (
     <section ref={sectionRef} className="relative h-[300vh] bg-charcoal">
       <div className="sticky top-0 flex h-screen items-center justify-center overflow-hidden bg-charcoal">
+        {/* Brand monogram backdrop (behind the wordmark + names), like the hero/DPI acts. */}
+        <BrandPattern variant="dense" id="clients" half="left" className="opacity-[0.14]" />
+
         <div className="absolute inset-x-0 top-24 z-content flex justify-center px-6 lg:top-28">
           <p className="clients-intro max-w-xl text-center text-sm font-medium tracking-wide text-white/70 md:text-base">
             Brands that trust us to shape how they show up.

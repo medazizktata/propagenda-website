@@ -47,19 +47,34 @@ export function ServicesStatement() {
         <BrandPattern variant="dense" id="services-statement" half="left" className="opacity-20" />
       </div>
 
-      <div className="relative z-content w-full max-w-5xl">
-        <SectionLabel className="svc-stmt-line mb-6">Services</SectionLabel>
-        <h1
-          className="font-sans font-bold uppercase leading-[0.95] tracking-display text-white"
-          style={{ fontSize: 'clamp(2.4rem, 7vw, 6rem)' }}
-        >
-          <span className="svc-stmt-line block">The whole brand,</span>
-          <span className="svc-stmt-line block text-orange">one studio.</span>
-        </h1>
-        <p className="svc-stmt-line mt-8 max-w-xl text-base leading-relaxed text-white/70 md:text-lg">
-          Eight integrated capabilities &mdash; from the first logo to the full launch, and
-          everything that carries your brand in between.
-        </p>
+      <div className="relative z-content grid w-full max-w-6xl items-center gap-10 lg:grid-cols-2 lg:gap-16">
+        <div className="order-2 lg:order-1">
+          <SectionLabel className="svc-stmt-line mb-6">Services</SectionLabel>
+          <h1
+            className="font-sans font-bold uppercase leading-[0.95] tracking-display text-white"
+            style={{ fontSize: 'clamp(2.2rem, 5.6vw, 4.75rem)' }}
+          >
+            <span className="svc-stmt-line block">The whole brand,</span>
+            <span className="svc-stmt-line block text-orange">one studio.</span>
+          </h1>
+          <p className="svc-stmt-line mt-7 max-w-md text-base leading-relaxed text-white/70 md:text-lg">
+            Eight integrated capabilities &mdash; from the first logo to the full launch, and
+            everything that carries your brand in between.
+          </p>
+        </div>
+
+        {/* Hero visual — the brand monogram (glow render). Not reused in the index below. */}
+        <div className="svc-stmt-line order-1 lg:order-2">
+          <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl ring-1 ring-white/10 sm:aspect-[16/9] lg:aspect-[4/5]">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/images/brand/monogram-glow.jpg"
+              alt=""
+              className="h-full w-full object-cover"
+            />
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-charcoal/50 via-transparent to-transparent" />
+          </div>
+        </div>
       </div>
     </section>
   );

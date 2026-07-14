@@ -55,7 +55,7 @@ export function ClientLogoGrid() {
         scrollTrigger: {
           trigger: sectionRef.current,
           start: 'top top',
-          end: '55% top',
+          end: '22% top',
           scrub: 0.6,
           invalidateOnRefresh: true,
         },

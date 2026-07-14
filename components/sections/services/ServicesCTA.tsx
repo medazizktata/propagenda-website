@@ -8,16 +8,13 @@ import { Button } from '@/components/ui/Button';
 export function ServicesCTA() {
   return (
     <section className="relative overflow-hidden bg-gradient-to-b from-orange to-orange-hover">
-      <div className="relative z-content mx-auto flex max-w-4xl flex-col items-center gap-8 px-gutter-m py-24 text-center lg:px-gutter-d lg:py-32">
+      <div className="relative z-content mx-auto flex max-w-4xl flex-col items-center gap-8 px-gutter-m py-20 text-center lg:px-gutter-d lg:py-24">
         <h2
-          className="font-sans font-bold uppercase leading-[0.95] tracking-display text-navy"
-          style={{ fontSize: 'clamp(2.2rem, 6vw, 5rem)' }}
+          className="font-sans font-bold uppercase leading-[1] tracking-display text-navy"
+          style={{ fontSize: 'clamp(1.9rem, 4.6vw, 3.5rem)' }}
         >
           Let&apos;s build it together.
         </h2>
-        <p className="max-w-md text-base font-medium text-navy/80 md:text-lg">
-          From the first logo to the full launch &mdash; tell us what you&apos;re working on.
-        </p>
         <Button href="/contact" variant="secondary" size="lg">
           Start a project &rarr;
         </Button>

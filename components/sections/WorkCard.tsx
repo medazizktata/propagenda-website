@@ -1,7 +1,6 @@
 import Link from 'next/link';
-import { DisplayHeading } from '@/components/ui/DisplayHeading';
+import { BrandPattern } from '@/components/ui/BrandPattern';
 import { BodyText } from '@/components/ui/BodyText';
-import { MediaPlaceholder } from '@/components/ui/MediaPlaceholder';
 import { cn } from '@/components/ui/cn';
 
 interface WorkCardProps {
@@ -9,26 +8,38 @@ interface WorkCardProps {
   teaser: string;
   href: string;
   accent?: string;
+  large?: boolean;
 }
 
-export function WorkCard({ title, teaser, href, accent }: WorkCardProps) {
+// Cinematic full-bleed tile: gradient + brand pattern panel with the title laid
+// over it (SMV "FAMOUS WORK" treatment), title visible by default. A real photo
+// can drop into the same panel later (replace the BrandPattern layer).
+export function WorkCard({ title, teaser, href, accent, large }: WorkCardProps) {
   return (
     <Link
       href={href}
-      className="group work-card block overflow-hidden rounded-lg border border-border bg-black"
+      className={cn(
+        'group relative flex flex-col justify-end overflow-hidden rounded-xl border border-border bg-gradient-to-br p-8',
+        accent ?? 'from-navy to-charcoal',
+        large ? 'min-h-[440px]' : 'min-h-[340px]',
+      )}
     >
-      <MediaPlaceholder
-        label={title}
-        accent={accent}
-        className={cn('work-card-image h-56 w-full transition-transform duration-cinematic ease-out hover-fine:group-hover:scale-105')}
+      <BrandPattern
+        variant="tiled"
+        id={`work-${href}`}
+        className="opacity-70 transition-transform duration-cinematic ease-out hover-fine:group-hover:scale-110"
       />
-      <div className="p-6">
-        <DisplayHeading as="h3" size="display-xs" className="text-lg">
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent" />
+      <div className="relative z-content">
+        <h3 className="font-sans text-display-xs font-bold uppercase tracking-display text-white">
           {title}
-        </DisplayHeading>
-        <BodyText muted className="mt-3">
+        </h3>
+        <BodyText muted className="mt-3 max-w-md">
           {teaser}
         </BodyText>
+        <span className="mt-5 inline-flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-orange">
+          Show me more <span aria-hidden>&rarr;</span>
+        </span>
       </div>
     </Link>
   );

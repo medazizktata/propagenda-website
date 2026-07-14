@@ -13,12 +13,12 @@ export function BlogTeaserGrid() {
   useFadeUpOnEnter(sectionRef);
 
   return (
-    <section ref={sectionRef} className="bg-black px-gutter-m py-32 lg:px-gutter-d">
+    <section ref={sectionRef} className="px-gutter-m py-32 lg:px-gutter-d">
       <div className="mb-12 flex flex-wrap items-end justify-between gap-4">
         <div>
           <SectionLabel>Blog</SectionLabel>
-          <DisplayHeading as="h2" size="display-xs" className="mt-2">
-            Latest Insights & Inspiration
+          <DisplayHeading as="h2" size="display-sm" className="mt-3">
+            Latest Insights &amp; <span className="accent-word">Inspiration</span>
           </DisplayHeading>
         </div>
         <Button href="/blog" variant="primary-ghost">

@@ -1,8 +1,6 @@
 'use client';
 
 import { useActionState } from 'react';
-import { DisplayHeading } from '@/components/ui/DisplayHeading';
-import { BodyText } from '@/components/ui/BodyText';
 import { Button } from '@/components/ui/Button';
 import { FormField } from '@/components/molecules/FormField';
 import { contactForm } from '@/content/site';
@@ -18,12 +16,6 @@ export function ContactForm() {
 
   return (
     <div className="max-w-form-min">
-      <DisplayHeading as="h2" size="display-xs" className="mb-2">
-        {contactForm.heading}
-      </DisplayHeading>
-      <BodyText muted className="mb-8">
-        {contactForm.subheading}
-      </BodyText>
       <form action={formAction} className="space-y-4" noValidate>
         <div className="grid gap-4 md:grid-cols-2">
           <FormField

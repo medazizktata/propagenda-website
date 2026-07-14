@@ -40,13 +40,14 @@ export function ServicesIndex() {
       gsap.set(['.services-ghost', '.services-kicker'], { autoAlpha: 0, y: 20 });
       gsap.set(rows, { autoAlpha: 0, y: 16 });
 
-      // Keyed to the lock (frame is centre-of-viewport, so it only enters view as the section
-      // pins) — assembles on-screen, then holds. Ends inside the pin so contact follows.
+      // Launch the reveal MID-TRANSITION — the moment the section is scrolling up into view
+      // during the hero handoff, not only once it locks — then finish inside the pin so the
+      // frame is composed on-screen and holds while contact follows.
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: el,
-          start: 'top 8%',
-          end: '32% top',
+          start: 'top 60%',
+          end: '30% top',
           scrub: 0.5,
           invalidateOnRefresh: true,
         },

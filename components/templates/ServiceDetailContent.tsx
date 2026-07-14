@@ -10,6 +10,7 @@ import { BrandPattern } from '@/components/ui/BrandPattern';
 import { SectionLabel } from '@/components/ui/SectionLabel';
 import { Button } from '@/components/ui/Button';
 import { ServicesCTA } from '@/components/sections/services/ServicesCTA';
+import { ServiceNextPrev } from '@/components/sections/services/ServiceNextPrev';
 import { serviceDetailConfig } from '@/components/sections/services/serviceDetailConfig';
 
 // Real client logos (temporary curated proof strip — shown on light chips so they read on
@@ -161,6 +162,9 @@ export function ServiceDetailContent({ service }: { service: ServiceRecord }) {
           )}
         </div>
       </section>
+
+      {/* ── NEXT / PREV (SMV project-detail signature) ───────────────────── */}
+      <ServiceNextPrev slug={service.slug} />
 
       {/* ── CTA ──────────────────────────────────────────────────────────── */}
       <ServicesCTA heading={cfg.ctaHeading} tertiary={service.tertiaryCta} />

@@ -47,26 +47,28 @@ export function ClientLogoGrid() {
       gsap.set('.clients-wordmark', { autoAlpha: 0, scale: 0.94 });
       gsap.set(names, { autoAlpha: 0, y: 10 });
 
-      // Play the staged reveal across the early pin, then hold the finished frame.
+      // Reveal as the section scrolls INTO view — intro → CLIENTS → names, one by one —
+      // so it assembles during the approach and finishes just after it settles at the top.
+      // Nothing is pre-composed on arrival.
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: sectionRef.current,
-          start: 'top top',
-          end: '+=130%',
-          scrub: 0.5,
+          start: 'top 80%',
+          end: 'top -40%',
+          scrub: 0.6,
           invalidateOnRefresh: true,
         },
       });
 
       tl.to(
         '.clients-intro',
-        { autoAlpha: 1, y: 0, ease: 'power2.out', duration: 0.2 },
+        { autoAlpha: 1, y: 0, ease: 'power2.out', duration: 0.18 },
         0,
       )
         .to(
           '.clients-wordmark',
-          { autoAlpha: 1, scale: 1, ease: 'power2.out', duration: 0.28 },
-          0.22,
+          { autoAlpha: 1, scale: 1, ease: 'power2.out', duration: 0.24 },
+          0.2,
         )
         .to(
           names,
@@ -75,9 +77,9 @@ export function ClientLogoGrid() {
             y: 0,
             ease: 'power1.out',
             duration: 0.1,
-            stagger: 0.045,
+            stagger: 0.04,
           },
-          0.55,
+          0.48,
         );
     }, sectionRef);
     return () => ctx.revert();

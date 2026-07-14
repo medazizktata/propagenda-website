@@ -23,9 +23,8 @@ const PLACEHOLDER_LOGOS = [
   '/images/clients/placeholder-logos/visa.svg',
 ];
 
-// SMV's "CLIENTS:" frame, in the Propagenda brand: a giant orange wordmark bleeds behind a
-// dense block of client names. Intro + wordmark + names all scrub in on enter — nothing sits
-// fully painted before the scroll reveal. On hover a name CROSSFADES into its logo in place.
+// Sticky clients frame. Scroll stages: small intro → giant CLIENTS → brand names one by one.
+// Reveal finishes early in the pin so everything stays visible for the rest of the hold.
 export function ClientLogoGrid() {
   const sectionRef = useRef<HTMLElement>(null);
   const reducedMotion = useReducedMotion();
@@ -34,44 +33,51 @@ export function ClientLogoGrid() {
     if (!sectionRef.current) return;
     const ctx = gsap.context(() => {
       if (reducedMotion) {
-        gsap.set(['.clients-intro', '.clients-wordmark', '.client-name'], { opacity: 1, y: 0, scale: 1 });
+        gsap.set(['.clients-intro', '.clients-wordmark', '.client-name'], {
+          autoAlpha: 1,
+          y: 0,
+          scale: 1,
+        });
         return;
       }
 
-      gsap.set('.clients-intro', { opacity: 0, y: 28 });
-      gsap.set('.clients-wordmark', { opacity: 0, scale: 0.92 });
-      gsap.set('.client-name', { opacity: 0, y: 14 });
+      const names = gsap.utils.toArray<HTMLElement>('.client-name');
 
+      gsap.set('.clients-intro', { autoAlpha: 0, y: 20 });
+      gsap.set('.clients-wordmark', { autoAlpha: 0, scale: 0.94 });
+      gsap.set(names, { autoAlpha: 0, y: 10 });
+
+      // Play the staged reveal across the early pin, then hold the finished frame.
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: sectionRef.current,
-          start: 'top 80%',
-          end: 'bottom bottom',
-          scrub: 0.6,
+          start: 'top top',
+          end: '+=130%',
+          scrub: 0.5,
+          invalidateOnRefresh: true,
         },
       });
 
-      // Frame arrives first — label then giant CLIENTS — then names peel in.
       tl.to(
         '.clients-intro',
-        { opacity: 1, y: 0, ease: 'power2.out', duration: 0.18 },
+        { autoAlpha: 1, y: 0, ease: 'power2.out', duration: 0.2 },
         0,
       )
         .to(
           '.clients-wordmark',
-          { opacity: 1, scale: 1, ease: 'power2.out', duration: 0.28 },
-          0.06,
+          { autoAlpha: 1, scale: 1, ease: 'power2.out', duration: 0.28 },
+          0.22,
         )
         .to(
-          '.client-name',
+          names,
           {
-            opacity: 1,
+            autoAlpha: 1,
             y: 0,
             ease: 'power1.out',
-            duration: 0.45,
-            stagger: { each: 0.04, from: 'random' },
+            duration: 0.1,
+            stagger: 0.045,
           },
-          0.2,
+          0.55,
         );
     }, sectionRef);
     return () => ctx.revert();
@@ -81,14 +87,14 @@ export function ClientLogoGrid() {
     <section ref={sectionRef} className="relative h-[300vh]">
       <div className="sticky top-0 flex h-screen items-center justify-center overflow-hidden bg-charcoal">
         <div className="absolute inset-x-0 top-24 z-content flex justify-center px-6 lg:top-28">
-          <p className="clients-intro max-w-xl text-center text-sm font-medium tracking-wide text-white/70 opacity-0 md:text-base">
+          <p className="clients-intro max-w-xl text-center text-sm font-medium tracking-wide text-white/70 md:text-base">
             Brands that trust us to shape how they show up.
           </p>
         </div>
 
         <h2
           aria-hidden
-          className="clients-wordmark pointer-events-none absolute inset-0 z-0 flex select-none items-center justify-center whitespace-nowrap font-sans font-black uppercase leading-none tracking-tighter text-orange opacity-0"
+          className="clients-wordmark pointer-events-none absolute inset-0 z-0 flex select-none items-center justify-center whitespace-nowrap font-sans font-black uppercase leading-none tracking-tighter text-orange"
           style={{ fontSize: 'clamp(4rem, 18vw, 18rem)' }}
         >
           Clients
@@ -120,7 +126,7 @@ export function ClientLogoGrid() {
               </>
             );
             const cls = cn(
-              'client-name group/logo relative inline-flex items-center whitespace-nowrap opacity-0',
+              'client-name group/logo relative inline-flex items-center whitespace-nowrap',
               brand.url && 'cursor-pointer',
             );
             return brand.url ? (

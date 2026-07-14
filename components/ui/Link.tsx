@@ -14,11 +14,11 @@ interface AppLinkProps {
 }
 
 const variantClasses: Record<LinkVariant, string> = {
-  nav: 'font-bold uppercase tracking-wide text-white hover-fine:hover:text-orange',
-  footer: 'text-base uppercase font-bold hover-fine:hover:text-orange lg:text-2xl',
-  inline: 'text-white hover-fine:hover:text-orange underline-offset-4 hover-fine:hover:underline',
-  ghost:
-    'font-bold uppercase tracking-display text-ghost',
+  nav: 'transition-hover font-bold uppercase tracking-wide text-white hover-fine:hover:text-orange',
+  footer: 'transition-hover text-base uppercase font-bold hover-fine:hover:text-orange lg:text-2xl',
+  inline:
+    'transition-hover text-white hover-fine:hover:text-orange underline-offset-4 hover-fine:hover:underline',
+  ghost: 'transition-hover font-bold uppercase tracking-display text-ghost',
 };
 
 export function AppLink({
@@ -31,7 +31,7 @@ export function AppLink({
 }: AppLinkProps) {
   const classes = cn(
     variantClasses[variant],
-    active && 'text-orange line-through',
+    active && 'text-orange',
     className,
   );
 

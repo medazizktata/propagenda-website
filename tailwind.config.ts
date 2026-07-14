@@ -51,19 +51,28 @@ const config: Config = {
         '2xl': ['1.5rem', { lineHeight: '1.4', letterSpacing: '0.01em' }],
         '3xl': ['1.875rem', { lineHeight: '1.3', letterSpacing: '0.02em' }],
         '4xl': ['2.25rem', { lineHeight: '1.2', letterSpacing: '0.02em' }],
-        'display-xs': ['clamp(2rem, 5.21vw, 5rem)', { lineHeight: '0.8', letterSpacing: '0.015em' }],
-        'display-sm': ['clamp(2.5rem, 7.81vw, 7.5rem)', { lineHeight: '0.75', letterSpacing: '0.015em' }],
-        'display-md': ['clamp(3rem, 10.42vw, 12.5rem)', { lineHeight: '0.8', letterSpacing: '0.015em' }],
-        'display-lg': ['clamp(4rem, 20.83vw, 25rem)', { lineHeight: '0.75', letterSpacing: '0.015em' }],
-        'display-xl': ['clamp(5rem, 24.14vw, 28rem)', { lineHeight: '0.8', letterSpacing: '0.015em' }],
-        'display-2xl': ['clamp(6rem, 31.25vw, 37.5rem)', { lineHeight: '0.73', letterSpacing: '0.015em' }],
+        // Brand-faithful display scale: roomier leading (~0.9) + wider tracking than SMV's
+        // tight-condensed 0.73. Sizes tempered from the extreme 31vw toward bold-but-legible.
+        'display-xs': ['clamp(1.9rem, 4.6vw, 4.25rem)', { lineHeight: '0.95', letterSpacing: '0.02em' }],
+        'display-sm': ['clamp(2.4rem, 6.8vw, 6rem)', { lineHeight: '0.92', letterSpacing: '0.02em' }],
+        'display-md': ['clamp(2.9rem, 9vw, 9rem)', { lineHeight: '0.9', letterSpacing: '0.02em' }],
+        'display-lg': ['clamp(3.6rem, 12vw, 14rem)', { lineHeight: '0.9', letterSpacing: '0.02em' }],
+        'display-xl': ['clamp(4.5rem, 15vw, 18rem)', { lineHeight: '0.9', letterSpacing: '0.02em' }],
+        'display-2xl': ['clamp(5rem, 18vw, 22rem)', { lineHeight: '0.9', letterSpacing: '0.02em' }],
         'nav-mobile': ['clamp(3rem, 15vw, 8rem)', { lineHeight: '0.78', letterSpacing: '0.015em' }],
         'nav-mobile-landscape': ['clamp(2rem, 7.5vw, 5rem)', { lineHeight: '0.78', letterSpacing: '0.015em' }],
       },
+      letterSpacing: {
+        // "tracking-display" — referenced by DisplayHeading (was undefined/dead).
+        // Roomy tracking for big brand caps (PDF caps are widely spaced, not condensed).
+        display: '0.02em',
+        label: '0.18em',
+      },
       spacing: {
-        'gutter-d': '1.03093vw',
-        'gutter-m': '4.12371vw',
-        header: '60px',
+        // Large, near-extreme page gutters (content sits well inside the edges).
+        'gutter-d': 'clamp(4rem, 14vw, 22rem)',
+        'gutter-m': '2.5rem',
+        header: '56px',
         18: '4.5rem',
         22: '5.5rem',
         30: '7.5rem',
@@ -108,9 +117,15 @@ const config: Config = {
         instant: '100ms',
         fast: '200ms',
         normal: '300ms',
+        /** Default hover in/out duration — use with `transition-hover` / `duration-hover`. */
+        hover: '300ms',
         slow: '500ms',
         cinematic: '5000ms',
         pswp: '333ms',
+      },
+      transitionTimingFunction: {
+        /** Smooth ease-out for hover enter + leave (symmetric, no snap-back). */
+        hover: 'cubic-bezier(0.22, 1, 0.36, 1)',
       },
       zIndex: {
         grain: '1',
@@ -122,13 +137,16 @@ const config: Config = {
         loader: '9000',
       },
       opacity: {
-        grain: '0.3',
-        'grain-hover': '0.35',
+        // Subtle SMV-style film grain over the whole app.
+        grain: '0.16',
+        'grain-hover': '0.18',
         'char-dim': '0.1',
       },
       animation: {
         'loader-glitch': 'glitch 0.2s ease',
         'line-wipe': 'lineWipe 0.4s ease forwards',
+        'page-cover': 'pageCover 0.34s cubic-bezier(0.76,0,0.24,1) forwards',
+        'page-reveal': 'pageReveal 0.46s cubic-bezier(0.76,0,0.24,1) forwards',
         'fade-in': 'fadeIn 0.3s ease-out',
         'fade-up': 'fadeUp 0.5s ease-out',
         'bright-flash': 'brightFlash 1s ease-out',
@@ -143,6 +161,16 @@ const config: Config = {
         lineWipe: {
           '0%': { transform: 'scaleY(0)' },
           '100%': { transform: 'scaleY(1)' },
+        },
+        // SMV-style route transition, split into two independently-triggered halves so the
+        // screen is covered BEFORE navigation and only revealed once the new page is ready.
+        pageCover: {
+          '0%': { transform: 'scaleY(0)', transformOrigin: 'bottom' },
+          '100%': { transform: 'scaleY(1)', transformOrigin: 'bottom' },
+        },
+        pageReveal: {
+          '0%': { transform: 'scaleY(1)', transformOrigin: 'top' },
+          '100%': { transform: 'scaleY(0)', transformOrigin: 'top' },
         },
         fadeIn: {
           '0%': { opacity: '0' },
@@ -159,7 +187,24 @@ const config: Config = {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    // Shared hover surface: apply `transition-hover` on anything that uses hover styles
+    // so enter + leave ease the same (colors, opacity, transform, shadow, filter…).
+    function hoverTransitionPlugin({
+      addUtilities,
+    }: {
+      addUtilities: (utilities: Record<string, Record<string, string>>) => void;
+    }) {
+      addUtilities({
+        '.transition-hover': {
+          'transition-property':
+            'color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter',
+          'transition-timing-function': 'cubic-bezier(0.22, 1, 0.36, 1)',
+          'transition-duration': '300ms',
+        },
+      });
+    },
+  ],
 };
 
 export default config;

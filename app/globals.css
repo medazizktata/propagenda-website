@@ -8,16 +8,17 @@
 @custom-variant hover-fine (@media (hover: hover) and (pointer: fine));
 @custom-variant touch-coarse (@media (hover: none) and (pointer: coarse));
 
+/* Brand headlines are SOLID white/orange (brand PDF p.1/6/15/17).
+   The old ".text-ghost" rendered transparent text (invisible on desktop) — retired.
+   Kept as a safe no-op that renders solid so any lingering usage stays legible. */
 .text-ghost {
-  color: transparent;
-  text-shadow: 0 0 1.7px var(--color-orange);
+  color: var(--color-white);
 }
 
-@media (max-width: 1023px), (hover: none) {
-  .text-ghost {
-    color: var(--color-orange);
-    text-shadow: none;
-  }
+/* Accent word inside a display heading — the brand's "one word in orange" device
+   (PDF p.1/6/24, Instagram posts). Use <span class="accent-word"> inside headings. */
+.accent-word {
+  color: var(--color-orange);
 }
 
 :root {
@@ -35,7 +36,7 @@
   --color-border: rgba(255, 255, 255, 0.12);
   --gutter-desktop: 1.03093vw;
   --gutter-mobile: 4.12371vw;
-  --header-height: 60px;
+  --header-height: 56px;
   --grain-opacity: 0.3;
   --vh: 1vh;
 }
@@ -54,7 +55,12 @@ body {
 }
 
 main {
+  /* Subtle film grain baked into the page background (behind all content, never over
+     the 3D/text/cards). `main` is in-flow, so the grain scrolls with the sections. */
   background-color: var(--color-surface);
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 240 240' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+  background-size: 240px 240px;
+  background-repeat: repeat;
   min-height: calc(var(--vh, 1vh) * 100);
 }
 
@@ -70,6 +76,38 @@ main {
   to {
     transform: translateX(-50%);
   }
+}
+
+/* Pattern fades across the section/panel height:
+   top 20% transparent → middle 60% solid → bottom 20% out. */
+.pattern-section-fade {
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    #000 20%,
+    #000 80%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    #000 20%,
+    #000 80%,
+    transparent 100%
+  );
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+
+/* Smooth hover in/out — prefer the Tailwind class `transition-hover` in components.
+   Kept here as an alias for non-JS / ad-hoc markup. */
+@utility transition-hover {
+  transition-property: color, background-color, border-color, text-decoration-color, fill,
+    stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+  transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  transition-duration: 300ms;
 }
 
 @media (prefers-reduced-motion: reduce) {

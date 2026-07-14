@@ -47,14 +47,14 @@ export function ClientLogoGrid() {
       gsap.set('.clients-wordmark', { autoAlpha: 0, scale: 0.94 });
       gsap.set(names, { autoAlpha: 0, y: 10 });
 
-      // The frame is vertically centred inside a tall pinned section, so it only enters the
-      // viewport once the section LOCKS at the top. Drive the reveal across the pin (not the
-      // approach) — intro → CLIENTS → names one by one — so it assembles on-screen and is
-      // never pre-composed by the time it scrolls in. The window stays inside the ~200vh pin.
+      // The frame is vertically centred in a tall pinned section, so it only rises into view
+      // as the section nears its lock. Begin the reveal just before it locks (content already
+      // visible in the lower viewport) and finish early in the pin — intro → CLIENTS → names
+      // one by one — so it assembles on-screen, never pre-composed by the time it scrolls in.
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: sectionRef.current,
-          start: 'top top',
+          start: 'top 20%',
           end: '22% top',
           scrub: 0.6,
           invalidateOnRefresh: true,

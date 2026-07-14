@@ -8,8 +8,7 @@ import { useReducedMotion } from '@/lib/motion/useReducedMotion';
 import { cn } from '@/components/ui/cn';
 
 // SMV curtain wipe: 4 stacked masks per half.
-// Left = design (hover slideshow). Right = video in the FRONT curtain layer (hover plays)
-// so the trailing curtain frames still apply. ~20% of scrub during approach, ~80% after lock.
+// Left = design (hover slideshow). Right = video in EVERY curtain layer (hover plays).
 
 type SlideshowMedia = { kind: 'slideshow'; slides: string[] };
 type VideoMedia = { kind: 'video'; src: string; poster: string };
@@ -119,17 +118,19 @@ function FrameStack({
   media: PanelMedia;
   hovered: boolean;
 }) {
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
 
   useEffect(() => {
-    if (media.kind !== 'video' || !videoRef.current) return;
-    const el = videoRef.current;
-    if (hovered) {
-      void el.play().catch(() => {});
-    } else {
-      el.pause();
-      el.currentTime = 0;
-    }
+    if (media.kind !== 'video') return;
+    videoRefs.current.forEach((el) => {
+      if (!el) return;
+      if (hovered) {
+        void el.play().catch(() => {});
+      } else {
+        el.pause();
+        el.currentTime = 0;
+      }
+    });
   }, [hovered, media]);
 
   return (
@@ -146,10 +147,11 @@ function FrameStack({
             )}
             style={{ width: 0, zIndex: i + 1 }}
           >
-            {/* Front layer = interactive media, clipped by the same curtain mask as video. */}
-            {isFront && media.kind === 'video' ? (
+            {media.kind === 'video' ? (
               <video
-                ref={videoRef}
+                ref={(el) => {
+                  videoRefs.current[i] = el;
+                }}
                 className={cn(
                   'absolute inset-0 h-full w-full object-cover transition-hover',
                   hovered && 'scale-105',
@@ -159,10 +161,10 @@ function FrameStack({
                 muted
                 loop
                 playsInline
-                preload="metadata"
+                preload={isFront ? 'metadata' : 'none'}
                 aria-hidden
               />
-            ) : isFront && media.kind === 'slideshow' ? (
+            ) : isFront ? (
               <FrontSlideshow slides={media.slides} active={hovered} />
             ) : (
               // eslint-disable-next-line @next/next/no-img-element
@@ -187,39 +189,30 @@ function FrameStack({
   );
 }
 
-function CurtainPanel({ panel, ready }: { panel: Panel; ready: boolean }) {
+function CurtainPanel({ panel }: { panel: Panel }) {
   const [hovered, setHovered] = useState(false);
   const words = panel.title.replace(/\.$/, '').split(/\s+/);
-  const active = ready && hovered;
-
-  useEffect(() => {
-    if (!ready) setHovered(false);
-  }, [ready]);
 
   return (
     <Link
       href={panel.href}
       className="group relative flex h-1/2 w-full flex-col items-center justify-center md:h-full md:w-1/2"
-      onMouseEnter={() => {
-        if (ready) setHovered(true);
-      }}
+      onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      onFocus={() => {
-        if (ready) setHovered(true);
-      }}
+      onFocus={() => setHovered(true)}
       onBlur={() => setHovered(false)}
     >
       <FrameStack
         frames={panel.frames}
         side={panel.side}
         media={panel.media}
-        hovered={active}
+        hovered={hovered}
       />
 
       <div className="relative z-10 flex w-full flex-col items-center justify-center px-6 py-10">
         <h3
           className={cn(
-            'text-center font-sans font-black uppercase leading-[0.75] tracking-tight',
+            'text-center font-sans font-bold uppercase leading-[0.92] tracking-wide',
             panel.tone === 'orange' ? 'text-orange' : 'text-white',
           )}
           style={{ fontSize: 'clamp(2.5rem, 8vw, 10.4vw)' }}
@@ -234,16 +227,10 @@ function CurtainPanel({ panel, ready }: { panel: Panel; ready: boolean }) {
 
         <span
           className={cn(
-            'work-btn mt-4 inline-flex items-center rounded-pill border-2 px-8 py-2.5 text-sm font-bold uppercase tracking-wide transition-hover md:mt-[1vw]',
+            'work-btn mt-8 inline-flex items-center rounded-pill border-2 px-8 py-2.5 text-sm font-bold uppercase tracking-wide transition-hover md:mt-[2.2vw]',
             panel.tone === 'orange'
-              ? cn(
-                  'border-orange text-orange',
-                  active && 'bg-orange text-black',
-                )
-              : cn(
-                  'border-white text-white',
-                  active && 'bg-white text-black',
-                ),
+              ? cn('border-orange text-orange', hovered && 'bg-orange text-black')
+              : cn('border-white text-white', hovered && 'bg-white text-black'),
           )}
         >
           {panel.cta}
@@ -256,9 +243,7 @@ function CurtainPanel({ panel, ready }: { panel: Panel; ready: boolean }) {
 export function WorkSplitSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const pinRef = useRef<HTMLDivElement>(null);
-  const readyRef = useRef(false);
   const reducedMotion = useReducedMotion();
-  const [curtainsReady, setCurtainsReady] = useState(!!reducedMotion);
 
   useEffect(() => {
     if (!sectionRef.current || !pinRef.current) return;
@@ -270,96 +255,73 @@ export function WorkSplitSection() {
         yPercent: 0,
       });
       gsap.set(sectionRef.current.querySelectorAll('.work-btn'), { opacity: 1, yPercent: 0 });
-      readyRef.current = true;
-      setCurtainsReady(true);
       return;
     }
-
-    readyRef.current = false;
-    setCurtainsReady(false);
 
     const ctx = gsap.context(() => {
       gsap.set('.work-pic-mask', { width: 0 });
       gsap.set('.work-reveal-word', { opacity: 0, yPercent: 70 });
       gsap.set('.work-btn', { opacity: 0, yPercent: 50 });
 
-      // Full section scroll: approach ≈ first ~20–25% of progress, pin hold ≈ the rest.
-      // Pack ~20% of motion into the approach tease, ~80% into the locked scrub.
+      // Begin mid-approach (before pin). Curtains lead, text follows, then hold.
+      const HOLD_FROM = 0.72;
+
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: sectionRef.current,
-          start: 'top bottom',
+          start: 'top 55%',
           end: 'bottom bottom',
-          scrub: 0.5,
-        },
-        onUpdate: () => {
-          const ready = tl.progress() >= 0.995;
-          if (ready === readyRef.current) return;
-          readyRef.current = ready;
-          setCurtainsReady(ready);
+          scrub: 0.4,
         },
       });
 
-      // --- 20%: soft tease while methodology → work handoff ---
+      // --- 1) Curtains kick off first on the way in ---
       tl.fromTo(
-        '.work-reveal-word',
-        { opacity: 0, yPercent: 70 },
-        {
-          opacity: 0.35,
-          yPercent: 45,
-          ease: 'none',
-          duration: 0.2,
-          stagger: 0.03,
-          immediateRender: false,
-        },
+        '.work-pic-main',
+        { width: 0 },
+        { width: '100%', ease: 'power2.out', duration: 0.32, immediateRender: false },
         0,
       )
         .fromTo(
-          '.work-pic-main',
-          { width: 0 },
-          { width: '14%', ease: 'none', duration: 0.2, immediateRender: false },
-          0,
-        )
-        .fromTo(
           '.work-pic-dup1',
           { width: 0 },
-          { width: '9%', ease: 'none', duration: 0.2, immediateRender: false },
-          0.04,
+          { width: '100%', ease: 'power2.out', duration: 0.32, immediateRender: false },
+          0.06,
         )
         .fromTo(
           '.work-pic-dup2',
           { width: 0 },
-          { width: '5%', ease: 'none', duration: 0.2, immediateRender: false },
-          0.08,
+          { width: '100%', ease: 'power2.out', duration: 0.32, immediateRender: false },
+          0.12,
         )
-
-        // --- 80%: main reveal once locked into the section ---
-        .to(
-          '.work-reveal-word',
-          {
-            opacity: 1,
-            yPercent: 0,
-            ease: 'power2.out',
-            duration: 0.7,
-            stagger: 0.06,
-          },
-          0.22,
-        )
-        .fromTo(
-          '.work-btn',
-          { opacity: 0, yPercent: 50 },
-          { opacity: 1, yPercent: 0, ease: 'power2.out', duration: 0.55, immediateRender: false },
-          0.32,
-        )
-        .to('.work-pic-main', { width: '100%', duration: 0.72, ease: 'power2.out' }, 0.22)
-        .to('.work-pic-dup1', { width: '100%', duration: 0.72, ease: 'power2.out' }, 0.34)
-        .to('.work-pic-dup2', { width: '100%', duration: 0.72, ease: 'power2.out' }, 0.46)
         .fromTo(
           '.work-pic-dup3',
           { width: 0 },
-          { width: '100%', duration: 0.68, ease: 'power2.out', immediateRender: false },
-          0.56,
+          { width: '100%', ease: 'power2.out', duration: 0.3, immediateRender: false },
+          0.18,
         );
+
+      // --- 2) Text after curtains are already moving ---
+      tl.fromTo(
+        '.work-reveal-word',
+        { opacity: 0, yPercent: 60 },
+        {
+          opacity: 1,
+          yPercent: 0,
+          ease: 'power2.out',
+          duration: 0.2,
+          stagger: 0.04,
+          immediateRender: false,
+        },
+        0.22,
+      ).fromTo(
+        '.work-btn',
+        { opacity: 0, yPercent: 40 },
+        { opacity: 1, yPercent: 0, ease: 'power2.out', duration: 0.16, immediateRender: false },
+        0.32,
+      );
+
+      tl.to({}, { duration: 1 - HOLD_FROM }, HOLD_FROM);
 
       ScrollTrigger.create({
         trigger: sectionRef.current,
@@ -385,7 +347,7 @@ export function WorkSplitSection() {
         </div>
 
         {PANELS.map((panel) => (
-          <CurtainPanel key={panel.href} panel={panel} ready={curtainsReady} />
+          <CurtainPanel key={panel.href} panel={panel} />
         ))}
       </div>
     </section>

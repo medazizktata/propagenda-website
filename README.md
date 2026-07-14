@@ -37,3 +37,7 @@ pnpm install
 ## Environment
 
 Copy `.env.example` to `.env.local` and set `NEXT_PUBLIC_SITE_URL` for production.
+
+| Variable | Purpose |
+|----------|---------|
+| `NEXT_PUBLIC_INIT_LOADER` | Orange quote splash on every full page load. Default on; set `false` to disable. |

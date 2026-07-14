@@ -33,7 +33,7 @@ const config: Config = {
           strong: 'rgba(255, 255, 255, 0.25)',
           accent: '#f58b27',
         },
-        input: '#f7f8fb',
+        input: '#141414',
         error: '#dc2626',
         success: '#16a34a',
       },
@@ -145,13 +145,25 @@ const config: Config = {
       animation: {
         'loader-glitch': 'glitch 0.2s ease',
         'line-wipe': 'lineWipe 0.4s ease forwards',
-        'page-cover': 'pageCover 0.34s cubic-bezier(0.76,0,0.24,1) forwards',
-        'page-reveal': 'pageReveal 0.46s cubic-bezier(0.76,0,0.24,1) forwards',
+        'page-cover': 'pageCover 0.34s cubic-bezier(0.76,0,0.24,1) both',
+        'page-reveal': 'pageReveal 0.28s cubic-bezier(0.22,1,0.36,1) forwards',
+        'loader-content-out': 'loaderContentOut 0.22s cubic-bezier(0.76,0,0.24,1) forwards',
+        'loader-shell-in': 'loaderShellIn 0.26s cubic-bezier(0.22,1,0.36,1) both',
+        'loader-cover-wipe-up': 'loaderCoverWipeUp 0.34s cubic-bezier(0.76,0,0.24,1) both',
+        'loader-cover-wipe-down': 'loaderCoverWipeDown 0.34s cubic-bezier(0.76,0,0.24,1) both',
+        'loader-cover-wipe-left': 'loaderCoverWipeLeft 0.34s cubic-bezier(0.76,0,0.24,1) both',
+        'loader-cover-wipe-right': 'loaderCoverWipeRight 0.34s cubic-bezier(0.76,0,0.24,1) both',
+        'loader-cover-iris': 'loaderCoverIris 0.36s cubic-bezier(0.22,1,0.36,1) both',
+        'loader-cover-slash': 'loaderCoverSlash 0.36s cubic-bezier(0.76,0,0.24,1) both',
+        'loader-cover-burst': 'loaderCoverBurst 0.36s cubic-bezier(0.22,1,0.36,1) both',
+        'loader-cover-fold': 'loaderCoverFold 0.38s cubic-bezier(0.76,0,0.24,1) both',
+        'loader-cover-blind': 'loaderCoverBlind 0.26s cubic-bezier(0.76,0,0.24,1) both',
         'fade-in': 'fadeIn 0.3s ease-out',
         'fade-up': 'fadeUp 0.5s ease-out',
         'bright-flash': 'brightFlash 1s ease-out',
         'bright-flash-fast': 'brightFlash 0.7s ease-out',
         'spin-slow': 'spin 1.2s linear infinite',
+        'hero-360': 'hero360Spin 7s cubic-bezier(0.65, 0, 0.35, 1) infinite',
       },
       keyframes: {
         glitch: {
@@ -162,15 +174,100 @@ const config: Config = {
           '0%': { transform: 'scaleY(0)' },
           '100%': { transform: 'scaleY(1)' },
         },
-        // SMV-style route transition, split into two independently-triggered halves so the
-        // screen is covered BEFORE navigation and only revealed once the new page is ready.
         pageCover: {
-          '0%': { transform: 'scaleY(0)', transformOrigin: 'bottom' },
-          '100%': { transform: 'scaleY(1)', transformOrigin: 'bottom' },
+          '0%': { transform: 'scaleY(0)', transformOrigin: 'bottom', opacity: '0' },
+          '100%': { transform: 'scaleY(1)', transformOrigin: 'bottom', opacity: '1' },
         },
         pageReveal: {
-          '0%': { transform: 'scaleY(1)', transformOrigin: 'top' },
-          '100%': { transform: 'scaleY(0)', transformOrigin: 'top' },
+          '0%': {
+            opacity: '1',
+            transform: 'scale(1)',
+            filter: 'brightness(1)',
+          },
+          '35%': {
+            opacity: '1',
+            filter: 'brightness(1.35)',
+          },
+          '100%': {
+            opacity: '0',
+            transform: 'scale(1.06)',
+            filter: 'brightness(1.5)',
+          },
+        },
+        loaderShellIn: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+        loaderContentOut: {
+          '0%': { opacity: '1', transform: 'scale(1) translateY(0)' },
+          '100%': { opacity: '0', transform: 'scale(0.94) translateY(-12px)' },
+        },
+        loaderCoverWipeUp: {
+          '0%': { transform: 'scaleY(0)', transformOrigin: 'bottom', opacity: '0' },
+          '35%': { opacity: '1' },
+          '100%': { transform: 'scaleY(1)', transformOrigin: 'bottom', opacity: '1' },
+        },
+        loaderCoverWipeDown: {
+          '0%': { transform: 'scaleY(0)', transformOrigin: 'top', opacity: '0' },
+          '35%': { opacity: '1' },
+          '100%': { transform: 'scaleY(1)', transformOrigin: 'top', opacity: '1' },
+        },
+        loaderCoverWipeLeft: {
+          '0%': { transform: 'scaleX(0)', transformOrigin: 'left', opacity: '0' },
+          '35%': { opacity: '1' },
+          '100%': { transform: 'scaleX(1)', transformOrigin: 'left', opacity: '1' },
+        },
+        loaderCoverWipeRight: {
+          '0%': { transform: 'scaleX(0)', transformOrigin: 'right', opacity: '0' },
+          '35%': { opacity: '1' },
+          '100%': { transform: 'scaleX(1)', transformOrigin: 'right', opacity: '1' },
+        },
+        loaderCoverIris: {
+          '0%': { clipPath: 'circle(0% at 50% 50%)', opacity: '0' },
+          '20%': { opacity: '1' },
+          '100%': { clipPath: 'circle(150% at 50% 50%)', opacity: '1' },
+        },
+        loaderCoverSlash: {
+          '0%': { clipPath: 'polygon(0 100%, 0 100%, 0 100%)', opacity: '0' },
+          '25%': { opacity: '1' },
+          '40%': { clipPath: 'polygon(0 40%, 70% 100%, 0 100%)' },
+          '100%': { clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0 100%)', opacity: '1' },
+        },
+        loaderCoverBurst: {
+          '0%': {
+            transform: 'scale(0.12)',
+            borderRadius: '50%',
+            opacity: '0',
+          },
+          '25%': { opacity: '1' },
+          '70%': {
+            borderRadius: '8%',
+            opacity: '1',
+          },
+          '100%': {
+            transform: 'scale(1)',
+            borderRadius: '0%',
+            opacity: '1',
+          },
+        },
+        loaderCoverFold: {
+          '0%': {
+            transform: 'perspective(1400px) rotateX(-88deg)',
+            transformOrigin: 'top',
+            opacity: '0',
+          },
+          '30%': { opacity: '1' },
+          '100%': {
+            transform: 'perspective(1400px) rotateX(0deg)',
+            transformOrigin: 'top',
+            opacity: '1',
+          },
+        },
+        loaderCoverBlind: {
+          '0%': { transform: 'scaleY(0)', transformOrigin: 'top', opacity: '1' },
+          '55%': { transform: 'scaleY(1)', transformOrigin: 'top', opacity: '1' },
+          // Clear strips so the shared animated pattern field stays visible.
+          '100%': { transform: 'scaleY(1)', transformOrigin: 'top', opacity: '0' },
         },
         fadeIn: {
           '0%': { opacity: '0' },
@@ -183,6 +280,11 @@ const config: Config = {
         brightFlash: {
           '0%': { filter: 'brightness(5)' },
           '100%': { filter: 'brightness(1)' },
+        },
+        // Hero subtitle: hold, then one full turn — small wink every cycle.
+        hero360Spin: {
+          '0%, 72%': { transform: 'rotate(0deg)' },
+          '100%': { transform: 'rotate(360deg)' },
         },
       },
     },

@@ -24,7 +24,7 @@ const PLACEHOLDER_LOGOS = [
   '/images/clients/placeholder-logos/visa.svg',
 ];
 
-// Sticky clients frame. Scroll stages: small intro → giant CLIENTS → brand names one by one.
+// Sticky clients frame. Scroll stages: intro → CLIENTS → brand names (random order).
 // Reveal spans most of a short pin so contact follows soon after the last name lands.
 export function ClientLogoGrid() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -48,14 +48,13 @@ export function ClientLogoGrid() {
       gsap.set('.clients-wordmark', { autoAlpha: 0, scale: 0.94 });
       gsap.set(names, { autoAlpha: 0, y: 10 });
 
-      // Reveal plays across most of the short pin — finish names near the end so
-      // you aren't stuck scrolling an empty hold into contact.
+      // Compact pin — finish names before the section ends so contact arrives sooner.
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: sectionRef.current,
-          start: 'top 30%',
+          start: 'top 20%',
           end: 'bottom bottom',
-          scrub: 0.55,
+          scrub: 0.45,
           invalidateOnRefresh: true,
         },
       });
@@ -67,8 +66,8 @@ export function ClientLogoGrid() {
       )
         .to(
           '.clients-wordmark',
-          { autoAlpha: 1, scale: 1, ease: 'power2.out', duration: 0.18 },
-          0.12,
+          { autoAlpha: 1, scale: 1, ease: 'power2.out', duration: 0.16 },
+          0.1,
         )
         .to(
           names,
@@ -77,21 +76,24 @@ export function ClientLogoGrid() {
             y: 0,
             ease: 'power1.out',
             duration: 0.1,
-            stagger: 0.028,
+            stagger: { each: 0.022, from: 'random' },
           },
-          0.28,
-        )
-        // Tiny settle beat, then section ends.
-        .to({}, { duration: 0.12 }, 0.88);
+          0.24,
+        );
     }, sectionRef);
     return () => ctx.revert();
   }, [reducedMotion]);
 
   return (
-    <section ref={sectionRef} className="relative h-[160vh] bg-charcoal md:h-[170vh]">
+    <section ref={sectionRef} className="relative h-[120vh] bg-charcoal md:h-[125vh]">
       <div className="sticky top-0 flex h-screen items-center justify-center overflow-hidden bg-charcoal">
-        {/* Brand monogram backdrop (behind the wordmark + names), like the hero/DPI acts. */}
-        <BrandPattern variant="dense" id="clients" half="left" className="opacity-[0.14]" />
+        {/* Brand monogram backdrop — fades out toward the bottom so contact doesn't inherit a hard pattern edge. */}
+        <BrandPattern
+          variant="dense"
+          id="clients"
+          half="left"
+          className="opacity-[0.14] [mask-image:linear-gradient(to_bottom,black_0%,black_45%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,black_0%,black_45%,transparent_100%)]"
+        />
 
         <div className="absolute inset-x-0 top-24 z-content flex justify-center px-6 lg:top-28">
           <p className="clients-intro max-w-xl text-center text-sm font-medium tracking-wide text-white/70 md:text-base">

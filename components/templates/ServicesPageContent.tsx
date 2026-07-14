@@ -1,6 +1,6 @@
 import { ServicesStatement } from '@/components/sections/services/ServicesStatement';
 import { ServicesIndex } from '@/components/sections/services/ServicesIndex';
-import { CTABand } from '@/components/sections/CTABand';
+import { ServicesCTA } from '@/components/sections/services/ServicesCTA';
 
 export function ServicesPageContent() {
   return (
@@ -9,8 +9,8 @@ export function ServicesPageContent() {
       <ServicesStatement />
       {/* ACT 2 — The Index */}
       <ServicesIndex />
-      {/* ACT 3 — Close: contact CTA (the global footer already carries the brand marquee). */}
-      <CTABand />
+      {/* ACT 3 — Close: bold orange CTA (the global footer carries the brand marquee). */}
+      <ServicesCTA />
     </>
   );
 }

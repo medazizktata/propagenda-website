@@ -47,14 +47,15 @@ export function ClientLogoGrid() {
       gsap.set('.clients-wordmark', { autoAlpha: 0, scale: 0.94 });
       gsap.set(names, { autoAlpha: 0, y: 10 });
 
-      // Reveal as the section scrolls INTO view — intro → CLIENTS → names, one by one —
-      // so it assembles during the approach and finishes just after it settles at the top.
-      // Nothing is pre-composed on arrival.
+      // The frame is vertically centred inside a tall pinned section, so it only enters the
+      // viewport once the section LOCKS at the top. Drive the reveal across the pin (not the
+      // approach) — intro → CLIENTS → names one by one — so it assembles on-screen and is
+      // never pre-composed by the time it scrolls in. The window stays inside the ~200vh pin.
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: sectionRef.current,
-          start: 'top 60%',
-          end: 'top -70%',
+          start: 'top top',
+          end: '55% top',
           scrub: 0.6,
           invalidateOnRefresh: true,
         },
@@ -86,7 +87,7 @@ export function ClientLogoGrid() {
   }, [reducedMotion]);
 
   return (
-    <section ref={sectionRef} className="relative h-[300vh]">
+    <section ref={sectionRef} className="relative h-[300vh] bg-charcoal">
       <div className="sticky top-0 flex h-screen items-center justify-center overflow-hidden bg-charcoal">
         <div className="absolute inset-x-0 top-24 z-content flex justify-center px-6 lg:top-28">
           <p className="clients-intro max-w-xl text-center text-sm font-medium tracking-wide text-white/70 md:text-base">

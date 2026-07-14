@@ -184,6 +184,18 @@ export const mobileApplications = service(
   'Mobile Applications',
   'MOBILE APPLICATIONS',
   'User-friendly mobile apps that enhance your brand and delight users.',
+  {
+    overview:
+      'From first sketch to store launch. We design and build creative, user-friendly mobile apps — with advanced technology and proven methods — that strengthen your brand, drive business growth, and delight the people who use them.',
+    scopeItems: [
+      'iOS & Android apps',
+      'Cross-platform development',
+      'Mobile UX/UI design',
+      'API & backend integration',
+      'App Store & Play Store launch',
+      'Maintenance & updates',
+    ],
+  },
 );
 
 export const events = service(

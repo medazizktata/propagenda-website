@@ -64,13 +64,13 @@ export function ServicesIndex() {
 
   return (
     <section ref={sectionRef} className="relative h-[170vh] bg-charcoal md:h-[185vh]">
-      <div className="sticky top-0 flex h-[100svh] items-center justify-center overflow-hidden bg-charcoal">
-        <div
-          className="relative mx-auto flex h-full w-full max-w-6xl items-center"
-          style={{ ['--rail' as keyof React.CSSProperties]: 'clamp(1.75rem, 4.5vw, 4.25rem)' }}
-          onMouseLeave={() => setActive(null)}
-        >
-          {/* Centre panel background: stacked previews + scrim, inset between the rails. */}
+      {/* Full-bleed on purpose: rails + preview reach the viewport edges (no gutter). */}
+      <div
+        className="sticky top-0 flex h-[100svh] items-center justify-center overflow-hidden bg-charcoal"
+        style={{ ['--rail' as keyof React.CSSProperties]: 'clamp(1.75rem, 4.5vw, 4.5rem)' }}
+        onMouseLeave={() => setActive(null)}
+      >
+          {/* Full-bleed preview panel, spanning edge-to-edge between the rails. */}
           <div
             aria-hidden
             className="pointer-events-none absolute inset-y-0 overflow-hidden"
@@ -132,9 +132,9 @@ export function ServicesIndex() {
             Services
           </h2>
 
-          {/* Rows + caption. */}
+          {/* Rows + caption — centred column over the full-bleed panel. */}
           <div
-            className="relative z-content flex h-full w-full flex-col justify-center pb-12 pt-20 md:pt-24"
+            className="relative z-content mx-auto flex h-full w-full max-w-7xl flex-col justify-center pb-12 pt-20 md:pt-24"
             style={{
               paddingLeft: 'calc(var(--rail) + clamp(1rem, 3vw, 3rem))',
               paddingRight: 'calc(var(--rail) + clamp(1rem, 3vw, 3rem))',
@@ -170,7 +170,6 @@ export function ServicesIndex() {
               </p>
             </div>
           </div>
-        </div>
       </div>
     </section>
   );

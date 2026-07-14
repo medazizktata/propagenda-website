@@ -25,7 +25,7 @@ const PLACEHOLDER_LOGOS = [
 ];
 
 // Sticky clients frame. Scroll stages: small intro → giant CLIENTS → brand names one by one.
-// Reveal finishes early in the pin so everything stays visible for the rest of the hold.
+// Reveal spans most of a short pin so contact follows soon after the last name lands.
 export function ClientLogoGrid() {
   const sectionRef = useRef<HTMLElement>(null);
   const reducedMotion = useReducedMotion();
@@ -48,29 +48,27 @@ export function ClientLogoGrid() {
       gsap.set('.clients-wordmark', { autoAlpha: 0, scale: 0.94 });
       gsap.set(names, { autoAlpha: 0, y: 10 });
 
-      // The frame is vertically centred in a tall pinned section, so it only rises into view
-      // as the section nears its lock. Begin the reveal just before it locks (content already
-      // visible in the lower viewport) and finish early in the pin — intro → CLIENTS → names
-      // one by one — so it assembles on-screen, never pre-composed by the time it scrolls in.
+      // Reveal plays across most of the short pin — finish names near the end so
+      // you aren't stuck scrolling an empty hold into contact.
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: sectionRef.current,
-          start: 'top 20%',
-          end: '22% top',
-          scrub: 0.6,
+          start: 'top 30%',
+          end: 'bottom bottom',
+          scrub: 0.55,
           invalidateOnRefresh: true,
         },
       });
 
       tl.to(
         '.clients-intro',
-        { autoAlpha: 1, y: 0, ease: 'power2.out', duration: 0.18 },
+        { autoAlpha: 1, y: 0, ease: 'power2.out', duration: 0.14 },
         0,
       )
         .to(
           '.clients-wordmark',
-          { autoAlpha: 1, scale: 1, ease: 'power2.out', duration: 0.24 },
-          0.2,
+          { autoAlpha: 1, scale: 1, ease: 'power2.out', duration: 0.18 },
+          0.12,
         )
         .to(
           names,
@@ -79,16 +77,18 @@ export function ClientLogoGrid() {
             y: 0,
             ease: 'power1.out',
             duration: 0.1,
-            stagger: 0.04,
+            stagger: 0.028,
           },
-          0.48,
-        );
+          0.28,
+        )
+        // Tiny settle beat, then section ends.
+        .to({}, { duration: 0.12 }, 0.88);
     }, sectionRef);
     return () => ctx.revert();
   }, [reducedMotion]);
 
   return (
-    <section ref={sectionRef} className="relative h-[300vh] bg-charcoal">
+    <section ref={sectionRef} className="relative h-[160vh] bg-charcoal md:h-[170vh]">
       <div className="sticky top-0 flex h-screen items-center justify-center overflow-hidden bg-charcoal">
         {/* Brand monogram backdrop (behind the wordmark + names), like the hero/DPI acts. */}
         <BrandPattern variant="dense" id="clients" half="left" className="opacity-[0.14]" />
@@ -108,8 +108,8 @@ export function ClientLogoGrid() {
         </h2>
 
         <div
-          className="relative z-content mx-auto flex max-w-5xl flex-wrap items-center justify-center gap-x-6 gap-y-3.5 px-6 text-center font-sans font-bold uppercase tracking-tight text-white [text-shadow:0_2px_12px_rgba(0,0,0,0.75)]"
-          style={{ fontSize: 'clamp(0.8rem, 1.6vw, 1.55rem)' }}
+          className="relative z-content mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-5 gap-y-3 px-6 text-center font-sans font-bold uppercase tracking-tight text-white [text-shadow:0_2px_12px_rgba(0,0,0,0.75)]"
+          style={{ fontSize: 'clamp(0.7rem, 1.25vw, 1.15rem)' }}
         >
           {clientLogos.map((brand, i) => {
             const logo = PLACEHOLDER_LOGOS[i % PLACEHOLDER_LOGOS.length];

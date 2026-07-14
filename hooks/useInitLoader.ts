@@ -24,12 +24,31 @@ export function useInitLoader() {
   useEffect(() => {
     if (state !== 'visible' || reducedMotion) return;
 
-    const timer = window.setTimeout(() => {
+    const start = performance.now();
+    let finished = false;
+    const finish = () => {
+      if (finished) return;
+      finished = true;
       sessionStorage.setItem(STORAGE_KEY, '1');
       setState('done');
-    }, 2200);
+    };
+    // Dismiss once the heavy 3D asset is ready, keeping a minimum on-screen time.
+    const onReady = () => {
+      const wait = Math.max(0, 1100 - (performance.now() - start)) + 350;
+      window.setTimeout(finish, wait);
+    };
 
-    return () => window.clearTimeout(timer);
+    if ((window as unknown as { __hero3dReady?: boolean }).__hero3dReady) {
+      onReady();
+    } else {
+      window.addEventListener('hero3d:ready', onReady, { once: true });
+    }
+    const maxTimer = window.setTimeout(finish, 5000); // safety fallback
+
+    return () => {
+      window.removeEventListener('hero3d:ready', onReady);
+      window.clearTimeout(maxTimer);
+    };
   }, [state, reducedMotion]);
 
   return {

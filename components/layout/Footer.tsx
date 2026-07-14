@@ -1,5 +1,3 @@
-import { DisplayHeading } from '@/components/ui/DisplayHeading';
-import { BodyText } from '@/components/ui/BodyText';
 import { AppLink } from '@/components/ui/Link';
 import { RunningMarquee } from '@/components/molecules/RunningMarquee';
 import { SocialIconLink } from '@/components/molecules/SocialIconLink';
@@ -15,47 +13,71 @@ export function Footer() {
         line2={footer.marquee.line2}
         ctaHref={footer.marquee.ctaHref}
       />
-      <div className="px-gutter-m py-16 lg:px-gutter-d">
-        <DisplayHeading as="p" size="display-xs" className="mb-8">
-          {footer.tagline}
-        </DisplayHeading>
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
-          <div className="space-y-2">
-            <BodyText muted>
-              <a href={`tel:${footer.phone.replace(/\s/g, '')}`} className="hover-fine:hover:text-orange">
-                {footer.phone}
-              </a>
-            </BodyText>
-            <BodyText muted>
-              <a href={`mailto:${footer.email}`} className="hover-fine:hover:text-orange">
-                {footer.email}
-              </a>
-            </BodyText>
-            <BodyText muted>{footer.address}</BodyText>
+
+      <div className="border-t border-white/10 px-gutter-m py-14 lg:px-gutter-d lg:py-20">
+        {/* Contact + nav */}
+        <div className="grid gap-12 lg:grid-cols-12 lg:gap-8">
+          <div className="space-y-3 lg:col-span-4">
+            <a
+              href={`tel:${footer.phone.replace(/\s/g, '')}`}
+              className="transition-hover block text-base tracking-wide text-white/75 hover-fine:hover:text-orange md:text-lg"
+            >
+              {footer.phone}
+            </a>
+            <a
+              href={`mailto:${footer.email}`}
+              className="transition-hover block text-base tracking-wide text-white/75 hover-fine:hover:text-orange md:text-lg"
+            >
+              {footer.email}
+            </a>
+            <p className="max-w-[22ch] text-sm leading-relaxed text-white/45 md:text-base">
+              {footer.address}
+            </p>
           </div>
-          <nav className="flex flex-col gap-2" aria-label="Footer">
-            {primaryNav.map((item) => (
-              <AppLink key={item.href} href={item.href} variant="footer">
-                {item.label}
-              </AppLink>
-            ))}
+
+          <nav className="lg:col-span-5" aria-label="Footer">
+            <ul className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:gap-x-7 sm:gap-y-3">
+              {primaryNav.map((item) => (
+                <li key={item.href}>
+                  <AppLink
+                    href={item.href}
+                    variant="footer"
+                    className="text-base font-bold tracking-wide text-white lg:text-xl"
+                  >
+                    {item.label}
+                  </AppLink>
+                </li>
+              ))}
+            </ul>
           </nav>
-          <div className="flex flex-wrap gap-3">
-            {socialLinks.map((link) => (
-              <SocialIconLink key={link.platform} link={link} />
-            ))}
-          </div>
-          <div className="flex flex-col gap-2">
+
+          <div className="flex flex-col gap-3 lg:col-span-3 lg:items-end">
             {footer.legalLinks.map((item) => (
-              <AppLink key={item.href} href={item.href} variant="footer">
+              <AppLink
+                key={item.href}
+                href={item.href}
+                variant="footer"
+                className="text-sm font-semibold tracking-wide text-white/55 lg:text-base"
+              >
                 {item.label}
               </AppLink>
             ))}
           </div>
         </div>
-        <BodyText as="p" size="text-sm" muted className="mt-12">
-          © {year} {footer.copyright}
-        </BodyText>
+
+        {/* Social icons + copyright */}
+        <div className="mt-14 flex flex-col gap-8 border-t border-white/10 pt-8 sm:mt-16 sm:flex-row sm:items-center sm:justify-between">
+          <ul className="flex items-center gap-1">
+            {socialLinks.map((link) => (
+              <li key={link.platform}>
+                <SocialIconLink link={link} />
+              </li>
+            ))}
+          </ul>
+          <p className="text-xs tracking-wide text-white/40">
+            © {year} {footer.copyright}
+          </p>
+        </div>
       </div>
     </footer>
   );

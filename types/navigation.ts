@@ -6,7 +6,7 @@ export interface NavItem {
 export interface SocialLink {
   label: string;
   href: string;
-  platform: 'facebook' | 'threads' | 'tiktok' | 'instagram';
+  platform: 'facebook' | 'threads' | 'tiktok' | 'instagram' | 'linkedin';
 }
 
 export interface FooterConfig {

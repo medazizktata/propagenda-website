@@ -12,10 +12,12 @@ export function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-header border-b border-border bg-charcoal/95 backdrop-blur-sm">
-      <div className="mx-auto flex h-header max-w-[1920px] items-center justify-between px-gutter-m lg:px-gutter-d">
-        <Logo />
-        <nav className="hidden items-center gap-1 md:flex" aria-label="Primary">
+    <header className="fixed inset-x-0 top-0 z-header bg-transparent pt-3">
+      <div className="mx-auto flex h-11 max-w-[1920px] items-center justify-between px-gutter-m lg:px-gutter-d">
+        {/* Mark only when narrow; full lockup once there’s room for the wordmark. */}
+        <Logo variant="mark" className="lg:hidden" />
+        <Logo className="hidden lg:inline-flex" />
+        <nav className="hidden items-center gap-5 lg:flex" aria-label="Primary">
           {primaryNav.map((item) => (
             <NavItemLink key={item.href} item={item} />
           ))}

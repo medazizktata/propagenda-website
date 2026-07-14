@@ -1,19 +1,21 @@
 'use client';
 
-import { usePageTransition } from '@/hooks/usePageTransition';
+import { usePageTransition, TRANSITION_COLUMNS, TRANSITION_STAGGER_MS } from '@/hooks/usePageTransition';
 
 export function PageTransitionLoader() {
-  const active = usePageTransition();
+  const phase = usePageTransition();
 
-  if (!active) return null;
+  if (phase === 'idle') return null;
+
+  const anim = phase === 'cover' ? 'animate-page-cover' : 'animate-page-reveal';
 
   return (
     <div className="pointer-events-none fixed inset-0 z-loader flex" aria-hidden>
-      {Array.from({ length: 30 }).map((_, i) => (
+      {Array.from({ length: TRANSITION_COLUMNS }).map((_, i) => (
         <span
           key={i}
-          className="h-full flex-1 origin-top bg-orange animate-line-wipe"
-          style={{ animationDelay: `${i * 12}ms` }}
+          className={`h-full flex-1 bg-orange ${anim}`}
+          style={{ animationDelay: `${i * TRANSITION_STAGGER_MS}ms` }}
         />
       ))}
     </div>

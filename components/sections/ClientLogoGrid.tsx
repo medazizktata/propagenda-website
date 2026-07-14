@@ -53,8 +53,8 @@ export function ClientLogoGrid() {
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: sectionRef.current,
-          start: 'top 45%',
-          end: 'top -60%',
+          start: 'top 60%',
+          end: 'top -70%',
           scrub: 0.6,
           invalidateOnRefresh: true,
         },

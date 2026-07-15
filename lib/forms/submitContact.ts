@@ -1,21 +1,31 @@
 'use server';
 
-import type { ContactFormResult } from '@/types/forms';
-import { contactSchema } from './contactSchema';
+import type { ContactFormData, ContactFormResult } from '@/types/forms';
+import { contactSchema, fieldErrorsFromZod } from './contactSchema';
 
-export async function submitContact(formData: FormData): Promise<ContactFormResult> {
-  const parsed = contactSchema.safeParse({
-    firstName: formData.get('firstName'),
-    lastName: formData.get('lastName'),
-    email: formData.get('email'),
-    phone: formData.get('phone'),
-    message: formData.get('message'),
-  });
+function readFields(formData: FormData): ContactFormData {
+  return {
+    firstName: String(formData.get('firstName') ?? ''),
+    lastName: String(formData.get('lastName') ?? ''),
+    email: String(formData.get('email') ?? ''),
+    phone: String(formData.get('phone') ?? ''),
+    message: String(formData.get('message') ?? ''),
+  };
+}
+
+export async function submitContact(
+  _prev: ContactFormResult,
+  formData: FormData,
+): Promise<ContactFormResult> {
+  const values = readFields(formData);
+  const parsed = contactSchema.safeParse(values);
 
   if (!parsed.success) {
     return {
       success: false,
-      message: parsed.error.issues[0]?.message ?? 'Invalid form data',
+      message: '',
+      fieldErrors: fieldErrorsFromZod(parsed.error),
+      values,
     };
   }
 
@@ -34,7 +44,11 @@ export async function submitContact(formData: FormData): Promise<ContactFormResu
     });
 
     if (!response.ok) {
-      return { success: false, message: 'Unable to send message. Please try again.' };
+      return {
+        success: false,
+        message: 'Unable to send message. Please try again.',
+        values: parsed.data,
+      };
     }
   }
 

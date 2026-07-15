@@ -22,6 +22,11 @@ export const serviceNav: NavItem[] = [
 
 export const socialLinks: SocialLink[] = [
   {
+    label: 'Facebook',
+    href: 'https://www.facebook.com/propagenda.marketing',
+    platform: 'facebook',
+  },
+  {
     label: 'Instagram',
     href: 'https://www.instagram.com/propagenda_marketing/',
     platform: 'instagram',

@@ -15,7 +15,7 @@ interface AppLinkProps {
 
 const variantClasses: Record<LinkVariant, string> = {
   nav: 'transition-hover font-bold uppercase tracking-wide text-white hover-fine:hover:text-orange',
-  footer: 'transition-hover text-base uppercase font-bold hover-fine:hover:text-orange lg:text-2xl',
+  footer: 'transition-hover text-sm uppercase font-bold hover-fine:hover:text-orange lg:text-base',
   inline:
     'transition-hover text-white hover-fine:hover:text-orange underline-offset-4 hover-fine:hover:underline',
   ghost: 'transition-hover font-bold uppercase tracking-display text-ghost',

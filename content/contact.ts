@@ -17,6 +17,7 @@ export const contactPageHeading = 'CONTACT US';
 
 export const whatsapp = {
   label: 'WhatsApp',
-  href: 'https://wa.me/971527533253',
-  display: '+971 52 753 3253',
+  href: 'https://wa.me/971527533253?text=Hi%20Propagenda%2C%20I%27d%20like%20to%20start%20a%20conversation.',
+  display: 'Message us',
+  number: '+971 52 753 3253',
 };

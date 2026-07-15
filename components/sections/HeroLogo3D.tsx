@@ -88,7 +88,7 @@ export function HeroLogo3D({ className }: { className?: string }) {
 
       const logo = new THREE.Group();
       data.paths.forEach((path) => {
-        path.toShapes(true).forEach((shape) => {
+        path.toShapes().forEach((shape) => {
           const geo = new THREE.ExtrudeGeometry(shape, {
             depth: 22,
             bevelEnabled: true,

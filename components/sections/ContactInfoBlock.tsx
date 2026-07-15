@@ -14,10 +14,17 @@ export function ContactInfoBlock({ showWhatsApp = false }: ContactInfoBlockProps
         value={footer.phone}
         href={`tel:${footer.phone.replace(/\s/g, '')}`}
       />
-      {showWhatsApp && (
-        <ContactInfoRow label={whatsapp.label} value={whatsapp.display} href={whatsapp.href} />
-      )}
-      <ContactInfoRow label="Email" value={footer.email} href={`mailto:${footer.email}`} />
+      <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:gap-12">
+        <ContactInfoRow label="Email" value={footer.email} href={`mailto:${footer.email}`} />
+        {showWhatsApp ? (
+          <ContactInfoRow
+            label={whatsapp.label}
+            value={whatsapp.display}
+            href={whatsapp.href}
+            external
+          />
+        ) : null}
+      </div>
       <ContactInfoRow label="Address" value={footer.address} />
     </div>
   );

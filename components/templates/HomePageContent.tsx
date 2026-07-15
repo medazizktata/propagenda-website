@@ -17,8 +17,10 @@ export function HomePageContent() {
       </SeamlessActs>
       <MethodologySection />
       <WorkSplitSection />
-      <ClientLogoGrid />
-      <ContactSection />
+      <SeamlessActs>
+        <ClientLogoGrid />
+        <ContactSection />
+      </SeamlessActs>
     </>
   );
 }

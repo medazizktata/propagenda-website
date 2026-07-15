@@ -3,39 +3,43 @@
 import { useEffect, useRef, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useReducedMotion } from '@/lib/motion/useReducedMotion';
+import { isRouteUnlocked, openComingSoonModal } from '@/lib/softLaunch';
 
 export type TransitionPhase = 'idle' | 'cover' | 'reveal';
 
-export const TRANSITION_COLUMNS = 12;
-export const TRANSITION_STAGGER_MS = 20;
-const COVER_MS = 340;
-const REVEAL_MS = 460;
-// Wait for EVERY column to finish rising before we navigate, so the screen is fully
-// covered (never see-through) at the moment the route swaps underneath.
-const COVER_COMPLETE_MS = COVER_MS + (TRANSITION_COLUMNS - 1) * TRANSITION_STAGGER_MS;
-const REVEAL_COMPLETE_MS = REVEAL_MS + (TRANSITION_COLUMNS - 1) * TRANSITION_STAGGER_MS;
+/** Orange wipe fills the screen, then fade-out reveals the new route. */
+export const COVER_MS = 340;
+export const REVEAL_MS = 280;
+/** Time the stacked quote stays readable after the wipe covers the screen. */
+export const QUOTE_HOLD_MS = 480;
+const COVER_COMPLETE_MS = COVER_MS + 30;
+/** Extra hold on home so Three can mount under the cover before fade-out. */
+const HOME_3D_BEAT_MS = 160;
+const HOME_3D_MAX_WAIT_MS = 4500;
+
+function isHomePath(path: string) {
+  return path === '/' || path === '';
+}
+
+function isDesktopViewport() {
+  return window.matchMedia('(min-width: 1024px)').matches;
+}
 
 /**
- * Drives the SMV-style route wipe as a proper two-phase transition:
- *   click → COVER (orange columns sweep up to fully hide the page) → navigate under the
- *   cover → REVEAL (columns sweep away to expose the new page).
- *
- * The old version keyed only off `pathname`, so the wipe ran *after* the new page had
- * already painted and — because it started see-through — you saw the destination flash
- * before the columns arrived. Intercepting the click and covering first fixes both.
+ * Mid-route: full-screen orange cover → navigate under it → slow opacity fade
+ * so the destination reveals while the fill opts out.
+ * Home routes hold the cover until the hero 3D logo is ready (desktop).
  */
-export function usePageTransition(): TransitionPhase {
+export function usePageTransition(): { phase: TransitionPhase; targetPath: string | null } {
   const pathname = usePathname();
   const router = useRouter();
   const reducedMotion = useReducedMotion();
   const [phase, setPhase] = useState<TransitionPhase>('idle');
+  const [targetPath, setTargetPath] = useState<string | null>(null);
   const pendingRef = useRef<string | null>(null);
   const timers = useRef<number[]>([]);
 
-  // Intercept internal link clicks: cover first, then navigate.
   useEffect(() => {
-    if (reducedMotion) return;
-
     const onClick = (e: MouseEvent) => {
       if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) {
         return;
@@ -53,13 +57,28 @@ export function usePageTransition(): TransitionPhase {
       } catch {
         return;
       }
-      // Only same-origin navigations to a different path get the wipe; hash/same-page and
-      // external links fall through to the browser untouched.
       if (url.origin !== window.location.origin) return;
-      if (url.pathname === window.location.pathname) return;
+      if (url.pathname === window.location.pathname && url.search === window.location.search) return;
+
+      // Soft launch: block unfinished routes — stay put and show the popup.
+      if (!isRouteUnlocked(url.pathname)) {
+        e.preventDefault();
+        openComingSoonModal(url.pathname);
+        return;
+      }
+
+      // Reduced motion: let the browser/Next handle navigation normally.
+      if (reducedMotion) return;
 
       e.preventDefault();
+      if (phase !== 'idle') return;
+
       pendingRef.current = url.pathname + url.search + url.hash;
+      setTargetPath(url.pathname);
+      // Force a fresh ready signal when landing on home with the 3D hero.
+      if (isHomePath(url.pathname)) {
+        (window as unknown as { __hero3dReady?: boolean }).__hero3dReady = false;
+      }
       setPhase('cover');
       timers.current.push(
         window.setTimeout(() => {
@@ -70,14 +89,56 @@ export function usePageTransition(): TransitionPhase {
 
     document.addEventListener('click', onClick, true);
     return () => document.removeEventListener('click', onClick, true);
-  }, [reducedMotion, router]);
+  }, [reducedMotion, router, phase]);
 
-  // Once the route we covered actually commits, reveal the new page.
   useEffect(() => {
-    if (pendingRef.current == null) return; // first load, or a nav we didn't initiate
+    if (pendingRef.current == null) return;
     pendingRef.current = null;
-    setPhase('reveal');
-    timers.current.push(window.setTimeout(() => setPhase('idle'), REVEAL_COMPLETE_MS + 60));
+
+    const startReveal = () => {
+      setPhase('reveal');
+      timers.current.push(
+        window.setTimeout(() => {
+          setPhase('idle');
+          setTargetPath(null);
+        }, REVEAL_MS + 40),
+      );
+    };
+
+    // Non-home: keep the quote on screen briefly, then fade out.
+    if (!isHomePath(pathname) || !isDesktopViewport()) {
+      timers.current.push(window.setTimeout(startReveal, QUOTE_HOLD_MS));
+      return;
+    }
+
+    // Home + desktop: hold until 3D is ready (and at least the quote hold).
+    const win = window as unknown as { __hero3dReady?: boolean };
+    const quoteReadyAt = performance.now() + QUOTE_HOLD_MS;
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      window.removeEventListener('hero3d:ready', onReady);
+      window.clearTimeout(maxWait);
+      const wait = Math.max(0, quoteReadyAt - performance.now()) + HOME_3D_BEAT_MS;
+      timers.current.push(window.setTimeout(startReveal, wait));
+    };
+    const onReady = () => finish();
+
+    if (win.__hero3dReady) {
+      finish();
+    } else {
+      window.addEventListener('hero3d:ready', onReady, { once: true });
+      // Race: ready may have fired between the reset and this listener.
+      if (win.__hero3dReady) finish();
+    }
+    const maxWait = window.setTimeout(finish, HOME_3D_MAX_WAIT_MS);
+
+    return () => {
+      done = true;
+      window.removeEventListener('hero3d:ready', onReady);
+      window.clearTimeout(maxWait);
+    };
   }, [pathname]);
 
   useEffect(() => {
@@ -85,5 +146,5 @@ export function usePageTransition(): TransitionPhase {
     return () => active.forEach((t) => window.clearTimeout(t));
   }, []);
 
-  return phase;
+  return { phase, targetPath };
 }

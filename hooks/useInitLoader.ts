@@ -2,39 +2,42 @@
 
 import { useEffect, useState } from 'react';
 import { useReducedMotion } from '@/lib/motion/useReducedMotion';
+import { ffInitLoader } from '@/lib/featureFlags';
 
-const STORAGE_KEY = 'propagenda-init-seen';
-
-function getInitialState(): 'visible' | 'done' {
-  if (typeof window === 'undefined') return 'done';
-  if (sessionStorage.getItem(STORAGE_KEY)) return 'done';
-  return 'visible';
+/** Opt out with NEXT_PUBLIC_FF_INIT_LOADER=false (or legacy NEXT_PUBLIC_INIT_LOADER). */
+export function isInitLoaderEnabled() {
+  return ffInitLoader;
 }
 
+/**
+ * Orange quote splash on every full page load (hard reload included).
+ * Soft client navigations use PageTransitionLoader instead.
+ */
 export function useInitLoader() {
   const reducedMotion = useReducedMotion();
-  const [state, setState] = useState<'visible' | 'done'>(getInitialState);
+  const enabled = isInitLoaderEnabled();
+  const [state, setState] = useState<'visible' | 'done'>(() =>
+    enabled && typeof window !== 'undefined' ? 'visible' : 'done',
+  );
 
   useEffect(() => {
-    if (reducedMotion) {
-      sessionStorage.setItem(STORAGE_KEY, '1');
+    if (!enabled || reducedMotion) {
+      setState('done');
     }
-  }, [reducedMotion]);
+  }, [enabled, reducedMotion]);
 
   useEffect(() => {
-    if (state !== 'visible' || reducedMotion) return;
+    if (!enabled || state !== 'visible' || reducedMotion) return;
 
     const start = performance.now();
     let finished = false;
     const finish = () => {
       if (finished) return;
       finished = true;
-      sessionStorage.setItem(STORAGE_KEY, '1');
       setState('done');
     };
-    // Dismiss once the heavy 3D asset is ready, keeping a minimum on-screen time.
     const onReady = () => {
-      const wait = Math.max(0, 1100 - (performance.now() - start)) + 350;
+      const wait = Math.max(0, 700 - (performance.now() - start)) + 180;
       window.setTimeout(finish, wait);
     };
 
@@ -43,17 +46,18 @@ export function useInitLoader() {
     } else {
       window.addEventListener('hero3d:ready', onReady, { once: true });
     }
-    const maxTimer = window.setTimeout(finish, 5000); // safety fallback
+    const maxTimer = window.setTimeout(finish, 3200);
 
     return () => {
       window.removeEventListener('hero3d:ready', onReady);
       window.clearTimeout(maxTimer);
     };
-  }, [state, reducedMotion]);
+  }, [enabled, state, reducedMotion]);
 
   return {
-    visible: !reducedMotion && state === 'visible',
-    ready: reducedMotion || state === 'done',
+    enabled,
+    visible: enabled && !reducedMotion && state === 'visible',
+    ready: !enabled || reducedMotion || state === 'done',
     dismiss: () => setState('done'),
   };
 }

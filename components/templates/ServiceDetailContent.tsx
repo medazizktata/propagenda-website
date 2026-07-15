@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import type { ServiceRecord } from '@/types/content';
 import { gsap } from '@/lib/motion/gsap';
@@ -31,6 +31,18 @@ export function ServiceDetailContent({ service }: { service: ServiceRecord }) {
   const rootRef = useRef<HTMLDivElement>(null);
   const reducedMotion = useReducedMotion();
   const cfg = serviceDetailConfig[service.slug];
+
+  // Always show exactly 3 related-work cards: the service's own related work first, padded
+  // from a safe pool (links to the work hub), de-duped by label.
+  const relatedThree = [
+    ...(service.relatedWork ?? []),
+    { label: 'Sanapex Interiors', href: '/work' },
+    { label: 'Quick Cars', href: '/work' },
+    { label: 'Darabzeen Al Ward', href: '/work' },
+    { label: 'BIL Events', href: '/work' },
+  ]
+    .filter((v, i, a) => a.findIndex((x) => x.label === v.label) === i)
+    .slice(0, 3);
 
   useEffect(() => {
     const el = rootRef.current;
@@ -118,8 +130,11 @@ export function ServiceDetailContent({ service }: { service: ServiceRecord }) {
 
       {/* ── SCOPE ────────────────────────────────────────────────────────── */}
       {service.scopeItems.length > 0 && (
-        <section className="relative px-gutter-m py-20 lg:px-gutter-d lg:py-24">
-          <div className="mx-auto max-w-6xl">
+        <section className="relative overflow-hidden px-gutter-m py-16 lg:px-gutter-d lg:py-20">
+          <div aria-hidden className="pattern-section-fade absolute inset-0">
+            <BrandPattern variant="tiled" />
+          </div>
+          <div className="relative z-content mx-auto max-w-6xl">
             <SectionLabel className="sd-reveal mb-10">What&apos;s included</SectionLabel>
             <div className="grid gap-x-12 sm:grid-cols-2">
               {service.scopeItems.map((item, i) => (
@@ -145,7 +160,7 @@ export function ServiceDetailContent({ service }: { service: ServiceRecord }) {
       <ServiceWorkGrid />
 
       {/* ── PROOF + RELATED WORK ─────────────────────────────────────────── */}
-      <section className="relative overflow-hidden border-t border-white/10 px-gutter-m py-20 lg:px-gutter-d lg:py-24">
+      <section className="relative overflow-hidden border-t border-white/10 px-gutter-m py-16 lg:px-gutter-d lg:py-20">
         <div aria-hidden className="pattern-section-fade absolute inset-0">
           <BrandPattern variant="tiled" />
         </div>
@@ -163,30 +178,28 @@ export function ServiceDetailContent({ service }: { service: ServiceRecord }) {
             ))}
           </div>
 
-          {service.relatedWork && service.relatedWork.length > 0 && (
-            <div className="mt-16">
-              <SectionLabel className="sd-reveal mb-6">Related work</SectionLabel>
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {service.relatedWork.map((rw) => (
-                  <Link
-                    key={rw.href}
-                    href={rw.href}
-                    className="group/rw sd-reveal flex items-center justify-between gap-4 rounded-xl border border-white/12 bg-white/[0.02] p-6 transition-hover hover-fine:hover:border-orange/50 hover-fine:hover:bg-white/[0.04]"
+          <div className="mt-14">
+            <SectionLabel className="sd-reveal mb-6">Related work</SectionLabel>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {relatedThree.map((rw, i) => (
+                <Link
+                  key={`${rw.href}-${i}`}
+                  href={rw.href}
+                  className="group/rw sd-reveal flex items-center justify-between gap-4 rounded-xl border border-white/12 bg-white/[0.02] p-6 transition-hover hover-fine:hover:border-orange/50 hover-fine:hover:bg-white/[0.04]"
+                >
+                  <span className="font-sans text-base font-bold uppercase tracking-tight text-white">
+                    {rw.label}
+                  </span>
+                  <span
+                    aria-hidden
+                    className="text-orange transition-transform duration-300 group-hover/rw:translate-x-1"
                   >
-                    <span className="font-sans text-base font-bold uppercase tracking-tight text-white">
-                      {rw.label}
-                    </span>
-                    <span
-                      aria-hidden
-                      className="text-orange transition-transform duration-300 group-hover/rw:translate-x-1"
-                    >
-                      &rarr;
-                    </span>
-                  </Link>
-                ))}
-              </div>
+                    &rarr;
+                  </span>
+                </Link>
+              ))}
             </div>
-          )}
+          </div>
         </div>
       </section>
 
@@ -226,8 +239,11 @@ function ModuleShell({
   children: React.ReactNode;
 }) {
   return (
-    <section className="relative border-t border-white/10 px-gutter-m py-20 lg:px-gutter-d lg:py-24">
-      <div className="mx-auto max-w-6xl">
+    <section className="relative overflow-hidden border-t border-white/10 px-gutter-m py-16 lg:px-gutter-d lg:py-20">
+      <div aria-hidden className="pattern-section-fade absolute inset-0">
+        <BrandPattern variant="tiled" />
+      </div>
+      <div className="relative z-content mx-auto max-w-6xl">
         <SectionLabel className="sd-reveal mb-4">{label}</SectionLabel>
         {title && (
           <h2
@@ -245,38 +261,68 @@ function ModuleShell({
 
 function TierCards({ service }: { service: ServiceRecord }) {
   const tiers = service.tiers ?? [];
+  // Interactive: click a tier to reveal what's included; the other collapses.
+  const [active, setActive] = useState(tiers.length - 1);
+
   return (
     <ModuleShell label="How we package it" title="Choose your level of brand.">
-      <div className="grid gap-6 md:grid-cols-2">
-        {tiers.map((tier, i) => (
-          <div
-            key={tier.name}
-            className={cn(
-              'sd-reveal flex flex-col rounded-2xl border p-8 lg:p-10',
-              i === tiers.length - 1
-                ? 'border-orange/60 bg-orange/[0.06]'
-                : 'border-white/12 bg-white/[0.02]',
-            )}
-          >
-            <div className="mb-6 flex items-center gap-3">
-              <span className="text-sm font-bold tabular-nums text-orange">{num(i)}</span>
-              <h3 className="font-sans text-xl font-bold uppercase tracking-tight text-white md:text-2xl">
-                {tier.name}
-              </h3>
-            </div>
-            <ul className="flex flex-col gap-3">
-              {tier.items.map((item) => (
-                <li key={item} className="flex gap-3 text-white/75">
-                  <span aria-hidden className="mt-1 text-orange">
-                    &mdash;
-                  </span>
-                  <span className="leading-relaxed">{item}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
+      <div className="grid items-start gap-6 md:grid-cols-2">
+        {tiers.map((tier, i) => {
+          const isActive = active === i;
+          return (
+            <button
+              key={tier.name}
+              type="button"
+              onClick={() => setActive(i)}
+              aria-expanded={isActive}
+              className={cn(
+                'sd-reveal block rounded-2xl border p-8 text-left transition-all duration-300 lg:p-10',
+                isActive
+                  ? 'border-orange bg-orange/[0.08]'
+                  : 'border-white/12 bg-white/[0.02] hover-fine:hover:border-white/30',
+              )}
+            >
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <span className="text-sm font-bold tabular-nums text-orange">{num(i)}</span>
+                  <h3 className="font-sans text-xl font-bold uppercase tracking-tight text-white md:text-2xl">
+                    {tier.name}
+                  </h3>
+                </div>
+                <span
+                  aria-hidden
+                  className={cn(
+                    'flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-lg leading-none transition-all duration-300',
+                    isActive ? 'rotate-45 border-orange text-orange' : 'border-white/25 text-white/60',
+                  )}
+                >
+                  +
+                </span>
+              </div>
+              <div
+                className={cn(
+                  'grid transition-all duration-500 ease-out',
+                  isActive ? 'mt-6 grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0',
+                )}
+              >
+                <ul className="flex flex-col gap-3 overflow-hidden">
+                  {tier.items.map((item) => (
+                    <li key={item} className="flex gap-3 text-white/75">
+                      <span aria-hidden className="mt-1 text-orange">
+                        &mdash;
+                      </span>
+                      <span className="leading-relaxed">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </button>
+          );
+        })}
       </div>
+      <p className="sd-reveal mt-6 text-xs uppercase tracking-wider text-white/40">
+        Tap a tier to see what&apos;s included.
+      </p>
     </ModuleShell>
   );
 }

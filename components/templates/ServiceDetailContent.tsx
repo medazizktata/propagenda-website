@@ -11,6 +11,7 @@ import { SectionLabel } from '@/components/ui/SectionLabel';
 import { Button } from '@/components/ui/Button';
 import { ServicesCTA } from '@/components/sections/services/ServicesCTA';
 import { ServiceNextPrev } from '@/components/sections/services/ServiceNextPrev';
+import { ServiceWorkGrid } from '@/components/sections/services/ServiceWorkGrid';
 import { serviceDetailConfig } from '@/components/sections/services/serviceDetailConfig';
 
 // Real client logos (temporary curated proof strip — shown on light chips so they read on
@@ -59,14 +60,14 @@ export function ServiceDetailContent({ service }: { service: ServiceRecord }) {
 
   return (
     <div ref={rootRef} className="bg-charcoal">
-      {/* ── HERO ─────────────────────────────────────────────────────────── */}
-      <section className="relative flex min-h-[92svh] items-center overflow-hidden bg-charcoal">
+      {/* ── HERO (SMV project-detail composition: centred title + tagline + scroll cue) ─── */}
+      <section className="relative flex min-h-[92svh] flex-col items-center justify-center overflow-hidden bg-charcoal px-gutter-m py-28 text-center lg:px-gutter-d">
         {cfg.heroImage ? (
           <div aria-hidden className="absolute inset-0">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={cfg.heroImage} alt="" className="h-full w-full object-cover object-center" />
-            <div className="absolute inset-0 bg-gradient-to-r from-charcoal via-charcoal/85 to-charcoal/20 md:via-charcoal/60 md:to-transparent" />
-            <div className="absolute inset-0 bg-gradient-to-t from-charcoal via-charcoal/30 to-transparent" />
+            <div className="absolute inset-0 bg-charcoal/[0.55]" />
+            <div className="absolute inset-0 bg-gradient-to-t from-charcoal via-charcoal/20 to-charcoal/60" />
           </div>
         ) : (
           <div aria-hidden className="pattern-section-fade absolute inset-0">
@@ -74,39 +75,50 @@ export function ServiceDetailContent({ service }: { service: ServiceRecord }) {
           </div>
         )}
 
-        {/* Orange rail spine — ties the page to the index. */}
-        <div aria-hidden className="absolute inset-y-0 left-0 w-[clamp(0.5rem,1.4vw,1rem)] bg-orange" />
+        {/* Back to the index (SMV back arrow). */}
+        <Link
+          href="/services"
+          aria-label="Back to services"
+          className="group absolute left-gutter-m top-24 z-content flex h-12 w-12 items-center justify-center rounded-full border border-white/25 text-white transition-hover hover-fine:hover:border-orange hover-fine:hover:text-orange lg:left-gutter-d"
+        >
+          <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5">
+            <path d="M19 12H5M5 12l6-6M5 12l6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </Link>
 
-        <div className="relative z-content w-full px-gutter-m lg:px-gutter-d">
-          <div className="max-w-3xl">
-            <nav className="sd-reveal mb-6 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-white/60">
-              <Link href="/services" className="transition-hover hover-fine:hover:text-orange">
-                Services
-              </Link>
-              <span className="text-orange">/</span>
-              <span className="text-white">{service.title}</span>
-            </nav>
-            <h1
-              className="sd-reveal font-sans font-bold uppercase leading-[0.92] tracking-display text-white [text-shadow:0_2px_30px_rgba(0,0,0,0.5)]"
-              style={{ fontSize: 'clamp(2.4rem, 7vw, 6rem)' }}
-            >
-              {service.h1}
-            </h1>
-            <p className="sd-reveal mt-8 max-w-xl text-base leading-relaxed text-white/80 [text-shadow:0_1px_16px_rgba(0,0,0,0.5)] md:text-lg">
-              {service.overview}
-            </p>
-            <div className="sd-reveal mt-10">
-              <Button href="/contact" variant="primary" size="lg">
-                Start a project &rarr;
-              </Button>
-            </div>
+        <div className="relative z-content flex max-w-4xl flex-col items-center">
+          <SectionLabel className="sd-reveal mb-6">Services</SectionLabel>
+          <h1
+            className="sd-reveal font-sans font-bold uppercase leading-[0.9] tracking-display text-white [text-shadow:0_2px_30px_rgba(0,0,0,0.55)]"
+            style={{ fontSize: 'clamp(2.4rem, 8.5vw, 7rem)' }}
+          >
+            {service.h1}
+            <span className="text-orange">.</span>
+          </h1>
+          <p className="sd-reveal mx-auto mt-7 max-w-2xl text-base leading-relaxed text-white/80 [text-shadow:0_1px_16px_rgba(0,0,0,0.55)] md:text-lg">
+            {service.overview}
+          </p>
+          <div className="sd-reveal mt-9">
+            <Button href="/contact" variant="primary" size="lg">
+              Start a project &rarr;
+            </Button>
           </div>
         </div>
+
+        {/* Scroll cue. */}
+        <span
+          aria-hidden
+          className="sd-reveal absolute bottom-10 left-1/2 z-content flex h-11 w-11 -translate-x-1/2 items-center justify-center rounded-full border border-orange text-orange motion-safe:animate-bounce"
+        >
+          <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5">
+            <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </span>
       </section>
 
       {/* ── SCOPE ────────────────────────────────────────────────────────── */}
       {service.scopeItems.length > 0 && (
-        <section className="relative px-gutter-m py-24 lg:px-gutter-d lg:py-32">
+        <section className="relative px-gutter-m py-20 lg:px-gutter-d lg:py-24">
           <div className="mx-auto max-w-6xl">
             <SectionLabel className="sd-reveal mb-10">What&apos;s included</SectionLabel>
             <div className="grid gap-x-12 sm:grid-cols-2">
@@ -129,13 +141,16 @@ export function ServiceDetailContent({ service }: { service: ServiceRecord }) {
       {/* ── SIGNATURE MODULE (adapts per service) ────────────────────────── */}
       <SignatureModule service={service} />
 
-      {/* ── PROOF ────────────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden px-gutter-m py-24 lg:px-gutter-d lg:py-28">
+      {/* ── SELECTED WORK (SMV-style image grid) ─────────────────────────── */}
+      <ServiceWorkGrid />
+
+      {/* ── PROOF + RELATED WORK ─────────────────────────────────────────── */}
+      <section className="relative overflow-hidden border-t border-white/10 px-gutter-m py-20 lg:px-gutter-d lg:py-24">
         <div aria-hidden className="pattern-section-fade absolute inset-0">
           <BrandPattern variant="tiled" />
         </div>
         <div className="relative z-content mx-auto max-w-6xl">
-          <SectionLabel className="sd-reveal mb-10">Trusted by</SectionLabel>
+          <SectionLabel className="sd-reveal mb-8">Trusted by</SectionLabel>
           <div className="sd-reveal flex flex-wrap items-center gap-4">
             {PROOF_LOGOS.map((logo) => (
               <span
@@ -149,13 +164,25 @@ export function ServiceDetailContent({ service }: { service: ServiceRecord }) {
           </div>
 
           {service.relatedWork && service.relatedWork.length > 0 && (
-            <div className="sd-reveal mt-16">
-              <SectionLabel className="mb-6">Related work</SectionLabel>
-              <div className="flex flex-wrap gap-4">
+            <div className="mt-16">
+              <SectionLabel className="sd-reveal mb-6">Related work</SectionLabel>
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {service.relatedWork.map((rw) => (
-                  <Button key={rw.href} href={rw.href} variant="primary-ghost" size="md">
-                    {rw.label} &rarr;
-                  </Button>
+                  <Link
+                    key={rw.href}
+                    href={rw.href}
+                    className="group/rw sd-reveal flex items-center justify-between gap-4 rounded-xl border border-white/12 bg-white/[0.02] p-6 transition-hover hover-fine:hover:border-orange/50 hover-fine:hover:bg-white/[0.04]"
+                  >
+                    <span className="font-sans text-base font-bold uppercase tracking-tight text-white">
+                      {rw.label}
+                    </span>
+                    <span
+                      aria-hidden
+                      className="text-orange transition-transform duration-300 group-hover/rw:translate-x-1"
+                    >
+                      &rarr;
+                    </span>
+                  </Link>
                 ))}
               </div>
             </div>
@@ -199,7 +226,7 @@ function ModuleShell({
   children: React.ReactNode;
 }) {
   return (
-    <section className="relative border-t border-white/10 px-gutter-m py-24 lg:px-gutter-d lg:py-32">
+    <section className="relative border-t border-white/10 px-gutter-m py-20 lg:px-gutter-d lg:py-24">
       <div className="mx-auto max-w-6xl">
         <SectionLabel className="sd-reveal mb-4">{label}</SectionLabel>
         {title && (

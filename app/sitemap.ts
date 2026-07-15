@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { BLOG_SLUGS, SERVICE_SLUGS, WORK_SLUGS } from '@/lib/constants/routes';
+import { isFeatureUnlocked } from '@/lib/featureFlags';
 import { getSiteUrl } from '@/lib/seo/site';
 
 type SitemapEntry = MetadataRoute.Sitemap[number];
@@ -18,7 +19,7 @@ function entry(
 }
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  return [
+  const candidates: SitemapEntry[] = [
     entry('/', 1.0, 'weekly'),
     entry('/services', 0.9, 'weekly'),
     entry('/work', 0.9, 'weekly'),
@@ -32,4 +33,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     entry('/terms', 0.3, 'yearly'),
     entry('/imprint', 0.3, 'yearly'),
   ];
+
+  return candidates.filter((item) => {
+    const path = item.url.replace(getSiteUrl(), '') || '/';
+    return isFeatureUnlocked(path);
+  });
 }

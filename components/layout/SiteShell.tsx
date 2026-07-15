@@ -7,6 +7,7 @@ import { PageTransitionLoader } from '@/components/layout/PageTransitionLoader';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { ComingSoonModal } from '@/components/molecules/ComingSoonModal';
+import { SoftLaunchRouteGuard } from '@/components/molecules/SoftLaunchRouteGuard';
 import { registerGsap, ScrollTrigger } from '@/lib/motion/gsap';
 import { setViewportHeight } from '@/lib/utils/vh';
 
@@ -45,6 +46,7 @@ export function SiteShell({ children }: { children: ReactNode }) {
       <Header />
       {children}
       <Footer />
+      <SoftLaunchRouteGuard />
       <Suspense fallback={null}>
         <ComingSoonModal />
       </Suspense>

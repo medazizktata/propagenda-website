@@ -35,7 +35,9 @@ export type ContactSchema = z.infer<typeof contactSchema>;
 export function fieldErrorsFromZod(
   error: z.ZodError,
 ): Partial<Record<keyof ContactSchema, string>> {
-  const flat = error.flatten().fieldErrors;
+  const flat = error.flatten().fieldErrors as Partial<
+    Record<keyof ContactSchema, string[]>
+  >;
   const out: Partial<Record<keyof ContactSchema, string>> = {};
   for (const key of Object.keys(flat) as (keyof ContactSchema)[]) {
     const msg = flat[key]?.[0];

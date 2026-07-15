@@ -35,7 +35,8 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@types/photoswipe": "^4.1.6"
+    "@types/photoswipe": "^4.1.6",
+    "@types/three": "^0.185.1"
   },
   "msw": {
     "workerDirectory": [

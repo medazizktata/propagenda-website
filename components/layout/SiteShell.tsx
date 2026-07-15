@@ -1,13 +1,14 @@
 'use client';
 
 import type { ReactNode } from 'react';
+import { Suspense, useEffect } from 'react';
 import { InitLoader } from '@/components/layout/InitLoader';
 import { PageTransitionLoader } from '@/components/layout/PageTransitionLoader';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
+import { ComingSoonModal } from '@/components/molecules/ComingSoonModal';
 import { registerGsap, ScrollTrigger } from '@/lib/motion/gsap';
 import { setViewportHeight } from '@/lib/utils/vh';
-import { useEffect } from 'react';
 
 export function SiteShell({ children }: { children: ReactNode }) {
   useEffect(() => {
@@ -44,6 +45,9 @@ export function SiteShell({ children }: { children: ReactNode }) {
       <Header />
       {children}
       <Footer />
+      <Suspense fallback={null}>
+        <ComingSoonModal />
+      </Suspense>
     </>
   );
 }

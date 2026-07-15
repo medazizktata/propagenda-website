@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useReducedMotion } from '@/lib/motion/useReducedMotion';
+import { isRouteUnlocked, openComingSoonModal } from '@/lib/softLaunch';
 
 export type TransitionPhase = 'idle' | 'cover' | 'reveal';
 
@@ -39,8 +40,6 @@ export function usePageTransition(): { phase: TransitionPhase; targetPath: strin
   const timers = useRef<number[]>([]);
 
   useEffect(() => {
-    if (reducedMotion) return;
-
     const onClick = (e: MouseEvent) => {
       if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) {
         return;
@@ -60,6 +59,16 @@ export function usePageTransition(): { phase: TransitionPhase; targetPath: strin
       }
       if (url.origin !== window.location.origin) return;
       if (url.pathname === window.location.pathname && url.search === window.location.search) return;
+
+      // Soft launch: block unfinished routes — stay put and show the popup.
+      if (!isRouteUnlocked(url.pathname)) {
+        e.preventDefault();
+        openComingSoonModal(url.pathname);
+        return;
+      }
+
+      // Reduced motion: let the browser/Next handle navigation normally.
+      if (reducedMotion) return;
 
       e.preventDefault();
       if (phase !== 'idle') return;

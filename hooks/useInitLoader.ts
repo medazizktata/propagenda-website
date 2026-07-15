@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import { useReducedMotion } from '@/lib/motion/useReducedMotion';
+import { ffInitLoader } from '@/lib/featureFlags';
 
-/** Opt out with NEXT_PUBLIC_INIT_LOADER=false in .env.local */
+/** Opt out with NEXT_PUBLIC_FF_INIT_LOADER=false (or legacy NEXT_PUBLIC_INIT_LOADER). */
 export function isInitLoaderEnabled() {
-  return process.env.NEXT_PUBLIC_INIT_LOADER !== 'false';
+  return ffInitLoader;
 }
 
 /**

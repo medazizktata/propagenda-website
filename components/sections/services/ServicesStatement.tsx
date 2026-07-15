@@ -6,14 +6,16 @@ import { gsap } from '@/lib/motion/gsap';
 import { useReducedMotion } from '@/lib/motion/useReducedMotion';
 
 /**
- * Act 1 of the Services page — a single-screen value statement that sets the tone before the
- * index. Visible on load (per the brand's motion contract); the lines rise in once as the
- * page arrives, then hold. Draft copy — refine voice before ship.
+ * Act 1 of the Services page — an immersive full-bleed brand-monogram hero. The mark reacts
+ * to the cursor (mouse parallax / depth), the statement rises in on load, and on scroll the
+ * text lifts + fades as a handoff into the index. Draft copy — refine voice before ship.
  */
 export function ServicesStatement() {
   const sectionRef = useRef<HTMLElement>(null);
+  const imgRef = useRef<HTMLImageElement>(null);
   const reducedMotion = useReducedMotion();
 
+  // Line reveal on load + scroll handoff (text lifts + fades into the index).
   useEffect(() => {
     const el = sectionRef.current;
     if (!el) return;
@@ -33,8 +35,41 @@ export function ServicesStatement() {
         delay: 0.15,
         immediateRender: false,
       });
+
+      gsap.to('.svc-hero-content', {
+        yPercent: -28,
+        autoAlpha: 0.15,
+        ease: 'none',
+        scrollTrigger: { trigger: el, start: 'top top', end: 'bottom top', scrub: 0.5 },
+      });
     }, sectionRef);
     return () => ctx.revert();
+  }, [reducedMotion]);
+
+  // Mouse parallax on the mark — depth that makes the hero feel alive.
+  useEffect(() => {
+    if (reducedMotion) return;
+    const img = imgRef.current;
+    if (!img) return;
+    const target = { x: 0, y: 0 };
+    const cur = { x: 0, y: 0 };
+    let raf = 0;
+    const onMove = (e: MouseEvent) => {
+      target.x = (e.clientX / window.innerWidth - 0.5) * 2;
+      target.y = (e.clientY / window.innerHeight - 0.5) * 2;
+    };
+    const tick = () => {
+      cur.x += (target.x - cur.x) * 0.05;
+      cur.y += (target.y - cur.y) * 0.05;
+      img.style.transform = `scale(1.14) translate(${cur.x * -24}px, ${cur.y * -16}px)`;
+      raf = requestAnimationFrame(tick);
+    };
+    window.addEventListener('mousemove', onMove);
+    raf = requestAnimationFrame(tick);
+    return () => {
+      window.removeEventListener('mousemove', onMove);
+      cancelAnimationFrame(raf);
+    };
   }, [reducedMotion]);
 
   return (
@@ -42,20 +77,24 @@ export function ServicesStatement() {
       ref={sectionRef}
       className="relative flex min-h-[100svh] items-center overflow-hidden bg-charcoal"
     >
-      {/* Full-bleed brand monogram — the hero IS the mark. Not reused in the index below. */}
-      <div className="hero-media absolute inset-0">
+      {/* Full-bleed brand monogram — the hero IS the mark. */}
+      <div className="absolute inset-0">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
+          ref={imgRef}
           src="/images/brand/monogram-glow.jpg"
           alt=""
-          className="h-full w-full object-cover object-[68%_center] lg:object-center"
+          className="h-full w-full object-cover object-[68%_center] will-change-transform lg:object-center"
+          style={{ transform: 'scale(1.14)' }}
         />
-        {/* Fade the mark into charcoal on the left (under the text) and along the floor. */}
+        {/* Fade the mark into charcoal on the left (under the text) + along the floor. */}
         <div className="absolute inset-0 bg-gradient-to-r from-charcoal via-charcoal/80 to-charcoal/10 md:via-charcoal/55 md:to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-t from-charcoal via-charcoal/25 to-transparent" />
+        {/* Radial vignette focuses the glow. */}
+        <div className="absolute inset-0 [background:radial-gradient(130%_120%_at_68%_45%,transparent_38%,rgba(15,21,31,0.6)_100%)]" />
       </div>
 
-      <div className="relative z-content w-full px-gutter-m lg:px-gutter-d">
+      <div className="svc-hero-content relative z-content w-full px-gutter-m lg:px-gutter-d">
         <div className="max-w-2xl">
           <SectionLabel className="svc-stmt-line mb-6">Services</SectionLabel>
           <h1

@@ -15,7 +15,7 @@ const WORK = [
 
 export function ServiceWorkGrid() {
   return (
-    <section className="relative border-t border-white/10 px-gutter-m py-16 lg:px-gutter-d lg:py-20">
+    <section className="relative border-t border-white/10 px-gutter-m py-12 lg:px-gutter-d lg:py-16">
       <div className="mx-auto max-w-7xl">
         <div className="sd-reveal mb-8 flex items-end justify-between gap-4">
           <SectionLabel>Selected work</SectionLabel>

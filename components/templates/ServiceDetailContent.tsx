@@ -130,12 +130,12 @@ export function ServiceDetailContent({ service }: { service: ServiceRecord }) {
 
       {/* ── SCOPE ────────────────────────────────────────────────────────── */}
       {service.scopeItems.length > 0 && (
-        <section className="relative overflow-hidden px-gutter-m py-16 lg:px-gutter-d lg:py-20">
+        <section className="relative overflow-hidden px-gutter-m py-12 lg:px-gutter-d lg:py-16">
           <div aria-hidden className="pattern-section-fade absolute inset-0">
             <BrandPattern variant="tiled" />
           </div>
           <div className="relative z-content mx-auto max-w-6xl">
-            <SectionLabel className="sd-reveal mb-10">What&apos;s included</SectionLabel>
+            <SectionLabel className="sd-reveal mb-8">What&apos;s included</SectionLabel>
             <div className="grid gap-x-12 sm:grid-cols-2">
               {service.scopeItems.map((item, i) => (
                 <div
@@ -160,7 +160,7 @@ export function ServiceDetailContent({ service }: { service: ServiceRecord }) {
       <ServiceWorkGrid />
 
       {/* ── PROOF + RELATED WORK ─────────────────────────────────────────── */}
-      <section className="relative overflow-hidden border-t border-white/10 px-gutter-m py-16 lg:px-gutter-d lg:py-20">
+      <section className="relative overflow-hidden border-t border-white/10 px-gutter-m py-12 lg:px-gutter-d lg:py-16">
         <div aria-hidden className="pattern-section-fade absolute inset-0">
           <BrandPattern variant="tiled" />
         </div>
@@ -178,7 +178,7 @@ export function ServiceDetailContent({ service }: { service: ServiceRecord }) {
             ))}
           </div>
 
-          <div className="mt-14">
+          <div className="mt-10">
             <SectionLabel className="sd-reveal mb-6">Related work</SectionLabel>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {relatedThree.map((rw, i) => (
@@ -239,7 +239,7 @@ function ModuleShell({
   children: React.ReactNode;
 }) {
   return (
-    <section className="relative overflow-hidden border-t border-white/10 px-gutter-m py-16 lg:px-gutter-d lg:py-20">
+    <section className="relative overflow-hidden border-t border-white/10 px-gutter-m py-12 lg:px-gutter-d lg:py-16">
       <div aria-hidden className="pattern-section-fade absolute inset-0">
         <BrandPattern variant="tiled" />
       </div>
@@ -247,7 +247,7 @@ function ModuleShell({
         <SectionLabel className="sd-reveal mb-4">{label}</SectionLabel>
         {title && (
           <h2
-            className="sd-reveal mb-12 max-w-3xl font-sans font-bold uppercase leading-[0.95] tracking-display text-white"
+            className="sd-reveal mb-8 max-w-3xl font-sans font-bold uppercase leading-[0.95] tracking-display text-white"
             style={{ fontSize: 'clamp(1.6rem, 3.6vw, 2.75rem)' }}
           >
             {title}
@@ -320,7 +320,7 @@ function TierCards({ service }: { service: ServiceRecord }) {
           );
         })}
       </div>
-      <p className="sd-reveal mt-6 text-xs uppercase tracking-wider text-white/40">
+      <p className="sd-reveal mt-4 text-xs uppercase tracking-wider text-white/40">
         Tap a tier to see what&apos;s included.
       </p>
     </ModuleShell>

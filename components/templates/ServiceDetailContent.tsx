@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import type { ServiceRecord } from '@/types/content';
+import type { ServiceRecord, ServiceSlug } from '@/types/content';
 import { gsap } from '@/lib/motion/gsap';
 import { useReducedMotion } from '@/lib/motion/useReducedMotion';
 import { cn } from '@/components/ui/cn';
@@ -26,6 +26,30 @@ const PROOF_LOGOS = [
 ];
 
 const num = (i: number) => String(i + 1).padStart(2, '0');
+
+// "What's included" gets a layout unique to each service type, chosen so it never mirrors
+// that service's signature module below it.
+type ScopeVariant = 'editorial' | 'grid' | 'ledger';
+const SCOPE_VARIANT: Record<ServiceSlug, ScopeVariant> = {
+  'branding-visual-identity': 'editorial',
+  'public-relations': 'grid',
+  'online-offline-marketing': 'ledger',
+  'graphics-production': 'ledger',
+  websites: 'grid',
+  'mobile-applications': 'grid',
+  events: 'editorial',
+  'photography-videography': 'editorial',
+};
+
+// Temporary imagery for the visual discipline tiles (photography/videography types).
+const DISCIPLINE_IMAGES = [
+  '/images/portfolio/work-food.png',
+  '/images/portfolio/work-restaurant.png',
+  '/images/portfolio/work-events.png',
+  '/images/portfolio/work-sanapex.png',
+  '/images/portfolio/work-quickcars.png',
+  '/images/portfolio/work-ghaftree.png',
+];
 
 export function ServiceDetailContent({ service }: { service: ServiceRecord }) {
   const rootRef = useRef<HTMLDivElement>(null);
@@ -106,9 +130,7 @@ export function ServiceDetailContent({ service }: { service: ServiceRecord }) {
             <Link href="/services" className="transition-hover hover-fine:hover:text-orange">
               Services
             </Link>
-            <span aria-hidden className="text-orange">
-              /
-            </span>
+            <span aria-hidden className="text-orange">&rarr;</span>
             <span className="text-white">{service.title}</span>
           </nav>
           <h1
@@ -143,32 +165,8 @@ export function ServiceDetailContent({ service }: { service: ServiceRecord }) {
         </button>
       </section>
 
-      {/* ── SCOPE ────────────────────────────────────────────────────────── */}
-      {service.scopeItems.length > 0 && (
-        <section className="relative overflow-hidden px-gutter-m py-12 lg:px-gutter-d lg:py-16">
-          <div aria-hidden className="pattern-section-fade absolute inset-0">
-            <BrandPattern variant="tiled" />
-          </div>
-          <div className="relative z-content mx-auto max-w-6xl">
-            <SectionLabel className="sd-reveal mb-8">What&apos;s included</SectionLabel>
-            <div className="grid gap-x-16 sm:grid-cols-2">
-              {service.scopeItems.map((item, i) => (
-                <div
-                  key={item}
-                  className="sd-reveal group/sc flex items-center gap-6 border-b border-white/10 py-5 transition-colors duration-300 hover-fine:hover:border-orange/60"
-                >
-                  <span className="w-10 shrink-0 font-sans text-3xl font-black leading-none tabular-nums text-orange transition-colors duration-300 group-hover/sc:text-white">
-                    {num(i)}
-                  </span>
-                  <span className="font-sans text-lg font-semibold uppercase tracking-tight text-white transition-all duration-300 group-hover/sc:translate-x-1.5 group-hover/sc:text-orange md:text-xl">
-                    {item}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
+      {/* ── SCOPE (layout unique per service type) ───────────────────────── */}
+      <ServiceScope service={service} />
 
       {/* ── SIGNATURE MODULE (adapts per service) ────────────────────────── */}
       <SignatureModule service={service} />
@@ -227,6 +225,99 @@ export function ServiceDetailContent({ service }: { service: ServiceRecord }) {
 
       {/* ── CTA ──────────────────────────────────────────────────────────── */}
       <ServicesCTA heading={cfg.ctaHeading} tertiary={service.tertiaryCta} />
+    </div>
+  );
+}
+
+/* ───────────────────────── Scope ("What's included") ───────────────────────── */
+
+function ServiceScope({ service }: { service: ServiceRecord }) {
+  if (service.scopeItems.length === 0) return null;
+  const variant = SCOPE_VARIANT[service.slug];
+  return (
+    <section className="relative overflow-hidden px-gutter-m py-12 lg:px-gutter-d lg:py-16">
+      <div aria-hidden className="pattern-section-fade absolute inset-0">
+        <BrandPattern variant="tiled" />
+      </div>
+      <div className="relative z-content mx-auto max-w-6xl">
+        <SectionLabel className="sd-reveal mb-8">What&apos;s included</SectionLabel>
+        {variant === 'editorial' && <ScopeEditorial items={service.scopeItems} />}
+        {variant === 'grid' && <ScopeGrid items={service.scopeItems} />}
+        {variant === 'ledger' && <ScopeLedger items={service.scopeItems} />}
+      </div>
+    </section>
+  );
+}
+
+// Bold, identity-forward: big ghost numbers + heavy rows (branding, photography).
+function ScopeEditorial({ items }: { items: string[] }) {
+  return (
+    <div className="flex flex-col">
+      {items.map((item, i) => (
+        <div
+          key={item}
+          className="sd-reveal group/sc flex items-center gap-6 border-b border-white/10 py-5 md:gap-10"
+        >
+          <span
+            className="font-sans font-black leading-none text-white/[0.1] transition-colors duration-300 group-hover/sc:text-orange/30"
+            style={{ fontSize: 'clamp(2.25rem, 5vw, 4rem)' }}
+          >
+            {num(i)}
+          </span>
+          <span
+            className="font-sans font-bold uppercase tracking-tight text-white transition-all duration-300 group-hover/sc:translate-x-2 group-hover/sc:text-orange"
+            style={{ fontSize: 'clamp(1.1rem, 2.6vw, 1.9rem)' }}
+          >
+            {item}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// Systematic multi-column index (marketing-adjacent digital services).
+function ScopeGrid({ items }: { items: string[] }) {
+  return (
+    <div className="grid gap-x-14 sm:grid-cols-2 lg:grid-cols-3">
+      {items.map((item, i) => (
+        <div
+          key={item}
+          className="sd-reveal group/sc flex items-baseline gap-4 border-b border-white/10 py-5 transition-colors duration-300 hover-fine:hover:border-orange/50"
+        >
+          <span className="text-sm font-bold tabular-nums text-orange">{num(i)}</span>
+          <span className="font-sans text-base font-semibold uppercase tracking-tight text-white transition-colors duration-300 group-hover/sc:text-orange md:text-lg">
+            {item}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// Spec-sheet ledger with column rule + trailing marker (print/production services).
+function ScopeLedger({ items }: { items: string[] }) {
+  return (
+    <div className="grid border-t border-white/15 sm:grid-cols-2">
+      {items.map((item, i) => (
+        <div
+          key={item}
+          className="sd-reveal group/sc flex items-center justify-between gap-4 border-b border-white/10 py-4 transition-colors duration-300 hover-fine:hover:bg-white/[0.03] sm:px-6 sm:odd:border-r sm:odd:border-r-white/10"
+        >
+          <span className="flex items-center gap-4">
+            <span className="text-sm font-bold tabular-nums text-orange">{num(i)}</span>
+            <span className="font-sans font-semibold uppercase tracking-tight text-white md:text-lg">
+              {item}
+            </span>
+          </span>
+          <span
+            aria-hidden
+            className="text-orange/60 transition-transform duration-300 group-hover/sc:translate-x-1"
+          >
+            &rarr;
+          </span>
+        </div>
+      ))}
     </div>
   );
 }
@@ -417,22 +508,32 @@ function ProcessSteps({ steps }: { steps: { title: string; body: string }[] }) {
 function DisciplineSplit({ disciplines }: { disciplines: { label: string; items: string[] }[] }) {
   return (
     <ModuleShell label="Two disciplines" title="Every frame, every format.">
-      <div className="grid gap-6 md:grid-cols-2">
-        {disciplines.map((d) => (
-          <div
-            key={d.label}
-            className="sd-reveal rounded-2xl border border-white/12 bg-white/[0.02] p-8 lg:p-10"
-          >
-            <h3 className="mb-6 font-sans text-2xl font-bold uppercase tracking-tight text-orange">
+      <div className="flex flex-col gap-12">
+        {disciplines.map((d, di) => (
+          <div key={d.label} className="sd-reveal">
+            <h3 className="mb-5 flex items-center gap-3 font-sans text-2xl font-bold uppercase tracking-tight text-orange">
+              <span className="text-sm font-bold tabular-nums text-orange/60">{num(di)}</span>
               {d.label}
             </h3>
-            <ul className="flex flex-wrap gap-x-6 gap-y-3">
-              {d.items.map((item) => (
-                <li key={item} className="font-sans font-semibold uppercase tracking-tight text-white/80">
-                  {item}
-                </li>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+              {d.items.map((item, i) => (
+                <div
+                  key={item}
+                  className="group/dt relative aspect-[4/3] overflow-hidden rounded-xl bg-white/[0.03]"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={DISCIPLINE_IMAGES[(di * 3 + i) % DISCIPLINE_IMAGES.length]}
+                    alt=""
+                    className="h-full w-full object-cover grayscale transition-all duration-500 ease-out group-hover/dt:scale-105 group-hover/dt:grayscale-0"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-charcoal via-charcoal/40 to-charcoal/60 transition-colors duration-300 group-hover/dt:from-charcoal/90 group-hover/dt:via-charcoal/20 group-hover/dt:to-transparent" />
+                  <span className="absolute inset-x-3 bottom-3 font-sans text-sm font-bold uppercase leading-tight tracking-tight text-white">
+                    {item}
+                  </span>
+                </div>
               ))}
-            </ul>
+            </div>
           </div>
         ))}
       </div>

@@ -95,7 +95,7 @@ export function ServicesStatement() {
       </div>
 
       <div className="svc-hero-content relative z-content w-full px-gutter-m lg:px-gutter-d">
-        <div className="max-w-2xl">
+        <div className="max-w-2xl translate-y-[7vh]">
           <SectionLabel className="svc-stmt-line mb-6">Services</SectionLabel>
           <h1
             className="font-sans font-bold uppercase leading-[0.92] tracking-display text-white [text-shadow:0_2px_30px_rgba(0,0,0,0.55)]"

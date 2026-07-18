@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/Button';
+import { BrandPattern } from '@/components/ui/BrandPattern';
 
 interface ServicesCTAProps {
   /** Headline override (defaults to the hub bookend). */
@@ -15,6 +16,8 @@ interface ServicesCTAProps {
 export function ServicesCTA({ heading = "Let's build it together.", tertiary }: ServicesCTAProps) {
   return (
     <section className="relative overflow-hidden bg-gradient-to-b from-orange to-orange-hover">
+      {/* Black monogram pattern over the orange surface. */}
+      <BrandPattern variant="tiled" className="!opacity-[0.12] [filter:brightness(0)]" />
       <div className="relative z-content mx-auto flex max-w-4xl flex-col items-center gap-8 px-gutter-m py-20 text-center lg:px-gutter-d lg:py-24">
         <h2
           className="font-sans font-bold uppercase leading-[1] tracking-display text-navy"

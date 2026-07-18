@@ -99,7 +99,18 @@ export function ServiceDetailContent({ service }: { service: ServiceRecord }) {
         </Link>
 
         <div className="relative z-content flex max-w-4xl flex-col items-center">
-          <SectionLabel className="sd-reveal mb-6">Services</SectionLabel>
+          <nav
+            aria-label="Breadcrumb"
+            className="sd-reveal mb-6 flex flex-wrap items-center justify-center gap-2 text-xs font-semibold uppercase tracking-wider text-white/60"
+          >
+            <Link href="/services" className="transition-hover hover-fine:hover:text-orange">
+              Services
+            </Link>
+            <span aria-hidden className="text-orange">
+              /
+            </span>
+            <span className="text-white">{service.title}</span>
+          </nav>
           <h1
             className="sd-reveal font-sans font-bold uppercase leading-[0.9] tracking-display text-white [text-shadow:0_2px_30px_rgba(0,0,0,0.55)]"
             style={{ fontSize: 'clamp(2.4rem, 8.5vw, 7rem)' }}
@@ -117,15 +128,19 @@ export function ServiceDetailContent({ service }: { service: ServiceRecord }) {
           </div>
         </div>
 
-        {/* Scroll cue. */}
-        <span
-          aria-hidden
-          className="sd-reveal absolute bottom-10 left-1/2 z-content flex h-11 w-11 -translate-x-1/2 items-center justify-center rounded-full border border-orange text-orange motion-safe:animate-bounce"
+        {/* Scroll cue — scrolls to the content below the hero. */}
+        <button
+          type="button"
+          aria-label="Scroll to details"
+          onClick={() =>
+            window.scrollTo({ top: Math.round(window.innerHeight * 0.9), behavior: 'smooth' })
+          }
+          className="sd-reveal absolute bottom-10 left-1/2 z-content flex h-11 w-11 -translate-x-1/2 items-center justify-center rounded-full border border-orange text-orange transition-hover hover-fine:hover:bg-orange hover-fine:hover:text-navy motion-safe:animate-bounce"
         >
           <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5">
             <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
-        </span>
+        </button>
       </section>
 
       {/* ── SCOPE ────────────────────────────────────────────────────────── */}
@@ -136,14 +151,16 @@ export function ServiceDetailContent({ service }: { service: ServiceRecord }) {
           </div>
           <div className="relative z-content mx-auto max-w-6xl">
             <SectionLabel className="sd-reveal mb-8">What&apos;s included</SectionLabel>
-            <div className="grid gap-x-12 sm:grid-cols-2">
+            <div className="grid gap-x-16 sm:grid-cols-2">
               {service.scopeItems.map((item, i) => (
                 <div
                   key={item}
-                  className="sd-reveal flex items-baseline gap-5 border-b border-white/10 py-5"
+                  className="sd-reveal group/sc flex items-center gap-6 border-b border-white/10 py-5 transition-colors duration-300 hover-fine:hover:border-orange/60"
                 >
-                  <span className="font-sans text-sm font-bold tabular-nums text-orange">{num(i)}</span>
-                  <span className="font-sans text-lg font-semibold uppercase tracking-tight text-white md:text-xl">
+                  <span className="w-10 shrink-0 font-sans text-3xl font-black leading-none tabular-nums text-orange transition-colors duration-300 group-hover/sc:text-white">
+                    {num(i)}
+                  </span>
+                  <span className="font-sans text-lg font-semibold uppercase tracking-tight text-white transition-all duration-300 group-hover/sc:translate-x-1.5 group-hover/sc:text-orange md:text-xl">
                     {item}
                   </span>
                 </div>
@@ -166,16 +183,18 @@ export function ServiceDetailContent({ service }: { service: ServiceRecord }) {
         </div>
         <div className="relative z-content mx-auto max-w-6xl">
           <SectionLabel className="sd-reveal mb-8">Trusted by</SectionLabel>
-          <div className="sd-reveal flex flex-wrap items-center gap-4">
-            {PROOF_LOGOS.map((logo) => (
-              <span
-                key={logo.name}
-                className="flex h-20 w-40 items-center justify-center rounded-xl bg-white/90 px-6 py-4"
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={logo.src} alt={logo.name} className="max-h-full max-w-full object-contain" />
-              </span>
-            ))}
+          <div className="sd-reveal relative overflow-hidden [mask-image:linear-gradient(to_right,transparent,#000_7%,#000_93%,transparent)] [-webkit-mask-image:linear-gradient(to_right,transparent,#000_7%,#000_93%,transparent)]">
+            <div className="flex w-max animate-[marquee_32s_linear_infinite] motion-reduce:animate-none">
+              {[...PROOF_LOGOS, ...PROOF_LOGOS].map((logo, i) => (
+                <span
+                  key={`${logo.name}-${i}`}
+                  className="mx-2 flex h-20 w-40 shrink-0 items-center justify-center rounded-xl bg-white/90 px-6 py-4"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={logo.src} alt={logo.name} className="max-h-full max-w-full object-contain" />
+                </span>
+              ))}
+            </div>
           </div>
 
           <div className="mt-10">
@@ -348,16 +367,30 @@ function ChecklistGrid({ items }: { items: string[] }) {
 function FocusBento({ items }: { items: string[] }) {
   return (
     <ModuleShell label="Where we focus" title="Full-funnel, online and off.">
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="flex flex-col">
         {items.map((item, i) => (
           <div
             key={item}
-            className="sd-reveal flex min-h-[9rem] flex-col justify-between rounded-2xl border border-white/12 bg-white/[0.02] p-8 transition-hover hover-fine:hover:border-orange/50"
+            className="sd-reveal group/fb flex items-center gap-6 border-t border-white/10 py-6 last:border-b md:gap-12 md:py-7"
           >
-            <span className="text-sm font-bold tabular-nums text-orange">{num(i)}</span>
-            <h3 className="font-sans text-xl font-bold uppercase tracking-tight text-white md:text-2xl">
+            <span
+              className="font-sans font-black leading-none text-white/[0.09] transition-colors duration-500 group-hover/fb:text-orange/30"
+              style={{ fontSize: 'clamp(2.75rem, 7vw, 6rem)' }}
+            >
+              {num(i)}
+            </span>
+            <h3
+              className="font-sans font-bold uppercase tracking-tight text-white transition-all duration-300 group-hover/fb:translate-x-2 group-hover/fb:text-orange"
+              style={{ fontSize: 'clamp(1.35rem, 3.2vw, 2.5rem)' }}
+            >
               {item}
             </h3>
+            <span
+              aria-hidden
+              className="ml-auto -translate-x-3 text-3xl text-orange opacity-0 transition-all duration-300 group-hover/fb:translate-x-0 group-hover/fb:opacity-100"
+            >
+              &rarr;
+            </span>
           </div>
         ))}
       </div>
@@ -412,13 +445,24 @@ function InfluenceList({ items }: { items: string[] }) {
     <ModuleShell label="Who we connect you with" title="The right people, the right reach.">
       <ul className="flex flex-col">
         {items.map((item, i) => (
-          <li key={item} className="sd-reveal flex items-center gap-6 border-b border-white/10 py-6">
-            <span className="text-sm font-bold tabular-nums text-orange">{num(i)}</span>
+          <li
+            key={item}
+            className="sd-reveal group/inf flex items-center gap-6 border-b border-white/10 py-6 transition-colors duration-300 hover-fine:hover:border-orange/50"
+          >
+            <span className="text-sm font-bold tabular-nums text-orange transition-transform duration-300 group-hover/inf:scale-125">
+              {num(i)}
+            </span>
             <span
-              className="font-sans font-bold uppercase tracking-tight text-white"
+              className="flex-1 font-sans font-bold uppercase tracking-tight text-white transition-all duration-300 group-hover/inf:translate-x-2 group-hover/inf:text-orange"
               style={{ fontSize: 'clamp(1.5rem, 3.4vw, 2.75rem)' }}
             >
               {item}
+            </span>
+            <span
+              aria-hidden
+              className="-translate-x-3 text-2xl text-orange opacity-0 transition-all duration-300 group-hover/inf:translate-x-0 group-hover/inf:opacity-100"
+            >
+              &rarr;
             </span>
           </li>
         ))}

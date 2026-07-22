@@ -391,7 +391,21 @@ function ServiceScope({ service }: { service: ServiceRecord }) {
   );
 }
 
-// Bold, identity-forward: big ghost numbers + heavy rows (branding, photography).
+// Photography "What's included" — big ghost numbers + heavy rows, each grounded with a one-line
+// descriptor of what we actually shoot. Natural-case names (no CSS uppercase) plus the oversized
+// faint numeral are the signature — distinct from the chip grid, ledger arrows, marketing
+// descriptors, web layers, mono tech-spec, and event checklist used by the other services. Flat
+// divided rows on the section background, no cards.
+const PHOTO_SCOPE_DESC: Record<string, string> = {
+  'Product photography': 'Clean, considered shots that make products sell.',
+  'Lifestyle & editorial': 'Brand stories told through people, mood, and place.',
+  'Event coverage': 'The whole day captured — candids, details, and key moments.',
+  'Real estate': 'Interiors and spaces shot to feel bright and inviting.',
+  'Cinematic video': 'Brand films, product reels, and testimonials, shot and cut.',
+  'Motion graphics': 'Animated logos, explainers, and titles that move.',
+  'Live streaming': 'Multi-camera streams for events, launches, and broadcasts.',
+};
+
 function ScopeEditorial({ items }: { items: string[] }) {
   return (
     <div className="flex flex-col">
@@ -406,12 +420,19 @@ function ScopeEditorial({ items }: { items: string[] }) {
           >
             {num(i)}
           </span>
-          <span
-            className="font-sans font-bold uppercase tracking-tight text-white transition-all duration-300 group-hover/sc:translate-x-2 group-hover/sc:text-orange"
-            style={{ fontSize: 'clamp(1.1rem, 2.6vw, 1.9rem)' }}
-          >
-            {item}
-          </span>
+          <div className="min-w-0">
+            <span
+              className="block font-sans font-bold tracking-tight text-white transition-all duration-300 group-hover/sc:translate-x-2 group-hover/sc:text-orange"
+              style={{ fontSize: 'clamp(1.1rem, 2.6vw, 1.9rem)' }}
+            >
+              {item}
+            </span>
+            {PHOTO_SCOPE_DESC[item] && (
+              <span className="mt-1 block text-sm leading-relaxed text-white/50">
+                {PHOTO_SCOPE_DESC[item]}
+              </span>
+            )}
+          </div>
         </div>
       ))}
     </div>

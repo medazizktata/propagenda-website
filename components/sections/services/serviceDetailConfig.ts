@@ -255,5 +255,31 @@ export const serviceDetailConfig: Record<ServiceSlug, ServiceDetailConfig> = {
         ],
       },
     ],
+    faqs: [
+      {
+        q: 'What do you shoot?',
+        a: 'Both stills and motion. On the photo side that’s products, lifestyle and editorial, food, events, real estate, portraits, and drone; on video it’s brand films, product and explainer videos, testimonials, motion graphics, and live streaming. If it needs to be captured well we cover it — often photo and video from the same shoot.',
+      },
+      {
+        q: 'Do you charge by the half-day or full-day?',
+        a: 'Both. A half-day covers around four hours on location or in studio — ideal for a focused product set or a short interview — while a full day runs about eight hours for larger shoots with multiple setups, looks, or locations. We recommend the right length once we’ve seen the shot list, and we’re clear about what each one covers.',
+      },
+      {
+        q: 'How long does editing take, and what’s the turnaround?',
+        a: 'Most photo galleries and video edits are delivered within about two weeks of the shoot, with a first set of previews sooner. Every image is professionally retouched and every video colour-graded and cut to your brief; if you’re working to a launch date, tell us early and we’ll build the schedule around it — rush turnaround is available when you need it.',
+      },
+      {
+        q: 'Who owns the photos and videos, and what usage rights do we get?',
+        a: 'You do. Final delivered images and videos come with full commercial usage rights for your brand — website, social, ads, and print — with no recurring licence fees. Where a shoot involves talent, music, or a rented location, any third-party usage terms are agreed and shared up front so there are no surprises later.',
+      },
+      {
+        q: 'Do you do video and reels as well as photography?',
+        a: 'Yes — video is half of what we do. Alongside full brand films we shoot short-form vertical content and reels made for Instagram, TikTok, and social feeds, and we can capture them on the same day as your photos so everything shares one consistent look.',
+      },
+      {
+        q: 'Do you shoot on location or in a studio?',
+        a: 'Whichever suits the work. We shoot on location — your venue, site, or space — and in a controlled studio setup for products, portraits, and clean-background work. For bigger projects we scout and secure the right location as part of pre-production, and photo and video can run on separate days or be combined into one.',
+      },
+    ],
   },
 };

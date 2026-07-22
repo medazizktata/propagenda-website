@@ -15,6 +15,7 @@ import { ServiceNextPrev } from '@/components/sections/services/ServiceNextPrev'
 import { ServiceWorkGrid } from '@/components/sections/services/ServiceWorkGrid';
 import { PrInfluenceRoster } from '@/components/sections/services/PrInfluenceRoster';
 import { MarketingFunnel } from '@/components/sections/services/MarketingFunnel';
+import { GraphicsProductionShowcase } from '@/components/sections/services/GraphicsProductionShowcase';
 import { serviceDetailConfig } from '@/components/sections/services/serviceDetailConfig';
 
 // Real client logos (temporary curated proof strip — shown on light chips so they read on
@@ -32,12 +33,12 @@ const num = (i: number) => String(i + 1).padStart(2, '0');
 
 // "What's included" gets a layout unique to each service type, chosen so it never mirrors
 // that service's signature module below it.
-type ScopeVariant = 'editorial' | 'grid' | 'ledger' | 'channels';
+type ScopeVariant = 'editorial' | 'grid' | 'ledger' | 'channels' | 'specsheet';
 const SCOPE_VARIANT: Record<ServiceSlug, ScopeVariant> = {
   'branding-visual-identity': 'editorial',
   'public-relations': 'grid',
   'online-offline-marketing': 'channels',
-  'graphics-production': 'ledger',
+  'graphics-production': 'specsheet',
   websites: 'grid',
   'mobile-applications': 'grid',
   events: 'editorial',
@@ -374,6 +375,7 @@ function ServiceScope({ service }: { service: ServiceRecord }) {
         {variant === 'grid' && <ScopeGrid items={service.scopeItems} />}
         {variant === 'ledger' && <ScopeLedger items={service.scopeItems} />}
         {variant === 'channels' && <ScopeChannels items={service.scopeItems} />}
+        {variant === 'specsheet' && <ScopeSpecSheet items={service.scopeItems} />}
       </div>
     </section>
   );
@@ -508,6 +510,82 @@ function ScopeChannels({ items }: { items: string[] }) {
           </div>
         );
       })}
+    </div>
+  );
+}
+
+// Print-production "spec sheet" — the What's-included list framed as a press proof: crop marks at
+// the sheet corners, a colour calibration strip, and each capability marked by a registration
+// target instead of a number chip. The proof-sheet framing is a print-shop cue no other scope
+// variant uses (editorial ghost numbers, grid chips, ledger arrows, marketing descriptors), and it
+// stays quieter than the signature bench above it. Descriptors are matched to the scope order.
+const SPEC_PROCESS = [
+  'Sheet-fed & digital',
+  'Roll-fed, wide',
+  'Fabricated & fitted',
+  'Decorated merch',
+  'Cut & wrapped',
+  'Stitched & printed',
+];
+const CALIBRATION = ['#F58B27', '#0F151F', '#606773', '#B9C0CB', '#FFFFFF', '#2A3240'];
+
+function RegistrationTarget({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden className={className}>
+      <circle cx="12" cy="12" r="7" stroke="currentColor" strokeWidth="1.3" />
+      <path
+        d="M12 1v6M12 17v6M1 12h6M17 12h6"
+        stroke="currentColor"
+        strokeWidth="1.3"
+        strokeLinecap="round"
+      />
+      <circle cx="12" cy="12" r="1.6" fill="currentColor" />
+    </svg>
+  );
+}
+
+function ScopeSpecSheet({ items }: { items: string[] }) {
+  return (
+    <div className="sd-reveal relative border border-white/12 bg-white/[0.015] p-6 sm:p-9">
+      {/* Crop / trim marks at the sheet corners — the proof-sheet cue. */}
+      <span aria-hidden className="pointer-events-none absolute -left-px -top-px h-4 w-4 border-l border-t border-orange/60" />
+      <span aria-hidden className="pointer-events-none absolute -right-px -top-px h-4 w-4 border-r border-t border-orange/60" />
+      <span aria-hidden className="pointer-events-none absolute -bottom-px -left-px h-4 w-4 border-b border-l border-orange/60" />
+      <span aria-hidden className="pointer-events-none absolute -bottom-px -right-px h-4 w-4 border-b border-r border-orange/60" />
+
+      {/* Sheet header — spec label + colour calibration strip. */}
+      <div className="mb-7 flex items-center justify-between gap-4 border-b border-white/10 pb-4">
+        <span className="flex items-center gap-2.5 text-sm text-white/55">
+          <RegistrationTarget className="h-4 w-4 text-orange" />
+          Production spec sheet
+        </span>
+        <div className="flex items-center gap-1">
+          {CALIBRATION.map((hex, i) => (
+            <span
+              key={`${hex}-${i}`}
+              aria-hidden
+              className="h-3.5 w-3.5 rounded-[3px] ring-1 ring-white/15"
+              style={{ backgroundColor: hex }}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Capabilities — registration-marked rows, two columns on wider screens. */}
+      <div className="grid sm:grid-cols-2 sm:gap-x-12">
+        {items.map((item, i) => (
+          <div
+            key={item}
+            className="group/ss flex items-center gap-4 border-b border-white/10 py-4 transition-colors duration-300 hover-fine:hover:border-orange/40"
+          >
+            <RegistrationTarget className="h-5 w-5 shrink-0 text-white/25 transition-colors duration-300 group-hover/ss:text-orange" />
+            <span className="font-sans font-semibold tracking-tight text-white md:text-lg">{item}</span>
+            <span className="ml-auto whitespace-nowrap text-sm text-white/40">
+              {SPEC_PROCESS[i % SPEC_PROCESS.length]}
+            </span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -766,7 +844,7 @@ function ServiceFAQ({ faqs }: { faqs: { q: string; a: string }[] }) {
 function SignatureModule({ service }: { service: ServiceRecord }) {
   const cfg = serviceDetailConfig[service.slug];
 
-  if (service.slug === 'graphics-production') return <DpiBand />;
+  if (service.slug === 'graphics-production') return <GraphicsProductionShowcase />;
   if (service.slug === 'public-relations') return <PrInfluenceRoster />;
   if (service.slug === 'online-offline-marketing') return <MarketingFunnel />;
   if (service.tiers && service.tiers.length > 0) return <TierCards service={service} />;

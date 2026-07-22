@@ -10,7 +10,7 @@ export const primaryNav: NavItem[] = [
 ];
 
 export const serviceNav: NavItem[] = [
-  { label: 'Branding & Visual Identity', href: '/services/branding-visual-identity' },
+  { label: 'Branding', href: '/services/branding-visual-identity' },
   { label: 'Public Relations', href: '/services/public-relations' },
   { label: 'Online & Offline Marketing', href: '/services/online-offline-marketing' },
   { label: 'Websites', href: '/services/websites' },

@@ -21,8 +21,8 @@ function service(
 
 export const brandingVisualIdentity = service(
   'branding-visual-identity',
-  'Branding & Visual Identity',
-  'BRANDING & VISUAL IDENTITY',
+  'Branding',
+  'BRANDING',
   'Strategy-first branding — logo, identity systems, stationery tiers, and brand guidelines for Dubai businesses.',
   {
     overview:

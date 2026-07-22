@@ -13,7 +13,7 @@ import { cn } from '@/components/ui/cn';
  */
 const SERVICE_MENU = [
   {
-    label: 'Branding & Visual Identity',
+    label: 'Branding',
     href: '/services/branding-visual-identity',
     image: '/images/portfolio/work-sanapex.png',
     blurb: 'Logos, identity systems, and guidelines that make you unmistakable.',

@@ -26,7 +26,7 @@ export interface ServiceHubCard {
 export const serviceHubCards: ServiceHubCard[] = [
   {
     slug: 'branding-visual-identity',
-    title: 'Branding & Visual Identity',
+    title: 'Branding',
     description:
       'From logo design to visual identity development and uplifting, our team of branding experts is dedicated to helping you establish a credible and trustworthy brand that drives long-term success for your business.',
     image: '/images/services/branding-and-visual-identity.jpg',

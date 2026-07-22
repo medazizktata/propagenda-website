@@ -1,31 +1,33 @@
-'use client';
+import { AboutHero } from '@/components/sections/about/AboutHero';
+import { AboutMission } from '@/components/sections/about/AboutMission';
+import { AboutValues } from '@/components/sections/about/AboutValues';
+import { AboutPillars } from '@/components/sections/about/AboutPillars';
+import { AboutLeadership } from '@/components/sections/about/AboutLeadership';
+import { AboutVision } from '@/components/sections/about/AboutVision';
+import { AboutCTA } from '@/components/sections/about/AboutCTA';
 
-import { AboutStatement } from '@/components/sections/AboutStatement';
-import { AboutPills } from '@/components/sections/AboutPills';
-import { AboutValues } from '@/components/sections/AboutValues';
-import { LeadershipCard } from '@/components/sections/LeadershipCard';
-import { AboutPopupMarquee } from '@/components/sections/AboutPopupMarquee';
-import { CTABand } from '@/components/sections/CTABand';
-import { MediaPlaceholder } from '@/components/ui/MediaPlaceholder';
-
+/**
+ * /about — a bespoke, scroll-choreographed telling of the Propagenda story, grounded in the
+ * real About content (name origin, mission, values, pillars, leadership, vision).
+ *
+ *   1. The name        — kinetic wordmark morph: propag[A]nda -> propag[E]nda
+ *   2. The mission      — word-by-word manifesto reveal, pinned
+ *   3. What we do        — one creed anchoring the four core values
+ *   4. Why us            — the core-values line decomposed into three pillars
+ *   5. Leadership        — the founder, in an editorial split
+ *   6. The vision motif  — "Looking for the better future" kinetic marquee
+ *   7. Close             — Contact Us
+ */
 export function AboutPageContent() {
-  const scrollToValues = () => {
-    document.getElementById('about-values')?.scrollIntoView({ behavior: 'smooth' });
-  };
-
   return (
     <>
-      <AboutStatement />
-      <AboutPills onTellMeMore={scrollToValues} />
+      <AboutHero />
+      <AboutMission />
       <AboutValues />
-      <LeadershipCard />
-      <AboutPopupMarquee />
-      <div className="grid gap-0 md:grid-cols-3">
-        <MediaPlaceholder label="Who We Are" className="min-h-48" accent="from-charcoal to-navy" />
-        <MediaPlaceholder label="What We Do" className="min-h-48" accent="from-navy to-black" />
-        <MediaPlaceholder label="Why Us" className="min-h-48" accent="from-black to-orange/30" />
-      </div>
-      <CTABand title="Looking for the Better Future" />
+      <AboutPillars />
+      <AboutLeadership />
+      <AboutVision />
+      <AboutCTA />
     </>
   );
 }

@@ -131,14 +131,6 @@ export function PrInfluenceRoster() {
                     aria-pressed={on}
                     className="group/row relative flex h-full w-full items-center gap-4 border-b border-white/10 py-5 text-left"
                   >
-                    {/* Active cue — a hairline accent that wipes down the row's leading edge. */}
-                    <span
-                      aria-hidden
-                      className={cn(
-                        'absolute left-0 top-0 h-full w-[2px] origin-top bg-orange transition-transform duration-300 ease-out',
-                        on ? 'scale-y-100' : 'scale-y-0',
-                      )}
-                    />
                     <span
                       className={cn(
                         'relative h-14 w-14 shrink-0 overflow-hidden rounded-xl ring-1 transition-all duration-300',
@@ -235,9 +227,11 @@ export function PrInfluenceRoster() {
                   </div>
                 ))}
               </div>
-              <p className="mt-4 text-sm leading-relaxed text-white/45">
-                <span className="text-white/70">Typical work: </span>
-                {p.example}
+              <p className="mt-4 flex min-w-0 flex-nowrap items-center gap-2.5 overflow-hidden text-sm">
+                <span className="shrink-0 bg-orange px-2 py-0.5 text-[0.68rem] font-semibold uppercase tracking-wider text-navy">
+                  Typical work
+                </span>
+                <span className="min-w-0 truncate text-white/55">{p.example}</span>
               </p>
             </div>
           </div>

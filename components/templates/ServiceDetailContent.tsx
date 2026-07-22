@@ -116,8 +116,9 @@ export function ServiceDetailContent({ service }: { service: ServiceRecord }) {
           <div aria-hidden className="absolute inset-0">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={cfg.heroImage} alt="" className="h-full w-full object-cover object-center" />
-            <div className="absolute inset-0 bg-charcoal/[0.55]" />
-            <div className="absolute inset-0 bg-gradient-to-t from-charcoal via-charcoal/20 to-charcoal/60" />
+            {/* Even darken — no light mid-band (via) that lets warm photo tones show through type. */}
+            <div className="absolute inset-0 bg-charcoal/70" />
+            <div className="absolute inset-0 bg-gradient-to-t from-charcoal via-charcoal/50 to-charcoal/65" />
           </div>
         ) : (
           <div aria-hidden className="pattern-section-fade absolute inset-0">
@@ -140,17 +141,19 @@ export function ServiceDetailContent({ service }: { service: ServiceRecord }) {
         </nav>
 
         <div className="relative z-content flex max-w-4xl translate-y-6 flex-col items-center md:translate-y-10">
+        <div className="sd-reveal">
           {service.slug === 'photography-videography' ? (
-            <PhotoVideoHeroTitle className="sd-reveal" />
+            <PhotoVideoHeroTitle />
           ) : (
             <h1
-              className="sd-reveal font-sans font-bold uppercase leading-[0.9] tracking-display text-white [text-shadow:0_2px_30px_rgba(0,0,0,0.55)]"
+              className="font-sans font-bold uppercase leading-[0.9] tracking-display text-white [text-shadow:0_2px_30px_rgba(0,0,0,0.55)]"
               style={{ fontSize: 'clamp(2.4rem, 8.5vw, 7rem)' }}
             >
               {service.h1}
               <span className="text-orange">.</span>
             </h1>
           )}
+        </div>
           {service.slug === 'photography-videography' ? (
             <PhotoVideoHeroOverview />
           ) : (
@@ -271,16 +274,20 @@ function ScopeReveal({ items }: { items: string[] }) {
       </div>
       <div className="relative z-content mx-auto max-w-6xl">
         <SectionLabel className="sd-reveal mb-8">What&apos;s included</SectionLabel>
-        <div className="grid gap-8 md:grid-cols-[1.15fr_1fr] md:gap-12">
-          <ul className="sd-reveal flex flex-col">
+        <div className="grid gap-8 md:grid-cols-[minmax(0,1fr)_20rem] md:items-stretch md:gap-12 lg:grid-cols-[minmax(0,1fr)_24rem]">
+          <ul className="sd-reveal flex h-full flex-col">
             {items.map((item, i) => {
               const on = active === i;
               return (
-                <li key={item} onMouseEnter={() => setActive(i)}>
+                <li
+                  key={item}
+                  className="flex min-h-0 flex-1 flex-col border-b border-white/10 last:border-b-0"
+                  onMouseEnter={() => setActive(i)}
+                >
                   <button
                     type="button"
                     onFocus={() => setActive(i)}
-                    className="flex w-full items-center gap-5 border-b border-white/10 py-5 text-left"
+                    className="flex h-full w-full items-center gap-5 py-4 text-left md:py-0"
                   >
                     <span
                       className={cn(
@@ -304,7 +311,7 @@ function ScopeReveal({ items }: { items: string[] }) {
               );
             })}
           </ul>
-          <div className="sd-reveal relative hidden aspect-[4/5] overflow-hidden rounded-2xl ring-1 ring-white/10 md:block">
+          <div className="sd-reveal relative hidden aspect-[4/5] w-full overflow-hidden rounded-2xl ring-1 ring-white/10 md:block md:w-[20rem] lg:w-[24rem]">
             {items.map((item, i) => (
               // eslint-disable-next-line @next/next/no-img-element
               <img
@@ -765,12 +772,12 @@ const APP_SCOPE_TECH: Record<string, string[]> = {
   'Maintenance & updates': ['refresh'],
 };
 const APP_SCOPE_DESC: Record<string, string> = {
-  'iOS & Android apps': 'Native builds that feel at home on each platform.',
-  'Cross-platform development': 'One codebase, both stores — shipped faster.',
-  'Mobile UX/UI design': 'Flows and interfaces designed for thumbs, not cursors.',
-  'API & backend integration': 'Apps wired to secure back-ends and live data.',
-  'App Store & Play Store launch': 'Submission, review, and release, handled end to end.',
-  'Maintenance & updates': 'New OS versions, fixes, and features after launch.',
+  'iOS & Android apps': 'Native on both platforms.',
+  'Cross-platform development': 'One codebase, both stores.',
+  'Mobile UX/UI design': 'Interfaces built for thumbs.',
+  'API & backend integration': 'Secure APIs and live data.',
+  'App Store & Play Store launch': 'Submission through release.',
+  'Maintenance & updates': 'Fixes and features after launch.',
 };
 
 // Authored, geometric tech marks (not brand logos) — a visual shorthand for the stack behind each
@@ -1900,9 +1907,6 @@ function DisciplineSplit({ disciplines }: { disciplines: { label: string; items:
               <h3 className="mb-6 flex flex-wrap items-center gap-3 font-sans text-2xl font-bold uppercase tracking-tight text-orange">
                 <span className="text-sm font-bold tabular-nums text-orange/60">{num(di)}</span>
                 {d.label}
-                <span className="hidden text-xs font-semibold uppercase tracking-wider text-white/35 hover-fine:inline">
-                  {isVideo ? '— hover to play' : '— hover to focus'}
-                </span>
               </h3>
               <div
                 className={cn(

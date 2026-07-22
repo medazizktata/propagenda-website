@@ -9,7 +9,7 @@ import { useReducedMotion } from '@/lib/motion/useReducedMotion';
 
 type Side = 'prev' | 'next';
 
-const NAME_SIZE = { fontSize: 'clamp(1.6rem, 5.5vw, 4.25rem)' } as const;
+const NAME_SIZE = { fontSize: 'clamp(1.75rem, 5vw, 3.75rem)' } as const;
 
 function NavPanel({
   card,
@@ -38,10 +38,10 @@ function NavPanel({
       onFocus={() => onHover(side)}
       onBlur={() => onHover(null)}
       className={cn(
-        'group/panel relative flex min-h-[11rem] flex-col justify-center overflow-hidden py-10 outline-none transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-orange lg:min-h-[15rem] lg:py-16',
-        isNext ? 'items-end text-right lg:pl-10 lg:pr-2' : 'items-start text-left lg:pl-2 lg:pr-10',
-        isDimmed && 'opacity-[0.38]',
-        isActive && !reducedMotion && 'lg:scale-[1.015]',
+        'group/panel relative flex min-h-[12rem] flex-col justify-center overflow-hidden py-12 outline-none transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-orange lg:min-h-[16rem] lg:py-20',
+        isNext ? 'items-end text-right lg:pl-14 lg:pr-4' : 'items-start text-left lg:pl-4 lg:pr-14',
+        isDimmed && 'opacity-[0.32]',
+        isActive && !reducedMotion && 'lg:scale-[1.01]',
       )}
     >
       <div
@@ -52,44 +52,43 @@ function NavPanel({
         )}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={preview} alt="" className="h-full w-full scale-105 object-cover transition-transform duration-700 ease-out group-hover/panel:scale-110" />
-        <div className="absolute inset-0 bg-charcoal/80" />
+        <img
+          src={preview}
+          alt=""
+          className="h-full w-full scale-105 object-cover transition-transform duration-700 ease-out group-hover/panel:scale-110"
+        />
+        <div className="absolute inset-0 bg-charcoal/75" />
         <div
           className={cn(
             'absolute inset-0',
             isNext
-              ? 'bg-gradient-to-l from-charcoal via-charcoal/55 to-transparent'
-              : 'bg-gradient-to-r from-charcoal via-charcoal/55 to-transparent',
+              ? 'bg-gradient-to-l from-charcoal via-charcoal/50 to-transparent'
+              : 'bg-gradient-to-r from-charcoal via-charcoal/50 to-transparent',
           )}
         />
       </div>
 
       <span
         className={cn(
-          'relative z-10 mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider transition-colors duration-300',
+          'relative z-10 mb-4 flex items-center gap-2.5 text-[0.7rem] font-semibold uppercase tracking-[0.18em] transition-colors duration-300',
           isNext && 'flex-row-reverse',
-          isActive ? 'text-orange' : 'text-white/45',
+          isActive ? 'text-orange' : 'text-white/40',
         )}
       >
-        {isNext ? 'Next service' : 'Previous service'}
+        {isNext ? 'Next' : 'Previous'}
         <span
           aria-hidden
           className={cn(
-            'text-sm transition-transform duration-300 ease-out',
-            isActive && (isNext ? 'translate-x-1.5' : '-translate-x-1.5'),
+            'inline-block h-px w-6 bg-current transition-all duration-300',
+            isActive && 'w-10',
           )}
-        >
-          {isNext ? '→' : '←'}
-        </span>
+        />
       </span>
 
       <span
         className={cn(
-          'relative z-10 block max-w-full font-sans font-black uppercase leading-[0.9] tracking-tighter transition-[color,-webkit-text-stroke,transform] duration-400 ease-out',
-          isActive
-            ? 'text-white [-webkit-text-stroke:0px]'
-            : 'text-transparent [-webkit-text-stroke:1.5px_#f58b27]',
-          !reducedMotion && isActive && 'scale-[1.02]',
+          'relative z-10 block max-w-full font-sans font-black uppercase leading-[0.88] tracking-tighter transition-colors duration-400 ease-out',
+          isActive ? 'text-white' : 'text-white/55',
         )}
         style={NAME_SIZE}
       >
@@ -98,8 +97,8 @@ function NavPanel({
 
       <p
         className={cn(
-          'relative z-10 mt-3 max-w-[30ch] text-sm leading-snug text-white/75 transition-all duration-300 ease-out',
-          isActive ? 'translate-y-0 opacity-100' : 'translate-y-3 opacity-0',
+          'relative z-10 mt-3 max-w-[28ch] text-sm leading-snug text-white/70 transition-all duration-300 ease-out',
+          isActive ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-2 opacity-0',
         )}
       >
         {card.descriptor}
@@ -142,28 +141,24 @@ export function ServiceNextPrev({ slug }: { slug: ServiceSlug }) {
 
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-1/2 z-20 grid -translate-y-1/2 grid-cols-2 items-center"
+          className="pointer-events-none absolute inset-y-8 left-1/2 z-20 hidden -translate-x-1/2 lg:flex lg:flex-col lg:items-center"
         >
-          <div className="flex items-center justify-end pl-6 pr-1 sm:pl-10 lg:pl-14 lg:pr-1.5">
-            <span className="h-px w-full bg-white/12" />
-          </div>
-          <div className="flex items-center justify-start pl-1 pr-6 sm:pr-10 lg:pl-1.5 lg:pr-14">
-            <span className="h-px w-full bg-white/12" />
-          </div>
+          <span className="w-px flex-1 bg-white/15" />
           <span
             className={cn(
-              'absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center px-1 transition-transform duration-300 ease-out',
-              hovered != null && !reducedMotion && 'scale-110',
+              'my-3 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/15 bg-charcoal transition-transform duration-300 ease-out',
+              hovered != null && !reducedMotion && 'scale-110 border-orange/50',
             )}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/images/brand/logo-monogram.svg"
               alt=""
-              className="h-4 w-4 shrink-0 select-none sm:h-5 sm:w-5"
+              className="h-3.5 w-3.5 shrink-0 select-none"
               draggable={false}
             />
           </span>
+          <span className="w-px flex-1 bg-white/15" />
         </div>
       </div>
     </section>

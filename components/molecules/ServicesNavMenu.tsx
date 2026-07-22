@@ -136,6 +136,7 @@ export function ServicesNavMenu() {
   const pathname = usePathname();
   const onServices = pathname === '/services' || pathname.startsWith('/services/');
   const rootRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
   const isFirstPath = useRef(true);
 
   const currentIndex = SERVICE_MENU.findIndex((s) => s.href === pathname);
@@ -149,7 +150,8 @@ export function ServicesNavMenu() {
       isFirstPath.current = false;
       return;
     }
-    setMenuSuppressed(true);
+    const overPanel = panelRef.current?.matches(':hover') ?? false;
+    setMenuSuppressed(overPanel);
     const focused = document.activeElement;
     if (focused instanceof HTMLElement && rootRef.current?.contains(focused)) {
       focused.blur();
@@ -162,6 +164,7 @@ export function ServicesNavMenu() {
     <div
       ref={rootRef}
       className="group relative"
+      onMouseEnter={() => setMenuSuppressed(false)}
       onMouseLeave={() => setMenuSuppressed(false)}
     >
       <AppLink
@@ -183,6 +186,7 @@ export function ServicesNavMenu() {
 
       {/* Mega-menu — hidden until the group is hovered or focused within. */}
       <div
+        ref={panelRef}
         className={cn(
           'invisible absolute left-1/2 top-full z-header -translate-x-1/2 translate-y-2 pt-4 opacity-0 transition-all duration-200 ease-out',
           !menuSuppressed &&

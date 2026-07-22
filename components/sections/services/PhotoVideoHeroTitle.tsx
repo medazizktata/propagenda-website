@@ -5,25 +5,18 @@ import { cn } from '@/components/ui/cn';
 import { useReducedMotion } from '@/lib/motion/useReducedMotion';
 
 const PREFIXES = ['PHOTO', 'VIDEO'] as const;
+const SUFFIX = 'GRAPHY';
 const CYCLE_MS = 2200;
-const TRANSITION_MS = 380;
-/** Fixed prefix slot width (em × title size) — PHOTO sets the measure; VIDEO spreads to match. */
-const PREFIX_SLOT_EM = 4.35;
+const TRANSITION_MS = 420;
+/** Suffix kerning eases to match the new prefix after the prefix has started moving. */
+const SUFFIX_KERNING_DELAY_MS = 150;
 
-function PrefixWord({ word }: { word: (typeof PREFIXES)[number] }) {
-  if (word === 'VIDEO') {
-    return (
-      <span className="flex w-full justify-between bg-transparent" aria-hidden>
-        {word.split('').map((ch, i) => (
-          <span key={`${ch}-${i}`}>
-            {ch}
-          </span>
-        ))}
-      </span>
-    );
-  }
-  return <span className="bg-transparent">{word}</span>;
-}
+const KERNING: Record<(typeof PREFIXES)[number], string> = {
+  PHOTO: '0.02em',
+  VIDEO: '0.028em',
+};
+
+const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
 
 export function PhotoVideoHeroTitle({ className }: { className?: string }) {
   const reducedMotion = useReducedMotion();
@@ -43,7 +36,7 @@ export function PhotoVideoHeroTitle({ className }: { className?: string }) {
     return (
       <h1
         className={cn(
-          'font-sans font-bold uppercase leading-[0.9] tracking-tight text-white [text-shadow:0_2px_30px_rgba(0,0,0,0.55)]',
+          'font-sans font-bold uppercase leading-[0.9] text-white',
           className,
         )}
         style={titleStyle}
@@ -55,20 +48,25 @@ export function PhotoVideoHeroTitle({ className }: { className?: string }) {
   }
 
   const prefix = PREFIXES[index];
+  const kerning = KERNING[prefix];
 
   return (
     <h1
       className={cn(
-        'font-sans font-bold uppercase leading-[0.9] tracking-tight text-white [text-shadow:0_2px_30px_rgba(0,0,0,0.55)]',
+        'font-sans font-bold uppercase leading-[0.9] text-white',
         className,
       )}
       style={titleStyle}
-      aria-label={`${PREFIXES[index]}GRAPHY — alternating with ${PREFIXES[(index + 1) % 2]}GRAPHY`}
+      aria-label="Photography and Videography — alternating headline"
     >
       <span className="inline-flex items-baseline justify-center whitespace-nowrap">
         <span
-          className="relative inline-block overflow-hidden align-baseline bg-transparent"
-          style={{ width: `${PREFIX_SLOT_EM}em`, height: '0.9em' }}
+          className="relative inline-block overflow-hidden bg-transparent align-bottom [box-shadow:none]"
+          style={{
+            height: '0.9em',
+            letterSpacing: kerning,
+            transition: `letter-spacing ${TRANSITION_MS}ms ${EASE}`,
+          }}
           aria-hidden
         >
           <span
@@ -79,21 +77,28 @@ export function PhotoVideoHeroTitle({ className }: { className?: string }) {
             }}
           >
             {PREFIXES.map((p) => (
-              <span
-                key={p}
-                className="flex h-[0.9em] items-end leading-[0.9]"
-                style={{ width: `${PREFIX_SLOT_EM}em` }}
-              >
-                <PrefixWord word={p} />
+              <span key={p} className="block h-[0.9em] leading-[0.9]">
+                {p}
               </span>
             ))}
           </span>
         </span>
-        <span>GRAPHY</span>
+        <span
+          className="align-baseline"
+          style={{
+            letterSpacing: kerning,
+            transition: `letter-spacing ${TRANSITION_MS}ms ${EASE}`,
+            transitionDelay: `${SUFFIX_KERNING_DELAY_MS}ms`,
+          }}
+          aria-hidden
+        >
+          {SUFFIX}
+        </span>
         <span className="text-orange">.</span>
       </span>
       <span className="sr-only" aria-live="polite">
-        {prefix}GRAPHY
+        {prefix}
+        {SUFFIX}
       </span>
     </h1>
   );

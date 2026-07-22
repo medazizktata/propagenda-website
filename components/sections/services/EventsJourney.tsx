@@ -72,6 +72,9 @@ const num = (i: number) => String(i + 1).padStart(2, '0');
 // Rail geometry — one row per phase; the node sits at each row's vertical centre, so the
 // continuous track runs from the first node's centre to the last node's centre.
 const ROW_REM = 4.25;
+const RAIL_HEIGHT_REM = ROW_REM * PHASES.length;
+/** Reserved body copy — always two lines of `text-base` + `leading-relaxed` (no layout jump). */
+const BODY_COPY_MIN_H = '3.25rem';
 
 export function EventsJourney() {
   const wrapRef = useRef<HTMLDivElement>(null);
@@ -200,9 +203,12 @@ export function EventsJourney() {
             Keep scrolling to move through the run of show, phase by phase.
           </p>
 
-          <div className="grid gap-8 lg:grid-cols-[minmax(0,0.82fr)_1.18fr] lg:gap-14">
+          <div
+            className="grid gap-8 lg:grid-cols-[minmax(0,0.82fr)_1.18fr] lg:items-stretch lg:gap-14"
+            style={{ minHeight: `${RAIL_HEIGHT_REM}rem` }}
+          >
             {/* ── Programme rail: a continuous fill scrubs with scroll while the marker advances ── */}
-            <div className="relative flex flex-col">
+            <div className="relative flex h-full flex-col" style={{ minHeight: `${RAIL_HEIGHT_REM}rem` }}>
               {/* Track + orange fill — the fill height tracks scroll progress continuously. */}
               <span
                 aria-hidden
@@ -264,9 +270,12 @@ export function EventsJourney() {
               })}
             </div>
 
-            {/* ── Show panel: a real event frame (the bold anchor) + phase copy, crossfaded by scroll ── */}
-            <div>
-              <div className="relative aspect-[4/3] overflow-hidden rounded-2xl ring-1 ring-white/10 sm:aspect-[16/10]">
+            {/* ── Show panel: fixed height = rail; image flexes, body locked to 2 lines ── */}
+            <div
+              className="flex h-full min-h-0 flex-col"
+              style={{ minHeight: `${RAIL_HEIGHT_REM}rem` }}
+            >
+              <div className="relative min-h-0 flex-1 overflow-hidden rounded-2xl bg-white/[0.04] ring-1 ring-white/10">
                 {PHASES.map((p, i) => (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
@@ -286,8 +295,7 @@ export function EventsJourney() {
                 <div className="absolute inset-x-5 bottom-5">
                   <span className="block text-sm text-orange">{phase.lead}</span>
                   <span
-                    key={active}
-                    className="block font-sans font-bold leading-tight text-white [text-shadow:0_1px_10px_rgba(0,0,0,0.8)] motion-safe:animate-[tier-rise_450ms_ease-out_both]"
+                    className="block font-sans font-bold leading-tight text-white [text-shadow:0_1px_10px_rgba(0,0,0,0.8)] transition-opacity duration-500"
                     style={{ fontSize: 'clamp(1.4rem, 3.4vw, 2.25rem)' }}
                   >
                     {phase.name}
@@ -295,10 +303,12 @@ export function EventsJourney() {
                 </div>
               </div>
 
-              {/* Phase detail — crossfades in step with the marker. */}
-              <div key={`d-${active}`} className="motion-safe:animate-[tier-rise_450ms_ease-out_both]">
-                <p className="mt-6 max-w-xl text-base leading-relaxed text-white/70">{phase.body}</p>
-              </div>
+              <p
+                className="mt-6 shrink-0 line-clamp-2 text-base leading-relaxed text-white/70"
+                style={{ minHeight: BODY_COPY_MIN_H }}
+              >
+                {phase.body}
+              </p>
             </div>
           </div>
         </div>

@@ -143,6 +143,8 @@ export function WebsitesShowcase() {
   const [active, setActive] = useState(0);
   const bp = BREAKPOINTS[active];
   const reducedMotion = useReducedMotion();
+  const stageRef = useRef<HTMLDivElement>(null);
+  const tiltRef = useRef<HTMLDivElement>(null);
 
   // Fire the performance readout (ring + count-up) once, when it scrolls into view.
   const perfRef = useRef<HTMLDivElement>(null);
@@ -162,6 +164,49 @@ export function WebsitesShowcase() {
     io.observe(el);
     return () => io.disconnect();
   }, [perfInView]);
+
+  // 3D parallax tilt on the browser frame — pointer position drives rotateX/Y (desktop hover only).
+  useEffect(() => {
+    if (reducedMotion) return;
+    const stage = stageRef.current;
+    const tilt = tiltRef.current;
+    if (!stage || !tilt) return;
+    const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    if (!finePointer) return;
+
+    const target = { rx: 0, ry: 0 };
+    const cur = { rx: 0, ry: 0 };
+    let raf = 0;
+
+    const onMove = (e: PointerEvent) => {
+      const rect = stage.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / rect.width - 0.5;
+      const y = (e.clientY - rect.top) / rect.height - 0.5;
+      target.ry = x * 11;
+      target.rx = -y * 9;
+    };
+    const onLeave = () => {
+      target.rx = 0;
+      target.ry = 0;
+    };
+
+    const tick = () => {
+      cur.rx += (target.rx - cur.rx) * 0.075;
+      cur.ry += (target.ry - cur.ry) * 0.075;
+      tilt.style.transform = `translateZ(28px) rotateX(${cur.rx}deg) rotateY(${cur.ry}deg)`;
+      raf = requestAnimationFrame(tick);
+    };
+
+    stage.addEventListener('pointermove', onMove);
+    stage.addEventListener('pointerleave', onLeave);
+    raf = requestAnimationFrame(tick);
+    return () => {
+      stage.removeEventListener('pointermove', onMove);
+      stage.removeEventListener('pointerleave', onLeave);
+      cancelAnimationFrame(raf);
+      tilt.style.transform = '';
+    };
+  }, [reducedMotion]);
 
   return (
     <section className="relative overflow-hidden px-gutter-m py-12 lg:px-gutter-d lg:py-16">
@@ -207,13 +252,20 @@ export function WebsitesShowcase() {
           </div>
         </div>
 
-        {/* ── Browser stage — the one bold focal element. Fixed height; only the width animates. ── */}
-        <div className="sd-reveal flex h-[24rem] items-stretch justify-center md:h-[32rem]">
+        {/* ── Browser stage — 3D tilt follows cursor over desktop / tablet / mobile widths. ── */}
+        <div
+          ref={stageRef}
+          className="sd-reveal flex h-[24rem] items-stretch justify-center [perspective:1400px] [perspective-origin:50%_42%] md:h-[32rem]"
+        >
           <div
-            className="w-full transition-all duration-500 ease-out"
-            style={{ maxWidth: bp.width }}
+            ref={tiltRef}
+            className="flex h-full w-full max-w-full items-stretch justify-center [transform-style:preserve-3d] will-change-transform"
           >
-            <div className="flex h-full flex-col overflow-hidden rounded-xl bg-white shadow-[0_30px_80px_-30px_rgba(0,0,0,0.8)] ring-1 ring-white/15">
+            <div
+              className="h-full w-full transition-[max-width] duration-500 ease-out"
+              style={{ maxWidth: bp.width }}
+            >
+              <div className="flex h-full flex-col overflow-hidden rounded-xl bg-white shadow-[0_30px_80px_-30px_rgba(0,0,0,0.8)] ring-1 ring-white/15">
               {/* Chrome bar — traffic lights, address pill, live dimensions. */}
               <div className="flex shrink-0 items-center gap-3 border-b border-black/5 bg-[#eceff3] px-3.5 py-2.5">
                 <div className="flex items-center gap-1.5">
@@ -295,6 +347,7 @@ export function WebsitesShowcase() {
               </div>
             </div>
           </div>
+        </div>
         </div>
 
         {/* ── Performance readout — Lighthouse-style, animates up on reveal. ── */}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type RefObject } from 'react';
 import { cn } from '@/components/ui/cn';
 import { gsap, ScrollTrigger } from '@/lib/motion/gsap';
 import { BrandPattern } from '@/components/ui/BrandPattern';
@@ -36,27 +36,27 @@ const STAGES: Stage[] = [
     name: 'Discover',
     screen: 'onboarding',
     wire: true,
-    detail: 'We map the goal, the platforms, and the handful of flows that actually matter — the brief behind the brief.',
+    detail: 'Goals, platforms, and the flows that matter.',
   },
   {
     name: 'Design',
     screen: 'onboarding',
-    detail: 'Wireframes become a native-feeling interface — type, colour, and one clear call to action, tuned for thumbs.',
+    detail: 'Wireframes to native UI — type, colour, one clear action.',
   },
   {
     name: 'Prototype',
     screen: 'home',
-    detail: 'A tappable prototype of the real flow — browse, search, and filter — tested before a line of production code.',
+    detail: 'Tappable flows, tested before we write production code.',
   },
   {
     name: 'Build',
     screen: 'detail',
-    detail: 'Screens get wired to secure back-ends and live data, with a confident primary action on every view.',
+    detail: 'Live data, secure APIs, a primary action on every screen.',
   },
   {
     name: 'Ship',
     screen: 'order',
-    detail: 'Submitted, reviewed, and released to the App Store and Play Store — then supported and improved as it grows.',
+    detail: 'Store submission, release, and support as you grow.',
   },
 ];
 
@@ -65,7 +65,17 @@ const DISHES = [
   { img: '/images/portfolio/work-food.png', name: 'Truffle burger', place: 'Grill House', time: '25 min', rating: '4.9' },
   { img: '/images/portfolio/work-restaurant.png', name: 'Sunday roast', place: 'The Table', time: '35 min', rating: '4.8' },
   { img: '/images/portfolio/work-ghaftree.png', name: 'Garden bowl', place: 'Ghaf Tree', time: '20 min', rating: '4.7' },
+  { img: '/images/portfolio/work-food.png', name: 'Spiced lamb wrap', place: 'Souk Kitchen', time: '22 min', rating: '4.8' },
+  { img: '/images/portfolio/work-restaurant.png', name: 'Sea bass ceviche', place: 'The Table', time: '28 min', rating: '4.6' },
 ];
+
+function scrollAmountForStage(stage: Stage, frac: number) {
+  if (stage.screen === 'home') return frac * 128;
+  if (stage.screen === 'detail') return frac * 108;
+  if (stage.screen === 'onboarding' && !stage.wire) return frac * 36;
+  if (stage.wire) return frac * 24;
+  return 0;
+}
 const FEATURE = DISHES[0];
 
 const PLATFORMS: { id: Platform; label: string }[] = [
@@ -384,9 +394,9 @@ function OnboardingScreen({ platform }: { platform: Platform }) {
 
 function HomeScreen({ platform }: { platform: Platform }) {
   return (
-    <div className="relative flex-1 overflow-hidden bg-[#f7f8fa]">
-      <div className="flex h-full flex-col overflow-hidden">
-        <div className="px-4 pt-3">
+    <div className="relative min-h-full flex-1 bg-[#f7f8fa]">
+      <div className="flex min-h-full flex-col">
+        <div className="shrink-0 px-4 pt-3">
           {/* Search field */}
           <div className="flex items-center gap-2 rounded-xl bg-black/[0.04] px-3 py-2.5">
             <Glyph kind="search" className="h-4 w-4 text-navy/40" />
@@ -407,8 +417,7 @@ function HomeScreen({ platform }: { platform: Platform }) {
             ))}
           </div>
         </div>
-        {/* Dish list */}
-        <div className="mt-3 flex-1 space-y-2.5 overflow-hidden px-4 pb-4">
+        <div className="mt-3 space-y-2.5 px-4 pb-6">
           {DISHES.map((d) => (
             <div
               key={d.name}
@@ -447,13 +456,13 @@ function HomeScreen({ platform }: { platform: Platform }) {
 
 function DetailScreen({ platform }: { platform: Platform }) {
   return (
-    <div className="relative flex-1 overflow-hidden bg-white">
-      <div className="flex h-full flex-col overflow-hidden">
+    <div className="relative min-h-full flex-1 bg-white">
+      <div className="flex min-h-full flex-col">
         <div className="relative h-40 shrink-0 overflow-hidden">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={FEATURE.img} alt="" className="h-full w-full object-cover" />
         </div>
-        <div className="flex-1 overflow-hidden px-4 pt-3.5">
+        <div className="px-4 pt-3.5 pb-4">
           <h4 className="font-sans text-[17px] font-bold text-navy">{FEATURE.name}</h4>
           <div className="mt-1.5 flex items-center gap-2">
             <RatingStars value={5} />
@@ -463,13 +472,20 @@ function DetailScreen({ platform }: { platform: Platform }) {
           <p className="mt-2.5 text-[12px] leading-relaxed text-navy/55">
             Aged beef, black truffle mayo, and smoked cheddar in a toasted brioche bun. From {FEATURE.place}.
           </p>
+          <p className="mt-2 text-[12px] leading-relaxed text-navy/45">
+            Served with hand-cut fries and house pickles. Customise spice level and add-ons before checkout.
+          </p>
           <div className="mt-3 flex items-baseline gap-1">
             <span className="font-sans text-[22px] font-bold text-navy">AED 48</span>
             <span className="text-[11px] text-navy/40">· {FEATURE.time} delivery</span>
           </div>
+          <div className="mt-4 space-y-2 border-t border-black/[0.06] pt-3">
+            <p className="text-[11px] font-semibold uppercase tracking-wide text-navy/40">Add-ons</p>
+            <p className="text-[12px] text-navy/55">Truffle fries · AED 12</p>
+            <p className="text-[12px] text-navy/55">Extra patty · AED 18</p>
+          </div>
         </div>
-        {/* Sticky primary action */}
-        <div className="shrink-0 border-t border-black/[0.05] p-3.5">
+        <div className="mt-auto shrink-0 border-t border-black/[0.05] p-3.5">
           <span
             className={cn(
               'flex h-11 w-full items-center justify-center bg-orange text-[15px] font-semibold text-navy',
@@ -529,11 +545,13 @@ function Phone({
   screen,
   wire,
   reduced,
+  scrollRef,
 }: {
   platform: Platform;
   screen: ScreenId;
   wire: boolean;
   reduced: boolean;
+  scrollRef?: RefObject<HTMLDivElement | null>;
 }) {
   const isOnboarding = screen === 'onboarding';
   const dark = isOnboarding && !wire;
@@ -543,7 +561,7 @@ function Phone({
   return (
     <div
       className={cn(
-        'relative mx-auto w-[212px] shrink-0 bg-navy p-2.5 shadow-[0_40px_90px_-40px_rgba(0,0,0,0.85)] ring-1 ring-white/10 sm:w-[248px] lg:w-[272px]',
+        'relative mx-auto w-[196px] shrink-0 bg-navy p-2 shadow-[0_32px_70px_-36px_rgba(0,0,0,0.85)] ring-1 ring-white/10 sm:w-[214px] lg:w-[228px]',
         isIos ? 'rounded-[2.75rem]' : 'rounded-[1.9rem]',
       )}
     >
@@ -551,7 +569,7 @@ function Phone({
       <span aria-hidden className="absolute -right-[3px] top-24 h-12 w-[3px] rounded-r bg-navy" />
       <div
         className={cn(
-          'relative flex h-[440px] flex-col overflow-hidden bg-white sm:h-[510px] lg:h-[544px]',
+          'relative flex h-[380px] flex-col overflow-hidden bg-white sm:h-[410px] lg:h-[430px]',
           isIos ? 'rounded-[2.1rem]' : 'rounded-[1.3rem]',
         )}
       >
@@ -560,22 +578,28 @@ function Phone({
           <AppHeader platform={platform} title={HEADER_TITLE[screen]} showBack={screen === 'detail'} />
         )}
 
-        {/* Screen body — re-keyed per screen+platform+fidelity so each state animates up cleanly. */}
-        <div
-          key={`${platform}-${screen}-${wire ? 'w' : 'd'}`}
-          className={cn('flex flex-1 flex-col overflow-hidden', !reduced && 'animate-[tier-rise_360ms_ease-out_both]')}
-        >
-          {wire ? (
-            <WireframeScreen platform={platform} />
-          ) : isOnboarding ? (
-            <OnboardingScreen platform={platform} />
-          ) : screen === 'home' ? (
-            <HomeScreen platform={platform} />
-          ) : screen === 'detail' ? (
-            <DetailScreen platform={platform} />
-          ) : (
-            <OrderScreen platform={platform} />
-          )}
+        <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden">
+          <div ref={scrollRef} className="flex min-h-full flex-col will-change-transform">
+            <div
+              key={`${platform}-${screen}-${wire ? 'w' : 'd'}`}
+              className={cn(
+                'flex min-h-full flex-col',
+                !reduced && 'animate-[tier-rise_360ms_ease-out_both]',
+              )}
+            >
+              {wire ? (
+                <WireframeScreen platform={platform} />
+              ) : isOnboarding ? (
+                <OnboardingScreen platform={platform} />
+              ) : screen === 'home' ? (
+                <HomeScreen platform={platform} />
+              ) : screen === 'detail' ? (
+                <DetailScreen platform={platform} />
+              ) : (
+                <OrderScreen platform={platform} />
+              )}
+            </div>
+          </div>
         </div>
 
         {!isOnboarding && <TabBar platform={platform} active={activeTab} />}
@@ -597,7 +621,11 @@ function PlatformToggle({
   className?: string;
 }) {
   return (
-    <div className={cn('inline-flex gap-1 rounded-xl border border-white/12 bg-white/[0.03] p-1', className)}>
+    <div
+      role="group"
+      aria-label="Platform"
+      className={cn('inline-flex w-fit max-w-full gap-1 rounded-full border border-white/12 bg-white/[0.04] p-1', className)}
+    >
       {PLATFORMS.map((p) => {
         const on = platform === p.id;
         return (
@@ -607,8 +635,8 @@ function PlatformToggle({
             onClick={() => onChange(p.id)}
             aria-pressed={on}
             className={cn(
-              'rounded-lg px-6 py-2 text-sm font-semibold transition-all duration-300 ease-out',
-              on ? 'bg-orange text-navy' : 'text-white/55 hover-fine:hover:text-white',
+              'rounded-full px-5 py-2 text-sm font-semibold transition-all duration-300 ease-out sm:px-6',
+              on ? 'bg-orange text-navy shadow-sm' : 'text-white/55 hover-fine:hover:text-white',
             )}
           >
             {p.label}
@@ -624,8 +652,8 @@ function SectionHead() {
     <>
       <SectionLabel className="mb-3">The build</SectionLabel>
       <h2
-        className="mb-8 max-w-3xl font-sans font-bold uppercase leading-[0.95] tracking-display text-white lg:mb-10"
-        style={{ fontSize: 'clamp(1.6rem, 3.6vw, 2.75rem)' }}
+        className="mb-8 max-w-4xl font-sans font-bold uppercase leading-[0.95] tracking-display text-white lg:mb-10"
+        style={{ fontSize: 'clamp(1.4rem, 3vw, 2.35rem)' }}
       >
         From wireframe to launch.
       </h2>
@@ -638,6 +666,8 @@ function SectionHead() {
 export function MobileAppShowcase() {
   const wrapRef = useRef<HTMLDivElement>(null);
   const pinRef = useRef<HTMLDivElement>(null);
+  const phoneScrollRef = useRef<HTMLDivElement>(null);
+  const activeRef = useRef(0);
   const reduced = useReducedMotion();
   const [platform, setPlatform] = useState<Platform>('ios');
   const [active, setActive] = useState(0);
@@ -656,7 +686,15 @@ export function MobileAppShowcase() {
         pin,
         scrub: true,
         onUpdate: (self) => {
-          setActive(Math.min(n - 1, Math.floor(self.progress * n)));
+          const raw = self.progress * n;
+          const idx = Math.min(n - 1, Math.max(0, Math.floor(raw)));
+          const frac = Math.min(1, raw - idx);
+          if (idx !== activeRef.current) {
+            activeRef.current = idx;
+            setActive(idx);
+          }
+          const y = scrollAmountForStage(STAGES[idx], frac);
+          gsap.set(phoneScrollRef.current, { y: -y });
         },
       });
     }, wrap);
@@ -671,19 +709,21 @@ export function MobileAppShowcase() {
         <div aria-hidden className="pattern-section-fade absolute inset-0">
           <BrandPattern variant="tiled" />
         </div>
-        <div className="relative z-content mx-auto max-w-6xl">
+        <div className="relative z-content mx-auto w-full max-w-[88rem]">
           <SectionHead />
-          <PlatformToggle platform={platform} onChange={setPlatform} className="mb-8 flex" />
-          <div className="grid items-start gap-10 lg:grid-cols-[auto_1fr] lg:gap-16">
-            <Phone platform={platform} screen="home" wire={false} reduced />
-            <ol className="w-full">
+          <div className="grid items-start gap-10 lg:grid-cols-2 lg:gap-12 xl:gap-16">
+            <div className="mx-auto flex w-full flex-col items-center gap-4">
+              <PlatformToggle platform={platform} onChange={setPlatform} />
+              <Phone platform={platform} screen="home" wire={false} reduced />
+            </div>
+            <ol className="w-full min-w-0 lg:pt-2">
               {STAGES.map((s, i) => (
                 <li key={s.name} className="flex gap-4 border-b border-white/10 py-5 last:border-b-0">
                   <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-white/25 text-[12px] font-bold tabular-nums text-orange">
                     {i + 1}
                   </span>
                   <div className="min-w-0">
-                    <span className="block font-sans text-lg font-bold tracking-tight text-white">{s.name}</span>
+                    <span className="block font-sans text-base font-bold tracking-tight text-white">{s.name}</span>
                     <span className="mt-1 block text-sm leading-relaxed text-white/55">{s.detail}</span>
                   </div>
                 </li>
@@ -701,20 +741,27 @@ export function MobileAppShowcase() {
     <section ref={wrapRef} className="relative">
       <div
         ref={pinRef}
-        className="relative flex min-h-[100svh] flex-col justify-center overflow-hidden px-gutter-m py-12 lg:px-gutter-d"
+        className="relative flex max-h-[100svh] min-h-[100svh] flex-col justify-center overflow-hidden px-gutter-m py-10 lg:px-gutter-d lg:py-12"
       >
         <div aria-hidden className="pattern-section-fade absolute inset-0">
           <BrandPattern variant="tiled" />
         </div>
-        <div className="relative z-content mx-auto w-full max-w-6xl">
+        <div className="relative z-content mx-auto w-full max-w-[88rem]">
           <SectionHead />
-          <PlatformToggle platform={platform} onChange={setPlatform} className="mb-8 flex justify-center lg:justify-start" />
 
-          <div className="grid items-center gap-8 lg:grid-cols-[auto_1fr] lg:gap-16">
-            {/* Phone — the bold anchor; advances screen as the scroll stage changes. */}
-            <Phone platform={platform} screen={cur.screen} wire={!!cur.wire} reduced={false} />
+          <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-12 xl:gap-16">
+            <div className="mx-auto flex w-full flex-col items-center gap-4">
+              <PlatformToggle platform={platform} onChange={setPlatform} />
+              <Phone
+                platform={platform}
+                screen={cur.screen}
+                wire={!!cur.wire}
+                reduced={false}
+                scrollRef={phoneScrollRef}
+              />
+            </div>
 
-            <div className="w-full">
+            <div className="w-full min-w-0 lg:flex lg:flex-col lg:justify-center lg:pl-2 xl:pl-4">
               {/* Desktop — a vertical build timeline; the active stage enlarges, its detail crossfades. */}
               <ol className="hidden lg:block">
                 {STAGES.map((s, i) => {
@@ -747,24 +794,28 @@ export function MobileAppShowcase() {
                         )}
                       </div>
                       {/* Content — collapsed name when idle; enlarges + reveals detail when active. */}
-                      <div className={cn('min-w-0 pb-8', on ? 'pt-0.5' : 'py-1')}>
-                        <span
-                          className={cn(
-                            'block font-sans font-bold tracking-tight transition-colors duration-300',
-                            on ? 'text-orange' : done ? 'text-white/70' : 'text-white/35',
-                          )}
-                          style={{ fontSize: on ? 'clamp(1.5rem, 2.6vw, 2.1rem)' : '1.125rem' }}
-                        >
-                          {s.name}
-                        </span>
-                        {on && (
+                      <div className="min-w-0 flex-1 pb-5">
+                        <div className="flex min-h-[2rem] items-end">
+                          <span
+                            className={cn(
+                              'block font-sans font-bold tracking-tight transition-colors duration-300',
+                              on ? 'text-white' : done ? 'text-white/22' : 'text-white/14',
+                            )}
+                            style={{ fontSize: on ? 'clamp(1.35rem, 2.5vw, 2.15rem)' : '1rem' }}
+                          >
+                            {s.name}
+                          </span>
+                        </div>
+                        <div className="mt-1.5 min-h-[2.85rem]">
                           <p
-                            key={active}
-                            className="mt-2 max-w-md animate-[tier-rise_400ms_ease-out_both] text-base leading-relaxed text-white/60"
+                            className={cn(
+                              'line-clamp-2 text-sm leading-relaxed transition-colors duration-300 xl:text-base',
+                              on ? 'text-white/90' : 'text-white/12',
+                            )}
                           >
                             {s.detail}
                           </p>
-                        )}
+                        </div>
                       </div>
                     </li>
                   );
@@ -776,7 +827,7 @@ export function MobileAppShowcase() {
                 <div className="flex items-baseline justify-between gap-4">
                   <span
                     key={`n-${active}`}
-                    className="animate-[tier-rise_360ms_ease-out_both] font-sans text-2xl font-bold tracking-tight text-orange"
+                    className="animate-[tier-rise_360ms_ease-out_both] font-sans text-xl font-bold tracking-tight text-white"
                   >
                     {cur.name}
                   </span>
@@ -786,7 +837,7 @@ export function MobileAppShowcase() {
                 </div>
                 <p
                   key={`d-${active}`}
-                  className="mt-2 min-h-[3.75rem] animate-[tier-rise_360ms_ease-out_both] text-sm leading-relaxed text-white/60"
+                  className="mt-2 min-h-[3.25rem] animate-[tier-rise_360ms_ease-out_both] text-sm leading-relaxed text-white/60"
                 >
                   {cur.detail}
                 </p>

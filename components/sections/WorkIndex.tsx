@@ -32,7 +32,7 @@ export function WorkIndex({ groups }: WorkIndexProps) {
   const ref = useRef<HTMLElement>(null);
   const [active, setActive] = useState<number | null>(null);
   const reducedMotion = useReducedMotion();
-  useFadeUpOnEnter(ref, '.work-index-reveal');
+  useFadeUpOnEnter(ref, '.work-index-reveal', { translateOnly: true });
 
   // Flatten so the bloom panel + active index span both groups with one running index.
   const flat = groups.flatMap((g) => g.items);

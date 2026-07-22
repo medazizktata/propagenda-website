@@ -8,11 +8,11 @@ export interface WorkHubEntry {
 }
 
 const accents = [
-  'from-orange/40 to-navy',
+  'from-orange/40 to-black',
   'from-charcoal to-orange/30',
-  'from-navy to-charcoal',
+  'from-black to-charcoal',
   'from-orange/20 to-black',
-  'from-black to-navy',
+  'from-black to-black',
   'from-charcoal to-orange/20',
 ];
 

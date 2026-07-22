@@ -12,7 +12,7 @@ interface LogoWallGridProps {
 
 export function LogoWallGrid({ brands, linkable = false }: LogoWallGridProps) {
   const ref = useRef<HTMLElement>(null);
-  useFadeUpOnEnter(ref, '[data-logo]');
+  useFadeUpOnEnter(ref, '[data-logo]', { translateOnly: true });
 
   return (
     <section ref={ref} className="border-t border-border px-gutter-m py-20 lg:px-gutter-d">
@@ -38,9 +38,9 @@ function LogoCell({
   const showPlaceholder = !brand.imageSrc || imageError;
 
   const accents = [
-    'from-navy to-charcoal',
+    'from-black to-charcoal',
     'from-charcoal to-black',
-    'from-black to-navy',
+    'from-black to-black',
     'from-orange/10 to-charcoal',
   ];
   const accent = accents[index % accents.length];

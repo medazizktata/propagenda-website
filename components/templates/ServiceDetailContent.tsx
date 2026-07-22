@@ -611,10 +611,12 @@ function ScopeStack({ items }: { items: string[] }) {
 }
 
 // Mobile "What's included" — a build spec keyed like an engineering manifest. Each capability sits
-// against a monospace stack tag in a fixed "code gutter" column (the tools we ship it with), then a
-// one-line descriptor. The mono gutter is the distinguishing signature — no numbers, no chips, no
-// card — and it reads as the tech stack behind the app, unlike every other scope variant (editorial
-// ghost numbers, grid chips, ledger arrows, marketing descriptors, print proof sheet, web layers).
+// against a fixed "code gutter" column that now shows the actual tools visually: small authored
+// tech glyphs (Swift, Kotlin, React, Figma, GraphQL, the two stores…) above a monospace stack tag,
+// then a one-line descriptor. The tool-icon gutter is the distinguishing signature — no numbers, no
+// chips, no card — and it reads as the tech stack behind the app, unlike every other scope variant
+// (editorial ghost numbers, grid chips, ledger arrows, marketing descriptors, print proof sheet,
+// web layers). Glyphs are simple geometric marks we author — not fetched brand logos.
 const APP_SCOPE_TAG: Record<string, string> = {
   'iOS & Android apps': 'Swift · Kotlin',
   'Cross-platform development': 'React Native',
@@ -622,6 +624,15 @@ const APP_SCOPE_TAG: Record<string, string> = {
   'API & backend integration': 'REST · GraphQL',
   'App Store & Play Store launch': 'App Store · Play',
   'Maintenance & updates': 'Care plan',
+};
+// The tech glyphs shown in the gutter for each capability, keyed to TechGlyph below.
+const APP_SCOPE_TECH: Record<string, string[]> = {
+  'iOS & Android apps': ['swift', 'kotlin'],
+  'Cross-platform development': ['react'],
+  'Mobile UX/UI design': ['figma'],
+  'API & backend integration': ['graphql'],
+  'App Store & Play Store launch': ['appstore', 'playstore'],
+  'Maintenance & updates': ['refresh'],
 };
 const APP_SCOPE_DESC: Record<string, string> = {
   'iOS & Android apps': 'Native builds that feel at home on each platform.',
@@ -632,16 +643,116 @@ const APP_SCOPE_DESC: Record<string, string> = {
   'Maintenance & updates': 'New OS versions, fixes, and features after launch.',
 };
 
+// Authored, geometric tech marks (not brand logos) — a visual shorthand for the stack behind each
+// capability. Stroke + currentColor so they inherit the orange gutter tone.
+function TechGlyph({ kind, className }: { kind: string; className?: string }) {
+  const s = {
+    viewBox: '0 0 24 24',
+    fill: 'none',
+    stroke: 'currentColor',
+    strokeWidth: 1.6,
+    strokeLinecap: 'round' as const,
+    strokeLinejoin: 'round' as const,
+    'aria-hidden': true,
+    className,
+  };
+  switch (kind) {
+    // Swift — a swift's swooping tail feather (a simple filled swoosh).
+    case 'swift':
+      return (
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden className={className}>
+          <path d="M5 4c5 1.4 9 4.3 11.6 8.3.7-1.7.6-3.8-.3-6 2.6 2.6 3.9 6.4 3.2 9.9.9 1.4 1.2 2.9.9 4.2-1-1.6-2.6-2.1-4.2-1.8-2.9 1.3-6.9.9-10.4-1.8 2.6.5 5.2.1 7-1C9.6 12.6 6.6 8.9 5 4Z" />
+        </svg>
+      );
+    // Kotlin — the folded square (two triangles meeting at the left edge).
+    case 'kotlin':
+      return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinejoin="round" aria-hidden className={className}>
+          <path d="M4 4h16L12 12l8 8H4V4Z" />
+          <path d="M4 4l8 8-8 8" />
+        </svg>
+      );
+    // React — the electron-orbit atom (nucleus + three orbits).
+    case 'react':
+      return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.4} aria-hidden className={className}>
+          <circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none" />
+          <ellipse cx="12" cy="12" rx="10" ry="4" />
+          <ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(60 12 12)" />
+          <ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(120 12 12)" />
+        </svg>
+      );
+    // Figma — the stacked-node mark (three left discs + two right).
+    case 'figma':
+      return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} aria-hidden className={className}>
+          <path d="M12 3H8.5a2.75 2.75 0 0 0 0 5.5H12V3Z" />
+          <path d="M12 3h3.5a2.75 2.75 0 0 1 0 5.5H12V3Z" />
+          <path d="M12 8.5H8.5a2.75 2.75 0 0 0 0 5.5H12V8.5Z" />
+          <circle cx="15.25" cy="11.25" r="2.75" />
+          <path d="M12 14H9.75a2.75 2.75 0 1 0 2.25 4.33V14Z" />
+        </svg>
+      );
+    // GraphQL — the connected hexagon of nodes.
+    case 'graphql':
+      return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.4} aria-hidden className={className}>
+          <path d="M12 3l7.8 4.5v9L12 21l-7.8-4.5v-9L12 3Z" />
+          <path d="M4.5 7.5 12 20.5M19.5 7.5 12 20.5M4.5 7.5h15" />
+          <circle cx="12" cy="3" r="1.5" fill="currentColor" stroke="none" />
+          <circle cx="19.8" cy="7.5" r="1.5" fill="currentColor" stroke="none" />
+          <circle cx="19.8" cy="16.5" r="1.5" fill="currentColor" stroke="none" />
+          <circle cx="12" cy="21" r="1.5" fill="currentColor" stroke="none" />
+          <circle cx="4.2" cy="16.5" r="1.5" fill="currentColor" stroke="none" />
+          <circle cx="4.2" cy="7.5" r="1.5" fill="currentColor" stroke="none" />
+        </svg>
+      );
+    // App Store — a rounded tile with the stylised "A".
+    case 'appstore':
+      return (
+        <svg {...s}>
+          <rect x="3" y="3" width="18" height="18" rx="4.5" />
+          <path d="M8.5 16 12 8.5 15.5 16M9.7 13.4h4.6" />
+        </svg>
+      );
+    // Play Store — the play triangle with its split seam.
+    case 'playstore':
+      return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinejoin="round" aria-hidden className={className}>
+          <path d="M5 3.5 19 12 5 20.5V3.5Z" />
+          <path d="m5 3.5 9.2 9.2M5 20.5l9.2-8" />
+        </svg>
+      );
+    // Maintenance — the update / refresh cycle.
+    case 'refresh':
+      return (
+        <svg {...s}>
+          <path d="M20 8a8 8 0 0 0-14.3-2M4 5v4h4" />
+          <path d="M4 16a8 8 0 0 0 14.3 2M20 19v-4h-4" />
+        </svg>
+      );
+    default:
+      return null;
+  }
+}
+
 function ScopeTechSpec({ items }: { items: string[] }) {
   return (
     <div className="flex flex-col border-t border-white/15">
       {items.map((item) => (
         <div
           key={item}
-          className="sd-reveal group/ts grid grid-cols-[5rem_1fr] items-baseline gap-x-5 gap-y-1 border-b border-white/10 py-5 transition-colors duration-300 hover-fine:hover:border-orange/40 sm:grid-cols-[8.5rem_1fr] sm:gap-x-8"
+          className="sd-reveal group/ts grid grid-cols-[5.5rem_1fr] items-baseline gap-x-5 gap-y-1 border-b border-white/10 py-5 transition-colors duration-300 hover-fine:hover:border-orange/40 sm:grid-cols-[9rem_1fr] sm:gap-x-8"
         >
-          <span className="font-mono text-[0.68rem] leading-snug text-orange/75 transition-colors duration-300 group-hover/ts:text-orange sm:text-xs">
-            {APP_SCOPE_TAG[item]}
+          <span className="flex flex-col gap-1.5 self-start pt-1 text-orange/80 transition-colors duration-300 group-hover/ts:text-orange">
+            <span className="flex items-center gap-1.5">
+              {(APP_SCOPE_TECH[item] ?? []).map((k) => (
+                <TechGlyph key={k} kind={k} className="h-5 w-5 sm:h-6 sm:w-6" />
+              ))}
+            </span>
+            <span className="font-mono text-[0.62rem] leading-snug sm:text-[0.68rem]">
+              {APP_SCOPE_TAG[item]}
+            </span>
           </span>
           <div>
             <span

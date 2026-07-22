@@ -1,28 +1,63 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { cn } from '@/components/ui/cn';
+import { gsap, ScrollTrigger } from '@/lib/motion/gsap';
 import { BrandPattern } from '@/components/ui/BrandPattern';
 import { SectionLabel } from '@/components/ui/SectionLabel';
 import { useReducedMotion } from '@/lib/motion/useReducedMotion';
 
 // The signature module for Mobile Applications. Websites already owns the "device that resizes"
 // idea (a browser window with a Desktop/Tablet/Mobile toggle + Lighthouse gauge), so this makes a
-// deliberately different point: the APP EXPERIENCE itself. One phone holds a real, tappable app
-// flow — onboarding → home → detail → confirmation — and an iOS ⇄ Android toggle swaps the native
-// chrome (status-bar clock side, header alignment, tab bar, home indicator vs system nav, the
-// Android FAB) so the same screens prove they feel at home on both platforms. Nothing here
-// resizes; the interaction is the flow and the platform, not the breakpoint. App content and
-// imagery are illustrative placeholders drawn from the portfolio pool.
+// deliberately different point: how the APP ITSELF gets built. The section PINS, and scroll scrubs
+// through the mobile design workflow — Discover → Design → Prototype → Build → Ship. As each stage
+// lands, the phone advances to the screen that stage produces: it opens on a wireframe of the first
+// launch, gains its real UI, then walks the live flow (home → detail → confirmation). An iOS ⇄
+// Android toggle swaps the native chrome (status-bar clock side, header alignment, tab bar, home
+// indicator vs system nav, the Android FAB) so the same screens prove they feel at home on both.
+// Reduced motion falls back to a static, fully readable version — every stage listed, the phone on
+// one finished screen. App content and imagery are illustrative placeholders from the portfolio.
 
 type Platform = 'ios' | 'android';
 type ScreenId = 'onboarding' | 'home' | 'detail' | 'order';
 
-const SCREENS: { id: ScreenId; name: string; caption: string }[] = [
-  { id: 'onboarding', name: 'Onboarding', caption: 'A warm first launch — brand, promise, and one clear call to action.' },
-  { id: 'home', name: 'Home', caption: 'Browse, search, and filter — the everyday screen, built for thumbs.' },
-  { id: 'detail', name: 'Detail', caption: 'Rich detail with real ratings and a confident primary action.' },
-  { id: 'order', name: 'Confirmation', caption: 'Instant, unmistakable feedback the moment an order lands.' },
+interface Stage {
+  name: string;
+  screen: ScreenId;
+  /** Discover shows the first-launch screen as a low-fidelity wireframe. */
+  wire?: boolean;
+  detail: string;
+}
+
+// The workflow the scroll scrubs through. Each stage maps to the phone screen it produces, so the
+// mockup visibly advances: wireframe → designed onboarding → home → detail → confirmation.
+const STAGES: Stage[] = [
+  {
+    name: 'Discover',
+    screen: 'onboarding',
+    wire: true,
+    detail: 'We map the goal, the platforms, and the handful of flows that actually matter — the brief behind the brief.',
+  },
+  {
+    name: 'Design',
+    screen: 'onboarding',
+    detail: 'Wireframes become a native-feeling interface — type, colour, and one clear call to action, tuned for thumbs.',
+  },
+  {
+    name: 'Prototype',
+    screen: 'home',
+    detail: 'A tappable prototype of the real flow — browse, search, and filter — tested before a line of production code.',
+  },
+  {
+    name: 'Build',
+    screen: 'detail',
+    detail: 'Screens get wired to secure back-ends and live data, with a confident primary action on every view.',
+  },
+  {
+    name: 'Ship',
+    screen: 'order',
+    detail: 'Submitted, reviewed, and released to the App Store and Play Store — then supported and improved as it grows.',
+  },
 ];
 
 const CATEGORIES = ['Popular', 'Grills', 'Healthy', 'Dessert'];
@@ -106,6 +141,14 @@ function Glyph({ kind, className }: { kind: string; className?: string }) {
           <circle cx="12" cy="19" r="1.6" />
         </svg>
       );
+    case 'image':
+      return (
+        <svg {...svg} className={className}>
+          <rect x="3" y="4" width="18" height="16" rx="2" />
+          <circle cx="8.5" cy="9.5" r="1.6" />
+          <path d="m4 18 5-5 4 3 3-2 4 4" />
+        </svg>
+      );
     default:
       return null;
   }
@@ -174,30 +217,16 @@ function StatusBar({ platform, dark }: { platform: Platform; dark: boolean }) {
 }
 
 // The app header. iOS centres the title with a thin back chevron; Android left-aligns the title
-// with a back arrow and an overflow menu, and carries a hair of Material elevation.
-function AppHeader({
-  platform,
-  title,
-  showBack,
-  onBack,
-}: {
-  platform: Platform;
-  title: string;
-  showBack: boolean;
-  onBack: () => void;
-}) {
+// with a back arrow and an overflow menu, and carries a hair of Material elevation. The phone is a
+// scroll-driven mockup, so the back affordance is a decorative indicator, not a control.
+function AppHeader({ platform, title, showBack }: { platform: Platform; title: string; showBack: boolean }) {
   if (platform === 'ios') {
     return (
       <div className="relative flex h-11 shrink-0 items-center justify-center border-b border-black/[0.06] px-3">
         {showBack && (
-          <button
-            type="button"
-            onClick={onBack}
-            aria-label="Back"
-            className="absolute left-2 flex items-center text-orange"
-          >
+          <span aria-hidden className="absolute left-2 flex items-center text-orange">
             <Glyph kind="chevron-left" className="h-5 w-5" />
-          </button>
+          </span>
         )}
         <span className="font-sans text-[15px] font-semibold text-navy">{title}</span>
       </div>
@@ -206,11 +235,11 @@ function AppHeader({
   return (
     <div className="flex h-14 shrink-0 items-center gap-3 border-b border-black/[0.04] px-3 shadow-[0_2px_6px_-4px_rgba(0,0,0,0.35)]">
       {showBack && (
-        <button type="button" onClick={onBack} aria-label="Back" className="flex items-center text-navy/80">
+        <span aria-hidden className="flex items-center text-navy/80">
           <svg {...svg} className="h-5 w-5">
             <path d="M20 12H4M10 6l-6 6 6 6" />
           </svg>
-        </button>
+        </span>
       )}
       <span className="flex-1 font-sans text-[17px] font-semibold text-navy">{title}</span>
       <Glyph kind="dots" className="h-4 w-4 text-navy/55" />
@@ -293,7 +322,42 @@ function RatingStars({ value, className }: { value: number; className?: string }
   );
 }
 
-function OnboardingScreen({ platform, onNext }: { platform: Platform; onNext: () => void }) {
+// Discover stage — the first-launch screen as a low-fidelity wireframe: hatched image placeholder,
+// grey skeleton copy, and a dashed action. It's the same layout the designed onboarding fills in.
+function WireframeScreen({ platform }: { platform: Platform }) {
+  return (
+    <div className="relative flex-1 overflow-hidden bg-[#eceef1]">
+      {/* Image placeholder — diagonal hatch + centred image glyph. */}
+      <div
+        className="absolute inset-x-0 top-0 h-[58%] border-b border-navy/10"
+        style={{
+          backgroundImage:
+            'repeating-linear-gradient(45deg, rgba(15,21,31,0.06) 0 1px, transparent 1px 9px)',
+        }}
+      >
+        <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-navy/25">
+          <Glyph kind="image" className="h-9 w-9" />
+        </span>
+      </div>
+      {/* Skeleton copy + dashed CTA. */}
+      <div className="relative flex h-full flex-col justify-end gap-2.5 p-6">
+        <span className="h-6 w-1/2 rounded-md bg-navy/20" />
+        <span className="h-2.5 w-4/5 rounded-full bg-navy/12" />
+        <span className="h-2.5 w-3/5 rounded-full bg-navy/12" />
+        <span
+          className={cn(
+            'mt-2 flex h-11 items-center justify-center border-2 border-dashed border-navy/25 text-[12px] font-medium text-navy/35',
+            platform === 'ios' ? 'rounded-xl' : 'rounded-full',
+          )}
+        >
+          Primary action
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function OnboardingScreen({ platform }: { platform: Platform }) {
   return (
     <div className="relative flex-1 overflow-hidden">
       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -304,23 +368,21 @@ function OnboardingScreen({ platform, onNext }: { platform: Platform; onNext: ()
         <p className="mt-2 max-w-[80%] text-[13px] leading-relaxed text-white/75">
           Great food from the places you love, delivered to your door.
         </p>
-        <button
-          type="button"
-          onClick={onNext}
+        <span
           className={cn(
             'mt-5 flex h-11 items-center justify-center bg-orange text-[15px] font-semibold text-navy',
             platform === 'ios' ? 'rounded-xl' : 'rounded-full',
           )}
         >
           Get started
-        </button>
+        </span>
         <span className="mt-3 text-center text-[12px] text-white/60">Already have an account? Sign in</span>
       </div>
     </div>
   );
 }
 
-function HomeScreen({ platform, onOpen }: { platform: Platform; onOpen: () => void }) {
+function HomeScreen({ platform }: { platform: Platform }) {
   return (
     <div className="relative flex-1 overflow-hidden bg-[#f7f8fa]">
       <div className="flex h-full flex-col overflow-hidden">
@@ -348,10 +410,8 @@ function HomeScreen({ platform, onOpen }: { platform: Platform; onOpen: () => vo
         {/* Dish list */}
         <div className="mt-3 flex-1 space-y-2.5 overflow-hidden px-4 pb-4">
           {DISHES.map((d) => (
-            <button
+            <div
               key={d.name}
-              type="button"
-              onClick={onOpen}
               className="flex w-full items-center gap-3 rounded-xl bg-white p-2 text-left ring-1 ring-black/[0.04]"
             >
               <span className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg">
@@ -368,26 +428,24 @@ function HomeScreen({ platform, onOpen }: { platform: Platform; onOpen: () => vo
                 <Star className="h-3 w-3 text-orange" />
                 {d.rating}
               </span>
-            </button>
+            </div>
           ))}
         </div>
       </div>
       {/* Android floating action button — a Material signature iOS has no equivalent for. */}
       {platform === 'android' && (
-        <button
-          type="button"
-          onClick={onOpen}
-          aria-label="New order"
+        <span
+          aria-hidden
           className="absolute bottom-4 right-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-orange text-navy shadow-[0_8px_20px_-6px_rgba(245,139,39,0.7)]"
         >
           <Glyph kind="plus" className="h-6 w-6" />
-        </button>
+        </span>
       )}
     </div>
   );
 }
 
-function DetailScreen({ platform, onOrder }: { platform: Platform; onOrder: () => void }) {
+function DetailScreen({ platform }: { platform: Platform }) {
   return (
     <div className="relative flex-1 overflow-hidden bg-white">
       <div className="flex h-full flex-col overflow-hidden">
@@ -412,16 +470,14 @@ function DetailScreen({ platform, onOrder }: { platform: Platform; onOrder: () =
         </div>
         {/* Sticky primary action */}
         <div className="shrink-0 border-t border-black/[0.05] p-3.5">
-          <button
-            type="button"
-            onClick={onOrder}
+          <span
             className={cn(
               'flex h-11 w-full items-center justify-center bg-orange text-[15px] font-semibold text-navy',
               platform === 'ios' ? 'rounded-xl' : 'rounded-full',
             )}
           >
             Add to cart · AED 48
-          </button>
+          </span>
         </div>
       </div>
     </div>
@@ -466,25 +522,28 @@ const HEADER_TITLE: Record<ScreenId, string> = {
   order: 'Confirmed',
 };
 
+// The device mock. `screen` + `wire` are driven by the scroll stage; the body re-keys per
+// screen/platform so each state animates up cleanly as the mockup advances.
 function Phone({
   platform,
   screen,
+  wire,
   reduced,
-  go,
 }: {
   platform: Platform;
   screen: ScreenId;
+  wire: boolean;
   reduced: boolean;
-  go: (id: ScreenId) => void;
 }) {
-  const dark = screen === 'onboarding';
+  const isOnboarding = screen === 'onboarding';
+  const dark = isOnboarding && !wire;
   const activeTab = screen === 'detail' ? 0 : screen === 'order' ? 2 : 0;
   const isIos = platform === 'ios';
 
   return (
     <div
       className={cn(
-        'relative mx-auto w-[264px] shrink-0 bg-navy p-2.5 shadow-[0_40px_90px_-40px_rgba(0,0,0,0.85)] ring-1 ring-white/10 sm:w-[280px]',
+        'relative mx-auto w-[212px] shrink-0 bg-navy p-2.5 shadow-[0_40px_90px_-40px_rgba(0,0,0,0.85)] ring-1 ring-white/10 sm:w-[248px] lg:w-[272px]',
         isIos ? 'rounded-[2.75rem]' : 'rounded-[1.9rem]',
       )}
     >
@@ -492,161 +551,257 @@ function Phone({
       <span aria-hidden className="absolute -right-[3px] top-24 h-12 w-[3px] rounded-r bg-navy" />
       <div
         className={cn(
-          'relative flex h-[540px] flex-col overflow-hidden bg-white sm:h-[560px]',
+          'relative flex h-[440px] flex-col overflow-hidden bg-white sm:h-[510px] lg:h-[544px]',
           isIos ? 'rounded-[2.1rem]' : 'rounded-[1.3rem]',
         )}
       >
         <StatusBar platform={platform} dark={dark} />
-        {screen !== 'onboarding' && (
-          <AppHeader
-            platform={platform}
-            title={HEADER_TITLE[screen]}
-            showBack={screen === 'detail'}
-            onBack={() => go('home')}
-          />
+        {!isOnboarding && (
+          <AppHeader platform={platform} title={HEADER_TITLE[screen]} showBack={screen === 'detail'} />
         )}
 
-        {/* Screen body — re-keyed per screen+platform so each state animates up cleanly. */}
+        {/* Screen body — re-keyed per screen+platform+fidelity so each state animates up cleanly. */}
         <div
-          key={`${platform}-${screen}`}
+          key={`${platform}-${screen}-${wire ? 'w' : 'd'}`}
           className={cn('flex flex-1 flex-col overflow-hidden', !reduced && 'animate-[tier-rise_360ms_ease-out_both]')}
         >
-          {screen === 'onboarding' && <OnboardingScreen platform={platform} onNext={() => go('home')} />}
-          {screen === 'home' && <HomeScreen platform={platform} onOpen={() => go('detail')} />}
-          {screen === 'detail' && <DetailScreen platform={platform} onOrder={() => go('order')} />}
-          {screen === 'order' && <OrderScreen platform={platform} />}
+          {wire ? (
+            <WireframeScreen platform={platform} />
+          ) : isOnboarding ? (
+            <OnboardingScreen platform={platform} />
+          ) : screen === 'home' ? (
+            <HomeScreen platform={platform} />
+          ) : screen === 'detail' ? (
+            <DetailScreen platform={platform} />
+          ) : (
+            <OrderScreen platform={platform} />
+          )}
         </div>
 
-        {screen !== 'onboarding' && <TabBar platform={platform} active={activeTab} />}
+        {!isOnboarding && <TabBar platform={platform} active={activeTab} />}
         <SystemNav platform={platform} />
       </div>
     </div>
   );
 }
 
+/* ── Shared bits ───────────────────────────────────────────────────────── */
+
+function PlatformToggle({
+  platform,
+  onChange,
+  className,
+}: {
+  platform: Platform;
+  onChange: (p: Platform) => void;
+  className?: string;
+}) {
+  return (
+    <div className={cn('inline-flex gap-1 rounded-xl border border-white/12 bg-white/[0.03] p-1', className)}>
+      {PLATFORMS.map((p) => {
+        const on = platform === p.id;
+        return (
+          <button
+            key={p.id}
+            type="button"
+            onClick={() => onChange(p.id)}
+            aria-pressed={on}
+            className={cn(
+              'rounded-lg px-6 py-2 text-sm font-semibold transition-all duration-300 ease-out',
+              on ? 'bg-orange text-navy' : 'text-white/55 hover-fine:hover:text-white',
+            )}
+          >
+            {p.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+function SectionHead() {
+  return (
+    <>
+      <SectionLabel className="mb-3">The build</SectionLabel>
+      <h2
+        className="mb-8 max-w-3xl font-sans font-bold uppercase leading-[0.95] tracking-display text-white lg:mb-10"
+        style={{ fontSize: 'clamp(1.6rem, 3.6vw, 2.75rem)' }}
+      >
+        From wireframe to launch.
+      </h2>
+    </>
+  );
+}
+
 /* ── Section ───────────────────────────────────────────────────────────── */
 
 export function MobileAppShowcase() {
-  const [platform, setPlatform] = useState<Platform>('ios');
-  const [stepIndex, setStepIndex] = useState(0);
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const pinRef = useRef<HTMLDivElement>(null);
   const reduced = useReducedMotion();
-  const screen = SCREENS[stepIndex].id;
+  const [platform, setPlatform] = useState<Platform>('ios');
+  const [active, setActive] = useState(0);
+  const n = STAGES.length;
 
-  const go = (id: ScreenId) => setStepIndex(SCREENS.findIndex((s) => s.id === id));
-  const atEnd = stepIndex === SCREENS.length - 1;
+  useEffect(() => {
+    if (reduced) return;
+    const wrap = wrapRef.current;
+    const pin = pinRef.current;
+    if (!wrap || !pin) return;
+    const ctx = gsap.context(() => {
+      ScrollTrigger.create({
+        trigger: wrap,
+        start: 'top top',
+        end: () => `+=${Math.round(window.innerHeight * (n - 1) * 0.85)}`,
+        pin,
+        scrub: true,
+        onUpdate: (self) => {
+          setActive(Math.min(n - 1, Math.floor(self.progress * n)));
+        },
+      });
+    }, wrap);
+    return () => ctx.revert();
+  }, [reduced, n]);
 
-  return (
-    <section className="relative overflow-hidden px-gutter-m py-12 lg:px-gutter-d lg:py-16">
-      <div aria-hidden className="pattern-section-fade absolute inset-0">
-        <BrandPattern variant="tiled" />
-      </div>
-      <div className="relative z-content mx-auto max-w-6xl">
-        <SectionLabel className="sd-reveal mb-4">The app</SectionLabel>
-        <h2
-          className="sd-reveal mb-4 max-w-3xl font-sans font-bold uppercase leading-[0.95] tracking-display text-white"
-          style={{ fontSize: 'clamp(1.6rem, 3.6vw, 2.75rem)' }}
-        >
-          Step through the experience.
-        </h2>
-        <p className="sd-reveal mb-8 max-w-2xl text-[0.95rem] leading-relaxed text-white/60 md:text-base">
-          Tap through a real app flow — from first launch to a placed order — then switch platforms
-          and watch the native chrome adapt. Same screens, genuinely at home on iOS and Android.
-        </p>
-
-        {/* Platform toggle — swaps the native chrome on the phone below. */}
-        <div className="sd-reveal mb-8 flex items-center justify-center">
-          <div className="inline-flex gap-1 rounded-xl border border-white/12 bg-white/[0.03] p-1">
-            {PLATFORMS.map((p) => {
-              const on = platform === p.id;
-              return (
-                <button
-                  key={p.id}
-                  type="button"
-                  onClick={() => setPlatform(p.id)}
-                  aria-pressed={on}
-                  className={cn(
-                    'rounded-lg px-6 py-2 text-sm font-semibold transition-all duration-300 ease-out',
-                    on ? 'bg-orange text-navy' : 'text-white/55 hover-fine:hover:text-white',
-                  )}
-                >
-                  {p.label}
-                </button>
-              );
-            })}
+  // Reduced-motion / no-scrub fallback: a static, fully readable version — every stage listed, the
+  // phone resting on one finished screen, platform toggle still live.
+  if (reduced) {
+    return (
+      <section className="relative overflow-hidden px-gutter-m py-12 lg:px-gutter-d lg:py-16">
+        <div aria-hidden className="pattern-section-fade absolute inset-0">
+          <BrandPattern variant="tiled" />
+        </div>
+        <div className="relative z-content mx-auto max-w-6xl">
+          <SectionHead />
+          <PlatformToggle platform={platform} onChange={setPlatform} className="mb-8 flex" />
+          <div className="grid items-start gap-10 lg:grid-cols-[auto_1fr] lg:gap-16">
+            <Phone platform={platform} screen="home" wire={false} reduced />
+            <ol className="w-full">
+              {STAGES.map((s, i) => (
+                <li key={s.name} className="flex gap-4 border-b border-white/10 py-5 last:border-b-0">
+                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-white/25 text-[12px] font-bold tabular-nums text-orange">
+                    {i + 1}
+                  </span>
+                  <div className="min-w-0">
+                    <span className="block font-sans text-lg font-bold tracking-tight text-white">{s.name}</span>
+                    <span className="mt-1 block text-sm leading-relaxed text-white/55">{s.detail}</span>
+                  </div>
+                </li>
+              ))}
+            </ol>
           </div>
         </div>
+      </section>
+    );
+  }
 
-        <div className="sd-reveal grid items-center gap-10 lg:grid-cols-[auto_1fr] lg:gap-16">
-          {/* The phone — the one bold focal element. */}
-          <Phone platform={platform} screen={screen} reduced={reduced} go={go} />
+  const cur = STAGES[active];
 
-          {/* Flow stepper — pick a screen, or walk it with Back / Next. */}
-          <div className="w-full">
-            <ol className="flex flex-col">
-              {SCREENS.map((s, i) => {
-                const on = stepIndex === i;
-                const done = i < stepIndex;
-                return (
-                  <li key={s.id}>
-                    <button
-                      type="button"
-                      onClick={() => setStepIndex(i)}
-                      aria-current={on}
-                      className="group/st flex w-full items-start gap-4 border-b border-white/10 py-4 text-left"
-                    >
-                      <span
-                        className={cn(
-                          'mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-[11px] font-bold tabular-nums transition-all duration-300',
-                          on
-                            ? 'border-orange bg-orange text-navy'
-                            : done
-                              ? 'border-orange/60 text-orange'
-                              : 'border-white/25 text-white/40',
-                        )}
-                      >
-                        {done ? <Glyph kind="check" className="h-3.5 w-3.5" /> : i + 1}
-                      </span>
-                      <span className="min-w-0">
+  return (
+    <section ref={wrapRef} className="relative">
+      <div
+        ref={pinRef}
+        className="relative flex min-h-[100svh] flex-col justify-center overflow-hidden px-gutter-m py-12 lg:px-gutter-d"
+      >
+        <div aria-hidden className="pattern-section-fade absolute inset-0">
+          <BrandPattern variant="tiled" />
+        </div>
+        <div className="relative z-content mx-auto w-full max-w-6xl">
+          <SectionHead />
+          <PlatformToggle platform={platform} onChange={setPlatform} className="mb-8 flex justify-center lg:justify-start" />
+
+          <div className="grid items-center gap-8 lg:grid-cols-[auto_1fr] lg:gap-16">
+            {/* Phone — the bold anchor; advances screen as the scroll stage changes. */}
+            <Phone platform={platform} screen={cur.screen} wire={!!cur.wire} reduced={false} />
+
+            <div className="w-full">
+              {/* Desktop — a vertical build timeline; the active stage enlarges, its detail crossfades. */}
+              <ol className="hidden lg:block">
+                {STAGES.map((s, i) => {
+                  const on = i === active;
+                  const done = i < active;
+                  return (
+                    <li key={s.name} className="flex gap-5">
+                      {/* Rail column — node + connector to the next stage (fills orange as you pass). */}
+                      <div className="flex flex-col items-center">
                         <span
                           className={cn(
-                            'block font-sans text-lg font-bold tracking-tight transition-colors duration-300',
-                            on ? 'text-orange' : 'text-white group-hover/st:text-white',
+                            'flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-[12px] font-bold tabular-nums transition-all duration-300',
+                            on
+                              ? 'scale-110 border-orange bg-orange text-navy'
+                              : done
+                                ? 'border-orange/60 text-orange'
+                                : 'border-white/25 text-white/40',
                           )}
+                        >
+                          {done ? <Glyph kind="check" className="h-4 w-4" /> : i + 1}
+                        </span>
+                        {i < n - 1 && (
+                          <span
+                            aria-hidden
+                            className={cn(
+                              'w-px flex-1 transition-colors duration-300',
+                              i < active ? 'bg-orange/60' : 'bg-white/12',
+                            )}
+                          />
+                        )}
+                      </div>
+                      {/* Content — collapsed name when idle; enlarges + reveals detail when active. */}
+                      <div className={cn('min-w-0 pb-8', on ? 'pt-0.5' : 'py-1')}>
+                        <span
+                          className={cn(
+                            'block font-sans font-bold tracking-tight transition-colors duration-300',
+                            on ? 'text-orange' : done ? 'text-white/70' : 'text-white/35',
+                          )}
+                          style={{ fontSize: on ? 'clamp(1.5rem, 2.6vw, 2.1rem)' : '1.125rem' }}
                         >
                           {s.name}
                         </span>
-                        <span
-                          className={cn(
-                            'mt-0.5 block text-sm leading-relaxed transition-all duration-300',
-                            on ? 'text-white/60' : 'text-white/30',
-                          )}
-                        >
-                          {s.caption}
-                        </span>
-                      </span>
-                    </button>
-                  </li>
-                );
-              })}
-            </ol>
+                        {on && (
+                          <p
+                            key={active}
+                            className="mt-2 max-w-md animate-[tier-rise_400ms_ease-out_both] text-base leading-relaxed text-white/60"
+                          >
+                            {s.detail}
+                          </p>
+                        )}
+                      </div>
+                    </li>
+                  );
+                })}
+              </ol>
 
-            {/* Walk controls */}
-            <div className="mt-6 flex items-center gap-4">
-              <button
-                type="button"
-                onClick={() => setStepIndex((i) => Math.max(0, i - 1))}
-                disabled={stepIndex === 0}
-                className="text-sm font-semibold text-white/55 transition-colors hover-fine:hover:text-white disabled:opacity-30 disabled:hover-fine:hover:text-white/55"
-              >
-                Back
-              </button>
-              <button
-                type="button"
-                onClick={() => setStepIndex((i) => (atEnd ? 0 : i + 1))}
-                className="flex items-center gap-2 rounded-full bg-orange px-6 py-2.5 text-sm font-semibold text-navy transition-transform duration-300 hover-fine:hover:-translate-y-0.5"
-              >
-                {atEnd ? 'Start over' : 'Next screen'}
-              </button>
+              {/* Mobile — compact: the active stage name + detail, then a segmented progress track. */}
+              <div className="lg:hidden">
+                <div className="flex items-baseline justify-between gap-4">
+                  <span
+                    key={`n-${active}`}
+                    className="animate-[tier-rise_360ms_ease-out_both] font-sans text-2xl font-bold tracking-tight text-orange"
+                  >
+                    {cur.name}
+                  </span>
+                  <span className="shrink-0 text-xs font-semibold tabular-nums text-white/40">
+                    Step {active + 1} / {n}
+                  </span>
+                </div>
+                <p
+                  key={`d-${active}`}
+                  className="mt-2 min-h-[3.75rem] animate-[tier-rise_360ms_ease-out_both] text-sm leading-relaxed text-white/60"
+                >
+                  {cur.detail}
+                </p>
+                <div className="mt-4 flex gap-1.5">
+                  {STAGES.map((s, i) => (
+                    <span
+                      key={s.name}
+                      className={cn(
+                        'h-1 flex-1 rounded-full transition-colors duration-300',
+                        i <= active ? 'bg-orange' : 'bg-white/15',
+                      )}
+                    />
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </div>

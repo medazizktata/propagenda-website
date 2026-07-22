@@ -21,8 +21,8 @@ function service(
 
 export const brandingVisualIdentity = service(
   'branding-visual-identity',
-  'Branding & Visual Identity',
-  'BRANDING & VISUAL IDENTITY',
+  'Branding',
+  'BRANDING',
   'Strategy-first branding — logo, identity systems, stationery tiers, and brand guidelines for Dubai businesses.',
   {
     overview:
@@ -98,7 +98,7 @@ export const onlineOfflineMarketing = service(
   'Digital campaigns, social media, content marketing, influencer marketing, and digital ads — online and offline.',
   {
     overview:
-      "High-quality and effective marketing solutions. Whether it's developing a brand strategy, creating a digital marketing campaign, producing video content, or managing social media accounts, we have the skills and experience to deliver exceptional results.",
+      'Campaigns that work online and offline — strategy, content, social, ads, and print, built to perform.',
     scopeItems: [
       'Brand strategy',
       'Digital marketing campaigns',
@@ -107,6 +107,7 @@ export const onlineOfflineMarketing = service(
       'Content marketing',
       'Influencer marketing',
       'Digital ads',
+      'Print & production',
     ],
     extendedBullets: [
       'Social Media Management',
@@ -121,33 +122,6 @@ export const onlineOfflineMarketing = service(
       { src: '/images/services/marketing/gallery-04.jpg', alt: 'Influencer collaboration', width: 1600, height: 1200 },
       { src: '/images/services/marketing/gallery-05.jpg', alt: 'Offline marketing materials', width: 1600, height: 1200 },
       { src: '/images/services/marketing/gallery-06.jpg', alt: 'Campaign performance overview', width: 1600, height: 1200 },
-    ],
-  },
-);
-
-export const graphicsProduction = service(
-  'graphics-production',
-  'Graphics Production',
-  'GRAPHICS PRODUCTION',
-  'Design · Print · Install — offset printing, signage, vehicle graphics, uniforms, and large-format production.',
-  {
-    overview:
-      'Turn your ideas and designs to life using high quality materials and by a highly experienced team.',
-    scopeItems: [
-      'Offset & digital printing',
-      'Digital & large format printing',
-      'Signages',
-      'Custom clothing & branded gifts',
-      'Vehicle graphics',
-      'Uniforms & embroidery',
-    ],
-    gallery: [
-      { src: '/images/services/graphics/gallery-01.jpg', alt: 'Offset printing samples', width: 1600, height: 1200 },
-      { src: '/images/services/graphics/gallery-02.jpg', alt: 'Large format signage', width: 1600, height: 1200 },
-      { src: '/images/services/graphics/gallery-03.jpg', alt: 'Vehicle graphics wrap', width: 1600, height: 1200 },
-      { src: '/images/services/graphics/gallery-04.jpg', alt: 'Branded uniforms', width: 1600, height: 1200 },
-      { src: '/images/services/graphics/gallery-05.jpg', alt: 'Stationery production', width: 1600, height: 1200 },
-      { src: '/images/services/graphics/gallery-06.jpg', alt: 'Custom branded gifts', width: 1600, height: 1200 },
     ],
   },
 );
@@ -184,6 +158,18 @@ export const mobileApplications = service(
   'Mobile Applications',
   'MOBILE APPLICATIONS',
   'User-friendly mobile apps that enhance your brand and delight users.',
+  {
+    overview:
+      'From first sketch to store launch — apps that strengthen your brand and delight users.',
+    scopeItems: [
+      'iOS & Android apps',
+      'Cross-platform development',
+      'Mobile UX/UI design',
+      'API & backend integration',
+      'App Store & Play Store launch',
+      'Maintenance & updates',
+    ],
+  },
 );
 
 export const events = service(
@@ -194,7 +180,14 @@ export const events = service(
   {
     overview:
       'From start to finish. From planning to evaluation. No matter what type of event you are planning, we can help you make it a success. We have the experience and expertise to handle every aspect of event organization and management.',
-    scopeItems: [],
+    scopeItems: [
+      'Event branding & identity',
+      'Marketing materials',
+      'Full organisation & logistics',
+      'Photography & videography',
+      'Social media coverage',
+      'Post-event evaluation',
+    ],
     eventChecklist: [
       'Re-branding',
       'Marketing materials production',
@@ -248,7 +241,6 @@ export const allServices: ServiceRecord[] = [
   brandingVisualIdentity,
   publicRelations,
   onlineOfflineMarketing,
-  graphicsProduction,
   websites,
   mobileApplications,
   events,

@@ -5,6 +5,7 @@ import { cn } from '@/components/ui/cn';
 import { useFadeUpOnEnter } from '@/hooks/useFadeUpOnEnter';
 import { useReducedMotion } from '@/lib/motion/useReducedMotion';
 import { WorkIndexRow } from '@/components/sections/WorkIndexRow';
+import { BrandPattern } from '@/components/ui/BrandPattern';
 import type { CaseStudyRecord } from '@/types/content';
 
 export interface WorkIndexGroup {
@@ -35,6 +36,10 @@ export function WorkIndex({ groups }: WorkIndexProps) {
 
   // Flatten so the bloom panel + active index span both groups with one running index.
   const flat = groups.flatMap((g) => g.items);
+  // Text-only studies (held, no imagery) show a subtle brand-pattern wash on hover
+  // instead of a dark void, so the mixed index reads intentionally.
+  const activeItem = active !== null ? flat[active] : null;
+  const showPattern = activeItem != null && !activeItem.heroImage;
 
   return (
     <section
@@ -66,6 +71,17 @@ export function WorkIndex({ groups }: WorkIndexProps) {
             />
           ) : null,
         )}
+        {/* Held (text-only) studies: a subtle brand-pattern wash instead of a photo. */}
+        <div
+          className={cn(
+            'absolute inset-0 transition-opacity duration-500 ease-out',
+            showPattern ? 'opacity-100' : 'opacity-0',
+          )}
+        >
+          <div className="absolute inset-0 opacity-[0.10]">
+            <BrandPattern variant="tiled" />
+          </div>
+        </div>
         {/* Scrims — keep the giant names legible while the work still reads through. */}
         <div className="absolute inset-0 bg-charcoal/55" />
         <div className="absolute inset-0 bg-gradient-to-b from-charcoal via-charcoal/20 to-charcoal/60" />

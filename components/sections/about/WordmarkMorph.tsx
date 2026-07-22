@@ -70,13 +70,11 @@ export function WordmarkMorph({ prefix, from, to, suffix, className }: WordmarkM
     const root = rootRef.current;
     const replay = () => play();
     root?.addEventListener('mouseenter', replay);
-    root?.addEventListener('focus', replay);
 
     return () => {
       delay.kill();
       gsap.killTweensOf([fromEl, toEl, flashEl]);
       root?.removeEventListener('mouseenter', replay);
-      root?.removeEventListener('focus', replay);
     };
   }, [reducedMotion]);
 
@@ -84,8 +82,7 @@ export function WordmarkMorph({ prefix, from, to, suffix, className }: WordmarkM
     <span
       ref={rootRef}
       aria-hidden="true"
-      tabIndex={reducedMotion ? undefined : 0}
-      className={cn('inline-flex items-baseline leading-[0.82] outline-none', className)}
+      className={cn('inline-flex items-baseline leading-[0.82]', className)}
     >
       <span>{prefix}</span>
       {/* Morph slot — the resolved letter (E) sizes the box; A and E are overlaid inside. */}

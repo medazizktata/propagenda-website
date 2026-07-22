@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/Button';
 import { ServicesCTA } from '@/components/sections/services/ServicesCTA';
 import { ServiceNextPrev } from '@/components/sections/services/ServiceNextPrev';
 import { ServiceWorkGrid } from '@/components/sections/services/ServiceWorkGrid';
+import { PrInfluenceRoster } from '@/components/sections/services/PrInfluenceRoster';
 import { serviceDetailConfig } from '@/components/sections/services/serviceDetailConfig';
 
 // Real client logos (temporary curated proof strip — shown on light chips so they read on
@@ -159,12 +160,15 @@ export function ServiceDetailContent({ service }: { service: ServiceRecord }) {
         </button>
       </section>
 
-      {/* ── SCOPE — branding gets the reveal list + bento; others the variant grid ── */}
+      {/* ── SCOPE — branding gets the reveal list + bento; PR gets the media-forward reveal
+           list on its own; others the variant grid ── */}
       {service.slug === 'branding-visual-identity' ? (
         <>
           <ScopeReveal items={service.scopeItems} />
           <ScopeBento items={service.scopeItems} />
         </>
+      ) : service.slug === 'public-relations' ? (
+        <ScopeReveal items={service.scopeItems} />
       ) : (
         <ServiceScope service={service} />
       )}
@@ -704,6 +708,7 @@ function SignatureModule({ service }: { service: ServiceRecord }) {
   const cfg = serviceDetailConfig[service.slug];
 
   if (service.slug === 'graphics-production') return <DpiBand />;
+  if (service.slug === 'public-relations') return <PrInfluenceRoster />;
   if (service.tiers && service.tiers.length > 0) return <TierCards service={service} />;
   if (service.eventChecklist && service.eventChecklist.length > 0)
     return <ChecklistGrid items={service.eventChecklist} />;

@@ -75,6 +75,32 @@ export const serviceDetailConfig: Record<ServiceSlug, ServiceDetailConfig> = {
       'Actors & artists',
       'Press & media',
     ],
+    faqs: [
+      {
+        q: 'How do you choose the right influencers for our brand?',
+        a: 'We match on audience, not just follower count — who their community actually is, how engaged it is, and whether their values fit yours. Relevance and authenticity beat raw reach every time, so every partner is vetted before we recommend them.',
+      },
+      {
+        q: 'How do you measure reach and ROI?',
+        a: 'We track the metrics tied to your goals — reach and impressions, engagement rate, click-throughs, referral traffic, and earned-media value — and report against clear benchmarks set before the campaign goes live.',
+      },
+      {
+        q: 'Can you help if we are facing a reputation or crisis situation?',
+        a: 'Yes. We handle reputation management and crisis communications — from a rapid holding statement to a full response plan — protecting your credibility while keeping messaging consistent across every channel.',
+      },
+      {
+        q: 'Do partnerships include category exclusivity?',
+        a: 'They can. Where it matters, we negotiate exclusivity so your chosen faces are not promoting a competitor during — or shortly after — your campaign. The terms are agreed up front and written into every collaboration.',
+      },
+      {
+        q: 'How long before we start to see results?',
+        a: 'Influencer and social activations can drive visibility within days of going live. Earned press coverage and lasting credibility build over weeks — most campaigns run across one to three months for meaningful, measurable impact.',
+      },
+      {
+        q: 'Is sponsored content clearly disclosed?',
+        a: 'Always. Every paid partnership follows advertising-disclosure standards and platform rules — clear labelling protects both your brand and the creator, and audiences trust transparent partnerships more.',
+      },
+    ],
   },
   'online-offline-marketing': {
     heroImage: '/images/portfolio/work-ghaftree.png',

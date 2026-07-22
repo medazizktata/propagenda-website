@@ -17,6 +17,7 @@ import { PrInfluenceRoster } from '@/components/sections/services/PrInfluenceRos
 import { MarketingFunnel } from '@/components/sections/services/MarketingFunnel';
 import { GraphicsProductionShowcase } from '@/components/sections/services/GraphicsProductionShowcase';
 import { WebsitesShowcase } from '@/components/sections/services/WebsitesShowcase';
+import { MobileAppShowcase } from '@/components/sections/services/MobileAppShowcase';
 import { serviceDetailConfig } from '@/components/sections/services/serviceDetailConfig';
 
 // Real client logos (temporary curated proof strip — shown on light chips so they read on
@@ -34,14 +35,14 @@ const num = (i: number) => String(i + 1).padStart(2, '0');
 
 // "What's included" gets a layout unique to each service type, chosen so it never mirrors
 // that service's signature module below it.
-type ScopeVariant = 'editorial' | 'grid' | 'ledger' | 'channels' | 'specsheet' | 'stack';
+type ScopeVariant = 'editorial' | 'grid' | 'ledger' | 'channels' | 'specsheet' | 'stack' | 'techspec';
 const SCOPE_VARIANT: Record<ServiceSlug, ScopeVariant> = {
   'branding-visual-identity': 'editorial',
   'public-relations': 'grid',
   'online-offline-marketing': 'channels',
   'graphics-production': 'specsheet',
   websites: 'stack',
-  'mobile-applications': 'grid',
+  'mobile-applications': 'techspec',
   events: 'editorial',
   'photography-videography': 'editorial',
 };
@@ -378,6 +379,7 @@ function ServiceScope({ service }: { service: ServiceRecord }) {
         {variant === 'channels' && <ScopeChannels items={service.scopeItems} />}
         {variant === 'specsheet' && <ScopeSpecSheet items={service.scopeItems} />}
         {variant === 'stack' && <ScopeStack items={service.scopeItems} />}
+        {variant === 'techspec' && <ScopeTechSpec items={service.scopeItems} />}
       </div>
     </section>
   );
@@ -656,6 +658,54 @@ function ScopeStack({ items }: { items: string[] }) {
   );
 }
 
+// Mobile "What's included" — a build spec keyed like an engineering manifest. Each capability sits
+// against a monospace stack tag in a fixed "code gutter" column (the tools we ship it with), then a
+// one-line descriptor. The mono gutter is the distinguishing signature — no numbers, no chips, no
+// card — and it reads as the tech stack behind the app, unlike every other scope variant (editorial
+// ghost numbers, grid chips, ledger arrows, marketing descriptors, print proof sheet, web layers).
+const APP_SCOPE_TAG: Record<string, string> = {
+  'iOS & Android apps': 'Swift · Kotlin',
+  'Cross-platform development': 'React Native',
+  'Mobile UX/UI design': 'Figma',
+  'API & backend integration': 'REST · GraphQL',
+  'App Store & Play Store launch': 'App Store · Play',
+  'Maintenance & updates': 'Care plan',
+};
+const APP_SCOPE_DESC: Record<string, string> = {
+  'iOS & Android apps': 'Native builds that feel at home on each platform.',
+  'Cross-platform development': 'One codebase, both stores — shipped faster.',
+  'Mobile UX/UI design': 'Flows and interfaces designed for thumbs, not cursors.',
+  'API & backend integration': 'Apps wired to secure back-ends and live data.',
+  'App Store & Play Store launch': 'Submission, review, and release, handled end to end.',
+  'Maintenance & updates': 'New OS versions, fixes, and features after launch.',
+};
+
+function ScopeTechSpec({ items }: { items: string[] }) {
+  return (
+    <div className="flex flex-col border-t border-white/15">
+      {items.map((item) => (
+        <div
+          key={item}
+          className="sd-reveal group/ts grid grid-cols-[5rem_1fr] items-baseline gap-x-5 gap-y-1 border-b border-white/10 py-5 transition-colors duration-300 hover-fine:hover:border-orange/40 sm:grid-cols-[8.5rem_1fr] sm:gap-x-8"
+        >
+          <span className="font-mono text-[0.68rem] leading-snug text-orange/75 transition-colors duration-300 group-hover/ts:text-orange sm:text-xs">
+            {APP_SCOPE_TAG[item]}
+          </span>
+          <div>
+            <span
+              className="block font-sans font-bold tracking-tight text-white transition-transform duration-300 group-hover/ts:translate-x-1"
+              style={{ fontSize: 'clamp(1.1rem, 2.4vw, 1.6rem)' }}
+            >
+              {item}
+            </span>
+            <span className="mt-1 block text-sm leading-relaxed text-white/50">{APP_SCOPE_DESC[item]}</span>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 /* ───────────────────────── Signature modules ───────────────────────── */
 
 // "How we work" — a pinned timeline you scrub with scroll (SMV-style). As the section pins,
@@ -914,6 +964,7 @@ function SignatureModule({ service }: { service: ServiceRecord }) {
   if (service.slug === 'public-relations') return <PrInfluenceRoster />;
   if (service.slug === 'online-offline-marketing') return <MarketingFunnel />;
   if (service.slug === 'websites') return <WebsitesShowcase />;
+  if (service.slug === 'mobile-applications') return <MobileAppShowcase />;
   if (service.tiers && service.tiers.length > 0) return <TierCards service={service} />;
   if (service.eventChecklist && service.eventChecklist.length > 0)
     return <ChecklistGrid items={service.eventChecklist} />;

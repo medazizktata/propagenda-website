@@ -208,6 +208,32 @@ export const serviceDetailConfig: Record<ServiceSlug, ServiceDetailConfig> = {
       { title: 'Ship', body: 'App Store and Play Store launch, handled end to end.' },
       { title: 'Support', body: 'Maintenance, updates, and steady iteration.' },
     ],
+    faqs: [
+      {
+        q: 'Should we build native or cross-platform?',
+        a: 'It depends on the app. Cross-platform (React Native or Flutter) ships one codebase to both stores faster and costs less to maintain, which suits most products. Where an app leans hard on device hardware, heavy graphics, or platform-specific features, we build fully native in Swift or Kotlin. We recommend the right approach after understanding your goals — you are never pushed into one by default.',
+      },
+      {
+        q: 'Do you build for both iOS and Android?',
+        a: 'Yes. We design and ship for both platforms, and the app respects each one — iOS conventions on iPhone, Material patterns on Android — so it feels native rather than ported. With a cross-platform build, both versions come from a single codebase and stay in sync as we release updates.',
+      },
+      {
+        q: 'How long does it take to build an app?',
+        a: 'A focused MVP with a core set of screens typically takes eight to twelve weeks; a larger app with accounts, payments, and back-end integrations runs longer. We map a clear timeline with milestones during Discovery, so you know what ships at each stage and can plan a launch around it.',
+      },
+      {
+        q: 'Do you handle App Store and Play Store submission?',
+        a: 'We do — it is part of the Ship phase. We prepare the store listings, screenshots, and metadata, set up your developer accounts, and manage the review and release process end to end. You keep full ownership of the accounts and the published app.',
+      },
+      {
+        q: 'Can you build the back-end and APIs too?',
+        a: 'Yes. Most apps need a server, database, and APIs behind them, and we build and integrate those as part of the project — secure authentication, live data, payments, notifications, and third-party services. If you already have a back-end, we integrate cleanly with your existing APIs.',
+      },
+      {
+        q: 'What happens after the app launches?',
+        a: 'Apps are never truly finished. We offer maintenance plans that keep your app compatible with new iOS and Android versions, fix issues, monitor performance and crashes, and roll out new features as you grow. You get steady iteration, not a hand-off and silence.',
+      },
+    ],
   },
   events: {
     heroImage: '/images/portfolio/work-events.png',

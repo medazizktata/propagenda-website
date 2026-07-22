@@ -1,10 +1,10 @@
 'use client';
 
-import { PageHero } from '@/components/sections/PageHero';
+import { WorkHero } from '@/components/sections/WorkHero';
 import { WorkIndex } from '@/components/sections/WorkIndex';
 import { LogoWallGrid } from '@/components/sections/LogoWallGrid';
 import { ClosingCTABand } from '@/components/sections/ClosingCTABand';
-import { workHubHeading, logoGridBrands } from '@/content/workHub';
+import { logoGridBrands } from '@/content/workHub';
 import { allCaseStudies } from '@/content/work';
 
 // Real case studies (with their heroImages, client, industry, year) drive the index —
@@ -26,12 +26,7 @@ const categoryGroups = CATEGORY_ORDER.map((label) => ({
 export function WorkPageContent() {
   return (
     <>
-      <PageHero
-        title={workHubHeading}
-        subtitle="A selection of the brands we've built, refined, and launched — identity to interface."
-        fixed
-        ghost
-      />
+      <WorkHero />
       <WorkIndex groups={categoryGroups} />
       <LogoWallGrid brands={logoGridBrands} />
       <ClosingCTABand />

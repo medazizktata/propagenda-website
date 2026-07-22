@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { cn } from '@/components/ui/cn';
 import { BrandPattern } from '@/components/ui/BrandPattern';
 import { SectionLabel } from '@/components/ui/SectionLabel';
@@ -25,8 +25,8 @@ type Breakpoint = {
 
 const BREAKPOINTS: Breakpoint[] = [
   { id: 'desktop', label: 'Desktop', width: '100%', dims: '1280 × 800', cols: 3 },
-  { id: 'tablet', label: 'Tablet', width: '600px', dims: '768 × 1024', cols: 2 },
-  { id: 'mobile', label: 'Mobile', width: '330px', dims: '375 × 812', cols: 1 },
+  { id: 'tablet', label: 'Tablet', width: '420px', dims: '768 × 1024', cols: 2 },
+  { id: 'mobile', label: 'Mobile', width: '260px', dims: '375 × 812', cols: 1 },
 ];
 
 // The mini-site rendered inside the frame — real portfolio renders as stand-in screenshots.
@@ -139,6 +139,228 @@ function ScoreGauge({ score, run, reduced }: { score: number; run: boolean; redu
   );
 }
 
+/** Mini-site that reflows inside the device screen. */
+function MiniSite({ bp }: { bp: Breakpoint }) {
+  return (
+    <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden bg-white">
+      <div className="flex shrink-0 items-center justify-between border-b border-black/[0.06] px-3 py-2.5 sm:px-4 sm:py-3">
+        <span className="font-sans text-sm font-bold tracking-tight text-navy">Quick Cars</span>
+        {bp.id === 'mobile' ? (
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden className="h-4 w-4 text-navy/70">
+            <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          </svg>
+        ) : (
+          <ul className="flex items-center gap-3 sm:gap-4">
+            {NAV_LINKS.map((l, i) => (
+              <li
+                key={l}
+                className={cn('text-[10px] sm:text-xs', i === 0 ? 'font-semibold text-orange' : 'text-navy/60')}
+              >
+                {l}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      <div className="relative h-[42%] min-h-[6.5rem] overflow-hidden">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={HERO_IMG} alt="" className="h-full w-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-t from-navy/85 via-navy/35 to-transparent" />
+        <div className="absolute inset-x-3 bottom-2.5 sm:inset-x-4 sm:bottom-3">
+          <p
+            className="font-sans font-bold leading-tight text-white"
+            style={{ fontSize: 'clamp(0.85rem, 2.2vw, 1.4rem)' }}
+          >
+            Find your next car.
+          </p>
+          <span className="mt-1.5 inline-block rounded bg-orange px-2 py-0.5 text-[9px] font-semibold text-navy sm:mt-2 sm:px-2.5 sm:py-1 sm:text-[10px]">
+            Browse models
+          </span>
+        </div>
+      </div>
+
+      <div className="min-h-0 flex-1 overflow-hidden p-3 sm:p-4">
+        <div
+          className="grid gap-2.5 transition-all duration-500 ease-out sm:gap-3"
+          style={{ gridTemplateColumns: `repeat(${bp.cols}, minmax(0, 1fr))` }}
+        >
+          {SITE_CARDS.map((card) => (
+            <div key={card.title} className="overflow-hidden rounded-lg ring-1 ring-black/[0.06]">
+              <div className="relative aspect-[4/3]">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={card.img} alt="" className="h-full w-full object-cover" />
+              </div>
+              <div className="px-2 py-1.5 sm:px-2.5 sm:py-2">
+                <span className="block truncate text-[10px] font-semibold text-navy sm:text-[11px]">{card.title}</span>
+                <span className="mt-0.5 block h-1.5 w-2/3 rounded-full bg-black/[0.08]" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function BrowserChrome({ dims }: { dims: string }) {
+  return (
+    <div className="flex shrink-0 items-center gap-2.5 border-b border-black/5 bg-[#eceff3] px-3 py-2 sm:gap-3 sm:px-3.5 sm:py-2.5">
+      <div className="flex items-center gap-1.5">
+        <span className="h-2.5 w-2.5 rounded-full bg-[#ff5f57]" />
+        <span className="h-2.5 w-2.5 rounded-full bg-[#febc2e]" />
+        <span className="h-2.5 w-2.5 rounded-full bg-[#28c840]" />
+      </div>
+      <div className="flex min-w-0 flex-1 items-center gap-1.5 rounded-md bg-white px-2 py-1 ring-1 ring-black/[0.06]">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden className="h-3 w-3 shrink-0 text-navy/40">
+          <rect x="5" y="11" width="14" height="9" rx="1.6" stroke="currentColor" strokeWidth="2" />
+          <path d="M8 11V8a4 4 0 0 1 8 0v3" stroke="currentColor" strokeWidth="2" />
+        </svg>
+        <span className="truncate text-[10px] text-navy/55 sm:text-[11px]">quickcars.ae</span>
+      </div>
+      <span className="hidden shrink-0 text-[10px] tabular-nums text-navy/40 sm:block sm:text-[11px]">{dims}</span>
+    </div>
+  );
+}
+
+/** Shared bezel — one morphing shell; radius / chrome / stand ease with the width resize. */
+const BEZEL = 'bg-[#3a404c] ring-1 ring-white/30 shadow-[0_28px_70px_-28px_rgba(0,0,0,0.9)]';
+const BEZEL_SOLID = 'bg-[#3a404c]';
+const MORPH = 'transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]';
+
+function DeviceMockup({ bp, children, reduced }: { bp: Breakpoint; children: ReactNode; reduced: boolean }) {
+  const isDesktop = bp.id === 'desktop';
+  const isTablet = bp.id === 'tablet';
+  const isMobile = bp.id === 'mobile';
+  const ease = reduced ? '' : MORPH;
+
+  return (
+    <div className={cn('relative flex h-full w-full flex-col items-center', ease)}>
+      {/* Outer bezel */}
+      <div
+        className={cn(
+          'relative flex min-h-0 w-full flex-1 flex-col',
+          BEZEL,
+          ease,
+          isDesktop && 'rounded-[1.1rem] p-2.5 sm:rounded-2xl sm:p-3',
+          isTablet && 'rounded-[1.6rem] p-3 sm:rounded-[1.85rem] sm:p-3.5',
+          isMobile && 'rounded-[2.1rem] p-2 sm:rounded-[2.35rem] sm:p-2.5',
+        )}
+      >
+        {/* Tablet camera */}
+        <span
+          aria-hidden
+          className={cn(
+            'pointer-events-none absolute left-1/2 top-5 z-10 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-white/35',
+            ease,
+            isTablet ? 'opacity-100' : 'opacity-0',
+          )}
+        />
+
+        {/* Phone side buttons */}
+        <span
+          aria-hidden
+          className={cn(
+            'pointer-events-none absolute -right-[3px] top-24 h-11 w-[3px] rounded-r',
+            BEZEL_SOLID,
+            ease,
+            isMobile ? 'opacity-100' : 'opacity-0',
+          )}
+        />
+        <span
+          aria-hidden
+          className={cn(
+            'pointer-events-none absolute -left-[3px] top-20 h-7 w-[3px] rounded-l',
+            BEZEL_SOLID,
+            ease,
+            isMobile ? 'opacity-100' : 'opacity-0',
+          )}
+        />
+        <span
+          aria-hidden
+          className={cn(
+            'pointer-events-none absolute -left-[3px] top-32 h-10 w-[3px] rounded-l',
+            BEZEL_SOLID,
+            ease,
+            isMobile ? 'opacity-100' : 'opacity-0',
+          )}
+        />
+
+        {/* Screen well */}
+        <div
+          className={cn(
+            'relative flex min-h-0 flex-1 flex-col overflow-hidden bg-white',
+            ease,
+            isDesktop && 'rounded-lg sm:rounded-xl',
+            isTablet && 'rounded-[1.15rem] sm:rounded-[1.35rem]',
+            isMobile && 'rounded-[1.65rem] sm:rounded-[1.85rem]',
+          )}
+        >
+          {/* Phone Dynamic Island */}
+          <div
+            className={cn(
+              'relative flex shrink-0 items-center justify-center overflow-hidden',
+              ease,
+              isMobile ? 'h-7 opacity-100' : 'h-0 opacity-0',
+            )}
+          >
+            <span aria-hidden className="h-3.5 w-14 rounded-full bg-[#1a1e26]" />
+          </div>
+
+          {/* Browser chrome — fades out on phone */}
+          <div
+            className={cn(
+              'shrink-0 overflow-hidden',
+              ease,
+              isMobile ? 'max-h-0 opacity-0' : 'max-h-14 opacity-100',
+            )}
+          >
+            <BrowserChrome dims={bp.dims} />
+          </div>
+
+          {children}
+
+          {/* Phone home indicator */}
+          <div
+            className={cn(
+              'flex shrink-0 items-center justify-center overflow-hidden',
+              ease,
+              isMobile ? 'h-4 opacity-100' : 'h-0 opacity-0',
+            )}
+          >
+            <span aria-hidden className="h-1 w-20 rounded-full bg-black/20" />
+          </div>
+        </div>
+
+        {/* Tablet home bar (below screen, in bezel) */}
+        <span
+          aria-hidden
+          className={cn(
+            'mx-auto block rounded-full bg-white/30',
+            ease,
+            isTablet ? 'mt-2.5 h-1 w-10 opacity-100' : 'mt-0 h-0 w-0 opacity-0',
+          )}
+        />
+      </div>
+
+      {/* Desktop stand */}
+      <div
+        className={cn(
+          'flex flex-col items-center overflow-hidden',
+          ease,
+          isDesktop ? 'max-h-10 opacity-100' : 'max-h-0 opacity-0',
+        )}
+      >
+        <span aria-hidden className={cn('h-3 w-16 sm:h-4 sm:w-20', BEZEL_SOLID)} />
+        <span
+          aria-hidden
+          className={cn('h-1.5 w-36 rounded-full ring-1 ring-white/25 sm:w-44', BEZEL_SOLID)}
+        />
+      </div>
+    </div>
+  );
+}
+
 export function WebsitesShowcase() {
   const [active, setActive] = useState(0);
   const bp = BREAKPOINTS[active];
@@ -221,9 +443,8 @@ export function WebsitesShowcase() {
         >
           See it at every size.
         </h2>
-        <p className="sd-reveal mb-8 max-w-2xl text-[0.95rem] leading-relaxed text-white/60 md:text-base">
-          Every site we build is responsive by design and fast by default. Drag the view from
-          desktop to mobile and watch the layout adapt — then see the performance behind it.
+        <p className="sd-reveal mb-8 max-w-xl text-[0.95rem] leading-relaxed text-white/60 md:text-base">
+          Responsive by design, fast by default. Switch the view and watch the layout adapt.
         </p>
 
         {/* ── Breakpoint toggle — resizes the browser stage below. ── */}
@@ -252,139 +473,65 @@ export function WebsitesShowcase() {
           </div>
         </div>
 
-        {/* ── Browser stage — 3D tilt follows cursor over desktop / tablet / mobile widths. ── */}
+        {/* ── Device stage — monitor / tablet / phone shell around the responsive mini-site. ── */}
         <div
           ref={stageRef}
-          className="sd-reveal flex h-[24rem] items-stretch justify-center [perspective:1400px] [perspective-origin:50%_42%] md:h-[32rem]"
+          className="sd-reveal flex h-[26rem] items-stretch justify-center [perspective:1400px] [perspective-origin:50%_42%] md:h-[34rem]"
         >
           <div
             ref={tiltRef}
             className="flex h-full w-full max-w-full items-stretch justify-center [transform-style:preserve-3d] will-change-transform"
           >
             <div
-              className="h-full w-full transition-[max-width] duration-500 ease-out"
+              className={cn(
+                'h-full w-full will-change-[max-width]',
+                !reducedMotion && 'transition-[max-width] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]',
+                bp.id === 'desktop' && 'pb-1',
+              )}
               style={{ maxWidth: bp.width }}
             >
-              <div className="flex h-full flex-col overflow-hidden rounded-xl bg-white shadow-[0_30px_80px_-30px_rgba(0,0,0,0.8)] ring-1 ring-white/15">
-              {/* Chrome bar — traffic lights, address pill, live dimensions. */}
-              <div className="flex shrink-0 items-center gap-3 border-b border-black/5 bg-[#eceff3] px-3.5 py-2.5">
-                <div className="flex items-center gap-1.5">
-                  <span className="h-2.5 w-2.5 rounded-full bg-[#ff5f57]" />
-                  <span className="h-2.5 w-2.5 rounded-full bg-[#febc2e]" />
-                  <span className="h-2.5 w-2.5 rounded-full bg-[#28c840]" />
-                </div>
-                <div className="flex min-w-0 flex-1 items-center gap-1.5 rounded-md bg-white px-2.5 py-1 ring-1 ring-black/[0.06]">
-                  <svg viewBox="0 0 24 24" fill="none" aria-hidden className="h-3 w-3 shrink-0 text-navy/40">
-                    <rect x="5" y="11" width="14" height="9" rx="1.6" stroke="currentColor" strokeWidth="2" />
-                    <path d="M8 11V8a4 4 0 0 1 8 0v3" stroke="currentColor" strokeWidth="2" />
-                  </svg>
-                  <span className="truncate text-[11px] text-navy/55">quickcars.ae</span>
-                </div>
-                <span className="hidden shrink-0 text-[11px] tabular-nums text-navy/40 sm:block">{bp.dims}</span>
-              </div>
-
-              {/* Viewport — a real mini-site that reflows by breakpoint (nav + hero + card grid). */}
-              <div className="relative flex-1 overflow-hidden bg-white">
-                {/* Site nav — collapses to a menu glyph at mobile width. */}
-                <div className="flex items-center justify-between border-b border-black/[0.06] px-4 py-3">
-                  <span className="font-sans text-sm font-bold tracking-tight text-navy">Quick Cars</span>
-                  {bp.id === 'mobile' ? (
-                    <svg viewBox="0 0 24 24" fill="none" aria-hidden className="h-4 w-4 text-navy/70">
-                      <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                    </svg>
-                  ) : (
-                    <ul className="flex items-center gap-4">
-                      {NAV_LINKS.map((l, i) => (
-                        <li
-                          key={l}
-                          className={cn('text-xs', i === 0 ? 'font-semibold text-orange' : 'text-navy/60')}
-                        >
-                          {l}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-
-                {/* Hero band. */}
-                <div className="relative h-[42%] min-h-[7rem] overflow-hidden">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={HERO_IMG} alt="" className="h-full w-full object-cover" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-navy/85 via-navy/35 to-transparent" />
-                  <div className="absolute inset-x-4 bottom-3">
-                    <p
-                      className="font-sans font-bold leading-tight text-white"
-                      style={{ fontSize: 'clamp(0.95rem, 2.4vw, 1.5rem)' }}
-                    >
-                      Find your next car.
-                    </p>
-                    <span className="mt-2 inline-block rounded bg-orange px-2.5 py-1 text-[10px] font-semibold text-navy">
-                      Browse models
-                    </span>
-                  </div>
-                </div>
-
-                {/* Card grid — three columns on desktop, two on tablet, one on mobile. */}
-                <div className="p-4">
-                  <div
-                    className="grid gap-3 transition-all duration-500 ease-out"
-                    style={{ gridTemplateColumns: `repeat(${bp.cols}, minmax(0, 1fr))` }}
-                  >
-                    {SITE_CARDS.map((card) => (
-                      <div key={card.title} className="overflow-hidden rounded-lg ring-1 ring-black/[0.06]">
-                        <div className="relative aspect-[4/3]">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img src={card.img} alt="" className="h-full w-full object-cover" />
-                        </div>
-                        <div className="px-2.5 py-2">
-                          <span className="block text-[11px] font-semibold text-navy">{card.title}</span>
-                          <span className="mt-0.5 block h-1.5 w-2/3 rounded-full bg-black/[0.08]" />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
+              <DeviceMockup bp={bp} reduced={!!reducedMotion}>
+                <MiniSite bp={bp} />
+              </DeviceMockup>
             </div>
           </div>
         </div>
-        </div>
 
-        {/* ── Performance readout — Lighthouse-style, animates up on reveal. ── */}
+        {/* ── Performance readout — score + vitals as one band under the device. ── */}
         <div
           ref={perfRef}
-          className="sd-reveal mt-12 grid gap-8 border-t border-white/10 pt-9 md:grid-cols-[auto_1fr] md:items-center md:gap-14"
+          className="sd-reveal mt-14 border-t border-white/10 pt-10"
         >
-          <div className="flex items-center gap-6">
-            <ScoreGauge score={98} run={perfInView} reduced={reducedMotion} />
-            <div className="max-w-xs">
-              <h3 className="font-sans text-xl font-bold tracking-tight text-white">Built to perform.</h3>
-              <p className="mt-2 text-sm leading-relaxed text-white/55">
-                Fast, accessible, and search-ready on every device — measured against Core Web
-                Vitals, not assumed.
-              </p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 border-t border-white/10 pt-6 sm:grid-cols-4 sm:border-t-0 sm:pt-0">
-            {VITALS.map((v, i) => (
-              <div
-                key={v.label}
-                className={cn(
-                  'px-1 py-2 sm:px-5',
-                  i > 0 && 'sm:border-l sm:border-white/10',
-                )}
-              >
-                <span className="block font-sans text-2xl font-bold tabular-nums text-white md:text-3xl">
-                  {v.value}
-                </span>
-                <span className="mt-1 block text-sm text-white/45">{v.label}</span>
-                <span className="mt-2 flex items-center gap-1.5 text-xs font-medium text-orange">
-                  <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-orange" />
-                  Good
-                </span>
+          <div className="flex flex-col items-center gap-8 lg:flex-row lg:items-center lg:gap-12">
+            <div className="flex shrink-0 flex-col items-center gap-4 text-center sm:flex-row sm:text-left">
+              <ScoreGauge score={98} run={perfInView} reduced={reducedMotion} />
+              <div className="max-w-[16rem]">
+                <h3 className="font-sans text-xl font-bold tracking-tight text-white sm:text-2xl">
+                  Built to perform.
+                </h3>
+                <p className="mt-1.5 text-sm leading-relaxed text-white/55">
+                  Fast and search-ready on every device — Core Web Vitals, not assumptions.
+                </p>
               </div>
-            ))}
+            </div>
+
+            <div className="grid w-full flex-1 grid-cols-2 gap-px overflow-hidden rounded-2xl bg-white/10 sm:grid-cols-4">
+              {VITALS.map((v) => (
+                <div
+                  key={v.label}
+                  className="flex flex-col bg-charcoal px-4 py-5 sm:px-5 sm:py-6"
+                >
+                  <span className="font-sans text-2xl font-bold tabular-nums text-white md:text-3xl">
+                    {v.value}
+                  </span>
+                  <span className="mt-1 text-xs text-white/45 sm:text-sm">{v.label}</span>
+                  <span className="mt-3 inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-orange">
+                    <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-orange" />
+                    Good
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>

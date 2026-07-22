@@ -105,6 +105,32 @@ export const serviceDetailConfig: Record<ServiceSlug, ServiceDetailConfig> = {
   'online-offline-marketing': {
     heroImage: '/images/portfolio/work-ghaftree.png',
     ctaHeading: 'Ready to grow?',
+    faqs: [
+      {
+        q: 'How do you decide the mix between online and offline?',
+        a: 'It follows your audience and goals, not a fixed formula. We map where your customers actually spend attention across the funnel, then weight the budget toward the channels — digital, physical, or both — that move them from awareness to loyalty most efficiently.',
+      },
+      {
+        q: 'What budget do we need, and can we start small and scale?',
+        a: 'Yes. We can start lean on a few high-intent channels, prove what works, then reinvest the winners and scale spend as returns come in. You set the monthly budget and we allocate it across the funnel — no long lock-ins to get going.',
+      },
+      {
+        q: 'Which channels are right for my business?',
+        a: 'That depends on what you sell and who buys it. A local service leans on search, social, and offline reach; an online store leans on paid social, influencers, and retargeting. After a short discovery, we recommend a specific channel plan rather than a generic package.',
+      },
+      {
+        q: 'How do you report on performance and attribution?',
+        a: 'You get a clear dashboard tied to the metrics that matter — reach, engagement, leads, cost per acquisition, and return on ad spend — reviewed on a regular cadence. For offline activity we use trackable codes, landing pages, and lift analysis so every channel earns its place.',
+      },
+      {
+        q: 'How long before we see results?',
+        a: 'Paid channels can drive traffic and leads within the first weeks, while content, SEO, and brand-building compound over months. We set realistic milestones up front so early wins and longer-term growth are both accounted for.',
+      },
+      {
+        q: 'Do we own the content and ad accounts you create?',
+        a: 'Yes. Ad accounts, campaign data, and the content we produce are yours — set up under your ownership from the start, so nothing is held hostage if we ever part ways.',
+      },
+    ],
   },
   'graphics-production': {
     heroImage: '/images/portfolio/work-restaurant.png',

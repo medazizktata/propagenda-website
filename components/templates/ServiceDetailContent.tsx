@@ -14,6 +14,7 @@ import { ServicesCTA } from '@/components/sections/services/ServicesCTA';
 import { ServiceNextPrev } from '@/components/sections/services/ServiceNextPrev';
 import { ServiceWorkGrid } from '@/components/sections/services/ServiceWorkGrid';
 import { PrInfluenceRoster } from '@/components/sections/services/PrInfluenceRoster';
+import { MarketingFunnel } from '@/components/sections/services/MarketingFunnel';
 import { serviceDetailConfig } from '@/components/sections/services/serviceDetailConfig';
 
 // Real client logos (temporary curated proof strip — shown on light chips so they read on
@@ -31,11 +32,11 @@ const num = (i: number) => String(i + 1).padStart(2, '0');
 
 // "What's included" gets a layout unique to each service type, chosen so it never mirrors
 // that service's signature module below it.
-type ScopeVariant = 'editorial' | 'grid' | 'ledger';
+type ScopeVariant = 'editorial' | 'grid' | 'ledger' | 'channels';
 const SCOPE_VARIANT: Record<ServiceSlug, ScopeVariant> = {
   'branding-visual-identity': 'editorial',
   'public-relations': 'grid',
-  'online-offline-marketing': 'ledger',
+  'online-offline-marketing': 'channels',
   'graphics-production': 'ledger',
   websites: 'grid',
   'mobile-applications': 'grid',
@@ -372,6 +373,7 @@ function ServiceScope({ service }: { service: ServiceRecord }) {
         {variant === 'editorial' && <ScopeEditorial items={service.scopeItems} />}
         {variant === 'grid' && <ScopeGrid items={service.scopeItems} />}
         {variant === 'ledger' && <ScopeLedger items={service.scopeItems} />}
+        {variant === 'channels' && <ScopeChannels items={service.scopeItems} />}
       </div>
     </section>
   );
@@ -449,6 +451,63 @@ function ScopeLedger({ items }: { items: string[] }) {
           </span>
         </div>
       ))}
+    </div>
+  );
+}
+
+// One-line descriptor per marketing discipline — subject-grounded content so the scope reads as
+// a capability index, not a bare list.
+const MARKETING_SCOPE_DESC: Record<string, string> = {
+  'Brand strategy': 'The positioning and message every channel is built on.',
+  'Digital marketing campaigns': 'Multi-channel campaigns, planned, run, and optimised.',
+  'Video content': 'Scroll-stopping video for social, ads, and screens.',
+  'Social media management': 'Day-to-day content, community, and steady growth.',
+  'Content marketing': 'Articles, guides, and assets that earn attention.',
+  'Influencer marketing': 'The right creators, matched to your audience.',
+  'Digital ads': 'Paid search, social, and display that convert.',
+};
+
+// Marketing "What's included" — an editorial capability index. The lead discipline is featured
+// full-width as the section's one bold anchor; the rest fall into a quiet two-column index, each
+// with a one-line descriptor. Natural-case names + descriptors set it apart from the ledger (spec
+// sheet), the grid (chip nodes) and the editorial (ghost numbers) used by the other services.
+function ScopeChannels({ items }: { items: string[] }) {
+  return (
+    <div className="grid gap-x-12 border-t border-white/15 sm:grid-cols-2">
+      {items.map((item, i) => {
+        const featured = i === 0;
+        return (
+          <div
+            key={item}
+            className={cn(
+              'sd-reveal group/sc border-b border-white/10 py-5 transition-colors duration-300 hover-fine:hover:border-orange/40',
+              featured && 'sm:col-span-2',
+            )}
+          >
+            <div className="flex items-baseline gap-4">
+              <span className="text-sm font-bold tabular-nums text-orange">{num(i)}</span>
+              <div>
+                <span
+                  className={cn(
+                    'block font-sans font-bold tracking-tight text-white transition-all duration-300 group-hover/sc:translate-x-1 group-hover/sc:text-orange',
+                    featured ? 'text-2xl md:text-3xl' : 'text-lg',
+                  )}
+                >
+                  {item}
+                </span>
+                <span
+                  className={cn(
+                    'mt-1 block leading-relaxed text-white/50',
+                    featured ? 'max-w-xl text-base' : 'text-sm',
+                  )}
+                >
+                  {MARKETING_SCOPE_DESC[item]}
+                </span>
+              </div>
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -709,6 +768,7 @@ function SignatureModule({ service }: { service: ServiceRecord }) {
 
   if (service.slug === 'graphics-production') return <DpiBand />;
   if (service.slug === 'public-relations') return <PrInfluenceRoster />;
+  if (service.slug === 'online-offline-marketing') return <MarketingFunnel />;
   if (service.tiers && service.tiers.length > 0) return <TierCards service={service} />;
   if (service.eventChecklist && service.eventChecklist.length > 0)
     return <ChecklistGrid items={service.eventChecklist} />;

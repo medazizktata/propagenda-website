@@ -37,7 +37,6 @@ export const sanapexInteriors = caseStudy(
     industry: 'Interior Design',
     year: '2024',
     heroImage: '/images/work/sanapex-interiors/hero.png',
-    accent: { color: '#baa58d', onColor: '#0f151f' },
     scopeItems: [
       'Logo design and complete brand identity',
       'Brand colors, typography, and visual direction',
@@ -100,7 +99,6 @@ export const p2pMotors = caseStudy(
     industry: 'Automotive Export',
     year: '2024',
     heroImage: '/images/work/p2p-motors/hero.png',
-    accent: { color: '#c9a24b', onColor: '#0a0a0a' },
     scopeItems: [
       'Logo design and complete brand identity',
       'Brand colors, typography, and visual language',
@@ -165,7 +163,6 @@ export const dosePharmacy = caseStudy(
     client: 'Dose Pharmacy',
     industry: 'Retail Pharmacy',
     year: '2023',
-    heroImage: '/images/portfolio/work-food.png',
     scopeItems: [
       'Logo design and complete brand identity',
       'Brand colors, typography, and visual style',
@@ -196,26 +193,7 @@ export const dosePharmacy = caseStudy(
       text: 'Customers tell us the store just feels calmer and easier to trust now.',
       author: 'Operations Lead, Dose Pharmacy',
     },
-    gallery: [
-      {
-        src: '/images/portfolio/work-food.png',
-        alt: 'Dose Pharmacy brand identity',
-        width: 1600,
-        height: 1200,
-      },
-      {
-        src: '/images/portfolio/work-restaurant.png',
-        alt: 'Dose Pharmacy in-store branding',
-        width: 1600,
-        height: 1200,
-      },
-      {
-        src: '/images/portfolio/work-events.png',
-        alt: 'Dose Pharmacy packaging and signage',
-        width: 1600,
-        height: 1200,
-      },
-    ],
+    gallery: [],
     prev: 'p2p-motors',
     next: 'clemson-porter-properties',
   },
@@ -234,7 +212,6 @@ export const clemsonPorterProperties = caseStudy(
     client: 'Clemson Porter Properties',
     industry: 'Real Estate Brokerage',
     year: '2024',
-    heroImage: '/images/portfolio/work-sanapex.png',
     scopeItems: [
       'Full logo redesign and brand identity system',
       'Brand colors, typography, and tone of voice',
@@ -265,32 +242,7 @@ export const clemsonPorterProperties = caseStudy(
       text: 'It finally feels like a brand our kind of client expects to see.',
       author: 'CEO, Clemson Porter Properties',
     },
-    gallery: [
-      {
-        src: '/images/portfolio/work-sanapex.png',
-        alt: 'Clemson Porter Properties brand system',
-        width: 1600,
-        height: 1200,
-      },
-      {
-        src: '/images/portfolio/work-restaurant.png',
-        alt: 'Clemson Porter Properties company profile',
-        width: 1600,
-        height: 1200,
-      },
-      {
-        src: '/images/portfolio/work-events.png',
-        alt: 'Clemson Porter Properties stationery suite',
-        width: 1600,
-        height: 1200,
-      },
-      {
-        src: '/images/portfolio/work-food.png',
-        alt: 'Clemson Porter Properties print collateral',
-        width: 1600,
-        height: 1200,
-      },
-    ],
+    gallery: [],
     prev: 'dose-pharmacy',
     next: 'sanapex-interiors',
   },
@@ -309,7 +261,6 @@ export const emiratesAgro = caseStudy(
     client: 'Emirates Agro',
     industry: 'Agriculture & Petrochemicals',
     year: '2023',
-    heroImage: '/images/portfolio/work-ghaftree.png',
     scopeItems: [
       'Logo redesign and full brand identity',
       'Visual direction rooted in agriculture and sustainability',
@@ -339,26 +290,7 @@ export const emiratesAgro = caseStudy(
       text: 'Four decades of history, finally captured in a brand that looks ahead.',
       author: 'Brand Lead, Emirates Agro',
     },
-    gallery: [
-      {
-        src: '/images/portfolio/work-ghaftree.png',
-        alt: 'Emirates Agro brand identity',
-        width: 1600,
-        height: 1200,
-      },
-      {
-        src: '/images/portfolio/work-food.png',
-        alt: 'Emirates Agro product branding',
-        width: 1600,
-        height: 1200,
-      },
-      {
-        src: '/images/portfolio/work-restaurant.png',
-        alt: 'Emirates Agro company profile design',
-        width: 1600,
-        height: 1200,
-      },
-    ],
+    gallery: [],
     prev: 'zealerz',
     next: 'zealerz',
   },

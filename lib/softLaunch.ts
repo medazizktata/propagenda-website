@@ -4,11 +4,16 @@ export const SOFT_LAUNCH_QUERY = 'soon';
 export const SOFT_LAUNCH_EVENT = 'propagenda:coming-soon';
 
 export function isSoftLaunchEnabled() {
+  // Duplicate static check — client click interceptor must not depend solely on
+  // module-level const inlining quirks after HMR.
+  if (process.env.NEXT_PUBLIC_FF_SOFT_LAUNCH === 'false') return false;
+  if (process.env.NEXT_PUBLIC_SOFT_LAUNCH === 'false') return false;
   return ffSoftLaunch;
 }
 
 /** True if pathname may load (respects soft-launch + per-page FF_* unlocks). */
 export function isRouteUnlocked(pathname: string): boolean {
+  if (!isSoftLaunchEnabled()) return true;
   return isFeatureUnlocked(pathname);
 }
 

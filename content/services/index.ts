@@ -206,7 +206,14 @@ export const events = service(
   {
     overview:
       'From start to finish. From planning to evaluation. No matter what type of event you are planning, we can help you make it a success. We have the experience and expertise to handle every aspect of event organization and management.',
-    scopeItems: [],
+    scopeItems: [
+      'Event branding & identity',
+      'Marketing materials',
+      'Full organisation & logistics',
+      'Photography & videography',
+      'Social media coverage',
+      'Post-event evaluation',
+    ],
     eventChecklist: [
       'Re-branding',
       'Marketing materials production',

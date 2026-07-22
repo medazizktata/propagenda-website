@@ -18,6 +18,7 @@ import { MarketingFunnel } from '@/components/sections/services/MarketingFunnel'
 import { GraphicsProductionShowcase } from '@/components/sections/services/GraphicsProductionShowcase';
 import { WebsitesShowcase } from '@/components/sections/services/WebsitesShowcase';
 import { MobileAppShowcase } from '@/components/sections/services/MobileAppShowcase';
+import { EventsJourney } from '@/components/sections/services/EventsJourney';
 import { serviceDetailConfig } from '@/components/sections/services/serviceDetailConfig';
 
 // Real client logos (temporary curated proof strip — shown on light chips so they read on
@@ -35,7 +36,15 @@ const num = (i: number) => String(i + 1).padStart(2, '0');
 
 // "What's included" gets a layout unique to each service type, chosen so it never mirrors
 // that service's signature module below it.
-type ScopeVariant = 'editorial' | 'grid' | 'ledger' | 'channels' | 'specsheet' | 'stack' | 'techspec';
+type ScopeVariant =
+  | 'editorial'
+  | 'grid'
+  | 'ledger'
+  | 'channels'
+  | 'specsheet'
+  | 'stack'
+  | 'techspec'
+  | 'coverage';
 const SCOPE_VARIANT: Record<ServiceSlug, ScopeVariant> = {
   'branding-visual-identity': 'editorial',
   'public-relations': 'grid',
@@ -43,7 +52,7 @@ const SCOPE_VARIANT: Record<ServiceSlug, ScopeVariant> = {
   'graphics-production': 'specsheet',
   websites: 'stack',
   'mobile-applications': 'techspec',
-  events: 'editorial',
+  events: 'coverage',
   'photography-videography': 'editorial',
 };
 
@@ -380,6 +389,7 @@ function ServiceScope({ service }: { service: ServiceRecord }) {
         {variant === 'specsheet' && <ScopeSpecSheet items={service.scopeItems} />}
         {variant === 'stack' && <ScopeStack items={service.scopeItems} />}
         {variant === 'techspec' && <ScopeTechSpec items={service.scopeItems} />}
+        {variant === 'coverage' && <ScopeCoverage items={service.scopeItems} />}
       </div>
     </section>
   );
@@ -706,6 +716,49 @@ function ScopeTechSpec({ items }: { items: string[] }) {
   );
 }
 
+// One-line descriptor per event deliverable — grounds the coverage list in the real work.
+const EVENT_SCOPE_DESC: Record<string, string> = {
+  'Event branding & identity': 'A name, look, and key visual made for the event alone.',
+  'Marketing materials': 'Invites, signage, stage, and print — designed and produced.',
+  'Full organisation & logistics': 'Venue, vendors, timings, and the run-of-show on the day.',
+  'Photography & videography': 'Every moment captured, edited, and delivered.',
+  'Social media coverage': 'Teasers, countdowns, and live posting throughout.',
+  'Post-event evaluation': 'An honest read on the results against the goals we set.',
+};
+
+// Events "What's included" — an event coverage checklist. Each deliverable is a flat, divided row
+// with a check disc that fills orange on hover (the "handled" moment) and a one-line descriptor.
+// The ticking check is the distinguishing signature — no numbers, chips, ledger arrows, mono tags,
+// proof-sheet marks, or layer glyphs used by the other scope variants — and it reads as the "we
+// handle everything" promise, grounded in the event checklist.
+function ScopeCoverage({ items }: { items: string[] }) {
+  return (
+    <div className="grid border-t border-white/15 sm:grid-cols-2 sm:gap-x-12">
+      {items.map((item) => (
+        <div
+          key={item}
+          className="sd-reveal group/sc flex items-start gap-4 border-b border-white/10 py-5 transition-colors duration-300 hover-fine:hover:border-orange/40"
+        >
+          <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-white/20 text-orange transition-all duration-300 group-hover/sc:border-orange group-hover/sc:bg-orange group-hover/sc:text-navy">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden className="h-3.5 w-3.5">
+              <path d="M5 12.5l4.2 4.2L19 7" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </span>
+          <div className="min-w-0">
+            <span
+              className="block font-sans font-bold tracking-tight text-white transition-transform duration-300 group-hover/sc:translate-x-1"
+              style={{ fontSize: 'clamp(1.1rem, 2.2vw, 1.5rem)' }}
+            >
+              {item}
+            </span>
+            <span className="mt-1 block text-sm leading-relaxed text-white/50">{EVENT_SCOPE_DESC[item]}</span>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 /* ───────────────────────── Signature modules ───────────────────────── */
 
 // "How we work" — a pinned timeline you scrub with scroll (SMV-style). As the section pins,
@@ -965,6 +1018,7 @@ function SignatureModule({ service }: { service: ServiceRecord }) {
   if (service.slug === 'online-offline-marketing') return <MarketingFunnel />;
   if (service.slug === 'websites') return <WebsitesShowcase />;
   if (service.slug === 'mobile-applications') return <MobileAppShowcase />;
+  if (service.slug === 'events') return <EventsJourney />;
   if (service.tiers && service.tiers.length > 0) return <TierCards service={service} />;
   if (service.eventChecklist && service.eventChecklist.length > 0)
     return <ChecklistGrid items={service.eventChecklist} />;

@@ -238,6 +238,32 @@ export const serviceDetailConfig: Record<ServiceSlug, ServiceDetailConfig> = {
   events: {
     heroImage: '/images/portfolio/work-events.png',
     ctaHeading: 'Planning an event?',
+    faqs: [
+      {
+        q: 'What types of events do you handle?',
+        a: 'Corporate launches, conferences, exhibitions, brand activations, and private celebrations — among others. Whatever the format or scale, we bring the same end-to-end approach: branding, production, coverage, and the logistics that hold it all together.',
+      },
+      {
+        q: 'How far in advance should we book you?',
+        a: 'The earlier the better — around six to eight weeks gives us room to shape the concept, build the identity, and produce everything properly. We do take on tighter timelines when we can, so it is always worth asking.',
+      },
+      {
+        q: 'Do you cover the event on the day itself?',
+        a: 'Yes. Our team is on-site to run the floor and coordinate timings, while photographers and videographers capture the day and our social team posts moments live as they happen.',
+      },
+      {
+        q: 'Can you run virtual or hybrid events?',
+        a: 'We do. Alongside in-person events, we handle live streaming, virtual staging, and hybrid formats — so an audience in the room and an audience at home get the same considered experience.',
+      },
+      {
+        q: 'Can you work to our budget?',
+        a: 'We scale the plan to fit. We are upfront about where money makes the biggest difference and where it does not, and we shape the scope around your priorities rather than a fixed package.',
+      },
+      {
+        q: 'What exactly is included?',
+        a: 'Event branding and identity, marketing materials, full organisation and logistics, photography and videography, social media coverage, and a post-event evaluation. In short, everything from the first brief to the final delivered frame.',
+      },
+    ],
   },
   'photography-videography': {
     heroImage: '/images/portfolio/work-food.png',

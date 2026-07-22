@@ -78,6 +78,106 @@ main {
   }
 }
 
+/* Photography: a camera-flash pulse when a frame snaps into focus. */
+@keyframes camera-flash {
+  0% {
+    opacity: 0;
+  }
+  6% {
+    opacity: 0.8;
+  }
+  40% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Videography: a scanline sweeping down the frame (playback / signal). */
+@keyframes video-scan {
+  0% {
+    transform: translateY(-120%);
+  }
+  100% {
+    transform: translateY(560%);
+  }
+}
+
+/* Logo suite — the primary mark draws itself (stroke traces the outline) then fills. `idle`
+   holds it invisible/ready; JS swaps in `path` when the mark scrolls into view so the sketch
+   is actually seen. */
+.logo-draw-idle {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  fill-opacity: 0;
+}
+.logo-draw-path {
+  stroke-dasharray: 1;
+  animation: logo-draw 2.8s cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+@keyframes logo-draw {
+  0% {
+    stroke-dashoffset: 1;
+    fill-opacity: 0;
+  }
+  60% {
+    stroke-dashoffset: 0;
+    fill-opacity: 0;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    fill-opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .logo-draw-idle,
+  .logo-draw-path {
+    stroke-dashoffset: 0;
+    fill-opacity: 1;
+    animation: none;
+  }
+}
+
+/* Branding kit tiles cascade in when a tier is selected. */
+@keyframes tier-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Photography selective (rack) focus. Each frame rests a hair out of focus; hovering a card
+   pulls IT sharp — but only after the reticle "hunts" (transition-delay), so the unblur lands
+   at the end of the focus animation. Only on hover-capable devices; touch stays sharp. */
+.pf-focus-img {
+  transition:
+    filter 300ms ease-out,
+    transform 300ms ease-out;
+}
+@media (hover: hover) and (pointer: fine) {
+  .pf-tile .pf-focus-img {
+    filter: blur(2px) grayscale(0.25);
+    transform: scale(1.02);
+  }
+  .pf-tile:hover .pf-focus-img {
+    filter: blur(0) grayscale(0);
+    transform: scale(1);
+    transition-delay: 430ms;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pf-focus-img {
+    filter: none;
+    transform: none;
+    transition: none;
+  }
+}
+
 /* Pattern fades across the section/panel height:
    top 20% transparent → middle 60% solid → bottom 20% out. */
 .pattern-section-fade {

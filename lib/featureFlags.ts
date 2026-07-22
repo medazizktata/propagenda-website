@@ -41,7 +41,7 @@ export const ffInitLoader = envFlag(
 export const pageFlags = {
   home: true, // always public
   about: envFlag('NEXT_PUBLIC_FF_PAGE_ABOUT', false),
-  services: envFlag('NEXT_PUBLIC_FF_PAGE_SERVICES', false),
+  services: envFlag('NEXT_PUBLIC_FF_PAGE_SERVICES', true),
   work: envFlag('NEXT_PUBLIC_FF_PAGE_WORK', false),
   blog: envFlag('NEXT_PUBLIC_FF_PAGE_BLOG', false),
   contact: envFlag('NEXT_PUBLIC_FF_PAGE_CONTACT', false),

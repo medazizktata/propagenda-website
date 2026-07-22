@@ -48,15 +48,27 @@ export function ServiceRow({ card, index, isActive, isDimmed, onActivate }: Serv
         isDimmed && 'opacity-35',
       )}
     >
-      <span
-        className={cn(
-          'min-w-0 truncate font-sans font-bold uppercase leading-[1.02] tracking-tight transition-colors duration-300',
-          isActive ? 'text-white' : 'text-white/85',
-        )}
-        style={{ fontSize: 'clamp(1rem, 2.8vw, 2.7rem)' }}
-      >
-        {card.title}
-        <span className="text-orange">.</span>
+      <span className="flex min-w-0 items-center gap-3 md:gap-5">
+        <span
+          aria-hidden
+          className={cn(
+            'shrink-0 rounded-full transition-all duration-300 ease-out',
+            'h-1.5 w-1.5 md:h-2 md:w-2',
+            isActive
+              ? 'scale-150 bg-orange shadow-[0_0_12px_rgba(245,139,39,0.7)]'
+              : 'bg-white/25 group-hover/row:bg-white/50',
+          )}
+        />
+        <span
+          className={cn(
+            'min-w-0 truncate font-sans font-bold uppercase leading-[1.02] tracking-tight transition-colors duration-300',
+            isActive ? 'text-white' : 'text-white/85',
+          )}
+          style={{ fontSize: 'clamp(1rem, 2.8vw, 2.7rem)' }}
+        >
+          {card.title}
+          <span className="text-orange">.</span>
+        </span>
       </span>
 
       <span className="flex shrink-0 items-center gap-3 md:gap-5">

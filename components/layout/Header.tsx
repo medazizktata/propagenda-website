@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { Logo } from '@/components/ui/Logo';
 import { NavItemLink } from '@/components/molecules/NavItem';
+import { ServicesNavMenu } from '@/components/molecules/ServicesNavMenu';
 import { HeaderCTA } from '@/components/molecules/HeaderCTA';
 import { HamburgerButton } from '@/components/molecules/HamburgerButton';
 import { MobileMenu } from '@/components/layout/MobileMenu';
@@ -47,9 +48,13 @@ export function Header() {
         <Logo variant="mark" className="lg:hidden" />
         <Logo className="hidden lg:inline-flex" />
         <nav className="hidden items-center gap-5 lg:flex" aria-label="Primary">
-          {primaryNav.map((item) => (
-            <NavItemLink key={item.href} item={item} />
-          ))}
+          {primaryNav.map((item) =>
+            item.href === '/services' ? (
+              <ServicesNavMenu key={item.href} />
+            ) : (
+              <NavItemLink key={item.href} item={item} />
+            ),
+          )}
         </nav>
         <div className="flex items-center gap-3">
           <HeaderCTA />

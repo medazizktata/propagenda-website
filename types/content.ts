@@ -81,6 +81,19 @@ export interface CaseStudyQuote {
   author: string;
 }
 
+/**
+ * Per-client body accent. Drives the case-study body tint (section marks, result
+ * numbers, deliverable checks, pull-quote) so each study can feel tailored to its
+ * real brand palette. Absent ⇒ the detail template falls back to brand orange.
+ * Data-driven so more clients can adopt their own accent later.
+ */
+export interface CaseStudyAccent {
+  /** Accent color as a hex string, e.g. Sanapex sand `#baa58d`. */
+  color: string;
+  /** Foreground for text/marks sitting ON the accent fill. Defaults to navy. */
+  onColor?: string;
+}
+
 export interface CaseStudyRecord {
   slug: WorkSlug;
   title: string;
@@ -105,6 +118,8 @@ export interface CaseStudyRecord {
   approach?: string;
   outcome?: string;
   quote?: CaseStudyQuote;
+  /** Optional per-client body accent (falls back to brand orange). */
+  accent?: CaseStudyAccent;
 }
 
 export interface BlogPostRecord {

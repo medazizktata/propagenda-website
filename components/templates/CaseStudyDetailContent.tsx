@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import type { CSSProperties } from 'react';
 import Link from 'next/link';
 import type {
   CaseStudyRecord,
@@ -87,8 +88,17 @@ export function CaseStudyDetailContent({ study }: CaseStudyDetailContentProps) {
   const prev = study.prev ? getCaseStudy(study.prev) : undefined;
   const next = study.next ? getCaseStudy(study.next) : undefined;
 
+  // Per-client body accent → CSS vars scoped to the case-study body. Sub-sections read
+  // them via `var(--sd-accent)` so Sanapex (sand) and P2P (gold) feel tailored, while
+  // the global orange/navy chrome (header, footer, CTA, prev/next) is left untouched.
+  // Absent accent falls back to brand orange, so every other study is unchanged.
+  const accentVars = {
+    '--sd-accent': study.accent?.color ?? '#f58b27',
+    '--sd-accent-on': study.accent?.onColor ?? '#0f151f',
+  } as CSSProperties;
+
   return (
-    <div ref={rootRef} className="bg-charcoal">
+    <div ref={rootRef} className="bg-charcoal" style={accentVars}>
       <CaseStudyHero study={study} meta={meta} reducedMotion={reducedMotion} />
 
       <CaseStudyNarrative overview={study.overview} stages={stages} />
@@ -185,7 +195,10 @@ function CaseStudyHero({
               aria-label="Breadcrumb"
               className="mb-6 flex flex-wrap items-center gap-2 text-sm text-white/55"
             >
-              <Link href="/work" className="transition-hover hover-fine:hover:text-orange">
+              <Link
+                href="/work"
+                className="transition-hover hover-fine:hover:text-[color:var(--sd-accent)]"
+              >
                 Work
               </Link>
               <span aria-hidden className="text-white/25">
@@ -199,7 +212,7 @@ function CaseStudyHero({
               style={{ fontSize: 'clamp(2rem, 5.6vw, 5rem)' }}
             >
               {study.h1}
-              <span className="text-orange">.</span>
+              <span className="text-[color:var(--sd-accent)]">.</span>
             </h1>
 
             {meta.length > 0 && (
@@ -207,7 +220,7 @@ function CaseStudyHero({
                 {meta.map((m, i) => (
                   <span key={`${m}-${i}`} className="flex items-center gap-3">
                     {i > 0 && (
-                      <span aria-hidden className="text-orange">
+                      <span aria-hidden className="text-[color:var(--sd-accent)]">
                         ·
                       </span>
                     )}
@@ -223,7 +236,7 @@ function CaseStudyHero({
           type="button"
           aria-label="Scroll to the story"
           onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}
-          className="absolute bottom-8 left-1/2 z-content flex h-11 w-11 -translate-x-1/2 items-center justify-center rounded-full border border-orange text-orange transition-hover hover-fine:hover:bg-orange hover-fine:hover:text-navy motion-safe:animate-bounce"
+          className="absolute bottom-8 left-1/2 z-content flex h-11 w-11 -translate-x-1/2 items-center justify-center rounded-full border border-[color:var(--sd-accent)] text-[color:var(--sd-accent)] transition-hover hover-fine:hover:bg-[color:var(--sd-accent)] hover-fine:hover:text-[color:var(--sd-accent-on)] motion-safe:animate-bounce"
         >
           <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5">
             <path
@@ -276,7 +289,7 @@ function CaseStudyNarrative({
                   >
                     {num(i)}
                   </span>
-                  <h2 className="pt-1 font-sans text-xl font-bold tracking-tight text-orange md:text-2xl">
+                  <h2 className="pt-1 font-sans text-xl font-bold tracking-tight text-[color:var(--sd-accent)] md:text-2xl">
                     {s.name}
                   </h2>
                 </div>
@@ -297,7 +310,9 @@ function CaseStudyResults({ results }: { results: CaseStudyResult[] }) {
   return (
     <section className="relative overflow-hidden border-y border-white/10 bg-navy px-gutter-m py-16 lg:px-gutter-d lg:py-20">
       <div className="relative z-content mx-auto max-w-6xl">
-        <SectionLabel className="sd-reveal mb-10">Results</SectionLabel>
+        <SectionLabel className="sd-reveal mb-10 text-[color:var(--sd-accent)]">
+          Results
+        </SectionLabel>
         <div className="grid grid-cols-1 md:grid-cols-3">
           {results.map((r, i) => (
             <div
@@ -308,7 +323,7 @@ function CaseStudyResults({ results }: { results: CaseStudyResult[] }) {
               )}
             >
               <div
-                className="font-sans font-black leading-none text-orange"
+                className="font-sans font-black leading-none text-[color:var(--sd-accent)]"
                 style={{ fontSize: 'clamp(2.75rem, 6vw, 4.5rem)' }}
               >
                 {r.value}
@@ -334,14 +349,16 @@ function CaseStudyDeliverables({ items }: { items: string[] }) {
         <BrandPattern variant="tiled" />
       </div>
       <div className="relative z-content mx-auto max-w-6xl">
-        <SectionLabel className="sd-reveal mb-8">What we delivered</SectionLabel>
+        <SectionLabel className="sd-reveal mb-8 text-[color:var(--sd-accent)]">
+          What we delivered
+        </SectionLabel>
         <ul className="sd-reveal grid border-t border-white/12 sm:grid-cols-2">
           {items.map((item) => (
             <li
               key={item}
               className="group/dl flex items-start gap-4 border-b border-white/10 py-5 transition-colors duration-300 hover-fine:hover:bg-white/[0.02] sm:px-6 sm:odd:border-r sm:odd:border-r-white/10"
             >
-              <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-white/20 text-orange transition-colors duration-300 group-hover/dl:border-orange group-hover/dl:bg-orange group-hover/dl:text-navy">
+              <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-white/20 text-[color:var(--sd-accent)] transition-colors duration-300 group-hover/dl:border-[color:var(--sd-accent)] group-hover/dl:bg-[color:var(--sd-accent)] group-hover/dl:text-[color:var(--sd-accent-on)]">
                 <CheckNode className="h-3 w-3" />
               </span>
               <span className="font-sans font-medium leading-snug text-white md:text-lg">
@@ -390,40 +407,83 @@ function CaseStudyGallery({ images }: { images: GalleryImage[] }) {
     if (openableIndex >= 0) open(openableIndex);
   };
 
+  // With only a couple of real frames (as the fully-branded studies have), the dense
+  // mosaic would leave lopsided gaps and read sparse. Instead show each frame large and
+  // whole — a magazine-style spread of the actual brand boards — so two images still feel
+  // rich. Three-plus frames keep the asymmetric mosaic.
+  const isSpread = images.length <= 2;
+
   return (
     <section className="relative px-gutter-m py-16 lg:px-gutter-d lg:py-24">
       <div className="mx-auto max-w-7xl">
-        <SectionLabel className="sd-reveal mb-8">Selected visuals</SectionLabel>
-        <div className="grid auto-rows-[9.5rem] grid-flow-dense grid-cols-2 gap-3 md:auto-rows-[12rem] md:grid-cols-4 md:gap-4">
-          {images.map((image, i) => (
-            <button
-              key={`${image.alt}-${i}`}
-              type="button"
-              onClick={() => (openable.length > 0 ? openAt(i) : undefined)}
-              disabled={openable.length === 0}
-              aria-label={openable.length > 0 ? `Open image: ${image.alt}` : image.alt}
-              className={cn(
-                'group/tile sd-reveal relative overflow-hidden rounded-xl bg-white/[0.03] text-left',
-                openable.length > 0 ? 'cursor-zoom-in' : 'cursor-default',
-                spanClass(images.length, i),
-              )}
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={image.src}
-                alt={image.alt}
-                className="h-full w-full object-cover transition-transform duration-[1200ms] ease-out hover-fine:group-hover/tile:scale-[1.06]"
-              />
-              <div
-                aria-hidden
-                className="absolute inset-0 bg-gradient-to-t from-charcoal/90 via-charcoal/10 to-transparent opacity-0 transition-opacity duration-300 hover-fine:group-hover/tile:opacity-100"
-              />
-              <span className="absolute inset-x-4 bottom-4 translate-y-2 font-sans text-sm font-semibold text-white opacity-0 transition-all duration-300 hover-fine:group-hover/tile:translate-y-0 hover-fine:group-hover/tile:opacity-100">
-                {image.alt}
-              </span>
-            </button>
-          ))}
-        </div>
+        <SectionLabel className="sd-reveal mb-8 text-[color:var(--sd-accent)]">
+          Selected visuals
+        </SectionLabel>
+        {isSpread ? (
+          <div className="grid gap-6 sm:grid-cols-2 md:gap-8">
+            {images.map((image, i) => (
+              <figure key={`${image.alt}-${i}`} className="sd-reveal">
+                <button
+                  type="button"
+                  onClick={() => (openable.length > 0 ? openAt(i) : undefined)}
+                  disabled={openable.length === 0}
+                  aria-label={openable.length > 0 ? `Open image: ${image.alt}` : image.alt}
+                  className={cn(
+                    // Frame matches the source A4 aspect, so the whole board shows with no
+                    // crop or letterbox — nothing is cut off, nothing is padded.
+                    'group/tile relative block aspect-[1241/1754] w-full overflow-hidden rounded-2xl bg-white/[0.03] ring-1 ring-inset ring-white/10',
+                    openable.length > 0 ? 'cursor-zoom-in' : 'cursor-default',
+                  )}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={image.src}
+                    alt={image.alt}
+                    className="h-full w-full object-cover object-top transition-transform duration-[1200ms] ease-out hover-fine:group-hover/tile:scale-[1.03]"
+                  />
+                  <div
+                    aria-hidden
+                    className="absolute inset-0 bg-charcoal/0 transition-colors duration-300 hover-fine:group-hover/tile:bg-charcoal/10"
+                  />
+                </button>
+                <figcaption className="mt-4 max-w-prose font-sans text-sm leading-relaxed text-white/55 md:text-base">
+                  {image.alt}
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        ) : (
+          <div className="grid auto-rows-[9.5rem] grid-flow-dense grid-cols-2 gap-3 md:auto-rows-[12rem] md:grid-cols-4 md:gap-4">
+            {images.map((image, i) => (
+              <button
+                key={`${image.alt}-${i}`}
+                type="button"
+                onClick={() => (openable.length > 0 ? openAt(i) : undefined)}
+                disabled={openable.length === 0}
+                aria-label={openable.length > 0 ? `Open image: ${image.alt}` : image.alt}
+                className={cn(
+                  'group/tile sd-reveal relative overflow-hidden rounded-xl bg-white/[0.03] text-left',
+                  openable.length > 0 ? 'cursor-zoom-in' : 'cursor-default',
+                  spanClass(images.length, i),
+                )}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={image.src}
+                  alt={image.alt}
+                  className="h-full w-full object-cover transition-transform duration-[1200ms] ease-out hover-fine:group-hover/tile:scale-[1.06]"
+                />
+                <div
+                  aria-hidden
+                  className="absolute inset-0 bg-gradient-to-t from-charcoal/90 via-charcoal/10 to-transparent opacity-0 transition-opacity duration-300 hover-fine:group-hover/tile:opacity-100"
+                />
+                <span className="absolute inset-x-4 bottom-4 translate-y-2 font-sans text-sm font-semibold text-white opacity-0 transition-all duration-300 hover-fine:group-hover/tile:translate-y-0 hover-fine:group-hover/tile:opacity-100">
+                  {image.alt}
+                </span>
+              </button>
+            ))}
+          </div>
+        )}
       </div>
       {openable.length > 0 && (
         <PhotoSwipeLightbox
@@ -448,13 +508,17 @@ function CaseStudyQuoteBlock({ quote }: { quote: CaseStudyQuote }) {
       <figure className="relative z-content mx-auto max-w-4xl">
         <span
           aria-hidden
-          className="block font-sans font-black leading-none text-orange"
+          className="block font-sans font-black leading-none text-[color:var(--sd-accent)]"
           style={{ fontSize: 'clamp(4rem, 10vw, 8rem)' }}
         >
           &ldquo;
         </span>
+        <span
+          aria-hidden
+          className="sd-reveal -mt-4 mb-6 block h-1 w-16 rounded-full bg-[color:var(--sd-accent)]"
+        />
         <blockquote
-          className="sd-reveal -mt-6 font-sans font-semibold leading-[1.15] text-white"
+          className="sd-reveal font-sans font-semibold leading-[1.15] text-white"
           style={{ fontSize: 'clamp(1.5rem, 4vw, 3rem)' }}
         >
           {quote.text}

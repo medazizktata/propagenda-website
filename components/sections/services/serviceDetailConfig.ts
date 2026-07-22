@@ -170,13 +170,14 @@ export const serviceDetailConfig: Record<ServiceSlug, ServiceDetailConfig> = {
     ],
   },
   'mobile-applications': {
+    heroImage: '/images/portfolio/work-food.png',
     ctaHeading: 'Ready to ship your app?',
     process: [
-      { title: 'Discover', body: 'Scope, platforms, and the flows that matter most.' },
-      { title: 'Design', body: 'Native-feeling UX/UI for iOS and Android.' },
-      { title: 'Build', body: 'Cross-platform apps wired to solid back-ends.' },
-      { title: 'Ship', body: 'App Store and Play Store launch, handled end to end.' },
-      { title: 'Support', body: 'Maintenance, updates, and steady iteration.' },
+      { title: 'Discover', body: 'Scope, platforms, core flows.' },
+      { title: 'Design', body: 'Native UX/UI for iOS and Android.' },
+      { title: 'Build', body: 'Apps wired to solid back-ends.' },
+      { title: 'Ship', body: 'App Store and Play launch.' },
+      { title: 'Support', body: 'Updates and iteration.' },
     ],
     faqs: [
       {

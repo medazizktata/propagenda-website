@@ -14,10 +14,12 @@
  *   NEXT_PUBLIC_FF_SOFT_LAUNCH=false
  *
  * Legacy aliases still work: NEXT_PUBLIC_SOFT_LAUNCH, NEXT_PUBLIC_INIT_LOADER.
+ *
+ * IMPORTANT: values must be read via static `process.env.NEXT_PUBLIC_*` access so Next
+ * inlines them into the client bundle. Dynamic `process.env[name]` stays undefined in the browser.
  */
 
-function envFlag(name: string, fallback: boolean): boolean {
-  const raw = process.env[name];
+function parseFlag(raw: string | undefined, fallback: boolean): boolean {
   if (raw == null || raw === '') return fallback;
   const v = raw.trim().toLowerCase();
   if (['1', 'true', 'yes', 'on'].includes(v)) return true;
@@ -26,26 +28,26 @@ function envFlag(name: string, fallback: boolean): boolean {
 }
 
 /** Soft launch master — lock unfinished routes behind coming-soon. Default: on. */
-export const ffSoftLaunch = envFlag(
-  'NEXT_PUBLIC_FF_SOFT_LAUNCH',
-  envFlag('NEXT_PUBLIC_SOFT_LAUNCH', true),
+export const ffSoftLaunch = parseFlag(
+  process.env.NEXT_PUBLIC_FF_SOFT_LAUNCH ?? process.env.NEXT_PUBLIC_SOFT_LAUNCH,
+  true,
 );
 
 /** Orange quote splash on full page load. Default: on. */
-export const ffInitLoader = envFlag(
-  'NEXT_PUBLIC_FF_INIT_LOADER',
-  envFlag('NEXT_PUBLIC_INIT_LOADER', true),
+export const ffInitLoader = parseFlag(
+  process.env.NEXT_PUBLIC_FF_INIT_LOADER ?? process.env.NEXT_PUBLIC_INIT_LOADER,
+  true,
 );
 
 /** Per-route unlocks while soft launch is active. Default: locked (false). */
 export const pageFlags = {
   home: true, // always public
-  about: envFlag('NEXT_PUBLIC_FF_PAGE_ABOUT', false),
-  services: envFlag('NEXT_PUBLIC_FF_PAGE_SERVICES', true),
-  work: envFlag('NEXT_PUBLIC_FF_PAGE_WORK', false),
-  blog: envFlag('NEXT_PUBLIC_FF_PAGE_BLOG', false),
-  contact: envFlag('NEXT_PUBLIC_FF_PAGE_CONTACT', false),
-  legal: envFlag('NEXT_PUBLIC_FF_PAGE_LEGAL', false),
+  about: parseFlag(process.env.NEXT_PUBLIC_FF_PAGE_ABOUT, false),
+  services: parseFlag(process.env.NEXT_PUBLIC_FF_PAGE_SERVICES, false),
+  work: parseFlag(process.env.NEXT_PUBLIC_FF_PAGE_WORK, false),
+  blog: parseFlag(process.env.NEXT_PUBLIC_FF_PAGE_BLOG, false),
+  contact: parseFlag(process.env.NEXT_PUBLIC_FF_PAGE_CONTACT, false),
+  legal: parseFlag(process.env.NEXT_PUBLIC_FF_PAGE_LEGAL, false),
 } as const;
 
 export type PageFlagKey = keyof typeof pageFlags;

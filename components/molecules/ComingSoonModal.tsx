@@ -19,7 +19,7 @@ const EXIT_MS = 280;
 /**
  * Soft-launch gate modal. Opens on:
  * - CustomEvent `propagenda:coming-soon` (nav click interceptor)
- * - `?soon=1` after middleware redirects a locked URL to home
+ * - `?soon=1` after proxy redirects a locked URL to home
  */
 export function ComingSoonModal() {
   const titleId = useId();

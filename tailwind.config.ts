@@ -291,7 +291,7 @@ const config: Config = {
   },
   plugins: [
     // Shared hover surface: apply `transition-hover` on anything that uses hover styles
-    // so enter + leave ease the same (colors, opacity, transform, shadow, filter…).
+    // so enter + leave ease the same. Always pairs with cursor:pointer.
     function hoverTransitionPlugin({
       addUtilities,
     }: {
@@ -299,6 +299,7 @@ const config: Config = {
     }) {
       addUtilities({
         '.transition-hover': {
+          cursor: 'pointer',
           'transition-property':
             'color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter',
           'transition-timing-function': 'cubic-bezier(0.22, 1, 0.36, 1)',

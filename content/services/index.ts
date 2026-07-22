@@ -98,7 +98,7 @@ export const onlineOfflineMarketing = service(
   'Digital campaigns, social media, content marketing, influencer marketing, and digital ads — online and offline.',
   {
     overview:
-      "High-quality and effective marketing solutions. Whether it's developing a brand strategy, creating a digital marketing campaign, producing video content, or managing social media accounts, we have the skills and experience to deliver exceptional results.",
+      'Campaigns that work online and offline — strategy, content, social, ads, and print, built to perform.',
     scopeItems: [
       'Brand strategy',
       'Digital marketing campaigns',
@@ -160,7 +160,7 @@ export const mobileApplications = service(
   'User-friendly mobile apps that enhance your brand and delight users.',
   {
     overview:
-      'From first sketch to store launch. We design and build creative, user-friendly mobile apps — with advanced technology and proven methods — that strengthen your brand, drive business growth, and delight the people who use them.',
+      'From first sketch to store launch — apps that strengthen your brand and delight users.',
     scopeItems: [
       'iOS & Android apps',
       'Cross-platform development',

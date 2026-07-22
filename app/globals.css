@@ -201,9 +201,33 @@ main {
   mask-repeat: no-repeat;
 }
 
+/* Interactive affordance — hover targets always show a pointer. */
+@layer base {
+  a[href],
+  button:not(:disabled),
+  [role='button']:not([aria-disabled='true']),
+  summary,
+  label[for],
+  select:not(:disabled),
+  input[type='button']:not(:disabled),
+  input[type='submit']:not(:disabled),
+  input[type='reset']:not(:disabled),
+  input[type='checkbox']:not(:disabled),
+  input[type='radio']:not(:disabled),
+  input[type='file']:not(:disabled) {
+    cursor: pointer;
+  }
+
+  /* Any element using a hover-fine:* utility — pointer is required with hover. */
+  [class*='hover-fine:hover'] {
+    cursor: pointer;
+  }
+}
+
 /* Smooth hover in/out — prefer the Tailwind class `transition-hover` in components.
-   Kept here as an alias for non-JS / ad-hoc markup. */
+   Kept here as an alias for non-JS / ad-hoc markup. Cursor is required with hover. */
 @utility transition-hover {
+  cursor: pointer;
   transition-property: color, background-color, border-color, text-decoration-color, fill,
     stroke, opacity, box-shadow, transform, filter, backdrop-filter;
   transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);

@@ -2,7 +2,6 @@ export const SERVICE_SLUGS = [
   'branding-visual-identity',
   'public-relations',
   'online-offline-marketing',
-  'graphics-production',
   'websites',
   'mobile-applications',
   'events',

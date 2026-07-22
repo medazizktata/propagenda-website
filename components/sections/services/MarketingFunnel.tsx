@@ -27,7 +27,7 @@ const STAGES: Stage[] = [
     stat: '3.2M',
     statLabel: 'Avg. impressions per campaign',
     online: ['Social ads', 'Influencer seeding', 'SEO content', 'Display & video'],
-    offline: ['OOH & billboards', 'Print & press', 'Events & activations'],
+    offline: ['OOH & billboards', 'Print & press', 'Signage & vehicle graphics', 'Events & activations'],
   },
   {
     name: 'Consideration',
@@ -43,7 +43,7 @@ const STAGES: Stage[] = [
     stat: '5.4×',
     statLabel: 'Return on ad spend',
     online: ['Paid search', 'Landing pages', 'Promo offers', 'Cart recovery'],
-    offline: ['In-store promotions', 'Point-of-sale', 'Sales collateral'],
+    offline: ['In-store promotions', 'Point-of-sale', 'Print & large-format', 'Sales collateral'],
   },
   {
     name: 'Loyalty',
@@ -51,7 +51,7 @@ const STAGES: Stage[] = [
     stat: '62%',
     statLabel: 'Repeat-purchase rate',
     online: ['Email & SMS', 'Loyalty app', 'Community & UGC'],
-    offline: ['Loyalty cards', 'VIP events', 'Thank-you mailers'],
+    offline: ['Loyalty cards', 'VIP events', 'Branded merch & gifts', 'Thank-you mailers'],
   },
 ];
 

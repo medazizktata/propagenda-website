@@ -132,36 +132,6 @@ export const serviceDetailConfig: Record<ServiceSlug, ServiceDetailConfig> = {
       },
     ],
   },
-  'graphics-production': {
-    heroImage: '/images/portfolio/work-restaurant.png',
-    ctaHeading: 'Ready to produce?',
-    faqs: [
-      {
-        q: 'How long does production take?',
-        a: 'It depends on the piece. Business cards and digital print are usually ready in two to four days; large-format banners in three to five; signage and vehicle wraps run longer because they are fabricated and fitted. We confirm a firm timeline once the artwork and finish are locked, and we can rush urgent jobs where the schedule allows.',
-      },
-      {
-        q: 'Is there a minimum order quantity?',
-        a: 'For digital and offset print we typically start from around 100 pieces, and branded merchandise from 25 to 50, since setup and unit costs level out at volume. Signage, banners, and vehicle graphics can be produced as a single unit. Tell us the quantity you have in mind and we will advise the most cost-effective run.',
-      },
-      {
-        q: 'What materials and substrates can you print on?',
-        a: 'A wide range — coated and uncoated paper stocks, recycled board, PVC and mesh banner, backlit film, Foamex, Dibond, acrylic, brushed aluminium, cast wrap vinyl, and apparel fabrics for embroidery and print. If you are not sure which substrate suits your job or environment, we will recommend the right one for durability, budget, and finish.',
-      },
-      {
-        q: 'Do you install what you produce?',
-        a: 'Yes. Our team handles installation for signage, vehicle wraps, window graphics, and large-format displays — on site, fitted to spec. For flat print and merchandise we arrange pick-up or delivery. Design, print, and install are handled end to end, so there is no need to coordinate separate suppliers.',
-      },
-      {
-        q: 'What file formats and artwork do you need?',
-        a: 'Print-ready vector artwork (PDF, AI, or EPS) is ideal, set in CMYK with fonts outlined and a 3mm bleed. High-resolution raster files work for photographic pieces. If your artwork is not production-ready, our designers can set it up, adjust it for the substrate, or create it from scratch.',
-      },
-      {
-        q: 'How do you handle proofing and colour accuracy?',
-        a: 'Every job is proofed and signed off before it runs. You receive a digital proof to approve, and a physical or press proof on request for critical colour. We print to your brand colours and can match Pantone references, so the produced piece stays true to your identity across every material.',
-      },
-    ],
-  },
   websites: {
     heroImage: '/images/portfolio/work-quickcars.png',
     ctaHeading: 'Ready to launch?',

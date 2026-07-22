@@ -107,6 +107,7 @@ export const onlineOfflineMarketing = service(
       'Content marketing',
       'Influencer marketing',
       'Digital ads',
+      'Print & production',
     ],
     extendedBullets: [
       'Social Media Management',
@@ -121,33 +122,6 @@ export const onlineOfflineMarketing = service(
       { src: '/images/services/marketing/gallery-04.jpg', alt: 'Influencer collaboration', width: 1600, height: 1200 },
       { src: '/images/services/marketing/gallery-05.jpg', alt: 'Offline marketing materials', width: 1600, height: 1200 },
       { src: '/images/services/marketing/gallery-06.jpg', alt: 'Campaign performance overview', width: 1600, height: 1200 },
-    ],
-  },
-);
-
-export const graphicsProduction = service(
-  'graphics-production',
-  'Graphics Production',
-  'GRAPHICS PRODUCTION',
-  'Design · Print · Install — offset printing, signage, vehicle graphics, uniforms, and large-format production.',
-  {
-    overview:
-      'Turn your ideas and designs to life using high quality materials and by a highly experienced team.',
-    scopeItems: [
-      'Offset & digital printing',
-      'Digital & large format printing',
-      'Signages',
-      'Custom clothing & branded gifts',
-      'Vehicle graphics',
-      'Uniforms & embroidery',
-    ],
-    gallery: [
-      { src: '/images/services/graphics/gallery-01.jpg', alt: 'Offset printing samples', width: 1600, height: 1200 },
-      { src: '/images/services/graphics/gallery-02.jpg', alt: 'Large format signage', width: 1600, height: 1200 },
-      { src: '/images/services/graphics/gallery-03.jpg', alt: 'Vehicle graphics wrap', width: 1600, height: 1200 },
-      { src: '/images/services/graphics/gallery-04.jpg', alt: 'Branded uniforms', width: 1600, height: 1200 },
-      { src: '/images/services/graphics/gallery-05.jpg', alt: 'Stationery production', width: 1600, height: 1200 },
-      { src: '/images/services/graphics/gallery-06.jpg', alt: 'Custom branded gifts', width: 1600, height: 1200 },
     ],
   },
 );
@@ -267,7 +241,6 @@ export const allServices: ServiceRecord[] = [
   brandingVisualIdentity,
   publicRelations,
   onlineOfflineMarketing,
-  graphicsProduction,
   websites,
   mobileApplications,
   events,

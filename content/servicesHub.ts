@@ -61,16 +61,6 @@ export const serviceHubCards: ServiceHubCard[] = [
     preview: '/images/portfolio/work-ghaftree.png',
   },
   {
-    slug: 'graphics-production',
-    title: 'Graphics Production',
-    description:
-      'Turn your ideas and designs to life using high quality materials and by a highly experienced team.',
-    image: '/images/services/graphics-prod.jpg',
-    tag: 'production',
-    descriptor: 'Design, print & install',
-    preview: '/images/portfolio/work-restaurant.png',
-  },
-  {
     slug: 'websites',
     title: 'Websites',
     description:

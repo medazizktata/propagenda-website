@@ -151,22 +151,6 @@ main {
   }
 }
 
-/* Graphics production: a gloss sheen sweeping across the produced-example plate when a new
-   capability is picked (a just-laminated / vinyl highlight). */
-@keyframes production-sheen {
-  0% {
-    transform: translateX(0) skewX(-12deg);
-    opacity: 0;
-  }
-  18% {
-    opacity: 0.55;
-  }
-  100% {
-    transform: translateX(560%) skewX(-12deg);
-    opacity: 0;
-  }
-}
-
 /* Photography selective (rack) focus. Each frame rests a hair out of focus; hovering a card
    pulls IT sharp — but only after the reticle "hunts" (transition-delay), so the unblur lands
    at the end of the focus animation. Only on hover-capable devices; touch stays sharp. */

@@ -31,12 +31,6 @@ const SERVICE_MENU = [
     blurb: 'Full-funnel campaigns, content, and ads that grow you.',
   },
   {
-    label: 'Graphics Production',
-    href: '/services/graphics-production',
-    image: '/images/portfolio/work-restaurant.png',
-    blurb: 'Design, print, and install — from business cards to vehicle wraps.',
-  },
-  {
     label: 'Websites',
     href: '/services/websites',
     image: '/images/portfolio/work-quickcars.png',
@@ -95,14 +89,6 @@ function ServiceIcon({ slug, className }: { slug: string; className?: string }) 
         <svg {...common}>
           <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
           <polyline points="16 7 22 7 22 13" />
-        </svg>
-      );
-    case 'graphics-production':
-      return (
-        <svg {...common}>
-          <polyline points="6 9 6 2 18 2 18 9" />
-          <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
-          <rect x="6" y="14" width="12" height="8" rx="1" />
         </svg>
       );
     case 'websites':

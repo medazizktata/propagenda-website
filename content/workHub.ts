@@ -68,8 +68,7 @@ export const logoGridBrands = [
   { name: 'Alla Doresu', imageSrc: '/images/clients/alla-doresu.png' },
   { name: 'Quick Car', imageSrc: '/images/clients/quick-car.png' },
   { name: 'Ghaf Tree', imageSrc: '/images/clients/ghaf-tree.png' },
-  { name: 'BIL Events', imageSrc: '/images/clients/bil-events.png' },
-  { name: 'Al Rowad International', imageSrc: '/images/clients/al-rowad.png' },
+  { name: 'Al Rowad International', imageSrc: '/images/clients/al-rowad-international.png' },
   { name: 'Lava Inc', imageSrc: '/images/clients/lava-inc.png' },
   { name: 'OU Optics', imageSrc: '/images/clients/ou-optics.png' },
   { name: 'MM Event Management', imageSrc: '/images/clients/mm-event-management.png' },
@@ -78,7 +77,6 @@ export const logoGridBrands = [
   { name: 'Global Space Finder', imageSrc: '/images/clients/global-space-finder.png' },
   { name: 'Chez Moda', imageSrc: '/images/clients/chez-moda.png' },
   { name: 'centralhub', imageSrc: '/images/clients/centralhub.png' },
-  { name: 'Drive Zone', imageSrc: '/images/clients/drive-zone.png' },
   { name: 'Dr. Shifa', imageSrc: '/images/clients/dr-shifa.png' },
-  { name: 'Wing Car Q&C', imageSrc: '/images/clients/wing-car.png' },
+  { name: 'Wing Car Q&C', imageSrc: '/images/clients/wing-car-qc.png' },
 ];

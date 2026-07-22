@@ -71,6 +71,16 @@ export interface ServiceRecord {
 
 export type WorkTier = 'featured' | 'more';
 
+export interface CaseStudyResult {
+  label: string;
+  value: string;
+}
+
+export interface CaseStudyQuote {
+  text: string;
+  author: string;
+}
+
 export interface CaseStudyRecord {
   slug: WorkSlug;
   title: string;
@@ -82,6 +92,16 @@ export interface CaseStudyRecord {
   prev?: WorkSlug;
   next?: WorkSlug;
   seo: SeoMeta;
+  client?: string;
+  industry?: string;
+  year?: string;
+  heroImage?: string;
+  deliverables?: string[];
+  results?: CaseStudyResult[];
+  challenge?: string;
+  approach?: string;
+  outcome?: string;
+  quote?: CaseStudyQuote;
 }
 
 export interface BlogPostRecord {

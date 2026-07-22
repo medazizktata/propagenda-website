@@ -7,8 +7,12 @@ import { useReducedMotion } from '@/lib/motion/useReducedMotion';
 
 /**
  * ACT 3 — What we do. One bold creed ("We create, we never copy.") anchors a quiet editorial
- * list of the four core values on the bare field — hairline-divided rows, no cards. Each row
- * brightens and its gloss rises as it crosses into view.
+ * list of the four core values on the bare field — hairline-divided rows, no cards.
+ *
+ * Everything is legible by default: the creed and every value title/gloss render white at full
+ * opacity on SSR, with no JS, and under reduced motion. Motion is TRANSLATE-ONLY — the creed
+ * words and each row settle up as they cross into view — so nothing is ever gated behind a
+ * trigger that could leave the section blank on a headless render.
  */
 export function AboutValues() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -16,41 +20,23 @@ export function AboutValues() {
 
   useEffect(() => {
     const el = sectionRef.current;
-    if (!el) return;
+    if (!el || reducedMotion) return;
     const ctx = gsap.context(() => {
-      const rows = gsap.utils.toArray<HTMLElement>('.value-row');
-      const quoteWords = gsap.utils.toArray<HTMLElement>('.creed-word');
-
-      if (reducedMotion) {
-        gsap.set([...rows, ...quoteWords], { autoAlpha: 1, y: 0 });
-        gsap.set(rows.map((r) => r.querySelector('.value-title')), { color: '#ffffff' });
-        return;
-      }
-
-      gsap.set(quoteWords, { autoAlpha: 0, y: 24 });
-      gsap.to(quoteWords, {
-        autoAlpha: 1,
-        y: 0,
+      gsap.from('.creed-word', {
+        y: 24,
         ease: 'power3.out',
         duration: 0.7,
         stagger: 0.08,
-        scrollTrigger: { trigger: '.about-creed', start: 'top 78%' },
+        scrollTrigger: { trigger: '.about-creed', start: 'top 82%', once: true },
       });
 
-      rows.forEach((row) => {
-        const title = row.querySelector('.value-title');
-        const gloss = row.querySelector('.value-gloss');
-        const tl = gsap.timeline({ scrollTrigger: { trigger: row, start: 'top 82%' } });
-        tl.fromTo(
-          title,
-          { color: 'rgba(255,255,255,0.28)', y: 18, autoAlpha: 0 },
-          { color: '#ffffff', y: 0, autoAlpha: 1, ease: 'power3.out', duration: 0.7 },
-        ).fromTo(
-          gloss,
-          { autoAlpha: 0, y: 12 },
-          { autoAlpha: 1, y: 0, ease: 'power2.out', duration: 0.6 },
-          0.15,
-        );
+      gsap.utils.toArray<HTMLElement>('.value-row').forEach((row) => {
+        gsap.from(row, {
+          y: 26,
+          ease: 'power3.out',
+          duration: 0.7,
+          scrollTrigger: { trigger: row, start: 'top 85%', once: true },
+        });
       });
     }, sectionRef);
     return () => ctx.revert();
@@ -73,7 +59,7 @@ export function AboutValues() {
         <span className="creed-word mr-[0.25em] inline-block text-orange">never&nbsp;copy.</span>
       </h2>
 
-      <p className="mt-8 max-w-xl text-base leading-relaxed text-white/55">
+      <p className="mt-8 max-w-xl text-base leading-relaxed text-white/80">
         Four principles hold under every project, from the first strategy session to launch.
       </p>
 
@@ -89,7 +75,7 @@ export function AboutValues() {
             >
               {value.title}
             </h3>
-            <p className="value-gloss max-w-md text-base leading-relaxed text-white/60 md:text-lg">
+            <p className="value-gloss max-w-md text-base leading-relaxed text-white/80 md:text-lg">
               {value.gloss}
             </p>
           </li>

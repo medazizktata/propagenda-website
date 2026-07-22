@@ -19,7 +19,12 @@ interface WordmarkMorphProps {
  * on load (after the intro window) and replays on hover / focus.
  *
  * Accessibility: the whole mark is decorative (aria-hidden); the section supplies the real
- * accessible heading text. Under reduced motion the resolved name is shown statically.
+ * accessible heading text.
+ *
+ * Legible-by-default: the RESOLVED letter (orange E) is the static default — it renders on
+ * SSR, with no JS, and under reduced motion, so the mark always reads "PROPAGENDA". The A is
+ * hidden by default (`opacity-0`) and is only summoned by the morph animation, which lifts it
+ * out and rises the E back into its slot. If the script never runs, nothing is ever blank.
  *
  * The morph slot is a plain inline-block sized by an invisible copy of the final letter — no
  * `overflow: hidden`, so the slot keeps its text baseline and the A/E stay on the type line.
@@ -37,6 +42,8 @@ export function WordmarkMorph({ prefix, from, to, suffix, className }: WordmarkM
     const flashEl = flashRef.current;
     if (!fromEl || !toEl) return;
 
+    // Default (no-JS / reduced) already shows the resolved E; under reduced motion we simply
+    // leave it — no morph, nothing hidden that a trigger would need to reveal.
     if (reducedMotion) {
       gsap.set(fromEl, { autoAlpha: 0 });
       gsap.set(toEl, { autoAlpha: 1, yPercent: 0 });
@@ -96,14 +103,15 @@ export function WordmarkMorph({ prefix, from, to, suffix, className }: WordmarkM
           aria-hidden
           className="pointer-events-none absolute inset-x-[-0.08em] bottom-[0.08em] top-[0.08em] origin-bottom rounded-[0.08em] bg-orange/80 opacity-0 blur-[3px]"
         />
-        <span ref={fromRef} className="absolute left-0 top-0 block w-full text-center text-white/85">
+        {/* A — hidden by default; the morph animation summons it, then lifts it away. */}
+        <span
+          ref={fromRef}
+          className="absolute left-0 top-0 block w-full text-center text-white/85 opacity-0"
+        >
           {from}
         </span>
-        <span
-          ref={toRef}
-          className="absolute left-0 top-0 block w-full text-center text-orange"
-          style={{ opacity: 0 }}
-        >
+        {/* E — the resolved letter, visible by default so the mark always reads "PROPAGENDA". */}
+        <span ref={toRef} className="absolute left-0 top-0 block w-full text-center text-orange">
           {to}
         </span>
       </span>

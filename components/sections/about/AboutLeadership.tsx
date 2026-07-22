@@ -19,25 +19,17 @@ export function AboutLeadership() {
 
   useEffect(() => {
     const el = sectionRef.current;
-    if (!el) return;
+    if (!el || reducedMotion) return;
     const ctx = gsap.context(() => {
-      const lines = gsap.utils.toArray<HTMLElement>('.lead-line');
-      if (reducedMotion) {
-        gsap.set(lines, { autoAlpha: 1, y: 0 });
-        return;
-      }
-      gsap.fromTo(
-        lines,
-        { autoAlpha: 0, y: 26 },
-        {
-          autoAlpha: 1,
-          y: 0,
-          ease: 'power3.out',
-          duration: 0.8,
-          stagger: 0.1,
-          scrollTrigger: { trigger: el, start: 'top 72%' },
-        },
-      );
+      // Text is fully legible by default; motion is TRANSLATE-ONLY (settles up on entry), so
+      // nothing is gated behind a trigger and the column can never render blank.
+      gsap.from('.lead-line', {
+        y: 26,
+        ease: 'power3.out',
+        duration: 0.8,
+        stagger: 0.1,
+        scrollTrigger: { trigger: el, start: 'top 78%', once: true },
+      });
       if (portraitRef.current) {
         gsap.fromTo(
           portraitRef.current,
@@ -59,15 +51,19 @@ export function AboutLeadership() {
       className="relative border-t border-border bg-black px-6 py-24 sm:px-10 lg:px-16 lg:py-32"
     >
       <div className="grid gap-12 lg:grid-cols-[minmax(0,0.85fr)_1.15fr] lg:items-center lg:gap-20">
-        {/* Brand-graded portrait panel — one surface. */}
-        <div className="relative aspect-[4/5] w-full max-w-md overflow-hidden rounded-lg border border-border bg-navy">
+        {/* Brand-graded portrait panel — one charcoal→black surface with an orange glow. */}
+        <div className="relative aspect-[4/5] w-full max-w-md overflow-hidden rounded-lg border border-border bg-charcoal">
           <div
             ref={portraitRef}
             aria-hidden
             className="absolute inset-0 -top-[8%] h-[116%] bg-cover bg-center bg-no-repeat opacity-40"
             style={{ backgroundImage: "url('/images/brand/pattern-field.png')" }}
           />
-          <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-black via-navy/40 to-transparent" />
+          <div
+            aria-hidden
+            className="absolute -bottom-1/4 left-1/2 h-[70%] w-[85%] -translate-x-1/2 rounded-full bg-orange opacity-[0.16] blur-[90px]"
+          />
+          <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-black via-charcoal/30 to-transparent" />
           <span
             aria-hidden
             className="absolute inset-0 flex items-center justify-center font-sans font-extrabold uppercase tracking-tighter text-orange/90"
@@ -92,7 +88,7 @@ export function AboutLeadership() {
           <p className="lead-line mt-4 font-sans text-lg font-semibold text-orange">
             {leadership.title}
           </p>
-          <p className="lead-line mt-7 max-w-xl text-lg leading-relaxed text-white/70">
+          <p className="lead-line mt-7 max-w-xl text-lg leading-relaxed text-white/80">
             {leadership.bio}
           </p>
           <p className="lead-line mt-7">

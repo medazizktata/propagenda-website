@@ -8,8 +8,13 @@ import { useReducedMotion } from '@/lib/motion/useReducedMotion';
 
 /**
  * ACT 4 — Why us. The brand's core-values line, decomposed into its three pillars
- * (Confidence · Support · Specialized services). Each pillar word ignites orange and its
- * tail rises as the line crosses view; together they reassemble the original sentence.
+ * (Confidence · Support · Specialized services). Together they reassemble the original
+ * sentence.
+ *
+ * Legible by default: each pillar word renders orange and its tail renders white at full
+ * opacity on SSR, with no JS, and under reduced motion. Motion is TRANSLATE-ONLY — each row
+ * settles up as it crosses into view — so nothing is gated behind a trigger and the section
+ * can never ship blank.
  */
 export function AboutPillars() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -17,28 +22,15 @@ export function AboutPillars() {
 
   useEffect(() => {
     const el = sectionRef.current;
-    if (!el) return;
+    if (!el || reducedMotion) return;
     const ctx = gsap.context(() => {
-      const rows = gsap.utils.toArray<HTMLElement>('.pillar-row');
-      if (reducedMotion) {
-        rows.forEach((row) => {
-          gsap.set(row.querySelector('.pillar-word'), { color: '#f58b27' });
-          gsap.set(row.querySelector('.pillar-tail'), { autoAlpha: 1, x: 0 });
+      gsap.utils.toArray<HTMLElement>('.pillar-row').forEach((row) => {
+        gsap.from(row, {
+          y: 28,
+          ease: 'power3.out',
+          duration: 0.75,
+          scrollTrigger: { trigger: row, start: 'top 84%', once: true },
         });
-        return;
-      }
-      rows.forEach((row) => {
-        const tl = gsap.timeline({ scrollTrigger: { trigger: row, start: 'top 80%' } });
-        tl.fromTo(
-          row.querySelector('.pillar-word'),
-          { color: 'rgba(255,255,255,0.9)', y: 26, autoAlpha: 0 },
-          { color: '#f58b27', y: 0, autoAlpha: 1, ease: 'power3.out', duration: 0.75 },
-        ).fromTo(
-          row.querySelector('.pillar-tail'),
-          { autoAlpha: 0, x: -18 },
-          { autoAlpha: 1, x: 0, ease: 'power2.out', duration: 0.6 },
-          0.2,
-        );
       });
     }, sectionRef);
     return () => ctx.revert();
@@ -55,7 +47,7 @@ export function AboutPillars() {
 
       <div className="relative z-content">
         <p className="text-sm font-medium text-orange">Why us</p>
-        <p className="mt-6 max-w-2xl text-lg leading-relaxed text-white/70 md:text-xl">
+        <p className="mt-6 max-w-2xl text-lg leading-relaxed text-white/80 md:text-xl">
           It comes down to three things we give every brand we work with:
         </p>
 
@@ -71,7 +63,7 @@ export function AboutPillars() {
               >
                 {pillar.word}
               </span>
-              <span className="pillar-tail text-lg leading-snug text-white/75 md:text-2xl">
+              <span className="pillar-tail text-lg leading-snug text-white/85 md:text-2xl">
                 {pillar.tail}
               </span>
             </li>

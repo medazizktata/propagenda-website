@@ -7,7 +7,9 @@ import { useReducedMotion } from '@/lib/motion/useReducedMotion';
 
 /**
  * ACT 6 — The vision motif. The brand's forward-looking line runs as a full-bleed kinetic
- * marquee (SMV about-popup), fading up as it enters. Reduced motion holds it still and legible.
+ * marquee (SMV about-popup). Label, marquee, and line are all legible by default; motion is
+ * TRANSLATE-ONLY (they settle up on entry), never an opacity gate — so nothing ships blank.
+ * The marquee itself is static under reduced motion (`motion-reduce:animate-none`).
  */
 export function AboutVision() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -17,25 +19,15 @@ export function AboutVision() {
 
   useEffect(() => {
     const el = sectionRef.current;
-    if (!el) return;
+    if (!el || reducedMotion) return;
     const ctx = gsap.context(() => {
-      const targets = gsap.utils.toArray<HTMLElement>('.vision-fade');
-      if (reducedMotion) {
-        gsap.set(targets, { autoAlpha: 1, y: 0 });
-        return;
-      }
-      gsap.fromTo(
-        targets,
-        { autoAlpha: 0, y: 30 },
-        {
-          autoAlpha: 1,
-          y: 0,
-          ease: 'power2.out',
-          duration: 0.9,
-          stagger: 0.1,
-          scrollTrigger: { trigger: el, start: 'top 78%' },
-        },
-      );
+      gsap.from('.vision-fade', {
+        y: 30,
+        ease: 'power2.out',
+        duration: 0.9,
+        stagger: 0.1,
+        scrollTrigger: { trigger: el, start: 'top 80%', once: true },
+      });
     }, sectionRef);
     return () => ctx.revert();
   }, [reducedMotion]);
@@ -43,7 +35,7 @@ export function AboutVision() {
   return (
     <section
       ref={sectionRef}
-      className="relative overflow-hidden border-t border-border bg-navy py-24 lg:py-32"
+      className="relative overflow-hidden border-t border-border bg-charcoal py-24 lg:py-32"
     >
       <p className="vision-fade px-6 text-center text-sm font-medium text-orange sm:px-10 lg:px-16">
         {vision.label}
@@ -73,7 +65,7 @@ export function AboutVision() {
         </div>
       </div>
 
-      <p className="vision-fade mx-auto max-w-2xl px-6 text-center text-lg leading-relaxed text-white/70 sm:px-10 lg:px-16">
+      <p className="vision-fade mx-auto max-w-2xl px-6 text-center text-lg leading-relaxed text-white/80 sm:px-10 lg:px-16">
         {vision.line}
       </p>
     </section>

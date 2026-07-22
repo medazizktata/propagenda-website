@@ -22,20 +22,17 @@ export function AboutHero() {
     const ctx = gsap.context(() => {
       const lines = gsap.utils.toArray<HTMLElement>('.about-hero-line');
 
-      if (reducedMotion) {
-        gsap.set(lines, { autoAlpha: 1, y: 0 });
-        return;
-      }
+      // Lines are fully legible by default (SSR / no-JS / reduced-motion). Motion only
+      // nudges them up on load — TRANSLATE-ONLY, never an opacity gate, so nothing can
+      // ship blank if the script or the tween never runs.
+      if (reducedMotion) return;
 
-      gsap.set(lines, { autoAlpha: 0, y: 34 });
-      gsap.to(lines, {
-        autoAlpha: 1,
-        y: 0,
+      gsap.from(lines, {
+        y: 34,
         ease: 'power3.out',
         duration: 0.9,
         stagger: 0.12,
         delay: 0.35,
-        immediateRender: false,
       });
 
       // Pattern parallax + hero content lift as the mission scrolls up over it.
@@ -94,7 +91,7 @@ export function AboutHero() {
           {/* The name decoded — PRO + P + AGENDA. */}
           <span
             aria-hidden
-            className="about-hero-line mt-6 flex flex-wrap items-baseline gap-x-[0.4em] gap-y-1 font-sans font-bold uppercase leading-[0.95] tracking-[0.04em] text-white/45"
+            className="about-hero-line mt-6 flex flex-wrap items-baseline gap-x-[0.4em] gap-y-1 font-sans font-bold uppercase leading-[0.95] tracking-[0.04em] text-white/70"
             style={{ fontSize: 'clamp(0.95rem, 2.6vw, 2.05rem)' }}
           >
             {acronym.map((part) => (
@@ -112,7 +109,7 @@ export function AboutHero() {
           turn on the <span className="text-orange">E</span>.
         </p>
 
-        <p className="about-hero-line mt-5 max-w-xl text-base leading-relaxed text-white/65">
+        <p className="about-hero-line mt-5 max-w-xl text-base leading-relaxed text-white/80">
           {aboutContent.origin}
         </p>
       </div>

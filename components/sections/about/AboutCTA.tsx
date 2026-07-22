@@ -18,25 +18,17 @@ export function AboutCTA() {
 
   useEffect(() => {
     const el = sectionRef.current;
-    if (!el) return;
+    if (!el || reducedMotion) return;
     const ctx = gsap.context(() => {
-      const targets = gsap.utils.toArray<HTMLElement>('.cta-fade');
-      if (reducedMotion) {
-        gsap.set(targets, { autoAlpha: 1, y: 0 });
-        return;
-      }
-      gsap.fromTo(
-        targets,
-        { autoAlpha: 0, y: 26 },
-        {
-          autoAlpha: 1,
-          y: 0,
-          ease: 'power3.out',
-          duration: 0.8,
-          stagger: 0.1,
-          scrollTrigger: { trigger: el, start: 'top 80%' },
-        },
-      );
+      // Legible by default; TRANSLATE-ONLY entry so the copy never ships invisible on the
+      // orange surface if the trigger doesn't fire.
+      gsap.from('.cta-fade', {
+        y: 26,
+        ease: 'power3.out',
+        duration: 0.8,
+        stagger: 0.1,
+        scrollTrigger: { trigger: el, start: 'top 82%', once: true },
+      });
     }, sectionRef);
     return () => ctx.revert();
   }, [reducedMotion]);
@@ -45,14 +37,14 @@ export function AboutCTA() {
     <section ref={sectionRef} className="relative overflow-hidden bg-orange">
       <BrandPattern variant="tiled" className="!opacity-[0.1] [filter:brightness(0)]" />
       <div className="relative z-content mx-auto flex max-w-3xl flex-col items-center gap-7 px-6 py-20 text-center sm:px-10 lg:py-28">
-        <p className="cta-fade text-sm font-semibold text-navy/70">{cta.kicker}</p>
+        <p className="cta-fade text-sm font-semibold text-[#0a0a0a]/75">{cta.kicker}</p>
         <h2
-          className="cta-fade font-sans font-extrabold uppercase leading-[0.95] tracking-[0.01em] text-navy"
+          className="cta-fade font-sans font-extrabold uppercase leading-[0.95] tracking-[0.01em] text-[#0a0a0a]"
           style={{ fontSize: 'clamp(2rem, 5vw, 3.75rem)' }}
         >
           {cta.heading}
         </h2>
-        <p className="cta-fade max-w-xl text-lg leading-relaxed text-navy/75">{cta.body}</p>
+        <p className="cta-fade max-w-xl text-lg leading-relaxed text-[#0a0a0a]/85">{cta.body}</p>
         <div className="cta-fade">
           <Button href={cta.href} variant="secondary" size="lg">
             {cta.label}

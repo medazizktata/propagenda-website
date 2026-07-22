@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import type { CSSProperties } from 'react';
 import Link from 'next/link';
 import type {
@@ -14,6 +14,7 @@ import { gsap, registerGsap } from '@/lib/motion/gsap';
 import { useReducedMotion } from '@/lib/motion/useReducedMotion';
 import { cn } from '@/components/ui/cn';
 import { BrandPattern } from '@/components/ui/BrandPattern';
+import { WorkNextPrev } from '@/components/sections/WorkNextPrev';
 import { PhotoSwipeLightbox } from '@/components/PhotoSwipeLightbox';
 import { usePhotoSwipe } from '@/hooks/usePhotoSwipe';
 
@@ -37,7 +38,6 @@ function CheckNode({ className }: { className?: string }) {
 }
 
 // Section heading — a real heading in natural case, NOT a tracked-out uppercase eyebrow.
-// One short orange tick anchors it to the brand without the AI-scaffold kicker.
 function SectionHeading({ children }: { children: React.ReactNode }) {
   return (
     <h2 className="sd-reveal mb-8 flex items-center gap-4 font-sans text-2xl font-bold text-white md:mb-10 md:text-3xl">
@@ -51,10 +51,8 @@ export function CaseStudyDetailContent({ study }: CaseStudyDetailContentProps) {
   const rootRef = useRef<HTMLDivElement>(null);
   const reducedMotion = useReducedMotion();
 
-  // Scroll reveal for `.sd-reveal` nodes. TRANSLATE-ONLY: content is fully visible by
-  // default (SSR + no-JS + reduced-motion all render it in place) and the animation only
-  // nudges it up on entry. It never gates opacity, so nothing can ever ship blank — the
-  // failure mode the previous version hit when the pinned hero desynced ScrollTrigger.
+  // Scroll reveal — TRANSLATE-ONLY: content is fully visible by default (SSR/no-JS/reduced-
+  // motion/before-trigger), motion only nudges position. Nothing can ever ship blank.
   useEffect(() => {
     const el = rootRef.current;
     if (!el || reducedMotion) return;
@@ -87,44 +85,80 @@ export function CaseStudyDetailContent({ study }: CaseStudyDetailContentProps) {
   const prev = study.prev ? getCaseStudy(study.prev) : undefined;
   const next = study.next ? getCaseStudy(study.next) : undefined;
 
-  // Accent stays the brand orange for every study (client-brand accents were removed per
-  // direction — the site keeps Propagenda's identity). Kept as a var so the whole body
-  // reads from one source. Text-on-accent is near-black; navy is never used as a fill.
   const accentVars = {
     '--sd-accent': study.accent?.color ?? '#f58b27',
     '--sd-accent-on': study.accent?.onColor ?? '#0a0a0a',
   } as CSSProperties;
 
+  // Real brand imagery is WOVEN through the story as full-frame moments, not dumped in a
+  // gallery at the end — so an image study reads as an art-directed piece, not a template.
+  const gallery = study.gallery;
+  const { isOpen, index, open, close } = usePhotoSwipe();
+  const openable = gallery.filter((g) => Boolean(g.src));
+  const openAt = (galleryIndex: number) => {
+    const img = gallery[galleryIndex];
+    const oi = openable.findIndex((o) => o.src === img?.src && o.alt === img?.alt);
+    if (oi >= 0) open(oi);
+  };
+  const canOpen = openable.length > 0;
+
   return (
     <div ref={rootRef} className="bg-charcoal" style={accentVars}>
       <CaseStudyHero study={study} meta={meta} reducedMotion={reducedMotion} />
 
-      <CaseStudyNarrative overview={study.overview} stages={stages} />
+      <CaseStudyLead overview={study.overview} />
+
+      {gallery[0] && (
+        <CaseStudyFeatureImage
+          image={gallery[0]}
+          flip={false}
+          canOpen={canOpen}
+          onOpen={() => openAt(0)}
+        />
+      )}
+
+      {stages.length > 0 && <CaseStudyStages stages={stages} />}
 
       {study.results && study.results.length > 0 && (
         <CaseStudyResults results={study.results} />
+      )}
+
+      {gallery[1] && (
+        <CaseStudyFeatureImage
+          image={gallery[1]}
+          flip
+          canOpen={canOpen}
+          onOpen={() => openAt(1)}
+        />
       )}
 
       {study.deliverables && study.deliverables.length > 0 && (
         <CaseStudyDeliverables items={study.deliverables} />
       )}
 
-      {study.gallery.length > 0 && <CaseStudyGallery images={study.gallery} />}
+      {gallery.length > 2 && (
+        <CaseStudyGalleryMosaic
+          images={gallery.slice(2)}
+          canOpen={canOpen}
+          onOpenAt={(i) => openAt(i + 2)}
+        />
+      )}
 
       {study.quote && <CaseStudyQuoteBlock quote={study.quote} />}
 
-      <CaseStudyPrevNext prev={prev} next={next} reducedMotion={reducedMotion} />
+      <WorkNextPrev prev={prev} next={next} />
 
       <ClosingCTA />
+
+      {canOpen && (
+        <PhotoSwipeLightbox images={openable} isOpen={isOpen} initialIndex={index} onClose={close} />
+      )}
     </div>
   );
 }
 
 /* ───────────────────────── Hero (pinned, scaling) ───────────────────────── */
 
-// Full-bleed hero. Image studies zoom their own photography; text-only studies get a bold,
-// deliberate monogram field + orange glow (brand art, never an empty void or a faint wash).
-// As it pins the frame zooms and the title lifts fully away — no ghost bleeds into the story.
 function CaseStudyHero({
   study,
   meta,
@@ -147,13 +181,7 @@ function CaseStudyHero({
     registerGsap();
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: wrap,
-          start: 'top top',
-          end: '+=65%',
-          pin,
-          scrub: true,
-        },
+        scrollTrigger: { trigger: wrap, start: 'top top', end: '+=55%', pin, scrub: true },
       });
       tl.to(imgRef.current, { scale: 1.16, ease: 'none' }, 0).to(
         contentRef.current,
@@ -166,19 +194,12 @@ function CaseStudyHero({
 
   return (
     <section ref={wrapRef} className="relative">
-      <div
-        ref={pinRef}
-        className="relative flex min-h-[100svh] flex-col justify-end overflow-hidden"
-      >
+      <div ref={pinRef} className="relative flex min-h-[100svh] flex-col justify-end overflow-hidden">
         <div ref={imgRef} aria-hidden className="absolute inset-0 will-change-transform">
           {study.heroImage ? (
             <>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={study.heroImage}
-                alt=""
-                className="h-full w-full object-cover object-center"
-              />
+              <img src={study.heroImage} alt="" className="h-full w-full object-cover object-center" />
               <div className="absolute inset-0 bg-charcoal/45" />
               <div className="absolute inset-0 bg-gradient-to-t from-charcoal via-charcoal/25 to-charcoal/70" />
             </>
@@ -196,19 +217,11 @@ function CaseStudyHero({
 
         <div className="relative z-content px-gutter-m pb-16 pt-28 lg:px-gutter-d lg:pb-24">
           <div ref={contentRef} className="will-change-transform">
-            <nav
-              aria-label="Breadcrumb"
-              className="mb-6 flex flex-wrap items-center gap-2 text-sm text-white/70"
-            >
-              <Link
-                href="/work"
-                className="transition-hover hover-fine:hover:text-[color:var(--sd-accent)]"
-              >
+            <nav aria-label="Breadcrumb" className="mb-6 flex flex-wrap items-center gap-2 text-sm text-white/70">
+              <Link href="/work" className="transition-hover hover-fine:hover:text-[color:var(--sd-accent)]">
                 Work
               </Link>
-              <span aria-hidden className="text-white/35">
-                /
-              </span>
+              <span aria-hidden className="text-white/35">/</span>
               <span className="text-white">{study.client ?? study.title}</span>
             </nav>
 
@@ -224,11 +237,7 @@ function CaseStudyHero({
               <p className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-1 text-base font-medium text-white/85 md:text-lg">
                 {meta.map((m, i) => (
                   <span key={`${m}-${i}`} className="flex items-center gap-3">
-                    {i > 0 && (
-                      <span aria-hidden className="text-[color:var(--sd-accent)]">
-                        ·
-                      </span>
-                    )}
+                    {i > 0 && <span aria-hidden className="text-[color:var(--sd-accent)]">·</span>}
                     {m}
                   </span>
                 ))}
@@ -244,13 +253,7 @@ function CaseStudyHero({
           className="absolute bottom-8 left-1/2 z-content flex h-11 w-11 -translate-x-1/2 items-center justify-center rounded-full border border-[color:var(--sd-accent)] text-[color:var(--sd-accent)] transition-hover hover-fine:hover:bg-[color:var(--sd-accent)] hover-fine:hover:text-[color:var(--sd-accent-on)] motion-safe:animate-bounce"
         >
           <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5">
-            <path
-              d="M6 9l6 6 6-6"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
+            <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </button>
       </div>
@@ -258,20 +261,11 @@ function CaseStudyHero({
   );
 }
 
-/* ───────────── Narrative: overview lead → problem / approach / result ───────────── */
+/* ───────────── Narrative: lead statement + problem / approach / result ───────────── */
 
-// Editorial narrative. NO numbered scaffolding, NO pattern behind copy. A large legible
-// lead, then each beat as a bold orange label paired with high-contrast body text on a
-// solid surface. Reads like a story, not a template.
-function CaseStudyNarrative({
-  overview,
-  stages,
-}: {
-  overview: string;
-  stages: { key: string; name: string; body: string }[];
-}) {
+function CaseStudyLead({ overview }: { overview: string }) {
   return (
-    <section className="relative bg-charcoal px-gutter-m py-20 lg:px-gutter-d lg:py-28">
+    <section className="relative bg-charcoal px-gutter-m pt-20 lg:px-gutter-d lg:pt-28">
       <div className="relative z-content mx-auto max-w-6xl">
         <p
           className="sd-reveal max-w-[24ch] font-sans font-semibold leading-[1.1] text-white md:max-w-[26ch]"
@@ -279,30 +273,89 @@ function CaseStudyNarrative({
         >
           {overview}
         </p>
+      </div>
+    </section>
+  );
+}
 
-        {stages.length > 0 && (
-          <div className="mt-16 md:mt-20">
-            {stages.map((s) => (
-              <div
-                key={s.key}
-                className="sd-reveal grid gap-4 border-t border-white/12 py-10 md:grid-cols-[16rem_minmax(0,1fr)] md:gap-14 md:py-14"
-              >
-                <h3
-                  className="font-sans font-bold leading-[1.05] text-[color:var(--sd-accent)]"
-                  style={{ fontSize: 'clamp(1.5rem, 2.6vw, 2.25rem)' }}
-                >
-                  {s.name}
-                </h3>
-                <p
-                  className="max-w-[68ch] text-pretty font-sans leading-relaxed text-white/90"
-                  style={{ fontSize: 'clamp(1.1rem, 1.5vw, 1.4rem)' }}
-                >
-                  {s.body}
-                </p>
-              </div>
-            ))}
+function CaseStudyStages({
+  stages,
+}: {
+  stages: { key: string; name: string; body: string }[];
+}) {
+  return (
+    <section className="relative bg-charcoal px-gutter-m py-16 lg:px-gutter-d lg:py-24">
+      <div className="relative z-content mx-auto max-w-6xl">
+        {stages.map((s) => (
+          <div
+            key={s.key}
+            className="sd-reveal grid gap-4 border-t border-white/12 py-10 md:grid-cols-[16rem_minmax(0,1fr)] md:gap-14 md:py-14"
+          >
+            <h3
+              className="font-sans font-bold leading-[1.05] text-[color:var(--sd-accent)]"
+              style={{ fontSize: 'clamp(1.5rem, 2.6vw, 2.25rem)' }}
+            >
+              {s.name}
+            </h3>
+            <p
+              className="max-w-[68ch] text-pretty font-sans leading-relaxed text-white/90"
+              style={{ fontSize: 'clamp(1.1rem, 1.5vw, 1.4rem)' }}
+            >
+              {s.body}
+            </p>
           </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/* ───────────────── Woven full-frame brand image (editorial, alternating) ───────────────── */
+
+// The real A4 brand board shown WHOLE beside an oversized caption — an art-directed moment
+// in the story, not a cropped banner. Alternates side by `flip`. Opens the lightbox.
+function CaseStudyFeatureImage({
+  image,
+  flip,
+  canOpen,
+  onOpen,
+}: {
+  image: GalleryImage;
+  flip: boolean;
+  canOpen: boolean;
+  onOpen: () => void;
+}) {
+  return (
+    <section className="relative border-y border-white/10 bg-black px-gutter-m py-16 lg:px-gutter-d lg:py-24">
+      <div
+        className={cn(
+          'mx-auto flex max-w-6xl flex-col items-center gap-8 lg:flex-row lg:gap-16',
+          flip && 'lg:flex-row-reverse',
         )}
+      >
+        <button
+          type="button"
+          onClick={canOpen ? onOpen : undefined}
+          disabled={!canOpen}
+          aria-label={canOpen ? `Open image: ${image.alt}` : image.alt}
+          className={cn(
+            'sd-reveal group/fi relative block w-full max-w-sm shrink-0 overflow-hidden rounded-2xl ring-1 ring-inset ring-white/10 lg:w-[40%]',
+            canOpen ? 'cursor-zoom-in' : 'cursor-default',
+          )}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={image.src}
+            alt={image.alt}
+            className="aspect-[1241/1754] w-full object-cover object-top transition-transform duration-[1200ms] ease-out hover-fine:group-hover/fi:scale-[1.03]"
+          />
+        </button>
+        <p
+          className="sd-reveal max-w-[34ch] font-sans leading-relaxed text-white/85 lg:w-[60%]"
+          style={{ fontSize: 'clamp(1.15rem, 1.8vw, 1.6rem)' }}
+        >
+          {image.alt}
+        </p>
       </div>
     </section>
   );
@@ -310,8 +363,6 @@ function CaseStudyNarrative({
 
 /* ───────────────────────── Results / metrics band ───────────────────────── */
 
-// Big numbers on a near-black band (tonal step from charcoal — never navy), split by
-// hairline rules. No cards.
 function CaseStudyResults({ results }: { results: CaseStudyResult[] }) {
   return (
     <section className="relative border-y border-white/10 bg-black px-gutter-m py-16 lg:px-gutter-d lg:py-24">
@@ -332,9 +383,7 @@ function CaseStudyResults({ results }: { results: CaseStudyResult[] }) {
               >
                 {r.value}
               </div>
-              <div className="mt-3 font-medium leading-relaxed text-white/75 md:text-lg">
-                {r.label}
-              </div>
+              <div className="mt-3 font-medium leading-relaxed text-white/75 md:text-lg">{r.label}</div>
             </div>
           ))}
         </div>
@@ -345,7 +394,6 @@ function CaseStudyResults({ results }: { results: CaseStudyResult[] }) {
 
 /* ───────────────────────── Deliverables ───────────────────────── */
 
-// Flat two-column divided list — natural case, check node per item. No pattern, no cards.
 function CaseStudyDeliverables({ items }: { items: string[] }) {
   return (
     <section className="relative bg-charcoal px-gutter-m py-16 lg:px-gutter-d lg:py-24">
@@ -360,9 +408,7 @@ function CaseStudyDeliverables({ items }: { items: string[] }) {
               <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-white/25 text-[color:var(--sd-accent)] transition-colors duration-300 group-hover/dl:border-[color:var(--sd-accent)] group-hover/dl:bg-[color:var(--sd-accent)] group-hover/dl:text-[color:var(--sd-accent-on)]">
                 <CheckNode className="h-3 w-3" />
               </span>
-              <span className="font-sans font-medium leading-snug text-white md:text-lg">
-                {item}
-              </span>
+              <span className="font-sans font-medium leading-snug text-white md:text-lg">{item}</span>
             </li>
           ))}
         </ul>
@@ -371,17 +417,9 @@ function CaseStudyDeliverables({ items }: { items: string[] }) {
   );
 }
 
-/* ───────────────────────── Gallery (asymmetric mosaic + lightbox) ───────────────────────── */
+/* ───────────────────────── Extra gallery (3+ images) ───────────────────────── */
 
 function spanClass(count: number, i: number) {
-  if (count <= 3) {
-    const desktop = [
-      'md:col-span-2 md:row-span-2',
-      'md:col-span-2 md:row-span-1',
-      'md:col-span-2 md:row-span-1',
-    ];
-    return cn(i === 0 ? 'col-span-2' : 'col-span-1', desktop[i] ?? 'md:col-span-2');
-  }
   const desktop = [
     'md:col-span-2 md:row-span-2',
     'md:col-span-2 md:row-span-1',
@@ -389,109 +427,52 @@ function spanClass(count: number, i: number) {
     'md:col-span-1 md:row-span-1',
   ];
   const mobile = i < 2 ? 'col-span-2' : 'col-span-1';
-  return cn(mobile, desktop[i % desktop.length]);
+  return cn(mobile, desktop[i % desktop.length], count <= 3 && i === 0 && 'md:row-span-2');
 }
 
-function CaseStudyGallery({ images }: { images: GalleryImage[] }) {
-  const { isOpen, index, open, close } = usePhotoSwipe();
-  const openable = images.filter((image) => Boolean(image.src));
-
-  const openAt = (galleryIndex: number) => {
-    const image = images[galleryIndex];
-    const openableIndex = openable.findIndex(
-      (item) => item.src === image.src && item.alt === image.alt,
-    );
-    if (openableIndex >= 0) open(openableIndex);
-  };
-
-  // ≤2 real frames (the fully-branded studies) show large and whole — a magazine-style
-  // spread of the actual brand boards. 3+ keep the asymmetric mosaic.
-  const isSpread = images.length <= 2;
-
+function CaseStudyGalleryMosaic({
+  images,
+  canOpen,
+  onOpenAt,
+}: {
+  images: GalleryImage[];
+  canOpen: boolean;
+  onOpenAt: (i: number) => void;
+}) {
   return (
     <section className="relative bg-charcoal px-gutter-m py-16 lg:px-gutter-d lg:py-24">
       <div className="mx-auto max-w-7xl">
-        <SectionHeading>Selected visuals</SectionHeading>
-        {isSpread ? (
-          <div className="grid gap-6 sm:grid-cols-2 md:gap-8">
-            {images.map((image, i) => (
-              <figure key={`${image.alt}-${i}`} className="sd-reveal">
-                <button
-                  type="button"
-                  onClick={() => (openable.length > 0 ? openAt(i) : undefined)}
-                  disabled={openable.length === 0}
-                  aria-label={openable.length > 0 ? `Open image: ${image.alt}` : image.alt}
-                  className={cn(
-                    'group/tile relative block aspect-[1241/1754] w-full overflow-hidden rounded-2xl bg-white/[0.03] ring-1 ring-inset ring-white/10',
-                    openable.length > 0 ? 'cursor-zoom-in' : 'cursor-default',
-                  )}
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={image.src}
-                    alt={image.alt}
-                    className="h-full w-full object-cover object-top transition-transform duration-[1200ms] ease-out hover-fine:group-hover/tile:scale-[1.03]"
-                  />
-                  <div
-                    aria-hidden
-                    className="absolute inset-0 bg-charcoal/0 transition-colors duration-300 hover-fine:group-hover/tile:bg-charcoal/10"
-                  />
-                </button>
-                <figcaption className="mt-4 max-w-prose font-sans leading-relaxed text-white/70 md:text-lg">
-                  {image.alt}
-                </figcaption>
-              </figure>
-            ))}
-          </div>
-        ) : (
-          <div className="grid auto-rows-[9.5rem] grid-flow-dense grid-cols-2 gap-3 md:auto-rows-[12rem] md:grid-cols-4 md:gap-4">
-            {images.map((image, i) => (
-              <button
-                key={`${image.alt}-${i}`}
-                type="button"
-                onClick={() => (openable.length > 0 ? openAt(i) : undefined)}
-                disabled={openable.length === 0}
-                aria-label={openable.length > 0 ? `Open image: ${image.alt}` : image.alt}
-                className={cn(
-                  'group/tile sd-reveal relative overflow-hidden rounded-xl bg-white/[0.03] text-left',
-                  openable.length > 0 ? 'cursor-zoom-in' : 'cursor-default',
-                  spanClass(images.length, i),
-                )}
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={image.src}
-                  alt={image.alt}
-                  className="h-full w-full object-cover transition-transform duration-[1200ms] ease-out hover-fine:group-hover/tile:scale-[1.06]"
-                />
-                <div
-                  aria-hidden
-                  className="absolute inset-0 bg-gradient-to-t from-charcoal/90 via-charcoal/10 to-transparent opacity-0 transition-opacity duration-300 hover-fine:group-hover/tile:opacity-100"
-                />
-                <span className="absolute inset-x-4 bottom-4 translate-y-2 font-sans text-sm font-semibold text-white opacity-0 transition-all duration-300 hover-fine:group-hover/tile:translate-y-0 hover-fine:group-hover/tile:opacity-100">
-                  {image.alt}
-                </span>
-              </button>
-            ))}
-          </div>
-        )}
+        <SectionHeading>More visuals</SectionHeading>
+        <div className="grid auto-rows-[9.5rem] grid-flow-dense grid-cols-2 gap-3 md:auto-rows-[12rem] md:grid-cols-4 md:gap-4">
+          {images.map((image, i) => (
+            <button
+              key={`${image.alt}-${i}`}
+              type="button"
+              onClick={canOpen ? () => onOpenAt(i) : undefined}
+              disabled={!canOpen}
+              aria-label={canOpen ? `Open image: ${image.alt}` : image.alt}
+              className={cn(
+                'group/tile sd-reveal relative overflow-hidden rounded-xl bg-white/[0.03] text-left',
+                canOpen ? 'cursor-zoom-in' : 'cursor-default',
+                spanClass(images.length, i),
+              )}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={image.src}
+                alt={image.alt}
+                className="h-full w-full object-cover transition-transform duration-[1200ms] ease-out hover-fine:group-hover/tile:scale-[1.06]"
+              />
+            </button>
+          ))}
+        </div>
       </div>
-      {openable.length > 0 && (
-        <PhotoSwipeLightbox
-          images={openable}
-          isOpen={isOpen}
-          initialIndex={index}
-          onClose={close}
-        />
-      )}
     </section>
   );
 }
 
 /* ───────────────────────── Pull quote ───────────────────────── */
 
-// Oversized quote on a near-black band. All text is visible by default (only .sd-reveal
-// nudges position), so the words are never invisible.
 function CaseStudyQuoteBlock({ quote }: { quote: CaseStudyQuote }) {
   return (
     <section className="relative border-y border-white/10 bg-black px-gutter-m py-20 lg:px-gutter-d lg:py-28">
@@ -548,130 +529,5 @@ function ClosingCTA() {
         </Link>
       </div>
     </section>
-  );
-}
-
-/* ───────────────────────── Cinematic prev / next ───────────────────────── */
-
-function CaseStudyPrevNext({
-  prev,
-  next,
-  reducedMotion,
-}: {
-  prev?: CaseStudyRecord;
-  next?: CaseStudyRecord;
-  reducedMotion: boolean;
-}) {
-  if (!prev && !next) return null;
-  return (
-    <section className="relative border-t border-white/10 bg-charcoal">
-      {next && <NextProjectPanel study={next} reducedMotion={reducedMotion} />}
-      {prev && (
-        <div className="border-t border-white/10 px-gutter-m py-8 lg:px-gutter-d">
-          <Link
-            href={`/work/${prev.slug}`}
-            className="group/prev inline-flex items-center gap-3 text-sm text-white/70 transition-hover hover-fine:hover:text-orange"
-          >
-            <span
-              aria-hidden
-              className="transition-transform duration-300 group-hover/prev:-translate-x-1"
-            >
-              &larr;
-            </span>
-            <span>Previous project</span>
-            <span className="font-semibold text-white">{prev.client ?? prev.title}</span>
-          </Link>
-        </div>
-      )}
-    </section>
-  );
-}
-
-// The next project rendered oversized: display-scale outlined name that fills in and reveals
-// its imagery on hover/focus. On touch (no hover) the name is solid and legible by default.
-function NextProjectPanel({
-  study,
-  reducedMotion,
-}: {
-  study: CaseStudyRecord;
-  reducedMotion: boolean;
-}) {
-  const [hovered, setHovered] = useState(false);
-
-  return (
-    <Link
-      href={`/work/${study.slug}`}
-      aria-label={`Next project: ${study.title}`}
-      onPointerEnter={() => setHovered(true)}
-      onPointerLeave={() => setHovered(false)}
-      onFocus={() => setHovered(true)}
-      onBlur={() => setHovered(false)}
-      className="group/next relative flex min-h-[45vh] flex-col justify-center overflow-hidden px-gutter-m py-20 outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-orange lg:min-h-[60vh] lg:px-gutter-d"
-    >
-      <div
-        aria-hidden
-        className={cn(
-          'pointer-events-none absolute inset-0 transition-opacity duration-500 ease-out',
-          hovered ? 'opacity-100' : 'opacity-0',
-        )}
-      >
-        {study.heroImage && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={study.heroImage}
-            alt=""
-            className={cn(
-              'h-full w-full object-cover',
-              !reducedMotion &&
-                'scale-105 transition-transform duration-700 ease-out group-hover/next:scale-110',
-            )}
-          />
-        )}
-        <div className="absolute inset-0 bg-charcoal/75" />
-        <div className="absolute inset-0 bg-gradient-to-t from-charcoal via-charcoal/40 to-charcoal/70" />
-      </div>
-
-      <div
-        aria-hidden
-        className={cn(
-          'absolute inset-0 opacity-[0.08] transition-opacity duration-500',
-          hovered ? 'opacity-0' : 'opacity-[0.08]',
-        )}
-      >
-        <BrandPattern variant="tiled" />
-      </div>
-
-      <div className="relative z-content mx-auto w-full max-w-6xl">
-        <span
-          className={cn(
-            'mb-4 block text-sm font-semibold transition-colors duration-300',
-            hovered ? 'text-orange' : 'text-white/70',
-          )}
-        >
-          Next project
-        </span>
-        <span
-          className={cn(
-            'block font-sans font-black uppercase leading-[0.9] tracking-tight transition-colors duration-500 ease-out touch-coarse:text-white touch-coarse:[-webkit-text-stroke:0px]',
-            hovered
-              ? 'text-white [-webkit-text-stroke:0px]'
-              : 'text-transparent [-webkit-text-stroke:1.5px_#f58b27]',
-          )}
-          style={{ fontSize: 'clamp(2rem, 8vw, 6.5rem)' }}
-        >
-          {study.client ?? study.title}
-        </span>
-        {(study.industry || study.year) && (
-          <span
-            className={cn(
-              'mt-5 block max-w-xl text-base text-white/80 transition-all duration-300 md:text-lg',
-              hovered ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-80',
-            )}
-          >
-            {[study.industry, study.year].filter(Boolean).join(' · ')}
-          </span>
-        )}
-      </div>
-    </Link>
   );
 }

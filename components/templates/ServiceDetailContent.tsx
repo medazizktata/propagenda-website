@@ -15,6 +15,8 @@ import { ServiceNextPrev } from '@/components/sections/services/ServiceNextPrev'
 import { ServiceWorkGrid } from '@/components/sections/services/ServiceWorkGrid';
 import { PrInfluenceRoster } from '@/components/sections/services/PrInfluenceRoster';
 import { MarketingFunnel } from '@/components/sections/services/MarketingFunnel';
+import { PhotoVideoHeroTitle } from '@/components/sections/services/PhotoVideoHeroTitle';
+import { PhotoVideoHeroOverview } from '@/components/sections/services/PhotoVideoHeroOverview';
 import { WebsitesShowcase } from '@/components/sections/services/WebsitesShowcase';
 import { MobileAppShowcase } from '@/components/sections/services/MobileAppShowcase';
 import { EventsJourney } from '@/components/sections/services/EventsJourney';
@@ -138,16 +140,24 @@ export function ServiceDetailContent({ service }: { service: ServiceRecord }) {
         </nav>
 
         <div className="relative z-content flex max-w-4xl translate-y-6 flex-col items-center md:translate-y-10">
-          <h1
-            className="sd-reveal font-sans font-bold uppercase leading-[0.9] tracking-display text-white [text-shadow:0_2px_30px_rgba(0,0,0,0.55)]"
-            style={{ fontSize: 'clamp(2.4rem, 8.5vw, 7rem)' }}
-          >
-            {service.h1}
-            <span className="text-orange">.</span>
-          </h1>
-          <p className="sd-reveal mx-auto mt-7 max-w-2xl text-base leading-relaxed text-white/80 [text-shadow:0_1px_16px_rgba(0,0,0,0.55)] md:text-lg">
-            {service.overview}
-          </p>
+          {service.slug === 'photography-videography' ? (
+            <PhotoVideoHeroTitle className="sd-reveal" />
+          ) : (
+            <h1
+              className="sd-reveal font-sans font-bold uppercase leading-[0.9] tracking-display text-white [text-shadow:0_2px_30px_rgba(0,0,0,0.55)]"
+              style={{ fontSize: 'clamp(2.4rem, 8.5vw, 7rem)' }}
+            >
+              {service.h1}
+              <span className="text-orange">.</span>
+            </h1>
+          )}
+          {service.slug === 'photography-videography' ? (
+            <PhotoVideoHeroOverview />
+          ) : (
+            <p className="sd-reveal mx-auto mt-7 max-w-2xl text-base leading-relaxed text-white/80 [text-shadow:0_1px_16px_rgba(0,0,0,0.55)] md:text-lg">
+              {service.overview}
+            </p>
+          )}
           <div className="sd-reveal mt-9">
             <Button href="/contact" variant="primary" size="lg">
               Start a project &rarr;
@@ -377,7 +387,12 @@ function ServiceScope({ service }: { service: ServiceRecord }) {
       <div aria-hidden className="pattern-section-fade absolute inset-0">
         <BrandPattern variant="tiled" />
       </div>
-      <div className="relative z-content mx-auto max-w-6xl">
+      <div
+        className={cn(
+          'relative z-content mx-auto max-w-6xl',
+          variant === 'techspec' && 'max-w-[88rem]',
+        )}
+      >
         <SectionLabel className="sd-reveal mb-8">What&apos;s included</SectionLabel>
         {variant === 'editorial' && <ScopeEditorial items={service.scopeItems} />}
         {variant === 'grid' && <ScopeGrid items={service.scopeItems} />}
@@ -555,57 +570,172 @@ const WEB_SCOPE_DESC: Record<string, string> = {
   'Ongoing management': 'Hosting, updates, security, and steady improvement.',
 };
 
-// A stack-depth glyph — one bar per layer reached, so the stack visibly builds as the list
-// descends (foundation → launch → care).
-function LayerGlyph({ count, className }: { count: number; className?: string }) {
-  return (
-    <span aria-hidden className={cn('flex flex-col items-end justify-end gap-[3px]', className)}>
-      {Array.from({ length: count }).map((_, i) => (
-        <span
-          key={i}
-          className="block h-[3px] rounded-full bg-orange transition-all duration-300"
-          style={{ width: `${14 + i * 4}px`, opacity: 0.4 + i * 0.12 }}
-        />
-      ))}
-    </span>
-  );
+// A small wireframe glyph per build layer — signals a website being assembled (page skeleton,
+// landing hero, UI blocks, a speed gauge, a maintenance loop) rather than a number or chip. Stroke
+// + currentColor so each glyph inherits its layer's accent tone.
+function LayerMotif({ kind, className }: { kind: string; className?: string }) {
+  const s = {
+    viewBox: '0 0 32 24',
+    fill: 'none',
+    stroke: 'currentColor',
+    strokeWidth: 1.5,
+    strokeLinecap: 'round' as const,
+    strokeLinejoin: 'round' as const,
+    'aria-hidden': true,
+    className,
+  };
+  switch (kind) {
+    // Design & development — a full page skeleton (header, content column + sidebar).
+    case 'build':
+      return (
+        <svg {...s}>
+          <rect x="3" y="3.5" width="26" height="17" rx="1.5" />
+          <path d="M3 8.5h26" />
+          <path d="M6.5 12h9M6.5 15h9M6.5 18h6" />
+          <rect x="18.5" y="11.5" width="7.5" height="7" rx="1" />
+        </svg>
+      );
+    // Landing pages — a single focused hero with one call-to-action.
+    case 'landing':
+      return (
+        <svg {...s}>
+          <rect x="3" y="3.5" width="26" height="17" rx="1.5" />
+          <path d="M9 8.5h14M11 12h10" />
+          <rect x="12" y="15" width="8" height="3.4" rx="1.2" />
+        </svg>
+      );
+    // UX/UI — component blocks with a cursor.
+    case 'uxui':
+      return (
+        <svg {...s}>
+          <rect x="3" y="4" width="10" height="7" rx="1.2" />
+          <rect x="3" y="13.5" width="10" height="6.5" rx="1.2" />
+          <path d="M18 5.5l7 5.5-3 .7 1.9 3.4-1.9 1.1-1.9-3.4-2.2 2.2V5.5Z" />
+        </svg>
+      );
+    // Performance — a speed gauge with its needle.
+    case 'perf':
+      return (
+        <svg {...s}>
+          <path d="M4 19a12 12 0 0 1 24 0" />
+          <path d="M16 19l6.5-5" />
+          <circle cx="16" cy="19" r="1.4" fill="currentColor" stroke="none" />
+        </svg>
+      );
+    // Ongoing management — a refresh / update loop.
+    case 'care':
+      return (
+        <svg {...s}>
+          <path d="M25 12a9 9 0 0 0-15.5-6.2M7.5 4v4h4" />
+          <path d="M7 12a9 9 0 0 0 15.5 6.2M24.5 20v-4h-4" />
+        </svg>
+      );
+    default:
+      return null;
+  }
 }
 
-// Websites "What's included" — a stacked "build layers" list. Each capability is a full-width
-// layer laid on the stack; a growing depth glyph accumulates a bar per layer, and hovering lifts
-// the layer off the stack (raised shadow) to separate it. Distinct from every other scope variant
-// (editorial ghost numbers, grid chips, ledger arrows, marketing descriptors, print proof sheet):
-// here the metaphor is the layered build of the site itself.
+// Each website deliverable maps to a build layer, in stack order (foundation → care).
+const WEB_LAYER_KIND: Record<string, string> = {
+  'Website design & development': 'build',
+  'Landing pages': 'landing',
+  'UX/UI': 'uxui',
+  'Performance optimization': 'perf',
+  'Ongoing management': 'care',
+};
+
+// Websites "What's included" — an exploded 3D layer stack. The deliverables are flat planes stacked
+// in perspective (perspective + rotateX + per-plane translateZ), each with only a hairline top edge
+// and a wireframe glyph of that layer — so the section reads as the site itself being built up in
+// z-layers, not as a list of cards. Hovering or focusing a plane lifts it out of the stack toward
+// the viewer, lights its leading edge orange, and brings its descriptor forward. Flat planes on the
+// bare background — no borders, chips or numbers — distinct from every other scope variant and from
+// the browser-mock signature module below. Reduced motion renders the same planes flat and static.
 function ScopeStack({ items }: { items: string[] }) {
+  const reducedMotion = useReducedMotion();
+  const [active, setActive] = useState(0);
   return (
-    <div className="flex flex-col gap-3">
-      {items.map((item, i) => (
-        <div
-          key={item}
-          className="sd-reveal group/ly relative flex items-center gap-5 overflow-hidden rounded-xl border border-white/10 bg-white/[0.02] px-5 py-5 transition-all duration-300 ease-out hover-fine:hover:-translate-y-1 hover-fine:hover:border-orange/40 hover-fine:hover:bg-white/[0.04] hover-fine:hover:shadow-[0_18px_40px_-24px_rgba(245,139,39,0.5)] md:px-7"
-        >
-          {/* Leading edge — an orange spine that extends on hover, like a highlighted layer. */}
-          <span
-            aria-hidden
-            className="absolute left-0 top-0 h-full w-[3px] origin-top scale-y-0 bg-orange transition-transform duration-300 ease-out group-hover/ly:scale-y-100"
-          />
-          <span className="text-sm font-bold tabular-nums text-orange">{num(i)}</span>
-          <div className="min-w-0 flex-1">
-            <span
-              className="block font-sans font-bold tracking-tight text-white transition-transform duration-300 group-hover/ly:translate-x-1"
-              style={{ fontSize: 'clamp(1.1rem, 2.2vw, 1.5rem)' }}
+    <div className="sd-reveal [perspective-origin:50%_28%] [perspective:1500px]">
+      <div
+        className="mx-auto flex max-w-3xl flex-col gap-2.5 [transform-style:preserve-3d]"
+        style={reducedMotion ? undefined : { transform: 'rotateX(18deg)' }}
+      >
+        {items.map((item, i) => {
+          const on = active === i;
+          return (
+            <button
+              key={item}
+              type="button"
+              onMouseEnter={() => setActive(i)}
+              onFocus={() => setActive(i)}
+              className={cn(
+                'group/ly relative flex w-full items-center gap-5 border-t py-5 pl-6 pr-5 text-left md:gap-7 md:pl-8',
+                on ? 'border-orange/70' : 'border-white/12',
+              )}
+              style={
+                reducedMotion
+                  ? undefined
+                  : {
+                      transform: `translateZ(${i * 8 + (on ? 44 : 0)}px) translateY(${on ? -4 : 0}px)`,
+                      boxShadow: on ? '0 26px 55px -30px rgba(245,139,39,0.65)' : 'none',
+                      transition:
+                        'transform 0.45s cubic-bezier(0.22,1,0.36,1), box-shadow 0.45s ease, border-color 0.3s ease',
+                    }
+              }
             >
-              {item}
-            </span>
-            {WEB_SCOPE_DESC[item] && (
-              <span className="mt-1 block text-sm leading-relaxed text-white/50">
-                {WEB_SCOPE_DESC[item]}
+              {/* Faint plane sheen (static) + the orange wash that fades in when the layer is live. */}
+              <span
+                aria-hidden
+                className="pointer-events-none absolute inset-0 bg-gradient-to-r from-white/[0.045] to-transparent"
+              />
+              <span
+                aria-hidden
+                className={cn(
+                  'pointer-events-none absolute inset-0 bg-gradient-to-r from-orange/[0.1] via-orange/[0.03] to-transparent transition-opacity duration-300',
+                  on ? 'opacity-100' : 'opacity-0',
+                )}
+              />
+              {/* Leading edge — an orange spine that grows as the layer lifts. */}
+              <span
+                aria-hidden
+                className={cn(
+                  'absolute left-0 top-0 h-full w-[3px] origin-top bg-orange transition-transform duration-300 ease-out',
+                  on ? 'scale-y-100' : 'scale-y-0',
+                )}
+              />
+              <span
+                className={cn(
+                  'relative shrink-0 transition-colors duration-300',
+                  on ? 'text-orange' : 'text-white/35',
+                )}
+              >
+                <LayerMotif kind={WEB_LAYER_KIND[item]} className="h-7 w-9" />
               </span>
-            )}
-          </div>
-          <LayerGlyph count={i + 1} className="hidden shrink-0 sm:flex" />
-        </div>
-      ))}
+              <span className="relative min-w-0 flex-1">
+                <span
+                  className={cn(
+                    'block font-sans font-bold tracking-tight transition-colors duration-300',
+                    on ? 'text-white' : 'text-white/75',
+                  )}
+                  style={{ fontSize: 'clamp(1.05rem, 2vw, 1.4rem)' }}
+                >
+                  {item}
+                </span>
+                {WEB_SCOPE_DESC[item] && (
+                  <span
+                    className={cn(
+                      'mt-1 block text-sm leading-relaxed transition-colors duration-300',
+                      on ? 'text-white/60' : 'text-white/35',
+                    )}
+                  >
+                    {WEB_SCOPE_DESC[item]}
+                  </span>
+                )}
+              </span>
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -737,34 +867,90 @@ function TechGlyph({ kind, className }: { kind: string; className?: string }) {
 }
 
 function ScopeTechSpec({ items }: { items: string[] }) {
+  const [active, setActive] = useState(0);
+  const safeIndex = Math.min(active, Math.max(0, items.length - 1));
+  const item = items[safeIndex] ?? '';
+  const tags = APP_SCOPE_TECH[item] ?? [];
+
   return (
-    <div className="flex flex-col border-t border-white/15">
-      {items.map((item) => (
-        <div
-          key={item}
-          className="sd-reveal group/ts grid grid-cols-[5.5rem_1fr] items-baseline gap-x-5 gap-y-1 border-b border-white/10 py-5 transition-colors duration-300 hover-fine:hover:border-orange/40 sm:grid-cols-[9rem_1fr] sm:gap-x-8"
+    <div className="sd-reveal overflow-hidden rounded-2xl border border-white/12 bg-gradient-to-br from-white/[0.03] to-transparent lg:grid lg:grid-cols-[minmax(13rem,0.34fr)_1fr]">
+      <div
+        className="flex gap-2 overflow-x-auto border-b border-white/10 p-2 [scrollbar-width:none] lg:flex-col lg:gap-0 lg:overflow-visible lg:border-b-0 lg:border-r lg:p-0 [&::-webkit-scrollbar]:hidden"
+        role="tablist"
+        aria-label="Capabilities"
+      >
+        {items.map((label, i) => {
+          const on = i === safeIndex;
+          return (
+            <button
+              key={label}
+              type="button"
+              role="tab"
+              aria-selected={on}
+              onMouseEnter={() => setActive(i)}
+              onFocus={() => setActive(i)}
+              onClick={() => setActive(i)}
+              className={cn(
+                'min-w-[10.5rem] shrink-0 rounded-xl px-4 py-3 text-left transition-all duration-300 lg:min-w-0 lg:rounded-none lg:border-b lg:border-white/8 lg:px-5 lg:py-4 lg:last:border-b-0',
+                on
+                  ? 'bg-orange text-navy shadow-[inset_3px_0_0_0_#0f151f] lg:bg-orange/[0.12] lg:text-white lg:shadow-[inset_3px_0_0_0_#f58b27]'
+                  : 'bg-white/[0.03] text-white/50 hover-fine:hover:bg-white/[0.06] lg:bg-transparent lg:hover-fine:hover:bg-white/[0.04]',
+              )}
+            >
+              <span
+                className={cn(
+                  'font-mono text-[0.65rem] font-semibold tabular-nums',
+                  on ? 'text-navy/65 lg:text-orange' : 'text-orange/75',
+                )}
+              >
+                {num(i)}
+              </span>
+              <span className="mt-1 block font-sans text-sm font-bold leading-snug lg:text-[0.95rem]">{label}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      <div
+        role="tabpanel"
+        className="relative flex min-h-[17rem] flex-col justify-end overflow-hidden p-6 sm:min-h-[19rem] sm:p-8 lg:min-h-[26rem] lg:p-10 xl:p-12"
+      >
+        <span
+          aria-hidden
+          className="pointer-events-none absolute -right-2 top-2 font-sans font-black leading-none text-white/[0.045] select-none"
+          style={{ fontSize: 'clamp(4.5rem, 16vw, 10rem)' }}
         >
-          <span className="flex flex-col gap-1.5 self-start pt-1 text-orange/80 transition-colors duration-300 group-hover/ts:text-orange">
-            <span className="flex items-center gap-1.5">
-              {(APP_SCOPE_TECH[item] ?? []).map((k) => (
-                <TechGlyph key={k} kind={k} className="h-5 w-5 sm:h-6 sm:w-6" />
-              ))}
+          {num(safeIndex)}
+        </span>
+        <div className="relative z-10 flex flex-wrap items-center gap-2.5 sm:gap-3">
+          {tags.map((k) => (
+            <span
+              key={k}
+              className="flex h-10 w-10 items-center justify-center rounded-xl border border-orange/35 bg-orange/10 text-orange sm:h-11 sm:w-11"
+            >
+              <TechGlyph kind={k} className="h-5 w-5" />
             </span>
-            <span className="font-mono text-[0.62rem] leading-snug sm:text-[0.68rem]">
+          ))}
+          {APP_SCOPE_TAG[item] && (
+            <span className="rounded-full border border-white/10 bg-charcoal/60 px-3 py-1 font-mono text-[0.68rem] text-white/45">
               {APP_SCOPE_TAG[item]}
             </span>
-          </span>
-          <div>
-            <span
-              className="block font-sans font-bold tracking-tight text-white transition-transform duration-300 group-hover/ts:translate-x-1"
-              style={{ fontSize: 'clamp(1.1rem, 2.4vw, 1.6rem)' }}
-            >
-              {item}
-            </span>
-            <span className="mt-1 block text-sm leading-relaxed text-white/50">{APP_SCOPE_DESC[item]}</span>
-          </div>
+          )}
         </div>
-      ))}
+        <h3
+          key={item}
+          className="relative z-10 mt-5 max-w-2xl font-sans font-bold tracking-tight text-white motion-safe:animate-[tier-rise_360ms_ease-out_both] lg:mt-6"
+          style={{ fontSize: 'clamp(1.5rem, 3.2vw, 2.65rem)' }}
+        >
+          {item}
+        </h3>
+        <p
+          key={`${item}-d`}
+          className="relative z-10 mt-3 max-w-2xl text-base leading-relaxed text-white/60 motion-safe:animate-[tier-rise_360ms_ease-out_both] lg:max-w-3xl lg:text-lg"
+        >
+          {APP_SCOPE_DESC[item] ?? ''}
+        </p>
+      </div>
     </div>
   );
 }
@@ -779,35 +965,58 @@ const EVENT_SCOPE_DESC: Record<string, string> = {
   'Post-event evaluation': 'An honest read on the results against the goals we set.',
 };
 
-// Events "What's included" — an event coverage checklist. Each deliverable is a flat, divided row
-// with a check disc that fills orange on hover (the "handled" moment) and a one-line descriptor.
-// The ticking check is the distinguishing signature — no numbers, chips, ledger arrows, mono tags,
-// proof-sheet marks, or layer glyphs used by the other scope variants — and it reads as the "we
-// handle everything" promise, grounded in the event checklist.
+// Each deliverable maps to where it lands in the event's run-of-show, so the checklist reads as a
+// schedule from planning through to the wrap-up.
+const EVENT_SCOPE_PHASE: Record<string, string> = {
+  'Event branding & identity': 'Before the event',
+  'Marketing materials': 'Before the event',
+  'Full organisation & logistics': 'On the day',
+  'Photography & videography': 'On the day',
+  'Social media coverage': 'On the day',
+  'Post-event evaluation': 'After the event',
+};
+
+// Events "What's included" — an event run-of-show. Each deliverable hangs off a single connected
+// spine and is grouped by when it happens (before → on the day → after), with a check node that
+// fills orange on hover (the "handled" moment). The connected timeline plus agenda phases are the
+// distinguishing signature — flat, no cards, no numbers or chips — reading as the event schedule we
+// cover end to end, distinct from every other scope variant.
 function ScopeCoverage({ items }: { items: string[] }) {
   return (
-    <div className="grid border-t border-white/15 sm:grid-cols-2 sm:gap-x-12">
-      {items.map((item) => (
-        <div
-          key={item}
-          className="sd-reveal group/sc flex items-start gap-4 border-b border-white/10 py-5 transition-colors duration-300 hover-fine:hover:border-orange/40"
-        >
-          <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-white/20 text-orange transition-all duration-300 group-hover/sc:border-orange group-hover/sc:bg-orange group-hover/sc:text-navy">
-            <svg viewBox="0 0 24 24" fill="none" aria-hidden className="h-3.5 w-3.5">
-              <path d="M5 12.5l4.2 4.2L19 7" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </span>
-          <div className="min-w-0">
-            <span
-              className="block font-sans font-bold tracking-tight text-white transition-transform duration-300 group-hover/sc:translate-x-1"
-              style={{ fontSize: 'clamp(1.1rem, 2.2vw, 1.5rem)' }}
-            >
-              {item}
-            </span>
-            <span className="mt-1 block text-sm leading-relaxed text-white/50">{EVENT_SCOPE_DESC[item]}</span>
+    <div className="mx-auto max-w-3xl">
+      {items.map((item, i) => {
+        const phase = EVENT_SCOPE_PHASE[item];
+        const isNewPhase = phase && phase !== EVENT_SCOPE_PHASE[items[i - 1]];
+        const isFirst = i === 0;
+        const isLast = i === items.length - 1;
+        return (
+          <div key={item} className="sd-reveal group/cv flex gap-5 md:gap-7">
+            {/* Rail — a continuous spine threading each check node, so the list reads as one timeline. */}
+            <div className="relative flex w-7 shrink-0 flex-col items-center self-stretch">
+              <span aria-hidden className={cn('w-px flex-1', isFirst ? 'bg-transparent' : 'bg-white/12')} />
+              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-white/25 bg-charcoal text-orange transition-all duration-300 ease-out group-hover/cv:scale-110 group-hover/cv:border-orange group-hover/cv:bg-orange group-hover/cv:text-navy">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden className="h-3.5 w-3.5">
+                  <path d="M5 12.5l4.2 4.2L19 7" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </span>
+              <span aria-hidden className={cn('w-px flex-1', isLast ? 'bg-transparent' : 'bg-white/12')} />
+            </div>
+            {/* Content — the phase caption prints once per group, like an agenda heading. */}
+            <div className={cn('min-w-0 flex-1 pt-1.5', isLast ? 'pb-1.5' : 'pb-9')}>
+              {isNewPhase && (
+                <span className="mb-2 block text-sm font-semibold text-orange">{phase}</span>
+              )}
+              <span
+                className="block font-sans font-bold tracking-tight text-white transition-transform duration-300 group-hover/cv:translate-x-1"
+                style={{ fontSize: 'clamp(1.1rem, 2.2vw, 1.5rem)' }}
+              >
+                {item}
+              </span>
+              <span className="mt-1 block text-sm leading-relaxed text-white/50">{EVENT_SCOPE_DESC[item]}</span>
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }

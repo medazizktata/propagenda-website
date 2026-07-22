@@ -309,7 +309,7 @@ export const zealerz = caseStudy(
     client: 'Zealerz',
     industry: 'LPG Marketplace & Logistics',
     year: '2024',
-    heroImage: '/images/portfolio/work-quickcars.png',
+    heroImage: '/images/work/zealerz/hero.png',
     scopeItems: [
       'Logo design and complete brand identity',
       'Visual language reflecting technology, speed, and trust',
@@ -339,22 +339,10 @@ export const zealerz = caseStudy(
     },
     gallery: [
       {
-        src: '/images/portfolio/work-quickcars.png',
-        alt: 'Zealerz brand identity',
-        width: 1600,
-        height: 1200,
-      },
-      {
-        src: '/images/portfolio/work-events.png',
-        alt: 'Zealerz app interface design',
-        width: 1600,
-        height: 1200,
-      },
-      {
-        src: '/images/portfolio/work-food.png',
-        alt: 'Zealerz visual system',
-        width: 1600,
-        height: 1200,
+        src: '/images/work/zealerz/hero.png',
+        alt: 'Zealerz LPG delivery app and brand identity — delivery trucks, gas cylinders and solar in a green industrial palette.',
+        width: 1241,
+        height: 1754,
       },
     ],
     prev: 'emirates-agro',

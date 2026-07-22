@@ -44,7 +44,8 @@ type ScopeVariant =
   | 'channels'
   | 'stack'
   | 'techspec'
-  | 'coverage';
+  | 'coverage'
+  | 'filmstrip';
 const SCOPE_VARIANT: Record<ServiceSlug, ScopeVariant> = {
   'branding-visual-identity': 'editorial',
   'public-relations': 'grid',
@@ -52,7 +53,7 @@ const SCOPE_VARIANT: Record<ServiceSlug, ScopeVariant> = {
   websites: 'stack',
   'mobile-applications': 'techspec',
   events: 'coverage',
-  'photography-videography': 'editorial',
+  'photography-videography': 'filmstrip',
 };
 
 // Temporary imagery for the visual discipline tiles (photography/videography types).
@@ -402,6 +403,7 @@ function ServiceScope({ service }: { service: ServiceRecord }) {
       >
         <SectionLabel className="sd-reveal mb-8">What&apos;s included</SectionLabel>
         {variant === 'editorial' && <ScopeEditorial items={service.scopeItems} />}
+        {variant === 'filmstrip' && <ScopeFilmstrip items={service.scopeItems} />}
         {variant === 'grid' && <ScopeGrid items={service.scopeItems} />}
         {variant === 'ledger' && <ScopeLedger items={service.scopeItems} />}
         {variant === 'channels' && <ScopeChannels items={service.scopeItems} />}
@@ -457,6 +459,129 @@ function ScopeEditorial({ items }: { items: string[] }) {
           </div>
         </div>
       ))}
+    </div>
+  );
+}
+
+// Photography "What's included" — a 35mm contact sheet. Each deliverable is a frame on one
+// continuous film strip: sprocket perforations run the full length top and bottom, each frame
+// carries edge-printed film numbering (e.g. "24A") and the deliverable name in the rebate margin.
+// The roll rests as a dim, desaturated proof (every frame before the selects are made); hovering a
+// frame racks it into full colour, glows it off the base, and drops a hand-drawn orange grease-
+// pencil ring on it — the way an editor circles the keeper to print. One film surface on the bare
+// background (frames are windows punched into the strip, not cards), slid horizontally like a strip
+// across a light table — distinct from the ghost-number rows and every other scope variant. Touch
+// devices see the frames already in colour; reduced motion keeps everything still (no scale).
+const PHOTO_SCOPE_IMG: Record<string, string> = {
+  'Product photography': '/images/portfolio/work-food.png',
+  'Lifestyle & editorial': '/images/portfolio/work-restaurant.png',
+  'Event coverage': '/images/portfolio/work-events.png',
+  'Real estate': '/images/portfolio/work-sanapex.png',
+  'Cinematic video': '/images/portfolio/work-quickcars.png',
+  'Motion graphics': '/images/portfolio/work-ghaftree.png',
+  'Live streaming': '/images/portfolio/work-events.png',
+};
+const PHOTO_FRAME_FALLBACK = [
+  '/images/portfolio/work-food.png',
+  '/images/portfolio/work-restaurant.png',
+  '/images/portfolio/work-events.png',
+  '/images/portfolio/work-sanapex.png',
+  '/images/portfolio/work-quickcars.png',
+  '/images/portfolio/work-ghaftree.png',
+];
+// Plausible 35mm edge numbering (…23, 24A, 25, 26A…) so the strip reads as a real roll.
+const frameCode = (i: number) => `${21 + i}${i % 2 === 0 ? '' : 'A'}`;
+// A row of round sprocket holes, tiled the full length of the strip and scrolling with it.
+const SPROCKET_STYLE: React.CSSProperties = {
+  backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.16) 0 2.4px, transparent 3px)',
+  backgroundSize: '19px 100%',
+  backgroundRepeat: 'repeat-x',
+  backgroundPosition: 'center',
+};
+
+function ScopeFilmstrip({ items }: { items: string[] }) {
+  return (
+    <div className="sd-reveal">
+      {/* Light-table note — reads like the printing along the film rebate. */}
+      <div className="mb-5 flex items-baseline justify-between gap-4">
+        <span className="text-sm text-white/45">Hover a frame to rack it into focus.</span>
+        <span className="hidden font-mono text-xs tabular-nums text-white/30 sm:block">
+          Roll 01 · {items.length} frames · ISO 400
+        </span>
+      </div>
+
+      {/* The strip — one continuous film surface, slid across the light table. Edge-faded so it
+          reads as running off past the margins. */}
+      <div className="relative overflow-x-auto pb-1 [mask-image:linear-gradient(to_right,transparent,#000_3%,#000_97%,transparent)] [scrollbar-width:none] [-webkit-mask-image:linear-gradient(to_right,transparent,#000_3%,#000_97%,transparent)] [&::-webkit-scrollbar]:hidden">
+        <div className="flex w-max flex-col rounded-[3px] bg-[#0b0b0d] ring-1 ring-white/10">
+          {/* Top perforations. */}
+          <div aria-hidden className="h-5 w-full" style={SPROCKET_STYLE} />
+
+          <div className="flex gap-1.5 px-2">
+            {items.map((item, i) => {
+              const src = PHOTO_SCOPE_IMG[item] ?? PHOTO_FRAME_FALLBACK[i % PHOTO_FRAME_FALLBACK.length];
+              return (
+                <div key={item} className="group/fr w-[13.5rem] shrink-0 pb-3 sm:w-[15rem]">
+                  {/* Edge code — printed in the rebate above the frame. */}
+                  <div className="px-1 py-2 font-mono text-[0.62rem] tabular-nums text-orange/70">
+                    {frameCode(i)}
+                  </div>
+
+                  {/* The negative window — the whole roll rests under-exposed; the hovered frame
+                      snaps to full colour and glows off the base. */}
+                  <div className="relative aspect-[3/2] overflow-hidden rounded-[1px] bg-black transition-shadow duration-500 group-hover/fr:shadow-[0_14px_34px_-14px_rgba(245,139,39,0.7)]">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={src}
+                      alt=""
+                      className="h-full w-full object-cover opacity-[0.72] grayscale-[0.5] transition-all duration-500 ease-out group-hover/fr:opacity-100 group-hover/fr:grayscale-0 motion-safe:group-hover/fr:scale-[1.04] touch-coarse:opacity-100 touch-coarse:grayscale-0"
+                    />
+                    {/* Proof wash — the dim exposure that lifts as the frame is selected. */}
+                    <span
+                      aria-hidden
+                      className="pointer-events-none absolute inset-0 bg-charcoal/30 transition-opacity duration-500 group-hover/fr:opacity-0 touch-coarse:opacity-0"
+                    />
+                    {/* Grease-pencil "keeper" ring — the editor circles the frame to print. */}
+                    <svg
+                      aria-hidden
+                      viewBox="0 0 150 100"
+                      className="pointer-events-none absolute inset-0 h-full w-full opacity-0 transition-opacity duration-300 group-hover/fr:opacity-100"
+                    >
+                      <ellipse
+                        cx="75"
+                        cy="50"
+                        rx="66"
+                        ry="41"
+                        fill="none"
+                        stroke="#f58b27"
+                        strokeWidth="3"
+                        strokeLinecap="round"
+                        strokeDasharray="300 16"
+                        transform="rotate(-3 75 50)"
+                      />
+                    </svg>
+                  </div>
+
+                  {/* Name + caption — the rest of the edge printing below the frame. */}
+                  <div className="px-1 pt-2.5">
+                    <span className="block font-sans text-sm font-bold tracking-tight text-white/80 transition-colors duration-300 group-hover/fr:text-orange">
+                      {item}
+                    </span>
+                    {PHOTO_SCOPE_DESC[item] && (
+                      <span className="mt-1 block text-xs leading-relaxed text-white/40">
+                        {PHOTO_SCOPE_DESC[item]}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Bottom perforations. */}
+          <div aria-hidden className="h-5 w-full" style={SPROCKET_STYLE} />
+        </div>
+      </div>
     </div>
   );
 }

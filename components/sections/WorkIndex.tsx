@@ -9,7 +9,7 @@ import type { CaseStudyRecord } from '@/types/content';
 
 export interface WorkIndexGroup {
   id: string;
-  /** Sentence/title-case group label (e.g. "Featured work") — no tracked caps. */
+  /** Sentence/title-case category label (e.g. "Automotive", "Property & interiors") — no tracked caps. */
   label: string;
   items: CaseStudyRecord[];
 }
@@ -19,12 +19,13 @@ interface WorkIndexProps {
 }
 
 /**
- * The Work hub centrepiece: an oversized, full-width "famous work" index. Each case study is
+ * The Work hub centrepiece: an oversized, full-width "famous work" index. Case studies are
+ * split into broad category sections (Automotive, Property & interiors, …); each study is
  * one giant type row; hover/focus blooms its REAL heroImage full-bleed behind the names
  * (fast fade layered over a slow 5s Ken-Burns zoom), siblings dim, and its industry/year
- * caption appears. Featured and More share one bloom panel and one active index. At rest the
- * flagship hero sits softly behind the names so the section is image-forward, never a void.
- * Reduced-motion: instant swaps, a single fixed scale, no zoom.
+ * caption appears. Every category section shares one bloom panel and one running active index.
+ * At rest the flagship hero sits softly behind the names so the section is image-forward,
+ * never a void. Reduced-motion: instant swaps, a single fixed scale, no zoom.
  */
 export function WorkIndex({ groups }: WorkIndexProps) {
   const ref = useRef<HTMLElement>(null);

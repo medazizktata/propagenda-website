@@ -85,7 +85,10 @@ export interface CaseStudyRecord {
   slug: WorkSlug;
   title: string;
   h1: string;
+  /** Legacy featured/more tier — retained in the data but no longer used for hub grouping. */
   tier: WorkTier;
+  /** Broad industry category used to group the Work hub (sentence case, e.g. "Automotive"). */
+  category: string;
   overview: string;
   scopeItems: string[];
   gallery: GalleryImage[];

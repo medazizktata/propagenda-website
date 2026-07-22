@@ -8,9 +8,20 @@ import { workHubHeading, logoGridBrands } from '@/content/workHub';
 import { allCaseStudies } from '@/content/work';
 
 // Real case studies (with their heroImages, client, industry, year) drive the index —
-// grouped by the authored tier so Featured leads and More follows.
-const featured = allCaseStudies.filter((c) => c.tier === 'featured');
-const more = allCaseStudies.filter((c) => c.tier === 'more');
+// now grouped by broad industry category rather than the legacy featured/more tier.
+// Explicit order so the hub reads deliberately; empty categories are dropped.
+const CATEGORY_ORDER = [
+  'Automotive',
+  'Property & interiors',
+  'Healthcare & retail',
+  'Industry & energy',
+] as const;
+
+const categoryGroups = CATEGORY_ORDER.map((label) => ({
+  id: label.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
+  label,
+  items: allCaseStudies.filter((c) => c.category === label),
+})).filter((group) => group.items.length > 0);
 
 export function WorkPageContent() {
   return (
@@ -21,12 +32,7 @@ export function WorkPageContent() {
         fixed
         ghost
       />
-      <WorkIndex
-        groups={[
-          { id: 'featured', label: 'Featured work', items: featured },
-          { id: 'more', label: 'More work', items: more },
-        ]}
-      />
+      <WorkIndex groups={categoryGroups} />
       <LogoWallGrid brands={logoGridBrands} />
       <ClosingCTABand />
     </>

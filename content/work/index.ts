@@ -5,6 +5,7 @@ function caseStudy(
   title: string,
   h1: string,
   tier: CaseStudyRecord['tier'],
+  category: CaseStudyRecord['category'],
   description: string,
   extra?: Partial<CaseStudyRecord>,
 ): CaseStudyRecord {
@@ -13,6 +14,7 @@ function caseStudy(
     title,
     h1,
     tier,
+    category,
     overview: `${title} case study — content from CONTENT_MAPPING.md.`,
     scopeItems: ['Branding', 'Digital presence'],
     gallery: [],
@@ -26,6 +28,7 @@ export const sanapexInteriors = caseStudy(
   'Sanapex Interiors — Full Branding & Digital Presence',
   'SANAPEX INTERIORS — FULL BRANDING & DIGITAL PRESENCE',
   'featured',
+  'Property & interiors',
   'Full visual identity and digital presence for a high-end interior design studio in Dubai.',
   {
     overview:
@@ -99,6 +102,7 @@ export const p2pMotors = caseStudy(
   'P2P Motors — Full Branding & Visual Identity',
   'P2P MOTORS — FULL BRANDING & VISUAL IDENTITY',
   'featured',
+  'Automotive',
   'Case study: bold branding for a Dubai luxury and specialty vehicle export company.',
   {
     overview:
@@ -175,6 +179,7 @@ export const dosePharmacy = caseStudy(
   'Dose Pharmacy — Branding & Fit-Out Design',
   'DOSE PHARMACY — BRANDING & FIT-OUT DESIGN',
   'featured',
+  'Healthcare & retail',
   'Case study: retail pharmacy branding and spatial fit-out in Riyadh.',
   {
     overview:
@@ -243,6 +248,7 @@ export const clemsonPorterProperties = caseStudy(
   'Clemson Porter Properties — Full Rebranding',
   'CLEMSON PORTER PROPERTIES — FULL REBRANDING',
   'featured',
+  'Property & interiors',
   'Case study: quiet-luxury rebranding for a UAE property brokerage.',
   {
     overview:
@@ -317,6 +323,7 @@ export const emiratesAgro = caseStudy(
   'Emirates Agro — Rebranding & Visual Identity',
   'EMIRATES AGRO — REBRANDING & VISUAL IDENTITY',
   'more',
+  'Industry & energy',
   'Case study: heritage-forward rebranding for a global agricultural supplier.',
   {
     overview:
@@ -384,6 +391,7 @@ export const zealerz = caseStudy(
   'Zealerz — Branding & Visual Identity',
   'ZEALERZ — BRANDING & VISUAL IDENTITY',
   'more',
+  'Industry & energy',
   'Case study: brand identity and app design for an LPG marketplace.',
   {
     overview:

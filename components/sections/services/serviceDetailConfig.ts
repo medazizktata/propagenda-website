@@ -172,6 +172,32 @@ export const serviceDetailConfig: Record<ServiceSlug, ServiceDetailConfig> = {
       { title: 'Launch', body: 'Tested, optimised, and shipped with confidence.' },
       { title: 'Manage', body: 'Ongoing care, updates, and performance tuning.' },
     ],
+    faqs: [
+      {
+        q: 'How long does it take to build a website?',
+        a: 'A focused landing page can be live in one to two weeks; a full multi-page site usually runs four to eight weeks depending on the number of pages, features, and content readiness. We map a clear timeline with milestones during the concept phase, so you always know what ships when.',
+      },
+      {
+        q: 'Can we edit the site ourselves after launch?',
+        a: 'Yes. We build on a content management system so your team can update text, images, and pages without touching code. We hand over a short walkthrough and simple documentation, and we are on call whenever you want us to handle changes for you.',
+      },
+      {
+        q: 'Do you handle hosting and domains?',
+        a: 'We do. We can set up fast, secure hosting, connect your domain, and configure SSL and email — or work with your existing providers if you prefer. Either way you keep full ownership of the domain and accounts.',
+      },
+      {
+        q: 'Will the site work well on mobile?',
+        a: 'Always. Every site is designed responsive-first, so the layout, navigation, and imagery adapt cleanly from large desktops down to phones. We test across real devices and breakpoints before launch to make sure it looks and works right everywhere.',
+      },
+      {
+        q: 'Is the site optimised for search and speed?',
+        a: 'Yes. We build on clean, efficient code with proper metadata, semantic structure, and image optimisation, and we tune against Core Web Vitals so pages load fast and rank well. Strong performance and on-page SEO are part of the build, not an afterthought.',
+      },
+      {
+        q: 'What does ongoing management include?',
+        a: 'Hosting and security, software and plugin updates, backups, uptime monitoring, small content changes, and regular performance checks. We offer flexible care plans so your site stays fast, safe, and current long after launch.',
+      },
+    ],
   },
   'mobile-applications': {
     ctaHeading: 'Ready to ship your app?',

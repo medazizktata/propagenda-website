@@ -16,6 +16,7 @@ import { ServiceWorkGrid } from '@/components/sections/services/ServiceWorkGrid'
 import { PrInfluenceRoster } from '@/components/sections/services/PrInfluenceRoster';
 import { MarketingFunnel } from '@/components/sections/services/MarketingFunnel';
 import { GraphicsProductionShowcase } from '@/components/sections/services/GraphicsProductionShowcase';
+import { WebsitesShowcase } from '@/components/sections/services/WebsitesShowcase';
 import { serviceDetailConfig } from '@/components/sections/services/serviceDetailConfig';
 
 // Real client logos (temporary curated proof strip — shown on light chips so they read on
@@ -33,13 +34,13 @@ const num = (i: number) => String(i + 1).padStart(2, '0');
 
 // "What's included" gets a layout unique to each service type, chosen so it never mirrors
 // that service's signature module below it.
-type ScopeVariant = 'editorial' | 'grid' | 'ledger' | 'channels' | 'specsheet';
+type ScopeVariant = 'editorial' | 'grid' | 'ledger' | 'channels' | 'specsheet' | 'stack';
 const SCOPE_VARIANT: Record<ServiceSlug, ScopeVariant> = {
   'branding-visual-identity': 'editorial',
   'public-relations': 'grid',
   'online-offline-marketing': 'channels',
   'graphics-production': 'specsheet',
-  websites: 'grid',
+  websites: 'stack',
   'mobile-applications': 'grid',
   events: 'editorial',
   'photography-videography': 'editorial',
@@ -101,7 +102,7 @@ export function ServiceDetailContent({ service }: { service: ServiceRecord }) {
   return (
     <div ref={rootRef} className="bg-charcoal">
       {/* ── HERO (SMV project-detail composition: centred title + tagline + scroll cue) ─── */}
-      <section className="relative flex min-h-[92svh] flex-col items-center justify-center overflow-hidden bg-charcoal px-gutter-m py-28 text-center lg:px-gutter-d">
+      <section className="relative flex min-h-[92svh] flex-col items-center justify-center overflow-hidden bg-charcoal px-gutter-m pb-20 pt-28 text-center lg:px-gutter-d lg:pb-28">
         {cfg.heroImage ? (
           <div aria-hidden className="absolute inset-0">
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -118,7 +119,7 @@ export function ServiceDetailContent({ service }: { service: ServiceRecord }) {
         {/* Breadcrumb — top-left; the "Services" link already navigates back (no separate arrow). */}
         <nav
           aria-label="Breadcrumb"
-          className="sd-reveal absolute left-gutter-m top-24 z-content flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-wider text-white/60 lg:left-gutter-d"
+          className="sd-reveal absolute left-1/2 top-24 z-content flex max-w-[calc(100%-2rem)] -translate-x-1/2 flex-wrap items-center justify-center gap-2 text-center text-xs font-semibold uppercase tracking-wider text-white/60"
         >
           <Link href="/services" className="transition-hover hover-fine:hover:text-orange">
             Services
@@ -129,7 +130,7 @@ export function ServiceDetailContent({ service }: { service: ServiceRecord }) {
           <span className="text-white">{service.title}</span>
         </nav>
 
-        <div className="relative z-content flex max-w-4xl flex-col items-center">
+        <div className="relative z-content flex max-w-4xl translate-y-6 flex-col items-center md:translate-y-10">
           <h1
             className="sd-reveal font-sans font-bold uppercase leading-[0.9] tracking-display text-white [text-shadow:0_2px_30px_rgba(0,0,0,0.55)]"
             style={{ fontSize: 'clamp(2.4rem, 8.5vw, 7rem)' }}
@@ -376,6 +377,7 @@ function ServiceScope({ service }: { service: ServiceRecord }) {
         {variant === 'ledger' && <ScopeLedger items={service.scopeItems} />}
         {variant === 'channels' && <ScopeChannels items={service.scopeItems} />}
         {variant === 'specsheet' && <ScopeSpecSheet items={service.scopeItems} />}
+        {variant === 'stack' && <ScopeStack items={service.scopeItems} />}
       </div>
     </section>
   );
@@ -586,6 +588,70 @@ function ScopeSpecSheet({ items }: { items: string[] }) {
           </div>
         ))}
       </div>
+    </div>
+  );
+}
+
+// One-line web descriptor per website deliverable — grounds the stack in real subject matter.
+const WEB_SCOPE_DESC: Record<string, string> = {
+  'Website design & development': 'Custom sites, designed and built from the ground up.',
+  'Landing pages': 'Focused, high-converting pages for every campaign.',
+  'UX/UI': 'Interfaces that are intuitive to navigate and quick to grasp.',
+  'Performance optimization': 'Fast loads, clean code, and healthy Core Web Vitals.',
+  'Ongoing management': 'Hosting, updates, security, and steady improvement.',
+};
+
+// A stack-depth glyph — one bar per layer reached, so the stack visibly builds as the list
+// descends (foundation → launch → care).
+function LayerGlyph({ count, className }: { count: number; className?: string }) {
+  return (
+    <span aria-hidden className={cn('flex flex-col items-end justify-end gap-[3px]', className)}>
+      {Array.from({ length: count }).map((_, i) => (
+        <span
+          key={i}
+          className="block h-[3px] rounded-full bg-orange transition-all duration-300"
+          style={{ width: `${14 + i * 4}px`, opacity: 0.4 + i * 0.12 }}
+        />
+      ))}
+    </span>
+  );
+}
+
+// Websites "What's included" — a stacked "build layers" list. Each capability is a full-width
+// layer laid on the stack; a growing depth glyph accumulates a bar per layer, and hovering lifts
+// the layer off the stack (raised shadow) to separate it. Distinct from every other scope variant
+// (editorial ghost numbers, grid chips, ledger arrows, marketing descriptors, print proof sheet):
+// here the metaphor is the layered build of the site itself.
+function ScopeStack({ items }: { items: string[] }) {
+  return (
+    <div className="flex flex-col gap-3">
+      {items.map((item, i) => (
+        <div
+          key={item}
+          className="sd-reveal group/ly relative flex items-center gap-5 overflow-hidden rounded-xl border border-white/10 bg-white/[0.02] px-5 py-5 transition-all duration-300 ease-out hover-fine:hover:-translate-y-1 hover-fine:hover:border-orange/40 hover-fine:hover:bg-white/[0.04] hover-fine:hover:shadow-[0_18px_40px_-24px_rgba(245,139,39,0.5)] md:px-7"
+        >
+          {/* Leading edge — an orange spine that extends on hover, like a highlighted layer. */}
+          <span
+            aria-hidden
+            className="absolute left-0 top-0 h-full w-[3px] origin-top scale-y-0 bg-orange transition-transform duration-300 ease-out group-hover/ly:scale-y-100"
+          />
+          <span className="text-sm font-bold tabular-nums text-orange">{num(i)}</span>
+          <div className="min-w-0 flex-1">
+            <span
+              className="block font-sans font-bold tracking-tight text-white transition-transform duration-300 group-hover/ly:translate-x-1"
+              style={{ fontSize: 'clamp(1.1rem, 2.2vw, 1.5rem)' }}
+            >
+              {item}
+            </span>
+            {WEB_SCOPE_DESC[item] && (
+              <span className="mt-1 block text-sm leading-relaxed text-white/50">
+                {WEB_SCOPE_DESC[item]}
+              </span>
+            )}
+          </div>
+          <LayerGlyph count={i + 1} className="hidden shrink-0 sm:flex" />
+        </div>
+      ))}
     </div>
   );
 }
@@ -847,6 +913,7 @@ function SignatureModule({ service }: { service: ServiceRecord }) {
   if (service.slug === 'graphics-production') return <GraphicsProductionShowcase />;
   if (service.slug === 'public-relations') return <PrInfluenceRoster />;
   if (service.slug === 'online-offline-marketing') return <MarketingFunnel />;
+  if (service.slug === 'websites') return <WebsitesShowcase />;
   if (service.tiers && service.tiers.length > 0) return <TierCards service={service} />;
   if (service.eventChecklist && service.eventChecklist.length > 0)
     return <ChecklistGrid items={service.eventChecklist} />;

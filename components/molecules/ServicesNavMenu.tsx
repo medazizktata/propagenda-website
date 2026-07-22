@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { AppLink } from '@/components/ui/Link';
@@ -149,13 +149,35 @@ function ServiceIcon({ slug, className }: { slug: string; className?: string }) 
 export function ServicesNavMenu() {
   const pathname = usePathname();
   const onServices = pathname === '/services' || pathname.startsWith('/services/');
+  const rootRef = useRef<HTMLDivElement>(null);
+  const isFirstPath = useRef(true);
 
   const currentIndex = SERVICE_MENU.findIndex((s) => s.href === pathname);
   const [active, setActive] = useState(currentIndex >= 0 ? currentIndex : 0);
+  const [menuSuppressed, setMenuSuppressed] = useState(false);
   const preview = SERVICE_MENU[active];
 
+  useEffect(() => {
+    setActive(currentIndex >= 0 ? currentIndex : 0);
+    if (isFirstPath.current) {
+      isFirstPath.current = false;
+      return;
+    }
+    setMenuSuppressed(true);
+    const focused = document.activeElement;
+    if (focused instanceof HTMLElement && rootRef.current?.contains(focused)) {
+      focused.blur();
+    }
+  }, [pathname, currentIndex]);
+
+  const dismissMenu = () => setMenuSuppressed(true);
+
   return (
-    <div className="group relative">
+    <div
+      ref={rootRef}
+      className="group relative"
+      onMouseLeave={() => setMenuSuppressed(false)}
+    >
       <AppLink
         href="/services"
         variant="nav"
@@ -177,8 +199,8 @@ export function ServicesNavMenu() {
       <div
         className={cn(
           'invisible absolute left-1/2 top-full z-header -translate-x-1/2 translate-y-2 pt-4 opacity-0 transition-all duration-200 ease-out',
-          'group-hover:visible group-hover:translate-y-0 group-hover:opacity-100',
-          'focus-within:visible focus-within:translate-y-0 focus-within:opacity-100',
+          !menuSuppressed &&
+            'group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 focus-within:visible focus-within:translate-y-0 focus-within:opacity-100',
         )}
       >
         <div className="relative w-[46rem] max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl border border-white/12 bg-charcoal/95 shadow-[0_28px_70px_-20px_rgba(0,0,0,0.8)] backdrop-blur-md">
@@ -193,6 +215,7 @@ export function ServicesNavMenu() {
                 <span className="text-xs text-white/45">Our services</span>
                 <Link
                   href="/services"
+                  onClick={dismissMenu}
                   className="text-xs font-medium text-orange/90 no-underline transition-colors hover-fine:hover:text-orange"
                 >
                   View all
@@ -200,28 +223,36 @@ export function ServicesNavMenu() {
               </div>
               <ul className="flex flex-col">
                 {SERVICE_MENU.map((s, i) => {
-                  const isActive = active === i;
+                  const isCurrent = pathname === s.href;
+                  const isPreview = active === i;
                   const slug = s.href.split('/').pop() ?? '';
                   return (
                     <li key={s.href} onMouseEnter={() => setActive(i)} onFocus={() => setActive(i)}>
                       <Link
                         href={s.href}
+                        aria-current={isCurrent ? 'page' : undefined}
+                        onClick={dismissMenu}
                         className={cn(
-                          'flex items-center gap-3 px-3 py-3 no-underline transition-transform duration-300 ease-out',
-                          isActive ? 'translate-x-1.5' : 'translate-x-0',
+                          'flex items-center gap-3 border-l-2 py-3 pl-[calc(0.75rem-2px)] pr-3 no-underline transition-[transform,background-color] duration-300 ease-out',
+                          isCurrent
+                            ? 'border-orange bg-white/[0.06]'
+                            : 'border-transparent',
+                          isPreview && !isCurrent ? 'translate-x-1.5' : 'translate-x-0',
                         )}
                       >
                         <ServiceIcon
                           slug={slug}
                           className={cn(
                             'h-[1.15rem] w-[1.15rem] shrink-0 transition-colors duration-300 ease-out',
-                            isActive ? 'text-orange' : 'text-white/40',
+                            isCurrent || isPreview ? 'text-orange' : 'text-white/40',
                           )}
                         />
                         <span
                           className={cn(
                             'text-[0.9rem] leading-tight transition-colors duration-300 ease-out',
-                            isActive ? 'font-semibold text-orange' : 'font-medium text-white/70',
+                            isCurrent || isPreview
+                              ? 'font-semibold text-orange'
+                              : 'font-medium text-white/70',
                           )}
                         >
                           {s.label}
@@ -236,6 +267,7 @@ export function ServicesNavMenu() {
             {/* ── Preview pane — full-bleed image, content overlaid at the foot ── */}
             <Link
               href={preview.href}
+              onClick={dismissMenu}
               className="group/pv relative flex flex-col justify-end overflow-hidden no-underline"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}

@@ -22,16 +22,6 @@ import { MobileAppShowcase } from '@/components/sections/services/MobileAppShowc
 import { EventsJourney } from '@/components/sections/services/EventsJourney';
 import { serviceDetailConfig } from '@/components/sections/services/serviceDetailConfig';
 
-// Real client logos (temporary curated proof strip — shown on light chips so they read on
-// the dark surface). Same honest "trusted by" set across detail pages.
-const PROOF_LOGOS = [
-  { name: 'Sanapex Interiors', src: '/images/clients/sanapex-interiors.png' },
-  { name: 'P2P Motors', src: '/images/clients/p2p-motors.png' },
-  { name: 'Centralhub', src: '/images/clients/centralhub.png' },
-  { name: 'Ghaf Tree', src: '/images/clients/ghaf-tree.png' },
-  { name: 'Dr. Shifa', src: '/images/clients/dr-shifa.png' },
-  { name: 'OU Optics', src: '/images/clients/ou-optics.png' },
-];
 
 const num = (i: number) => String(i + 1).padStart(2, '0');
 
@@ -205,29 +195,6 @@ export function ServiceDetailContent({ service }: { service: ServiceRecord }) {
 
       {/* ── SELECTED WORK (SMV-style image grid) ─────────────────────────── */}
       <ServiceWorkGrid />
-
-      {/* ── TRUSTED BY (logo marquee) ────────────────────────────────────── */}
-      <section className="relative overflow-hidden px-gutter-m py-12 lg:px-gutter-d lg:py-16">
-        <div aria-hidden className="pattern-section-fade absolute inset-0">
-          <BrandPattern variant="tiled" />
-        </div>
-        <div className="relative z-content mx-auto max-w-6xl">
-          <SectionLabel className="sd-reveal mb-8">Trusted by</SectionLabel>
-          <div className="sd-reveal relative overflow-hidden [mask-image:linear-gradient(to_right,transparent,#000_7%,#000_93%,transparent)] [-webkit-mask-image:linear-gradient(to_right,transparent,#000_7%,#000_93%,transparent)]">
-            <div className="flex w-max animate-[marquee_32s_linear_infinite] motion-reduce:animate-none">
-              {[...PROOF_LOGOS, ...PROOF_LOGOS].map((logo, i) => (
-                <span
-                  key={`${logo.name}-${i}`}
-                  className="mx-2 flex h-20 w-40 shrink-0 items-center justify-center rounded-xl bg-white/90 px-6 py-4"
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={logo.src} alt={logo.name} className="max-h-full max-w-full object-contain" />
-                </span>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* ── FAQ (services with authored questions) ───────────────────────── */}
       {cfg.faqs && cfg.faqs.length > 0 && <ServiceFAQ faqs={cfg.faqs} />}

@@ -49,11 +49,13 @@ export const ffInitLoader = parseFlag(
 /** Per-route unlocks while soft launch is active. Default: locked (false). */
 export const pageFlags = {
   home: true, // always public
-  about: parseFlag(process.env.NEXT_PUBLIC_FF_PAGE_ABOUT, false),
-  services: parseFlag(process.env.NEXT_PUBLIC_FF_PAGE_SERVICES, false),
-  work: parseFlag(process.env.NEXT_PUBLIC_FF_PAGE_WORK, false),
+  // Launched sections default to unlocked; an env var can still force-lock (…=false).
+  about: parseFlag(process.env.NEXT_PUBLIC_FF_PAGE_ABOUT, true),
+  services: parseFlag(process.env.NEXT_PUBLIC_FF_PAGE_SERVICES, true),
+  work: parseFlag(process.env.NEXT_PUBLIC_FF_PAGE_WORK, true),
+  // Not ready yet — stay behind coming-soon until finished.
   blog: parseFlag(process.env.NEXT_PUBLIC_FF_PAGE_BLOG, false),
-  contact: parseFlag(process.env.NEXT_PUBLIC_FF_PAGE_CONTACT, false),
+  contact: parseFlag(process.env.NEXT_PUBLIC_FF_PAGE_CONTACT, true),
   legal: parseFlag(process.env.NEXT_PUBLIC_FF_PAGE_LEGAL, false),
 } as const;
 

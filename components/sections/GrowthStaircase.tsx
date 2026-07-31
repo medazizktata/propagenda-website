@@ -33,7 +33,7 @@ export function GrowthStaircase() {
         scrollTrigger: { trigger: sectionRef.current, start: 'top 70%', once: true },
       });
       const tl = gsap.timeline({
-        scrollTrigger: { trigger: '.gs-stairs', start: 'top 80%', once: true },
+        scrollTrigger: { trigger: '.gs-stairs', start: 'top 58%', once: true },
       });
       tl.from('.gs-tread', {
         scaleX: 0,

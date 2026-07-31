@@ -21,8 +21,9 @@ export function GrowthStaircase() {
   // Scroll-triggered build — fires once the STAIRCASE itself is well into view (not when the
   // tall section's top merely enters at the bottom of the screen — that played too early), so
   // you watch each tread draw and its step climb. Plays BOTH ways: reveals on the way down,
-  // reverses (un-reveals) on the way back up. Translate/scale only — the copy is never
-  // opacity-gated, so it can't ship blank; reduced-motion and no-JS render it finished in place.
+  // reverses (un-reveals) on the way back up. Each step's copy starts INVISIBLE and fades in as
+  // it climbs. The fade is JS + motion only — the reduced-motion and no-JS paths bail early
+  // (below), so the finished staircase always renders in place and can't ship blank.
   useEffect(() => {
     if (!sectionRef.current || reducedMotion) return;
     const ctx = gsap.context(() => {
@@ -51,7 +52,7 @@ export function GrowthStaircase() {
         stagger: 0.16,
       }).from(
         '.gs-step-body',
-        { y: 64, duration: 0.6, ease: 'power3.out', stagger: 0.16 },
+        { autoAlpha: 0, y: 64, duration: 0.6, ease: 'power3.out', stagger: 0.16 },
         0.12,
       );
     }, sectionRef);

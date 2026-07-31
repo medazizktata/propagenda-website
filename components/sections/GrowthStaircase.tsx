@@ -18,11 +18,11 @@ export function GrowthStaircase() {
   const reducedMotion = useReducedMotion();
   const { label, headingLead, headingAccent, intro, steps } = growthStaircase;
 
-  // Scroll-triggered build — the animation fires only once the STAIRCASE itself is in view
-  // (not when the tall section's top merely enters at the bottom of the screen — that made it
-  // play too early), so you actually watch each tread draw and its step climb. Translate/scale
-  // only — the copy is never opacity-gated, so it can't ship blank; reduced-motion and no-JS
-  // render the finished staircase in place.
+  // Scroll-triggered build — fires once the STAIRCASE itself is well into view (not when the
+  // tall section's top merely enters at the bottom of the screen — that played too early), so
+  // you watch each tread draw and its step climb. Plays BOTH ways: reveals on the way down,
+  // reverses (un-reveals) on the way back up. Translate/scale only — the copy is never
+  // opacity-gated, so it can't ship blank; reduced-motion and no-JS render it finished in place.
   useEffect(() => {
     if (!sectionRef.current || reducedMotion) return;
     const ctx = gsap.context(() => {
@@ -30,10 +30,18 @@ export function GrowthStaircase() {
         y: 36,
         duration: 0.6,
         ease: 'power3.out',
-        scrollTrigger: { trigger: sectionRef.current, start: 'top 70%', once: true },
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: 'top 70%',
+          toggleActions: 'play none none reverse',
+        },
       });
       const tl = gsap.timeline({
-        scrollTrigger: { trigger: '.gs-stairs', start: 'top 58%', once: true },
+        scrollTrigger: {
+          trigger: '.gs-stairs',
+          start: 'top 58%',
+          toggleActions: 'play none none reverse',
+        },
       });
       tl.from('.gs-tread', {
         scaleX: 0,

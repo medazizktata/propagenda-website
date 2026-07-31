@@ -66,21 +66,20 @@ function WorkCardImage({ initial }: { initial: string }) {
 // next section — everything BREAKS APART: the cards fly outward and the words scatter
 // (step 11). Statement stays orange-on-dark and legible; only the motion is scrolled.
 
-// Scattered resting layout — offsets are a fraction of the viewport (x → vw, y → vh),
-// so the cluster stays proportional at any size. `video` marks the one live showreel
-// card (SMV's central portrait); the rest are brand placeholders (fill with real work
-// later). `grad` tints each placeholder so the cluster reads as distinct pieces.
+// Organized resting layout — the deck resolves into a PRECISE, symmetric grid (two even
+// columns of three that frame the statement, with the live showreel squared-up in the
+// centre), aligned and zero-rotation rather than scattered — it reads as a deliberate,
+// put-together team. Offsets are a fraction of the viewport (x → vw, y → vh) so it stays
+// proportional at any size; `grad` is a neutral charcoal→black tint (never navy).
 type ScatterCard = { x: number; y: number; rot: number; w: number; grad: string; video?: boolean; img?: string };
-// Bottom-row cards (indices 3/5/6) sit a little higher than the true edges so they clear
-// the subline band at the very bottom of the act (no overlap).
 const CARDS: ScatterCard[] = [
-  { x: -34, y: -24, rot: -11, w: 15, grad: 'from-navy via-charcoal to-black', img: '/images/portfolio/work-sanapex.png' },
-  { x: -3, y: -31, rot: 7, w: 14, grad: 'from-charcoal via-navy to-black', img: '/images/portfolio/work-quickcars.png' },
-  { x: 33, y: -22, rot: 10, w: 15, grad: 'from-black via-charcoal to-navy', img: '/images/portfolio/work-food.png' },
-  { x: -32, y: 12, rot: 8, w: 14, grad: 'from-navy to-charcoal', img: '/images/portfolio/work-events.png' },
-  { x: 4, y: 4, rot: -5, w: 18, video: true, grad: 'from-charcoal to-black' },
-  { x: -7, y: 20, rot: -9, w: 14, grad: 'from-black to-navy', img: '/images/portfolio/work-ghaftree.png' },
-  { x: 33, y: 16, rot: -11, w: 15, grad: 'from-charcoal via-black to-navy', img: '/images/portfolio/work-restaurant.png' },
+  { x: -33, y: -25, rot: 0, w: 15, grad: 'from-charcoal to-black', img: '/images/portfolio/work-sanapex.png' },
+  { x: -33, y: 0, rot: 0, w: 15, grad: 'from-black to-charcoal', img: '/images/portfolio/work-quickcars.png' },
+  { x: -33, y: 25, rot: 0, w: 15, grad: 'from-charcoal to-black', img: '/images/portfolio/work-events.png' },
+  { x: 33, y: -25, rot: 0, w: 15, grad: 'from-black to-charcoal', img: '/images/portfolio/work-food.png' },
+  { x: 0, y: 0, rot: 0, w: 17, video: true, grad: 'from-charcoal to-black' },
+  { x: 33, y: 0, rot: 0, w: 15, grad: 'from-charcoal to-black', img: '/images/portfolio/work-ghaftree.png' },
+  { x: 33, y: 25, rot: 0, w: 15, grad: 'from-black to-charcoal', img: '/images/portfolio/work-restaurant.png' },
 ];
 
 // The opening frame (SMV step 9): the cards begin STACKED like a deck near the centre —
@@ -301,7 +300,7 @@ export function DesignPrintInstallPopup() {
               {card.video ? (
                 <video
                   className="absolute inset-0 h-full w-full object-cover"
-                  src="/videos/hero-placeholder.mp4"
+                  src="/videos/showreel-marketing.mp4"
                   autoPlay
                   muted
                   loop

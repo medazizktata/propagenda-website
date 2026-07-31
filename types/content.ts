@@ -71,17 +71,55 @@ export interface ServiceRecord {
 
 export type WorkTier = 'featured' | 'more';
 
+export interface CaseStudyResult {
+  label: string;
+  value: string;
+}
+
+export interface CaseStudyQuote {
+  text: string;
+  author: string;
+}
+
+/**
+ * Per-client body accent. Drives the case-study body tint (section marks, result
+ * numbers, deliverable checks, pull-quote) so each study can feel tailored to its
+ * real brand palette. Absent ⇒ the detail template falls back to brand orange.
+ * Data-driven so more clients can adopt their own accent later.
+ */
+export interface CaseStudyAccent {
+  /** Accent color as a hex string, e.g. Sanapex sand `#baa58d`. */
+  color: string;
+  /** Foreground for text/marks sitting ON the accent fill. Defaults to navy. */
+  onColor?: string;
+}
+
 export interface CaseStudyRecord {
   slug: WorkSlug;
   title: string;
   h1: string;
+  /** Legacy featured/more tier — retained in the data but no longer used for hub grouping. */
   tier: WorkTier;
+  /** Broad industry category used to group the Work hub (sentence case, e.g. "Automotive"). */
+  category: string;
   overview: string;
   scopeItems: string[];
   gallery: GalleryImage[];
   prev?: WorkSlug;
   next?: WorkSlug;
   seo: SeoMeta;
+  client?: string;
+  industry?: string;
+  year?: string;
+  heroImage?: string;
+  deliverables?: string[];
+  results?: CaseStudyResult[];
+  challenge?: string;
+  approach?: string;
+  outcome?: string;
+  quote?: CaseStudyQuote;
+  /** Optional per-client body accent (falls back to brand orange). */
+  accent?: CaseStudyAccent;
 }
 
 export interface BlogPostRecord {

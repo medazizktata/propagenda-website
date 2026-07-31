@@ -27,11 +27,18 @@ function parseFlag(raw: string | undefined, fallback: boolean): boolean {
   return fallback;
 }
 
-/** Soft launch master — lock unfinished routes behind coming-soon. Default: on. */
-export const ffSoftLaunch = parseFlag(
-  process.env.NEXT_PUBLIC_FF_SOFT_LAUNCH ?? process.env.NEXT_PUBLIC_SOFT_LAUNCH,
-  true,
-);
+/**
+ * Soft launch master — lock unfinished routes behind coming-soon. Default: on.
+ * Equality checks (not parseFlag) so Next reliably inlines into the client bundle.
+ */
+export const ffSoftLaunch =
+  process.env.NEXT_PUBLIC_FF_SOFT_LAUNCH === 'false' ||
+  process.env.NEXT_PUBLIC_SOFT_LAUNCH === 'false'
+    ? false
+    : process.env.NEXT_PUBLIC_FF_SOFT_LAUNCH === 'true' ||
+        process.env.NEXT_PUBLIC_SOFT_LAUNCH === 'true'
+      ? true
+      : true;
 
 /** Orange quote splash on full page load. Default: on. */
 export const ffInitLoader = parseFlag(

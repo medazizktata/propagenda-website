@@ -1,26 +1,35 @@
 'use client';
 
-import { PageHero } from '@/components/sections/PageHero';
-import { WorkOverviewList } from '@/components/sections/WorkOverviewList';
+import { WorkHero } from '@/components/sections/WorkHero';
+import { WorkIndex } from '@/components/sections/WorkIndex';
 import { LogoWallGrid } from '@/components/sections/LogoWallGrid';
 import { ClosingCTABand } from '@/components/sections/ClosingCTABand';
-import { CTABand } from '@/components/sections/CTABand';
-import {
-  workHubHeading,
-  featuredWorkEntries,
-  moreWorkEntries,
-  logoGridBrands,
-} from '@/content/workHub';
+import { logoGridBrands } from '@/content/workHub';
+import { allCaseStudies } from '@/content/work';
+
+// Real case studies (with their heroImages, client, industry, year) drive the index —
+// now grouped by broad industry category rather than the legacy featured/more tier.
+// Explicit order so the hub reads deliberately; empty categories are dropped.
+const CATEGORY_ORDER = [
+  'Automotive',
+  'Property & interiors',
+  'Healthcare & retail',
+  'Industry & energy',
+] as const;
+
+const categoryGroups = CATEGORY_ORDER.map((label) => ({
+  id: label.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
+  label,
+  items: allCaseStudies.filter((c) => c.category === label),
+})).filter((group) => group.items.length > 0);
 
 export function WorkPageContent() {
   return (
     <>
-      <PageHero title={workHubHeading} fixed ghost />
-      <WorkOverviewList id="featured" title="Featured Work" entries={featuredWorkEntries} />
-      <WorkOverviewList id="more" title="More Work" entries={moreWorkEntries} />
+      <WorkHero />
+      <WorkIndex groups={categoryGroups} />
       <LogoWallGrid brands={logoGridBrands} />
       <ClosingCTABand />
-      <CTABand title="Looking for the Better Future" />
     </>
   );
 }

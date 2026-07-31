@@ -1,31 +1,20 @@
-'use client';
+import { AboutImmersive } from "@/components/sections/about/AboutImmersive";
+import { AboutStudio } from "@/components/sections/about/AboutStudio";
+import { ServicesCTA } from "@/components/sections/services/ServicesCTA";
+import { aboutContent } from "@/content/about";
 
-import { AboutStatement } from '@/components/sections/AboutStatement';
-import { AboutPills } from '@/components/sections/AboutPills';
-import { AboutValues } from '@/components/sections/AboutValues';
-import { LeadershipCard } from '@/components/sections/LeadershipCard';
-import { AboutPopupMarquee } from '@/components/sections/AboutPopupMarquee';
-import { CTABand } from '@/components/sections/CTABand';
-import { MediaPlaceholder } from '@/components/ui/MediaPlaceholder';
-
+/**
+ * /about — mix:
+ * 1) SMV immersive statement journey
+ * 2) Plusdrie editorial studio body
+ * 3) Orange CTA bookend
+ */
 export function AboutPageContent() {
-  const scrollToValues = () => {
-    document.getElementById('about-values')?.scrollIntoView({ behavior: 'smooth' });
-  };
-
   return (
     <>
-      <AboutStatement />
-      <AboutPills onTellMeMore={scrollToValues} />
-      <AboutValues />
-      <LeadershipCard />
-      <AboutPopupMarquee />
-      <div className="grid gap-0 md:grid-cols-3">
-        <MediaPlaceholder label="Who We Are" className="min-h-48" accent="from-charcoal to-navy" />
-        <MediaPlaceholder label="What We Do" className="min-h-48" accent="from-navy to-black" />
-        <MediaPlaceholder label="Why Us" className="min-h-48" accent="from-black to-orange/30" />
-      </div>
-      <CTABand title="Looking for the Better Future" />
+      <AboutImmersive />
+      <AboutStudio />
+      <ServicesCTA heading={aboutContent.cta.heading} />
     </>
   );
 }

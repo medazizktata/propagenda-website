@@ -43,3 +43,4 @@ __pycache__/
 # Debug
 npm-debug.log*
 pnpm-debug.log*
+.ref/

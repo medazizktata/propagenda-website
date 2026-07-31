@@ -18,32 +18,34 @@ export function GrowthStaircase() {
   const reducedMotion = useReducedMotion();
   const { label, headingLead, headingAccent, intro, steps } = growthStaircase;
 
-  // Scroll-driven: as the section passes through, each tread DRAWS in and its step CLIMBS up,
-  // staggered — the staircase builds under the scroll. No-JS and reduced-motion render the
-  // whole staircase in place (legible by default; the animation is pure enhancement).
+  // Scroll-triggered build — the animation fires only once the STAIRCASE itself is in view
+  // (not when the tall section's top merely enters at the bottom of the screen — that made it
+  // play too early), so you actually watch each tread draw and its step climb. Translate/scale
+  // only — the copy is never opacity-gated, so it can't ship blank; reduced-motion and no-JS
+  // render the finished staircase in place.
   useEffect(() => {
-    if (!sectionRef.current) return;
+    if (!sectionRef.current || reducedMotion) return;
     const ctx = gsap.context(() => {
-      if (reducedMotion) {
-        gsap.set(['.gs-head', '.gs-step-body'], { autoAlpha: 1, y: 0 });
-        gsap.set('.gs-tread', { scaleX: 1 });
-        return;
-      }
-      gsap.set('.gs-head', { autoAlpha: 0, y: 44 });
-      gsap.set('.gs-tread', { scaleX: 0, transformOrigin: 'left center' });
-      gsap.set('.gs-step-body', { autoAlpha: 0, y: 64 });
-
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: 'top 82%',
-          end: 'top 18%',
-          scrub: 0.6,
-        },
+      gsap.from('.gs-head', {
+        y: 36,
+        duration: 0.6,
+        ease: 'power3.out',
+        scrollTrigger: { trigger: sectionRef.current, start: 'top 70%', once: true },
       });
-      tl.to('.gs-head', { autoAlpha: 1, y: 0, ease: 'power2.out', duration: 0.18 }, 0)
-        .to('.gs-tread', { scaleX: 1, ease: 'power3.out', duration: 0.5, stagger: 0.22 }, 0.16)
-        .to('.gs-step-body', { autoAlpha: 1, y: 0, ease: 'power2.out', duration: 0.44, stagger: 0.22 }, 0.22);
+      const tl = gsap.timeline({
+        scrollTrigger: { trigger: '.gs-stairs', start: 'top 80%', once: true },
+      });
+      tl.from('.gs-tread', {
+        scaleX: 0,
+        transformOrigin: 'left center',
+        duration: 0.5,
+        ease: 'power3.out',
+        stagger: 0.16,
+      }).from(
+        '.gs-step-body',
+        { y: 64, duration: 0.6, ease: 'power3.out', stagger: 0.16 },
+        0.12,
+      );
     }, sectionRef);
     return () => ctx.revert();
   }, [reducedMotion]);

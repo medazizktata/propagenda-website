@@ -16,7 +16,7 @@ const HeroLogo3D = dynamic(
   { ssr: false },
 );
 
-const HERO_VIDEO_SRC = '/videos/showreel-marketing.mp4';
+const HERO_VIDEO_SRC = '/videos/propagenda-marketing.mp4';
 const ACCENT_WORD = 'CREATIVITY';
 
 const CLIP_REST = { t: 8, r: 37, b: 10, l: 37, rad: 24 };

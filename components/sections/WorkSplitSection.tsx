@@ -44,8 +44,8 @@ const PANELS: Panel[] = [
   },
   {
     title: 'Video Work',
-    cta: 'See film & photo',
-    href: '/services/photography-videography',
+    cta: 'See the work',
+    href: '/work',
     frames: [
       '/images/portfolio/work-events.png',
       '/images/portfolio/work-quickcars.png',
@@ -54,7 +54,7 @@ const PANELS: Panel[] = [
     ],
     media: {
       kind: 'video',
-      src: '/videos/hero-placeholder.mp4',
+      src: '/videos/propagenda-marketing.mp4',
       poster: '/images/portfolio/work-events.png',
     },
     tone: 'orange',

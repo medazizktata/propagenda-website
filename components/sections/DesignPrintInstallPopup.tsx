@@ -300,7 +300,7 @@ export function DesignPrintInstallPopup() {
               {card.video ? (
                 <video
                   className="absolute inset-0 h-full w-full object-cover"
-                  src="/videos/showreel-marketing.mp4"
+                  src="/videos/propagenda-marketing.mp4"
                   autoPlay
                   muted
                   loop

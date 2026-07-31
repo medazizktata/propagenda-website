@@ -30,6 +30,38 @@ export const methodologySteps = [
   },
 ];
 
+// Growth staircase (home) — an ascending journey from a credible start to category
+// leadership. An ordered sequence, so the step numbers earn their place.
+export const growthStaircase = {
+  label: 'Growth mindset',
+  headingLead: 'Built to',
+  headingAccent: 'grow',
+  intro:
+    'Every brand we build is a step up — from a credible start to the reference your whole category chases.',
+  steps: [
+    {
+      step: '01',
+      label: 'Establish',
+      body: 'A credible, unmistakable foundation — identity, voice, and the system behind it.',
+    },
+    {
+      step: '02',
+      label: 'Gain momentum',
+      body: 'Consistent presence across every channel turns first impressions into recognition.',
+    },
+    {
+      step: '03',
+      label: 'Scale',
+      body: 'Campaigns, content, and product that reach further and convert harder as you grow.',
+    },
+    {
+      step: '04',
+      label: 'Lead',
+      body: 'Become the reference your category measures itself against.',
+    },
+  ],
+};
+
 export const featuredWork = [
   {
     title: 'Sanapex Interiors',

@@ -1,7 +1,7 @@
 import { Hero } from '@/components/sections/Hero';
 import { ManifestoSection } from '@/components/sections/ManifestoSection';
 import { DesignPrintInstallPopup } from '@/components/sections/DesignPrintInstallPopup';
-import { MethodologySection } from '@/components/sections/MethodologySection';
+import { GrowthStaircase } from '@/components/sections/GrowthStaircase';
 import { WorkSplitSection } from '@/components/sections/WorkSplitSection';
 import { ClientLogoGrid } from '@/components/sections/ClientLogoGrid';
 import { ContactSection } from '@/components/sections/ContactSection';
@@ -15,7 +15,7 @@ export function HomePageContent() {
         <ManifestoSection />
         <DesignPrintInstallPopup />
       </SeamlessActs>
-      <MethodologySection />
+      <GrowthStaircase />
       <WorkSplitSection />
       <SeamlessActs>
         <ClientLogoGrid />

@@ -288,8 +288,11 @@ export function DesignPrintInstallPopup() {
           </div>
         </div>
 
-        {/* Scattered media cards (parallax layer, behind the statement so it stays legible). */}
-        <div ref={cardsRef} className="pointer-events-none absolute inset-0 will-change-transform">
+        {/* Scattered media cards (parallax layer, behind the statement so it stays legible).
+            `isolate` keeps each card's z-index (video card on top of the deck) LOCAL to this
+            group, so the layer as a whole stays a plain sibling in DOM order — that lets the
+            statement paint above it without a z-index, so PRINT's mix-blend can reach the card. */}
+        <div ref={cardsRef} className="pointer-events-none absolute inset-0 isolate will-change-transform">
           {CARDS.map((card, i) => (
             <div
               key={i}
@@ -317,11 +320,16 @@ export function DesignPrintInstallPopup() {
 
         {/* Absolutely centered (optical) — raised above true midpoint so the stack
             reads as center-screen, each word squarely centered on the axis. */}
-        <h2 className="pointer-events-none absolute left-1/2 top-[48%] z-content flex w-full max-w-[100vw] -translate-x-1/2 -translate-y-1/2 flex-col items-center text-center font-sans font-bold uppercase leading-[0.82] tracking-tight text-orange">
+        <h2 className="pointer-events-none absolute left-1/2 top-[48%] flex w-full max-w-[100vw] -translate-x-1/2 -translate-y-1/2 flex-col items-center text-center font-sans font-bold uppercase leading-[0.82] tracking-tight text-orange">
           {words.map((word, i) => (
             <span
               key={word}
-              className={cn('dpi-word block w-full text-center will-change-transform', i === 1 && 'text-white')}
+              className={cn(
+                'dpi-word block w-full text-center will-change-transform',
+                // The middle word ("PRINT") is white and sits over the live video card — blend
+                // it against whatever is behind so it stays legible on bright/white frames too.
+                i === 1 && 'text-white mix-blend-difference',
+              )}
               style={{ fontSize: 'clamp(3rem, 12vw, 12rem)' }}
             >
               {word}

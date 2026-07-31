@@ -4,7 +4,7 @@ import { useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { DisplayHeading } from '@/components/ui/DisplayHeading';
 import { SectionLabel } from '@/components/ui/SectionLabel';
-import { ContactForm } from '@/components/sections/ContactForm';
+import { Button } from '@/components/ui/Button';
 import { ContactInfoBlock } from '@/components/sections/ContactInfoBlock';
 import { gsap } from '@/lib/motion/gsap';
 import { useReducedMotion } from '@/lib/motion/useReducedMotion';
@@ -95,8 +95,14 @@ export function ContactSection() {
           <div className="contact-info">
             <ContactInfoBlock showWhatsApp />
           </div>
-          <div className="contact-form">
-            <ContactForm />
+          <div className="contact-form flex flex-col items-start justify-center gap-6">
+            <p className="max-w-md text-lg leading-relaxed text-white/70 md:text-xl">
+              Tell us about your brand and where you want to take it — we&apos;ll get back to
+              you within a day.
+            </p>
+            <Button href="/contact" size="lg">
+              Get in touch
+            </Button>
           </div>
         </div>
       </div>

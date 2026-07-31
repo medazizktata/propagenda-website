@@ -18,24 +18,32 @@ export function GrowthStaircase() {
   const reducedMotion = useReducedMotion();
   const { label, headingLead, headingAccent, intro, steps } = growthStaircase;
 
-  // Translate-only reveals — content is legible by default (never gated on a trigger firing);
-  // the steps simply climb into place as the staircase enters view.
+  // Scroll-driven: as the section passes through, each tread DRAWS in and its step CLIMBS up,
+  // staggered — the staircase builds under the scroll. No-JS and reduced-motion render the
+  // whole staircase in place (legible by default; the animation is pure enhancement).
   useEffect(() => {
-    if (!sectionRef.current || reducedMotion) return;
+    if (!sectionRef.current) return;
     const ctx = gsap.context(() => {
-      gsap.from('.gs-head', {
-        y: 40,
-        duration: 0.7,
-        ease: 'power3.out',
-        scrollTrigger: { trigger: sectionRef.current, start: 'top 78%', once: true },
+      if (reducedMotion) {
+        gsap.set(['.gs-head', '.gs-step-body'], { autoAlpha: 1, y: 0 });
+        gsap.set('.gs-tread', { scaleX: 1 });
+        return;
+      }
+      gsap.set('.gs-head', { autoAlpha: 0, y: 44 });
+      gsap.set('.gs-tread', { scaleX: 0, transformOrigin: 'left center' });
+      gsap.set('.gs-step-body', { autoAlpha: 0, y: 64 });
+
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: 'top 82%',
+          end: 'top 18%',
+          scrub: 0.6,
+        },
       });
-      gsap.from('.gs-step', {
-        y: 60,
-        duration: 0.7,
-        ease: 'power3.out',
-        stagger: 0.14,
-        scrollTrigger: { trigger: '.gs-stairs', start: 'top 84%', once: true },
-      });
+      tl.to('.gs-head', { autoAlpha: 1, y: 0, ease: 'power2.out', duration: 0.18 }, 0)
+        .to('.gs-tread', { scaleX: 1, ease: 'power3.out', duration: 0.5, stagger: 0.22 }, 0.16)
+        .to('.gs-step-body', { autoAlpha: 1, y: 0, ease: 'power2.out', duration: 0.44, stagger: 0.22 }, 0.22);
     }, sectionRef);
     return () => ctx.revert();
   }, [reducedMotion]);
@@ -62,24 +70,23 @@ export function GrowthStaircase() {
         {/* Staircase — each block sits on an orange tread and climbs above the previous one. */}
         <ol className="gs-stairs mt-16 grid grid-cols-1 gap-12 md:mt-24 md:grid-cols-4 md:items-start md:gap-6">
           {steps.map((s, i) => (
-            <li
-              key={s.step}
-              className={cn('gs-step group relative will-change-transform', RISE[i % RISE.length])}
-            >
-              {/* Tread — the orange step surface. */}
-              <div className="mb-6 h-1.5 w-full rounded-full bg-orange" />
-              <p
-                className="font-sans font-black leading-none text-orange"
-                style={{ fontSize: 'clamp(2.75rem, 4.5vw, 4rem)' }}
-              >
-                {s.step}
-              </p>
-              <h3 className="mt-4 font-sans text-xl font-bold uppercase tracking-tight text-white transition-colors duration-300 group-hover:text-orange md:text-2xl">
-                {s.label}
-              </h3>
-              <p className="mt-3 max-w-xs text-base leading-relaxed text-white/65 transition-colors duration-300 group-hover:text-white/85">
-                {s.body}
-              </p>
+            <li key={s.step} className={cn('group relative', RISE[i % RISE.length])}>
+              {/* Tread — the orange step surface; draws left→right on scroll. */}
+              <div className="gs-tread mb-6 h-1.5 w-full origin-left rounded-full bg-orange will-change-transform" />
+              <div className="gs-step-body will-change-transform">
+                <p
+                  className="font-sans font-black leading-none text-orange"
+                  style={{ fontSize: 'clamp(2.75rem, 4.5vw, 4rem)' }}
+                >
+                  {s.step}
+                </p>
+                <h3 className="mt-4 font-sans text-xl font-bold uppercase tracking-tight text-white transition-colors duration-300 group-hover:text-orange md:text-2xl">
+                  {s.label}
+                </h3>
+                <p className="mt-3 max-w-xs text-base leading-relaxed text-white/65 transition-colors duration-300 group-hover:text-white/85">
+                  {s.body}
+                </p>
+              </div>
             </li>
           ))}
         </ol>

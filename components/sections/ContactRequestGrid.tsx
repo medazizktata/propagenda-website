@@ -7,8 +7,9 @@ import { cn } from "@/components/ui/cn";
 import { gsap } from "@/lib/motion/gsap";
 
 /**
- * SMV contact request grid — full-viewport 2×2 panels.
- * Snaps on page scroll (not a trapped inner scroller).
+ * SMV contact request grid — full-viewport 2×2 in a snap scrollport.
+ * Mobile: one panel per snap. Desktop: one row per snap.
+ * Scroll chains out to the rest of the page after the last stop.
  */
 export function ContactRequestGrid() {
   const rows = [
@@ -17,20 +18,27 @@ export function ContactRequestGrid() {
   ] as const;
 
   return (
-    <section aria-label="Ways to reach us" className="border-b border-white/10">
+    <section
+      aria-label="Ways to reach us"
+      className={cn(
+        "relative h-[100svh] overflow-y-auto overscroll-y-auto border-b border-white/10",
+        "snap-y snap-mandatory scroll-smooth [-webkit-overflow-scrolling:touch]",
+        "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
+      )}
+    >
       <div className="flex flex-col md:hidden">
         {contactRequests.map((box) => (
-          <div key={box.cta} className="h-[100svh] snap-start snap-always">
+          <div key={box.cta} className="h-[100svh] shrink-0 snap-start snap-always">
             <RequestPanel {...box} className="h-full min-h-0" />
           </div>
         ))}
       </div>
 
-      <div className="hidden md:block">
+      <div className="hidden md:flex md:flex-col">
         {rows.map((pair, i) => (
           <div
             key={i}
-            className="grid h-[100svh] snap-start snap-always grid-cols-2"
+            className="grid h-[100svh] shrink-0 snap-start snap-always grid-cols-2"
           >
             {pair.map((box) => (
               <RequestPanel key={box.cta} {...box} className="h-full min-h-0" />

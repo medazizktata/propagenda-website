@@ -16,7 +16,7 @@ import { useReducedMotion } from "@/lib/motion/useReducedMotion";
 /**
  * SMV-style about: stacked full-viewport statements.
  * Pass advances with a smooth word reveal. Fail triggers a twisted marquee overlay.
- * Final pass routes to /contact. Closing kinetic marquee sits under the stack.
+ * Final pass scrolls into the studio section.
  */
 export function AboutImmersive() {
   const router = useRouter();
@@ -25,7 +25,7 @@ export function AboutImmersive() {
   const failRef = useRef<HTMLDivElement>(null);
   const [index, setIndex] = useState(0);
   const [failMsg, setFailMsg] = useState<string | null>(null);
-  const { statements, marquee } = aboutContent;
+  const { statements } = aboutContent;
 
   const flashWords = useCallback(
     (panel: HTMLElement | null) => {
@@ -76,6 +76,12 @@ export function AboutImmersive() {
   const onPass = (statement: AboutStatement, i: number) => {
     if (statement.passHref) {
       router.push(statement.passHref);
+      return;
+    }
+    if (statement.passScrollId) {
+      document
+        .getElementById(statement.passScrollId)
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
       return;
     }
     if (i < statements.length - 1) goTo(i + 1);
@@ -197,35 +203,6 @@ export function AboutImmersive() {
                   </span>
                 ))}
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="relative overflow-hidden border-y border-white/15 bg-black py-8 lg:py-10">
-        <div
-          aria-hidden
-          className="flex overflow-hidden [mask-image:linear-gradient(to_right,transparent,#000_4%,#000_96%,transparent)]"
-        >
-          <div className="flex w-max animate-[marquee_32s_linear_infinite] motion-reduce:animate-none">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <span key={i} className="flex shrink-0 items-center">
-                <span
-                  className={cn(
-                    "whitespace-nowrap font-sans font-extrabold uppercase leading-none tracking-[0.02em]",
-                    i % 2 === 0 ? "text-white" : "text-orange",
-                  )}
-                  style={{ fontSize: "clamp(1.6rem, 5vw, 3.5rem)" }}
-                >
-                  {marquee}
-                </span>
-                <span
-                  className="mx-[0.35em] text-orange"
-                  style={{ fontSize: "clamp(1.6rem, 5vw, 3.5rem)" }}
-                >
-                  ·
-                </span>
-              </span>
             ))}
           </div>
         </div>

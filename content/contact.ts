@@ -1,3 +1,31 @@
+/** Kinetic bridge between grid and closer. */
+export const contactBridge = ["NO FILLER", "JUST WORK", "REAL REPLIES"];
+
+/**
+ * Post-grid closer — research-led manifesto (Humbleteam/Obys energy).
+ * Big idea left, short form right.
+ */
+export const contactCloser = {
+  kicker: "Start a project",
+  lines: [
+    [{ text: "HAVE AN IDEA?", accent: false }],
+    [{ text: "LET'S MAKE IT", accent: false }],
+    [{ text: "IMPOSSIBLE", accent: true, hero: true }],
+    [
+      { text: "TO ", accent: false },
+      { text: "IGNORE.", accent: true },
+    ],
+  ],
+  mailto: "info@thepropagenda.com",
+  submitLabel: "Send it",
+  fields: {
+    name: "Your name",
+    email: "Email",
+    phone: "Phone",
+    message: "What's the project?",
+  },
+};
+
 export const contactRequests = [
   {
     rows: ["NEW BUSINESS", "BRANDS", "FOUNDERS"],
@@ -32,27 +60,6 @@ export const contactRequests = [
       "https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=1600&q=80",
   },
 ] as const;
-
-/** Kinetic bridge between grid and invite — short punches, not a disclaimer. */
-export const contactBridge = ["NO FILLER", "JUST WORK", "REAL REPLIES"];
-
-/** SMV-style invite — headline caps, email in normal case with hand-drawn underline. */
-export const contactInvite = {
-  lines: [
-    { text: "WE LIVE AND WORK IN ", accent: false },
-    { text: "DUBAI", accent: true },
-    { text: " — AND WE LOVE MEETING NEW FACES.", accent: false },
-  ],
-  subline:
-    "If you've got a brief, a collab, or a half-formed idea, drop us a line.",
-  mailto: "info@thepropagenda.com",
-};
-
-export const contactFormSection = {
-  heading: "Let's talk.",
-  subheading: "Tell us what you're building — we'll get back within one business day.",
-  submitLabel: "Send message",
-};
 
 export const whatsapp = {
   label: "WhatsApp",

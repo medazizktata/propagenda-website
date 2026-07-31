@@ -1,16 +1,14 @@
 import { ContactRequestGrid } from "@/components/sections/ContactRequestGrid";
 import { ContactStatement } from "@/components/sections/ContactStatement";
-import { ContactInvite } from "@/components/sections/ContactInvite";
-import { ContactTalkForm } from "@/components/sections/ContactTalkForm";
+import { ContactCloser } from "@/components/sections/ContactCloser";
 
-/** /contact — snap grid → team note → invite → form. */
+/** /contact — snap grid · kinetic bridge · manifesto + form closer. */
 export function ContactPageContent() {
   return (
-    <div className="snap-y snap-proximity scroll-smooth bg-charcoal">
+    <div className="bg-charcoal">
       <ContactRequestGrid />
       <ContactStatement />
-      <ContactInvite />
-      <ContactTalkForm />
+      <ContactCloser />
     </div>
   );
 }

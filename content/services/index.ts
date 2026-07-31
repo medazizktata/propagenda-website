@@ -211,18 +211,17 @@ export const photographyVideography = service(
   'photography-videography',
   'Photography & Videography',
   'PHOTOGRAPHY & VIDEOGRAPHY',
-  'Product, lifestyle, real estate, event, and cinematic video production in Dubai. Book your shoot today.',
+  'Brand, product, lifestyle, and real-estate photography that makes your identity look as considered as it is — with supporting video when a story needs motion.',
   {
     overview:
-      'Photography: products, brands, lifestyle, editorial, events, food, real estate, portraits, drone. Video: explainer videos, products, testimonials, brand videos, animated videos, motion graphics, live streaming.',
+      'Design-led visual content, led by photography: product, brand, lifestyle, editorial, food, real estate, portraits, events, and drone — every frame art-directed to match your identity. Video is a supporting layer for when motion tells the story better: short brand films, product and testimonial clips, and motion graphics.',
     scopeItems: [
-      'Product photography',
+      'Product & brand photography',
       'Lifestyle & editorial',
+      'Real estate & interiors',
       'Event coverage',
-      'Real estate',
-      'Cinematic video',
+      'Supporting brand video',
       'Motion graphics',
-      'Live streaming',
     ],
     gallery: [
       { src: '/images/services/photography/gallery-01.jpg', alt: 'Product photography', width: 1600, height: 1200 },

@@ -242,18 +242,20 @@ export const serviceDetailConfig: Record<ServiceSlug, ServiceDetailConfig> = {
     disciplines: [
       {
         label: 'Photography',
-        items: ['Products', 'Lifestyle & editorial', 'Events', 'Food', 'Real estate', 'Portraits', 'Drone'],
+        items: [
+          'Products & brand',
+          'Lifestyle & editorial',
+          'Real estate & interiors',
+          'Food',
+          'Events',
+          'Portraits',
+          'Campaigns',
+          'Drone',
+        ],
       },
       {
-        label: 'Videography',
-        items: [
-          'Explainer videos',
-          'Product films',
-          'Testimonials',
-          'Brand videos',
-          'Motion graphics',
-          'Live streaming',
-        ],
+        label: 'Supporting video',
+        items: ['Short brand films', 'Product & testimonial clips', 'Motion graphics', 'Social cut-downs'],
       },
     ],
     faqs: [

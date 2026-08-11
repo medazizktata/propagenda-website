@@ -50,9 +50,10 @@ export function WorkIndexRow({
         }
       }}
       className={cn(
-        'group/row flex flex-col gap-1 border-b border-white/12 py-4 outline-none',
-        'transition-[opacity,color] duration-300 ease-out focus-visible:border-orange',
-        'md:flex-row md:items-baseline md:justify-between md:gap-8 md:py-5',
+        'group/row flex flex-col gap-1 py-3 outline-none',
+        'transition-[opacity,color] duration-300 ease-out',
+        'focus-visible:text-orange',
+        'md:flex-row md:items-baseline md:justify-between md:gap-8 md:py-4',
         isDimmed && 'opacity-40',
       )}
     >

@@ -93,12 +93,12 @@ export function WorkIndex({ groups }: WorkIndexProps) {
           const offset = groups.slice(0, gi).reduce((n, g) => n + g.items.length, 0);
           return (
             <div key={group.id} id={group.id}>
-              <div className="work-index-reveal mb-4 border-b border-white/12 pb-3 md:mb-6">
-                <h2 className="font-sans text-lg font-semibold text-orange md:text-xl">
+              <div className="work-index-reveal mb-6 md:mb-8">
+                <h2 className="font-sans text-sm font-semibold uppercase tracking-[0.18em] text-orange md:text-base">
                   {group.label}
                 </h2>
               </div>
-              <ul className="flex flex-col">
+              <ul className="flex flex-col gap-1 md:gap-2">
                 {group.items.map((item, i) => {
                   const caption = [item.industry, item.year].filter(Boolean).join('  ·  ');
                   return (

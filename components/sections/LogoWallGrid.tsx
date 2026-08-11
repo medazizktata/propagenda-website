@@ -15,8 +15,8 @@ export function LogoWallGrid({ brands, linkable = false }: LogoWallGridProps) {
   useFadeUpOnEnter(ref, '[data-logo]', { translateOnly: true });
 
   return (
-    <section ref={ref} className="border-t border-border px-gutter-m py-20 lg:px-gutter-d">
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 lg:gap-6">
+    <section ref={ref} className="px-gutter-m py-20 lg:px-gutter-d lg:py-24">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 lg:gap-5">
         {brands.map((brand, index) => (
           <LogoCell key={brand.name} brand={brand} index={index} linkable={linkable} />
         ))}
@@ -48,7 +48,7 @@ function LogoCell({
   const content = showPlaceholder ? (
     <MediaPlaceholder label={brand.name} accent={accent} className="h-28 w-full" />
   ) : (
-    <div className="relative flex h-28 items-center justify-center bg-charcoal p-6">
+    <div className="relative flex h-28 items-center justify-center bg-white/[0.03] p-6">
       <Image
         src={brand.imageSrc}
         alt={brand.name}
@@ -61,7 +61,7 @@ function LogoCell({
   );
 
   const className =
-    'overflow-hidden rounded-lg border border-border bg-black transition-opacity duration-fast hover-fine:hover:border-orange/30';
+    'overflow-hidden rounded-lg bg-transparent transition-opacity duration-fast hover-fine:hover:opacity-80';
 
   if (linkable) {
     return (

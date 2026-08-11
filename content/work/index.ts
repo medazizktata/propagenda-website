@@ -32,7 +32,7 @@ export const sanapexInteriors = caseStudy(
   'Full visual identity and digital presence for a high-end interior design studio in Dubai.',
   {
     overview:
-      'Sanapex Interiors is a high-end interior design studio focused on residential and commercial spaces. We created a full visual identity that reflects their refined aesthetic and attention to detail.',
+      'A high-end interiors studio. We gave it an identity as refined as the spaces it designs.',
     client: 'Sanapex Interiors',
     industry: 'Interior Design',
     year: '2024',
@@ -57,11 +57,11 @@ export const sanapexInteriors = caseStudy(
       { label: 'Turnaround', value: '6 weeks' },
     ],
     challenge:
-      "Sanapex Interiors had the craftsmanship of a high-end studio but no cohesive identity to match. Its materials looked improvised and failed to signal the premium positioning it holds in Dubai's residential and commercial market.",
+      'World-class craft. A brand that still looked improvised.',
     approach:
-      'We built a complete visual identity from the logo outward — a refined palette, editorial typography, and a portfolio-led company profile — then extended the system into a structured website and a full set of print and digital assets.',
+      'Logo to website — one refined system, built to signal premium from the first glance.',
     outcome:
-      'The studio now presents with a consistent, elevated brand across every touchpoint, from pitch decks to signage, giving prospective clients an immediate read of its quality before the first meeting.',
+      'Every touchpoint now reads as high-end before the first meeting.',
     quote: {
       text: 'The new identity finally looks like the work we actually deliver.',
       author: 'Founder, Sanapex Interiors',
@@ -94,7 +94,7 @@ export const p2pMotors = caseStudy(
   'Case study: bold branding for a Dubai luxury and specialty vehicle export company.',
   {
     overview:
-      'P2P Motors is a Dubai-based export company specializing in luxury, electric, and specialty vehicles. We handled the full branding scope — building a clear, bold identity that reflects their international scale and premium offering.',
+      'Luxury vehicle export, Dubai. We built a bold identity that travels as far as the cars do.',
     client: 'P2P Motors',
     industry: 'Automotive Export',
     year: '2024',
@@ -122,11 +122,11 @@ export const p2pMotors = caseStudy(
       { label: 'Social engagement lift', value: '+80%' },
     ],
     challenge:
-      "P2P Motors exports luxury, electric, and specialty vehicles to buyers worldwide, but its branding didn't convey the scale or premium standing needed to win trust across borders.",
+      'Global scale. Branding that still felt local and soft.',
     approach:
-      'We delivered the full branding scope — a bold, confident identity carried consistently from the company profile and social channels through to physical flags, signboards, and showroom graphics.',
+      'Full branding — profile, socials, flags, showroom — one confident system.',
     outcome:
-      'Every touchpoint, digital to physical, now speaks the same premium language, giving a global audience a coherent and credible first impression of the brand.',
+      'Digital to physical, every surface now says premium and international.',
     quote: {
       text: 'Wherever a client meets us — showroom, socials, or a signed export deal — we look like one serious brand.',
       author: 'Managing Director, P2P Motors',
@@ -159,7 +159,7 @@ export const dosePharmacy = caseStudy(
   'Case study: retail pharmacy branding and spatial fit-out in Riyadh.',
   {
     overview:
-      'Dose Pharmacy is a modern retail pharmacy based in Riyadh. The goal was to create a clean, welcoming brand that balances medical trust with retail appeal. We delivered a full visual identity along with spatial branding that ties everything together.',
+      'A modern Riyadh pharmacy. Clean brand, warm fit-out — trust you can walk into.',
     client: 'Dose Pharmacy',
     industry: 'Retail Pharmacy',
     year: '2023',
@@ -184,11 +184,11 @@ export const dosePharmacy = caseStudy(
       { label: 'Footfall uplift (pilot store)', value: '+35%' },
     ],
     challenge:
-      "Dose Pharmacy needed a retail brand for Riyadh that felt clinically trustworthy yet warm enough to compete with modern lifestyle retail — a balance most pharmacy branding misses.",
+      'Clinical trust and retail warmth — most pharmacies pick one and miss.',
     approach:
-      'We developed a clean visual identity and carried it into spatial branding, packaging, and signage, so the fit-out, shelves, and shopfront all read as one welcoming system.',
+      'Identity into space: packaging, signage, and shopfront as one system.',
     outcome:
-      "The result is a cohesive brand experience that runs from the storefront to the product in the customer's hand, positioning Dose as approachable and dependable.",
+      'From storefront to shelf, Dose feels calm, clear, and dependable.',
     quote: {
       text: 'Customers tell us the store just feels calmer and easier to trust now.',
       author: 'Operations Lead, Dose Pharmacy',
@@ -208,7 +208,7 @@ export const clemsonPorterProperties = caseStudy(
   'Case study: quiet-luxury rebranding for a UAE property brokerage.',
   {
     overview:
-      'Clemson Porter is a UAE-based property brokerage working with clients across the globe. We led a complete rebranding to reflect their refined, discreet approach — positioning them as a quiet force in high-value real estate.',
+      'UAE property brokerage. A quiet-luxury rebrand for clients who notice everything.',
     client: 'Clemson Porter Properties',
     industry: 'Real Estate Brokerage',
     year: '2024',
@@ -233,11 +233,11 @@ export const clemsonPorterProperties = caseStudy(
       { label: 'Rebrand rollout', value: '5 weeks' },
     ],
     challenge:
-      'Clemson Porter, a Business Bay brokerage serving high-net-worth and international investors, was presenting with a dated identity that undersold its discreet, high-value positioning.',
+      'High-value clients. A brand that still looked dated.',
     approach:
-      'We led a complete rebrand grounded in quiet luxury — a restrained logo system, refined typography, and a considered tone of voice extended across the company profile and stationery.',
+      'Full rebrand — restrained mark, quiet luxury, zero noise.',
     outcome:
-      'The brand now reads as subtle, confident, and timeless, resonating with the global investors and private clients the brokerage is built to serve.',
+      'Subtle, confident, timeless — built for private capital.',
     quote: {
       text: 'It finally feels like a brand our kind of client expects to see.',
       author: 'CEO, Clemson Porter Properties',
@@ -257,7 +257,7 @@ export const emiratesAgro = caseStudy(
   'Case study: heritage-forward rebranding for a global agricultural supplier.',
   {
     overview:
-      'Emirates Agro is a global supplier of agricultural products, fertilizers, and petrochemical raw materials, operating under the Madameek Group. With a legacy dating back to 1981, the company needed a brand that reflects both its heritage and its forward-looking global presence.',
+      'Since 1981. We rebranded a global agro supplier for the next forty years.',
     client: 'Emirates Agro',
     industry: 'Agriculture & Petrochemicals',
     year: '2023',
@@ -281,11 +281,11 @@ export const emiratesAgro = caseStudy(
       { label: 'Profile and collateral', value: 'Full suite' },
     ],
     challenge:
-      'Emirates Agro, a Madameek Group supplier of agricultural products, fertilizers, and petrochemical raw materials since 1981, needed a brand that honored its heritage while signaling a modern, global outlook.',
+      'Deep heritage. A brand that no longer looked global.',
     approach:
-      'We redesigned the identity around agriculture and sustainability — a layered palette of greens, almond, and dun, paired with a minimal, clean layout system built for clarity and trust.',
+      'Greens, clarity, trust — identity rooted in land and scale.',
     outcome:
-      'The refreshed brand bridges four decades of legacy with a forward-looking presence, unifying its diverse product lines under one confident visual language.',
+      'Four decades of legacy, one modern visual language.',
     quote: {
       text: 'Four decades of history, finally captured in a brand that looks ahead.',
       author: 'Brand Lead, Emirates Agro',
@@ -305,7 +305,7 @@ export const zealerz = caseStudy(
   'Case study: brand identity and app design for an LPG marketplace.',
   {
     overview:
-      'Zealerz is a Dubai-based virtual marketplace aiming to transform the LPG supply chain by making it simple, fast, and reliable for both businesses and consumers.',
+      'LPG, simplified. Brand + app for a Dubai marketplace built on speed and trust.',
     client: 'Zealerz',
     industry: 'LPG Marketplace & Logistics',
     year: '2024',
@@ -328,11 +328,11 @@ export const zealerz = caseStudy(
       { label: 'Brand system', value: 'Digital + physical' },
     ],
     challenge:
-      'Zealerz set out to modernize the LPG supply chain in Dubai, but a fragmented, low-trust category meant it needed a brand that felt as fast and reliable as the service it promised.',
+      'A low-trust category. A product that had to feel instant.',
     approach:
-      'We built a full identity around technology, speed, and trust, then applied it across a focused app experience designed for clarity and ease for both businesses and consumers.',
+      'Identity + app — tech energy, zero friction.',
     outcome:
-      'Zealerz launched with a cohesive brand and product that make ordering LPG feel simple and dependable, differentiating it in an otherwise commoditized market.',
+      'Ordering LPG finally feels as simple as it should.',
     quote: {
       text: 'Ordering gas should feel this simple — the brand and app finally make it so.',
       author: 'Founder, Zealerz',

@@ -22,17 +22,20 @@ interface CaseStudyDetailContentProps {
   study: CaseStudyRecord;
 }
 
-function CheckNode({ className }: { className?: string }) {
+function SectionHeading({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden className={className}>
-      <path d="M5 12.5l4.2 4.2L19 7" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-function SectionHeading({ children }: { children: React.ReactNode }) {
-  return (
-    <h2 className="sd-reveal mb-8 flex items-center gap-4 font-sans text-2xl font-bold text-white md:mb-10 md:text-3xl">
+    <h2
+      className={cn(
+        'sd-reveal mb-8 flex items-center gap-4 font-sans text-2xl font-bold text-white md:mb-10 md:text-3xl',
+        className,
+      )}
+    >
       <span aria-hidden className="h-6 w-1.5 shrink-0 rounded-full bg-[color:var(--sd-accent)]" />
       {children}
     </h2>
@@ -420,23 +423,26 @@ function CaseStudyFeatureImage({
   );
 }
 
-/* ───────────────────────── Deliverables (a calm breather) ───────────────────────── */
+/* ───────────────────────── Deliverables (editorial list) ───────────────────────── */
 
 function CaseStudyDeliverables({ items }: { items: string[] }) {
   return (
-    <section className="relative bg-charcoal px-gutter-m py-16 lg:px-gutter-d lg:py-24">
-      <div className="relative z-content mx-auto max-w-6xl">
-        <SectionHeading>What we delivered</SectionHeading>
-        <ul className="grid border-t border-white/12 sm:grid-cols-2">
-          {items.map((item) => (
-            <li
-              key={item}
-              className="sd-reveal group/dl flex items-start gap-4 border-b border-white/10 py-5 transition-colors duration-300 hover-fine:hover:bg-white/[0.03] sm:px-6 sm:odd:border-r sm:odd:border-r-white/10"
-            >
-              <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-white/25 text-[color:var(--sd-accent)] transition-colors duration-300 group-hover/dl:border-[color:var(--sd-accent)] group-hover/dl:bg-[color:var(--sd-accent)] group-hover/dl:text-[color:var(--sd-accent-on)]">
-                <CheckNode className="h-3 w-3" />
+    <section className="relative bg-charcoal px-gutter-m py-20 lg:px-gutter-d lg:py-28">
+      <div className="relative z-content mx-auto grid max-w-6xl gap-12 lg:grid-cols-[minmax(12rem,0.42fr)_1fr] lg:items-start lg:gap-20">
+        <SectionHeading className="mb-0 md:mb-0">What we delivered</SectionHeading>
+
+        <ul className="grid gap-x-14 gap-y-7 sm:grid-cols-2">
+          {items.map((item, i) => (
+            <li key={item} className="sd-reveal flex items-start gap-4">
+              <span
+                aria-hidden
+                className="mt-0.5 shrink-0 font-mono text-xs font-semibold tracking-[0.12em] text-[color:var(--sd-accent)]"
+              >
+                {String(i + 1).padStart(2, '0')}
               </span>
-              <span className="font-sans font-medium leading-snug text-white md:text-lg">{item}</span>
+              <span className="font-sans text-base font-medium leading-snug text-white/90 md:text-lg">
+                {item}
+              </span>
             </li>
           ))}
         </ul>

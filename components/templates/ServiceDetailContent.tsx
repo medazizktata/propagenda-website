@@ -149,7 +149,7 @@ export function ServiceDetailContent({ service }: { service: ServiceRecord }) {
           {service.slug === 'photography-videography' ? (
             <PhotoVideoHeroOverview />
           ) : (
-            <p className="sd-reveal mx-auto mt-7 max-w-2xl text-base leading-relaxed text-white/80 [text-shadow:0_1px_16px_rgba(0,0,0,0.55)] md:text-lg">
+            <p className="sd-reveal mx-auto mt-8 max-w-measure-lead text-lg font-light leading-[1.5] text-white/85 [text-shadow:0_1px_16px_rgba(0,0,0,0.55)] md:text-xl">
               {service.overview}
             </p>
           )}
@@ -1486,7 +1486,7 @@ function ServiceFAQ({ faqs }: { faqs: { q: string; a: string }[] }) {
                 )}
               >
                 <div className="overflow-hidden">
-                  <p className="max-w-2xl pr-8 text-[0.95rem] leading-relaxed text-white/65">{f.a}</p>
+                  <p className="max-w-measure pr-8 text-[0.95rem] leading-[1.7] text-white/75">{f.a}</p>
                 </div>
               </div>
             </div>

@@ -119,6 +119,12 @@ const config: Config = {
         'prose-fixed': '712px',
         'content-column': '700px',
         'form-min': '345px',
+        // Editorial reading measures (ch-based, cuberto/micdrop-grade legibility).
+        // `measure` is the default long-form body column; narrow/wide flank it.
+        measure: '66ch',
+        'measure-narrow': '54ch',
+        'measure-wide': '74ch',
+        'measure-lead': '46ch',
       },
       transitionDuration: {
         instant: '100ms',

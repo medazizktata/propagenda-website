@@ -254,6 +254,83 @@ main {
   mask-repeat: no-repeat;
 }
 
+/* ─────────────────────────────────────────────────────────────────────────
+   Editorial long-form prose (legal / policy / any measured body copy).
+   Legible BY DEFAULT — no opacity gating, no scroll-triggered visibility.
+   Pair with a max-w-measure* wrapper to cap the reading line.
+   ───────────────────────────────────────────────────────────────────────── */
+.prose-editorial {
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 1.0625rem; /* 17px */
+  line-height: 1.75;
+  letter-spacing: 0.003em;
+  text-wrap: pretty;
+}
+@media (min-width: 1024px) {
+  .prose-editorial {
+    font-size: 1.125rem; /* 18px */
+  }
+}
+.prose-editorial > * + * {
+  margin-top: 1.15em;
+}
+.prose-editorial strong,
+.prose-editorial b {
+  color: #fff;
+  font-weight: 600;
+}
+.prose-editorial a {
+  color: var(--color-orange);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  transition: color 300ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+@media (hover: hover) and (pointer: fine) {
+  .prose-editorial a:hover {
+    color: var(--color-orange-hover);
+  }
+}
+.prose-editorial ul,
+.prose-editorial ol {
+  display: grid;
+  gap: 0.7em;
+  padding: 0;
+}
+.prose-editorial li {
+  position: relative;
+  padding-left: 1.6em;
+  list-style: none;
+}
+/* Cuberto-style short orange rule marker for unordered items. */
+.prose-editorial ul > li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.78em;
+  width: 0.7em;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--color-orange);
+}
+.prose-editorial ol {
+  counter-reset: prose-ol;
+}
+.prose-editorial ol > li {
+  counter-increment: prose-ol;
+}
+.prose-editorial ol > li::before {
+  content: counter(prose-ol, decimal-leading-zero);
+  position: absolute;
+  left: 0;
+  top: 0.05em;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.72em;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--color-orange);
+}
+
 /* Interactive affordance — hover targets always show a pointer. */
 @layer base {
   a[href],

@@ -41,7 +41,7 @@ function NavPanel({
       onBlur={() => onHover(null)}
       className={cn(
         'group/panel relative flex min-h-[12rem] flex-col justify-center overflow-hidden py-12 outline-none transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-orange lg:min-h-[16rem] lg:py-20',
-        isNext ? 'items-end text-right lg:pl-14 lg:pr-4' : 'items-start text-left lg:pl-4 lg:pr-14',
+        isNext ? 'items-end text-right lg:pl-8 lg:pr-2' : 'items-start text-left lg:pl-2 lg:pr-8',
         isDimmed && 'opacity-[0.32]',
         isActive && !reducedMotion && 'lg:scale-[1.01]',
       )}
@@ -127,36 +127,43 @@ export function WorkNextPrev({
       className="relative overflow-hidden border-t border-white/10 bg-charcoal px-gutter-m lg:px-gutter-d"
       onPointerLeave={() => setHovered(null)}
     >
-      <div className="relative mx-auto flex max-w-[1700px] flex-col lg:grid lg:grid-cols-2 lg:items-stretch">
+      <div
+        className={cn(
+          'relative mx-auto grid max-w-[1700px] grid-cols-1 lg:items-stretch',
+          prev && next
+            ? 'lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]'
+            : 'lg:grid-cols-1',
+        )}
+      >
         {prev && (
           <NavPanel study={prev} side="prev" hovered={hovered} onHover={setHovered} reducedMotion={reducedMotion} />
-        )}
-        {next && (
-          <NavPanel study={next} side="next" hovered={hovered} onHover={setHovered} reducedMotion={reducedMotion} />
         )}
 
         {prev && next && (
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-y-8 left-1/2 z-20 hidden -translate-x-1/2 lg:flex lg:flex-col lg:items-center"
+            className="pointer-events-none relative z-20 hidden w-12 shrink-0 self-stretch py-8 lg:block"
           >
-            <span className="w-px flex-1 bg-white/15" />
+            <span className="absolute inset-y-8 left-1/2 w-px -translate-x-1/2 bg-white/15" />
             <span
               className={cn(
-                'my-3 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/15 bg-charcoal transition-transform duration-300 ease-out',
-                hovered != null && !reducedMotion && 'scale-110 border-orange/50',
+                'absolute left-1/2 top-1/2 flex h-11 w-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-charcoal transition-[transform,border-color] duration-300 ease-out',
+                hovered != null && !reducedMotion && 'scale-110 border-orange/55',
               )}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/images/brand/logo-monogram.svg"
                 alt=""
-                className="h-3.5 w-3.5 shrink-0 select-none"
+                className="h-4 w-4 object-contain select-none"
                 draggable={false}
               />
             </span>
-            <span className="w-px flex-1 bg-white/15" />
           </div>
+        )}
+
+        {next && (
+          <NavPanel study={next} side="next" hovered={hovered} onHover={setHovered} reducedMotion={reducedMotion} />
         )}
       </div>
     </section>

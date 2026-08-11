@@ -44,8 +44,8 @@ const PANELS: Panel[] = [
   },
   {
     title: 'Video Work',
-    cta: 'See video work',
-    href: '/work',
+    cta: 'See film & photo',
+    href: '/work/video',
     frames: [
       '/images/portfolio/work-events.webp',
       '/images/portfolio/work-quickcars.webp',

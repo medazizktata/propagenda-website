@@ -17,15 +17,8 @@ export const WORK_SLUGS = [
   'zealerz',
 ] as const;
 
-export const BLOG_SLUGS = [
-  'the-power-of-visual-identity',
-  'whats-destroying-your-brand',
-  'how-colors-influence-consumer-behavior',
-] as const;
-
 export type ServiceSlug = (typeof SERVICE_SLUGS)[number];
 export type WorkSlug = (typeof WORK_SLUGS)[number];
-export type BlogSlug = (typeof BLOG_SLUGS)[number];
 
 export interface SeoMeta {
   title: string;
@@ -120,18 +113,6 @@ export interface CaseStudyRecord {
   quote?: CaseStudyQuote;
   /** Optional per-client body accent (falls back to brand orange). */
   accent?: CaseStudyAccent;
-}
-
-export interface BlogPostRecord {
-  slug: BlogSlug;
-  title: string;
-  date: string;
-  category: string;
-  excerpt: string;
-  body: string;
-  image?: GalleryImage;
-  tags: string[];
-  seo: SeoMeta;
 }
 
 export interface LegalSection {

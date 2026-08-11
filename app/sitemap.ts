@@ -1,5 +1,5 @@
 import type { MetadataRoute } from 'next';
-import { BLOG_SLUGS, SERVICE_SLUGS, WORK_SLUGS } from '@/lib/constants/routes';
+import { SERVICE_SLUGS, WORK_SLUGS } from '@/lib/constants/routes';
 import { isFeatureUnlocked } from '@/lib/featureFlags';
 import { getSiteUrl } from '@/lib/seo/site';
 
@@ -27,8 +27,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     entry('/about', 0.8, 'monthly'),
     ...SERVICE_SLUGS.map((slug) => entry(`/services/${slug}`, 0.8)),
     ...WORK_SLUGS.map((slug) => entry(`/work/${slug}`, 0.8)),
-    entry('/blog', 0.7, 'weekly'),
-    ...BLOG_SLUGS.map((slug) => entry(`/blog/${slug}`, 0.7)),
     entry('/privacy', 0.3, 'yearly'),
     entry('/terms', 0.3, 'yearly'),
     entry('/imprint', 0.3, 'yearly'),

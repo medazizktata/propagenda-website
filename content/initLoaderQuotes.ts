@@ -109,12 +109,6 @@ export const loaderPresets = {
     entrance: 'expose',
     curtain: 'wipe-left',
   },
-  blog: {
-    lines: ['THINK', 'LOUDER.', 'BUILD', 'BETTER.'],
-    attribution: 'BLOG',
-    entrance: 'pulse',
-    curtain: 'slash',
-  },
   contact: {
     lines: ["LET'S", 'START A', 'CONVERSATION.'],
     attribution: 'CONTACT',
@@ -187,7 +181,6 @@ export const routeLoaderPresets: Record<string, LoaderPresetId> = {
   '/about': 'about',
   '/services': 'services',
   '/work': 'work',
-  '/blog': 'blog',
   '/contact': 'contact',
   '/privacy': 'privacy',
   '/terms': 'terms',
@@ -231,7 +224,6 @@ function presetIdForPath(pathname: string): LoaderPresetId {
   if (routeLoaderPresets[path]) return routeLoaderPresets[path]!;
   if (path.startsWith('/services')) return routeLoaderPresets['/services'] ?? 'services';
   if (path.startsWith('/work')) return routeLoaderPresets['/work'] ?? 'work';
-  if (path.startsWith('/blog')) return routeLoaderPresets['/blog'] ?? 'blog';
   return FALLBACK;
 }
 

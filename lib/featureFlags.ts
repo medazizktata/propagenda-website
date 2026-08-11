@@ -7,7 +7,6 @@
  *   NEXT_PUBLIC_FF_PAGE_ABOUT=true
  *   NEXT_PUBLIC_FF_PAGE_SERVICES=true
  *   NEXT_PUBLIC_FF_PAGE_WORK=true
- *   NEXT_PUBLIC_FF_PAGE_BLOG=true
  *   NEXT_PUBLIC_FF_PAGE_CONTACT=true
  *   NEXT_PUBLIC_FF_PAGE_LEGAL=true   (privacy / terms / imprint)
  * Kill soft launch entirely (all pages public):
@@ -52,7 +51,6 @@ export const pageFlags = {
   about: parseFlag(process.env.NEXT_PUBLIC_FF_PAGE_ABOUT, false),
   services: parseFlag(process.env.NEXT_PUBLIC_FF_PAGE_SERVICES, false),
   work: parseFlag(process.env.NEXT_PUBLIC_FF_PAGE_WORK, false),
-  blog: parseFlag(process.env.NEXT_PUBLIC_FF_PAGE_BLOG, false),
   contact: parseFlag(process.env.NEXT_PUBLIC_FF_PAGE_CONTACT, false),
   legal: parseFlag(process.env.NEXT_PUBLIC_FF_PAGE_LEGAL, false),
 } as const;
@@ -68,7 +66,6 @@ export function pageFlagForPath(pathname: string): PageFlagKey | null {
   if (normalized === '/about') return 'about';
   if (normalized === '/services' || normalized.startsWith('/services/')) return 'services';
   if (normalized === '/work' || normalized.startsWith('/work/')) return 'work';
-  if (normalized === '/blog' || normalized.startsWith('/blog/')) return 'blog';
   if (normalized === '/contact') return 'contact';
   if (normalized === '/privacy' || normalized === '/terms' || normalized === '/imprint') {
     return 'legal';

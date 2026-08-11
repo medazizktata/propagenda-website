@@ -125,25 +125,3 @@ export const clientLogos: ClientBrand[] = [
   { name: 'Dr. Shifa', logo: 'dr-shifa.png' },
   { name: 'Wing Car Q&C', logo: 'wing-car-qc.png' },
 ];
-
-export const blogTeasers = [
-  {
-    title: 'The Power of Visual Identity: Why Your Brand Needs More Than Just a Logo',
-    date: 'January 2, 2025',
-    excerpt:
-      'Why visual identity matters beyond the logo — and how Propagenda builds memorable brands.',
-    href: '/blog/the-power-of-visual-identity',
-  },
-  {
-    title: "What's Destroying Your Brand?",
-    date: 'January 2, 2025',
-    excerpt: 'Seven brand pitfalls that erode trust — and how to protect your reputation.',
-    href: '/blog/whats-destroying-your-brand',
-  },
-  {
-    title: 'How Colors Influence Consumer Behavior',
-    date: 'January 2, 2025',
-    excerpt: 'Color psychology for marketing — emotional impact and brand color selection tips.',
-    href: '/blog/how-colors-influence-consumer-behavior',
-  },
-] as const;

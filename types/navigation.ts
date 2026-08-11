@@ -24,10 +24,12 @@ export interface ContactFormConfig {
   subheading: string;
   submitLabel: string;
   fields: {
-    firstName: { label: string; placeholder: string };
-    lastName: { label: string; placeholder: string };
+    name: { label: string; placeholder: string };
+    company: { label: string; placeholder: string };
     email: { label: string; placeholder: string };
-    phone: { label: string; placeholder: string };
+    source: { label: string; placeholder: string };
+    budget: { label: string; placeholder: string };
+    timeframe: { label: string; placeholder: string };
     message: { label: string; placeholder: string };
   };
 }

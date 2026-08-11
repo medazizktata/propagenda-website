@@ -61,15 +61,29 @@ export const footer: FooterConfig = {
 };
 
 export const contactForm: ContactFormConfig = {
-  heading: "Let's start a conversation",
-  subheading: 'Get a free consultation',
-  submitLabel: 'Send Message',
+  heading: "Let's start your project together",
+  subheading: 'Tell us what you need',
+  submitLabel: 'Submit',
   fields: {
-    firstName: { label: 'First Name', placeholder: 'First Name' },
-    lastName: { label: 'Last Name', placeholder: 'Last Name' },
-    email: { label: 'Email', placeholder: 'Email' },
-    phone: { label: 'Phone', placeholder: 'Phone' },
-    message: { label: 'Message', placeholder: 'Message' },
+    name: { label: 'Your name', placeholder: 'Your name…' },
+    company: { label: 'Your company', placeholder: 'Your company…' },
+    email: { label: 'Your email', placeholder: 'Your email…' },
+    source: {
+      label: 'How did you find out about us?',
+      placeholder: 'How did you find out about us?',
+    },
+    budget: {
+      label: 'Budget for the project?',
+      placeholder: 'Budget for the project?',
+    },
+    timeframe: {
+      label: 'Time frame of the project?',
+      placeholder: 'Time frame of the project?',
+    },
+    message: {
+      label: 'Tell us about the project',
+      placeholder: 'Please tell us about scope, requirements, features…',
+    },
   },
 };
 

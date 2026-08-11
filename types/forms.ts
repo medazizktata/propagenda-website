@@ -1,8 +1,10 @@
 export interface ContactFormData {
-  firstName: string;
-  lastName: string;
+  name: string;
+  company: string;
   email: string;
-  phone: string;
+  source: string;
+  budget: string;
+  timeframe: string;
   message: string;
 }
 

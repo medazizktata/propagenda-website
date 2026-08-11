@@ -14,7 +14,7 @@ export const privacy: LegalRecord = {
     {
       heading: 'Information We Collect',
       paragraphs: [
-        'When you submit our contact form, we may collect your first name, last name, email address, phone number, and message content.',
+        'When you submit our contact form, we may collect your name, company, email address, how you found us, project budget, time frame, and message content.',
         'We may also collect technical data such as browser type, device information, and pages visited through standard server logs and analytics tools.',
       ],
     },

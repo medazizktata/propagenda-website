@@ -1,31 +1,33 @@
 import { z } from 'zod';
+import { contactCloser } from '@/content/contact';
+
+const sourceOptions = contactCloser.fields.source.options as [string, ...string[]];
+const budgetOptions = contactCloser.fields.budget.options as [string, ...string[]];
+const timeframeOptions = contactCloser.fields.timeframe.options as [string, ...string[]];
 
 export const contactSchema = z.object({
-  firstName: z
+  name: z
     .string()
     .trim()
-    .min(1, 'First name is required')
-    .max(80, 'First name is too long'),
-  lastName: z
+    .min(1, 'Name is required')
+    .max(120, 'Name is too long'),
+  company: z
     .string()
     .trim()
-    .min(1, 'Last name is required')
-    .max(80, 'Last name is too long'),
+    .min(1, 'Company is required')
+    .max(120, 'Company is too long'),
   email: z
     .string()
     .trim()
     .min(1, 'Email is required')
     .email('Enter a valid email address'),
-  phone: z
-    .string()
-    .trim()
-    .min(1, 'Phone is required')
-    .min(7, 'Enter a valid phone number')
-    .max(30, 'Phone number is too long'),
+  source: z.enum(sourceOptions, { message: 'Please select an option' }),
+  budget: z.enum(budgetOptions, { message: 'Please select a budget' }),
+  timeframe: z.enum(timeframeOptions, { message: 'Please select a time frame' }),
   message: z
     .string()
     .trim()
-    .min(1, 'Message is required')
+    .min(1, 'Tell us about the project')
     .min(10, 'Message must be at least 10 characters')
     .max(2000, 'Message is too long'),
 });

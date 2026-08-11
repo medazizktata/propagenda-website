@@ -5,10 +5,12 @@ import { contactSchema, fieldErrorsFromZod } from './contactSchema';
 
 function readFields(formData: FormData): ContactFormData {
   return {
-    firstName: String(formData.get('firstName') ?? ''),
-    lastName: String(formData.get('lastName') ?? ''),
+    name: String(formData.get('name') ?? ''),
+    company: String(formData.get('company') ?? ''),
     email: String(formData.get('email') ?? ''),
-    phone: String(formData.get('phone') ?? ''),
+    source: String(formData.get('source') ?? ''),
+    budget: String(formData.get('budget') ?? ''),
+    timeframe: String(formData.get('timeframe') ?? ''),
     message: String(formData.get('message') ?? ''),
   };
 }

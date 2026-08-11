@@ -17,12 +17,52 @@ export const contactCloser = {
     ],
   ],
   mailto: "info@thepropagenda.com",
-  submitLabel: "Send it",
+  formTitle: "Let's start your project together",
+  formEyebrow: "Brief",
+  submitLabel: "Submit",
   fields: {
-    name: "Your name",
-    email: "Email",
-    phone: "Phone",
-    message: "What's the project?",
+    name: { label: "Your name", placeholder: "Your name…" },
+    company: { label: "Your company", placeholder: "Your company…" },
+    email: { label: "Your email", placeholder: "Your email…" },
+    source: {
+      label: "How did you find out about us?",
+      placeholder: "How did you find out about us?",
+      options: [
+        "Google / Search",
+        "Instagram",
+        "LinkedIn",
+        "Referral",
+        "Event or word of mouth",
+        "Other",
+      ],
+    },
+    budget: {
+      label: "Budget for the project?",
+      placeholder: "Budget for the project?",
+      options: [
+        "Under AED 10k",
+        "AED 10k – 25k",
+        "AED 25k – 50k",
+        "AED 50k – 100k",
+        "AED 100k+",
+        "Not sure yet",
+      ],
+    },
+    timeframe: {
+      label: "Time frame of the project?",
+      placeholder: "Time frame of the project?",
+      options: [
+        "ASAP",
+        "1–2 months",
+        "3–6 months",
+        "6+ months",
+        "Flexible",
+      ],
+    },
+    message: {
+      label: "Tell us about the project",
+      placeholder: "Please tell us about scope, requirements, features…",
+    },
   },
 };
 

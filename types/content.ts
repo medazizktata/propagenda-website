@@ -128,3 +128,21 @@ export interface LegalRecord {
   centered?: boolean;
   seo: SeoMeta;
 }
+
+export type VideoOrientation = 'landscape' | 'portrait';
+
+/** A single video in the /work/video showcase. `src` empty = a poster-only swap-in slot. */
+export interface VideoProject {
+  slug: string;
+  title: string;
+  category: string;
+  src: string;
+  poster: string;
+  orientation: VideoOrientation;
+  width: number;
+  height: number;
+  duration?: string;
+  client?: string;
+  description?: string;
+  placeholder?: boolean;
+}

@@ -300,11 +300,12 @@ function CaseStudyStory({
           </p>
         </div>
 
-        {stages.map((s) => (
+        {stages.map((s, i) => (
           <div key={s.key} className="flex min-h-[88vh] items-center px-gutter-m lg:px-gutter-d">
             <div className="sd-reveal mx-auto w-full max-w-4xl">
-              <span className="mb-6 inline-flex items-center gap-3 font-sans text-xl font-bold text-[color:var(--sd-accent)] md:text-2xl">
-                <span aria-hidden className="h-2.5 w-2.5 shrink-0 rounded-full bg-[color:var(--sd-accent)]" />
+              <span className="mb-7 flex items-center gap-4 font-sans text-xs font-bold uppercase tracking-[0.18em] text-[color:var(--sd-accent)] md:text-sm">
+                <span aria-hidden className="tabular-nums">{String(i + 1).padStart(2, '0')}</span>
+                <span aria-hidden className="h-px w-8 shrink-0 bg-[color:var(--sd-accent)]/60" />
                 {s.name}
               </span>
               <p
@@ -410,12 +411,18 @@ function CaseStudyFeatureImage({
             />
           </div>
         </button>
-        <p
-          className="sd-reveal max-w-[34ch] font-sans leading-relaxed text-white/85 lg:w-[54%]"
-          style={{ fontSize: 'clamp(1.25rem, 2vw, 1.75rem)' }}
-        >
-          {image.alt}
-        </p>
+        <div className="sd-reveal lg:w-[54%]">
+          <span className="mb-5 flex items-center gap-4 font-sans text-xs font-bold uppercase tracking-[0.18em] text-[color:var(--sd-accent)]">
+            <span aria-hidden className="h-px w-8 shrink-0 bg-[color:var(--sd-accent)]/60" />
+            In focus
+          </span>
+          <p
+            className="max-w-[34ch] font-sans leading-relaxed text-white/85"
+            style={{ fontSize: 'clamp(1.25rem, 2vw, 1.75rem)' }}
+          >
+            {image.alt}
+          </p>
+        </div>
       </div>
     </section>
   );

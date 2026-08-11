@@ -47,12 +47,6 @@ export const socialLinks: SocialLink[] = [
 ];
 
 export const footer: FooterConfig = {
-  marquee: {
-    line1: 'PROPAGENDA · MARKETING SERVICES · LOOKING FOR THE BETTER FUTURE ·',
-    line2: 'CONNECT NOW →',
-    ctaLabel: 'CONNECT NOW',
-    ctaHref: '/contact',
-  },
   tagline: 'Looking for the Better Future',
   secondaryTagline: 'Together for the Better Future',
   phone: '+971 52 753 3253',

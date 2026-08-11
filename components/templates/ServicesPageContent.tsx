@@ -12,7 +12,7 @@ export function ServicesPageContent() {
       <ServicesIndex />
       {/* ACT 3 — Why the studio + client proof */}
       <ServicesWhy />
-      {/* ACT 4 — Close: bold orange CTA (the global footer carries the brand marquee). */}
+      {/* ACT 4 — Close: bold orange CTA. */}
       <ServicesCTA />
     </>
   );

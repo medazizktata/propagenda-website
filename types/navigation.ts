@@ -10,12 +10,6 @@ export interface SocialLink {
 }
 
 export interface FooterConfig {
-  marquee: {
-    line1: string;
-    line2: string;
-    ctaLabel: string;
-    ctaHref: string;
-  };
   tagline: string;
   secondaryTagline?: string;
   phone: string;

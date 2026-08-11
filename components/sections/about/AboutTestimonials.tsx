@@ -39,7 +39,7 @@ export function AboutTestimonials() {
           className={cn(
             "flex w-max gap-4 lg:gap-5",
             !reducedMotion &&
-              "animate-[marquee_48s_linear_infinite] hover:[animation-play-state:paused] motion-reduce:animate-none",
+              "animate-[marquee_48s_linear_infinite] motion-reduce:animate-none",
           )}
         >
           {loop.map((item, i) => {

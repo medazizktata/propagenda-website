@@ -43,16 +43,27 @@ export function AboutStudio() {
       className="relative scroll-mt-24 bg-charcoal text-white"
     >
       {/* Intro + principles */}
-      <div className="px-gutter-m py-24 lg:px-gutter-d lg:py-32">
+      <div className="relative px-gutter-m py-24 lg:px-gutter-d lg:py-32">
         <div className="mx-auto grid max-w-[1920px] items-center gap-16 lg:grid-cols-2 lg:gap-24">
-          <div data-about-reveal>
-            <p className="mb-6 text-sm font-medium text-white/45">{intro.label}</p>
-            <h2
-              className="max-w-lg font-sans font-bold leading-[1.14] tracking-[-0.025em] text-white"
-              style={{ fontSize: "clamp(1.75rem, 3.4vw, 2.85rem)" }}
-            >
-              {intro.statement}
-            </h2>
+          <div data-about-reveal className="relative">
+            {/* Shape-only monogram — brand presence without competing with the statement */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/images/brand/logo-monogram.svg"
+              alt=""
+              aria-hidden
+              className="pointer-events-none absolute -left-[8%] top-1/2 w-[min(70%,22rem)] -translate-y-[42%] select-none opacity-[0.14] lg:-left-[12%] lg:w-[min(85%,28rem)]"
+              draggable={false}
+            />
+            <div className="relative z-content">
+              <p className="mb-6 text-sm font-medium text-white/45">{intro.label}</p>
+              <h2
+                className="max-w-lg font-sans font-bold leading-[1.14] tracking-[-0.025em] text-white"
+                style={{ fontSize: "clamp(1.75rem, 3.4vw, 2.85rem)" }}
+              >
+                {intro.statement}
+              </h2>
+            </div>
           </div>
 
           <ul data-about-reveal className="divide-y divide-white/10">

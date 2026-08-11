@@ -79,9 +79,23 @@ export function AboutImmersive() {
       return;
     }
     if (statement.passScrollId) {
-      document
-        .getElementById(statement.passScrollId)
-        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+      const el = document.getElementById(statement.passScrollId);
+      if (!el) return;
+      const headerOffset = 96;
+      const targetY =
+        el.getBoundingClientRect().top + window.scrollY - headerOffset;
+      if (reducedMotion) {
+        window.scrollTo(0, targetY);
+        return;
+      }
+      const proxy = { y: window.scrollY };
+      gsap.killTweensOf(proxy);
+      gsap.to(proxy, {
+        y: Math.max(0, targetY),
+        duration: 1.45,
+        ease: "power3.inOut",
+        onUpdate: () => window.scrollTo(0, proxy.y),
+      });
       return;
     }
     if (i < statements.length - 1) goTo(i + 1);

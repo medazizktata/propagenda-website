@@ -85,8 +85,8 @@ export function ClientLogoGrid() {
         </div>
 
         <div
-          className="relative z-content mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-5 gap-y-3 px-6 text-center font-sans font-bold uppercase tracking-tight text-white [text-shadow:0_2px_12px_rgba(0,0,0,0.75)]"
-          style={{ fontSize: 'clamp(0.7rem, 1.25vw, 1.15rem)' }}
+          className="relative z-content mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-4 gap-y-3.5 px-5 text-center font-sans font-bold uppercase tracking-tight text-white [text-shadow:0_2px_12px_rgba(0,0,0,0.75)] sm:gap-x-5 sm:gap-y-4 sm:px-6 md:gap-x-6"
+          style={{ fontSize: 'clamp(1.05rem, 0.7rem + 2.4vw, 1.25rem)' }}
         >
           {clientLogos.map((brand) => {
             // Real extracted client logo (content/home.ts); names without one don't morph.

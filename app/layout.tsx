@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
-import { Poppins } from 'next/font/google';
+import { IBM_Plex_Mono, Poppins } from 'next/font/google';
 import { Providers } from './providers';
 import { SkipLink } from '@/components/ui/SkipLink';
 import { SiteShell } from '@/components/layout/SiteShell';
@@ -11,6 +11,14 @@ const poppins = Poppins({
   subsets: ['latin'],
   weight: ['300', '400', '500', '600', '700', '800'],
   variable: '--font-poppins',
+  display: 'swap',
+});
+
+/** Backstage register: mono caps for eyebrows, metadata, scroll cues, trust lines. */
+const plexMono = IBM_Plex_Mono({
+  subsets: ['latin'],
+  weight: ['500'],
+  variable: '--font-mono',
   display: 'swap',
 });
 
@@ -26,7 +34,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className={poppins.variable}>
+    <html lang="en" className={`${poppins.variable} ${plexMono.variable}`}>
       <body>
         <SkipLink />
         <Providers>

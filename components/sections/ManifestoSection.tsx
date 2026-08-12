@@ -79,7 +79,7 @@ export function ManifestoSection() {
               brighten in right after the quote finishes. */}
           <footer className="mt-12 flex items-center gap-4">
             <span aria-hidden className="mf-word h-0.5 w-14 bg-orange" />
-            <cite className="mf-word font-sans text-2xl font-bold uppercase not-italic tracking-wide text-white lg:text-3xl">
+            <cite className="mf-word text-backstage not-italic text-white/70 md:text-sm">
               {manifestoAttribution}
             </cite>
           </footer>

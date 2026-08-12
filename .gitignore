@@ -44,3 +44,8 @@ __pycache__/
 npm-debug.log*
 pnpm-debug.log*
 .ref/
+
+# Playwright
+test-results/
+playwright-report/
+blob-report/

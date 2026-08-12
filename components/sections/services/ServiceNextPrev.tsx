@@ -16,13 +16,11 @@ function NavPanel({
   side,
   hovered,
   onHover,
-  reducedMotion,
 }: {
   card: ServiceHubCard;
   side: Side;
   hovered: Side | null;
   onHover: (side: Side | null) => void;
-  reducedMotion: boolean;
 }) {
   const isActive = hovered === side;
   const isDimmed = hovered != null && hovered !== side;
@@ -38,10 +36,9 @@ function NavPanel({
       onFocus={() => onHover(side)}
       onBlur={() => onHover(null)}
       className={cn(
-        'group/panel relative flex min-h-[12rem] flex-col justify-center overflow-hidden py-12 outline-none transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-orange lg:min-h-[16rem] lg:py-20',
+        'group/panel relative flex min-h-[12rem] flex-col justify-center overflow-hidden py-12 outline-none transition-opacity duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:outline-none lg:min-h-[16rem] lg:py-20',
         isNext ? 'items-end text-right lg:pl-8 lg:pr-2' : 'items-start text-left lg:pl-2 lg:pr-8',
         isDimmed && 'opacity-[0.32]',
-        isActive && !reducedMotion && 'lg:scale-[1.01]',
       )}
     >
       <div
@@ -87,7 +84,7 @@ function NavPanel({
 
       <span
         className={cn(
-          'relative z-10 block max-w-full font-sans font-black uppercase leading-[0.88] tracking-tighter transition-colors duration-400 ease-out',
+          'relative z-10 block max-w-full font-sans font-extrabold uppercase leading-[0.88] tracking-tighter transition-colors duration-400 ease-out',
           isActive ? 'text-white' : 'text-white/55',
         )}
         style={NAME_SIZE}
@@ -128,7 +125,6 @@ export function ServiceNextPrev({ slug }: { slug: ServiceSlug }) {
           side="prev"
           hovered={hovered}
           onHover={setHovered}
-          reducedMotion={reducedMotion}
         />
 
         <div
@@ -157,7 +153,6 @@ export function ServiceNextPrev({ slug }: { slug: ServiceSlug }) {
           side="next"
           hovered={hovered}
           onHover={setHovered}
-          reducedMotion={reducedMotion}
         />
       </div>
     </section>

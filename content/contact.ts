@@ -19,14 +19,16 @@ export const contactCloser = {
   mailto: "info@thepropagenda.com",
   formTitle: "Let's start your project together",
   formEyebrow: "Brief",
-  submitLabel: "Submit",
+  submitLabel: "Send the brief",
+  // Labels do the asking; placeholders show an example or stay out of the way —
+  // never a duplicate of the label (it reads as a glitch and doubles the noise).
   fields: {
-    name: { label: "Your name", placeholder: "Your name…" },
-    company: { label: "Your company", placeholder: "Your company…" },
-    email: { label: "Your email", placeholder: "Your email…" },
+    name: { label: "Your name", placeholder: "Aisha Rahman" },
+    company: { label: "Your company", placeholder: "Company or brand" },
+    email: { label: "Your email", placeholder: "you@company.com" },
     source: {
-      label: "How did you find out about us?",
-      placeholder: "How did you find out about us?",
+      label: "How did you hear?",
+      placeholder: "Choose one",
       options: [
         "Google / Search",
         "Instagram",
@@ -37,8 +39,8 @@ export const contactCloser = {
       ],
     },
     budget: {
-      label: "Budget for the project?",
-      placeholder: "Budget for the project?",
+      label: "Project budget",
+      placeholder: "Choose a range",
       options: [
         "Under AED 10k",
         "AED 10k – 25k",
@@ -49,8 +51,8 @@ export const contactCloser = {
       ],
     },
     timeframe: {
-      label: "Time frame of the project?",
-      placeholder: "Time frame of the project?",
+      label: "Timeframe",
+      placeholder: "Choose one",
       options: [
         "ASAP",
         "1–2 months",
@@ -61,7 +63,7 @@ export const contactCloser = {
     },
     message: {
       label: "Tell us about the project",
-      placeholder: "Please tell us about scope, requirements, features…",
+      placeholder: "Scope, goals, links — anything that helps us reply usefully.",
     },
   },
 };

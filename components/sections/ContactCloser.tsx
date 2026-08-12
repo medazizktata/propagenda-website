@@ -1,30 +1,20 @@
 "use client";
 
-import { useActionState, useEffect, useRef } from "react";
-import { BrandPattern } from "@/components/ui/BrandPattern";
-import { contactCloser } from "@/content/contact";
+import { useActionState, useEffect, useRef, useState } from "react";
+import { contactCloser, whatsapp } from "@/content/contact";
 import { submitContact } from "@/lib/forms/submitContact";
 import { cn } from "@/components/ui/cn";
+import { FormSelect } from "@/components/molecules/FormSelect";
+import {
+  contactControl,
+  contactControlSingle,
+  contactLabel,
+} from "@/components/molecules/contactControl";
 import { gsap } from "@/lib/motion/gsap";
 import { useReducedMotion } from "@/lib/motion/useReducedMotion";
 import type { ContactFormResult } from "@/types/forms";
 
 const initialState: ContactFormResult = { success: false, message: "" };
-
-const field = cn(
-  "w-full rounded-xl border border-white/10 bg-white/[0.05] px-4 py-3",
-  "text-[0.95rem] text-white placeholder:text-white/35",
-  "transition-[border-color,background-color,box-shadow] duration-200",
-  "hover-fine:hover:border-white/20 hover-fine:hover:bg-white/[0.07]",
-  "focus-visible:border-orange/70 focus-visible:bg-white/[0.08] focus-visible:outline-none",
-  "focus-visible:shadow-[0_0_0_3px_rgba(245,139,39,0.18)]",
-);
-
-const selectField = cn(
-  field,
-  "appearance-none bg-[length:0.75rem] bg-[right_1rem_center] bg-no-repeat pr-10",
-  "bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 12 8%27 fill=%27none%27%3E%3Cpath d=%27M1 1.5L6 6.5L11 1.5%27 stroke=%27%23f58b27%27 stroke-width=%271.6%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27/%3E%3C/svg%3E')]",
-);
 
 /**
  * Manifesto + brief form — same row on desktop, stacked on mobile.
@@ -59,24 +49,21 @@ export function ContactCloser() {
       id="contact-form"
       className="relative overflow-hidden bg-charcoal"
     >
-      <div aria-hidden className="pattern-section-fade pointer-events-none absolute inset-0">
-        <BrandPattern variant="dense" className="opacity-[0.14]" />
-      </div>
       <div
         aria-hidden
-        className="pointer-events-none absolute left-[8%] top-[35%] h-[55%] w-[48%] -translate-y-1/2 rounded-full bg-orange opacity-[0.1] blur-[160px]"
+        className="pointer-events-none absolute left-[8%] top-1/2 h-[50%] w-[42%] -translate-y-1/2 rounded-full bg-orange opacity-[0.08] blur-[160px]"
       />
 
       <div className="relative z-content mx-auto max-w-[1920px] px-gutter-m py-20 lg:px-gutter-d lg:py-28">
-        <div className="grid items-start gap-12 lg:grid-cols-[minmax(0,1.05fr)_minmax(20rem,0.95fr)] lg:gap-16 xl:gap-20">
-          <div data-closer-in className="lg:sticky lg:top-28">
-            <p className="mb-5 font-mono text-xs uppercase tracking-[0.22em] text-orange">
+        <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16 xl:gap-20">
+          <div data-closer-in>
+            <p className="text-backstage mb-6 text-white/55">
               {contactCloser.kicker}
             </p>
 
             <h2
-              className="font-sans font-black uppercase leading-[0.86] tracking-[-0.035em]"
-              style={{ fontSize: "clamp(2.25rem, 5.2vw, 5.25rem)" }}
+              className="font-sans font-extrabold uppercase leading-[0.84] tracking-[-0.04em]"
+              style={{ fontSize: "clamp(2.5rem, 5.4vw, 5.75rem)" }}
             >
               {contactCloser.lines.map((line, i) => {
                 const hero = line.some((s) => "hero" in s && s.hero);
@@ -104,55 +91,67 @@ export function ContactCloser() {
               })}
             </h2>
 
-            <a
-              href={`mailto:${contactCloser.mailto}`}
-              className="mt-8 inline-block font-sans text-base font-semibold normal-case tracking-normal text-orange transition-colors hover-fine:hover:text-white md:text-lg"
-            >
-              {contactCloser.mailto}
-            </a>
+            <div className="mt-10 flex flex-col items-start gap-2.5">
+              <a
+                href={`mailto:${contactCloser.mailto}`}
+                className="inline-block font-sans text-lg font-semibold normal-case tracking-normal text-orange transition-colors hover-fine:hover:text-white md:text-xl"
+              >
+                {contactCloser.mailto}
+              </a>
+              <a
+                href={whatsapp.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-backstage inline-flex items-center gap-2 text-white/65 transition-colors hover-fine:hover:text-white"
+              >
+                WhatsApp {whatsapp.number} <span aria-hidden>↗</span>
+              </a>
+            </div>
+
+            <p className="text-backstage mt-8 text-white/35">
+              Al Quoz · Dubai · <DubaiTime /> GST — replies within a day
+            </p>
           </div>
 
           <div
             data-closer-in
-            className="relative w-full overflow-hidden rounded-[1.75rem] border border-white/12 border-t-4 border-t-orange bg-[#2f2f2f] shadow-[0_40px_100px_-40px_rgba(0,0,0,0.55)]"
+            className="relative w-full rounded-[2rem] border border-white/12 bg-[#2c2c2c] p-8 shadow-[0_40px_80px_-40px_rgba(0,0,0,0.55)] sm:p-10 lg:p-12"
           >
-            <div className="p-6 sm:p-8">
-              <div className="mb-6">
-                <p className="text-[0.65rem] font-bold uppercase tracking-[0.18em] text-white/40">
-                  {contactCloser.formEyebrow}
-                </p>
-                <h3 className="mt-1 font-sans text-xl font-bold tracking-tight text-white md:text-2xl">
-                  {contactCloser.formTitle}
-                </h3>
+            <div className="mb-8">
+              <p className="text-backstage text-white/40">{contactCloser.formEyebrow}</p>
+              <h3 className="mt-2 font-sans text-2xl font-bold tracking-tight text-white lg:text-3xl">
+                {contactCloser.formTitle}
+              </h3>
+            </div>
+
+            <form
+              key={JSON.stringify(errors) + String(state.success)}
+              action={formAction}
+              className="flex flex-col gap-5"
+              noValidate
+            >
+              <div className="grid items-end gap-5 sm:grid-cols-2">
+                <LabeledField
+                  id="name"
+                  name="name"
+                  label={f.name.label}
+                  placeholder={f.name.placeholder}
+                  defaultValue={values.name}
+                  error={errors.name}
+                  required
+                />
+                <LabeledField
+                  id="company"
+                  name="company"
+                  label={f.company.label}
+                  placeholder={f.company.placeholder}
+                  defaultValue={values.company}
+                  error={errors.company}
+                  required
+                />
               </div>
 
-              <form
-                key={JSON.stringify(errors) + String(state.success)}
-                action={formAction}
-                className="space-y-3.5"
-                noValidate
-              >
-                <div className="grid gap-3.5 sm:grid-cols-2">
-                  <LabeledField
-                    id="name"
-                    name="name"
-                    label={f.name.label}
-                    placeholder={f.name.placeholder}
-                    defaultValue={values.name}
-                    error={errors.name}
-                    required
-                  />
-                  <LabeledField
-                    id="company"
-                    name="company"
-                    label={f.company.label}
-                    placeholder={f.company.placeholder}
-                    defaultValue={values.company}
-                    error={errors.company}
-                    required
-                  />
-                </div>
-
+              <div className="grid items-end gap-5 sm:grid-cols-2">
                 <LabeledField
                   id="email"
                   name="email"
@@ -163,8 +162,7 @@ export function ContactCloser() {
                   error={errors.email}
                   required
                 />
-
-                <SelectField
+                <FormSelect
                   id="source"
                   name="source"
                   label={f.source.label}
@@ -174,85 +172,105 @@ export function ContactCloser() {
                   error={errors.source}
                   required
                 />
+              </div>
 
-                <div className="grid gap-3.5 sm:grid-cols-2">
-                  <SelectField
-                    id="budget"
-                    name="budget"
-                    label={f.budget.label}
-                    placeholder={f.budget.placeholder}
-                    options={f.budget.options}
-                    defaultValue={values.budget}
-                    error={errors.budget}
-                    required
-                  />
-                  <SelectField
-                    id="timeframe"
-                    name="timeframe"
-                    label={f.timeframe.label}
-                    placeholder={f.timeframe.placeholder}
-                    options={f.timeframe.options}
-                    defaultValue={values.timeframe}
-                    error={errors.timeframe}
-                    required
-                  />
-                </div>
+              <div className="grid items-end gap-5 sm:grid-cols-2">
+                <FormSelect
+                  id="budget"
+                  name="budget"
+                  label={f.budget.label}
+                  placeholder={f.budget.placeholder}
+                  options={f.budget.options}
+                  defaultValue={values.budget}
+                  error={errors.budget}
+                  required
+                />
+                <FormSelect
+                  id="timeframe"
+                  name="timeframe"
+                  label={f.timeframe.label}
+                  placeholder={f.timeframe.placeholder}
+                  options={f.timeframe.options}
+                  defaultValue={values.timeframe}
+                  error={errors.timeframe}
+                  required
+                />
+              </div>
 
-                <div>
-                  <label
-                    htmlFor="message"
-                    className="mb-2 block text-sm font-medium tracking-normal text-white/55"
-                  >
-                    {f.message.label} <span className="text-orange">*</span>
-                  </label>
-                  <textarea
-                    id="message"
-                    name="message"
-                    placeholder={f.message.placeholder}
-                    defaultValue={values.message}
-                    required
-                    rows={4}
-                    className={cn(field, "min-h-28 resize-y", errors.message && "border-error")}
-                    aria-invalid={Boolean(errors.message)}
-                  />
-                  {errors.message ? (
-                    <p className="mt-1.5 text-xs text-error">{errors.message}</p>
-                  ) : null}
-                </div>
+              <div className="flex w-full min-w-0 flex-col">
+                <label htmlFor="message" className={contactLabel}>
+                  {f.message.label} <span className="text-orange">*</span>
+                </label>
+                <textarea
+                  id="message"
+                  name="message"
+                  placeholder={f.message.placeholder}
+                  defaultValue={values.message}
+                  required
+                  rows={5}
+                  className={cn(
+                    contactControl,
+                    "h-auto min-h-36 resize-y py-4 leading-relaxed",
+                    errors.message && "border-error",
+                  )}
+                  aria-invalid={Boolean(errors.message)}
+                />
+                {errors.message ? (
+                  <p className="mt-1.5 text-xs text-error">{errors.message}</p>
+                ) : null}
+              </div>
 
-                <div className="pt-1">
-                  <button
-                    type="submit"
-                    disabled={pending}
-                    className={cn(
-                      "inline-flex min-h-12 w-full items-center justify-center rounded-full bg-orange px-8 py-3.5",
-                      "font-sans text-sm font-extrabold uppercase tracking-[0.14em] text-black",
-                      "transition-[transform,background-color,box-shadow] duration-300 ease-out",
-                      "hover-fine:hover:-translate-y-0.5 hover-fine:hover:bg-white hover-fine:hover:shadow-[0_16px_40px_-12px_rgba(245,139,39,0.55)]",
-                      "disabled:cursor-not-allowed disabled:opacity-60",
-                    )}
-                  >
-                    {pending ? "Sending…" : contactCloser.submitLabel}
-                  </button>
-                  {state.message ? (
-                    <p
-                      className={cn(
-                        "mt-3 text-center text-sm",
-                        state.success ? "text-success" : "text-error",
-                      )}
-                      role="status"
-                    >
-                      {state.message}
-                    </p>
-                  ) : null}
-                </div>
-              </form>
-            </div>
+              <button
+                type="submit"
+                disabled={pending}
+                className={cn(
+                  "mt-2 inline-flex h-14 w-full items-center justify-center rounded-full bg-orange px-8",
+                  "font-sans text-sm font-extrabold uppercase tracking-[0.16em] text-ink",
+                  "transition-[transform,background-color,box-shadow] duration-300 ease-out",
+                  "hover-fine:hover:-translate-y-0.5 hover-fine:hover:bg-white hover-fine:hover:shadow-[0_16px_40px_-12px_rgba(245,139,39,0.55)]",
+                  "disabled:cursor-not-allowed disabled:opacity-60",
+                )}
+              >
+                {pending ? "Sending…" : contactCloser.submitLabel}
+              </button>
+              {state.message ? (
+                <p
+                  className={cn(
+                    "text-center text-sm",
+                    state.success ? "text-success" : "text-error",
+                  )}
+                  role="status"
+                >
+                  {state.message}
+                </p>
+              ) : null}
+            </form>
           </div>
         </div>
       </div>
     </section>
   );
+}
+
+/** Live Dubai clock (GST, UTC+4) — updates each minute; renders empty until mounted
+    so server and client markup never disagree. */
+function DubaiTime() {
+  const [time, setTime] = useState('');
+  useEffect(() => {
+    const tick = () =>
+      setTime(
+        new Intl.DateTimeFormat('en-GB', {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false,
+          timeZone: 'Asia/Dubai',
+        }).format(new Date()),
+      );
+    tick();
+    const id = window.setInterval(tick, 30_000);
+    return () => window.clearInterval(id);
+  }, []);
+  return <span>{time || '--:--'}</span>;
 }
 
 function LabeledField({
@@ -275,11 +293,8 @@ function LabeledField({
   required?: boolean;
 }) {
   return (
-    <div>
-      <label
-        htmlFor={id}
-        className="mb-2 block text-sm font-medium tracking-normal text-white/55"
-      >
+    <div className="flex w-full min-w-0 flex-col">
+      <label htmlFor={id} className={contactLabel}>
         {label}
         {required ? <span className="ml-1 text-orange">*</span> : null}
       </label>
@@ -290,59 +305,9 @@ function LabeledField({
         placeholder={placeholder}
         defaultValue={defaultValue}
         required={required}
-        className={cn(field, error && "border-error")}
+        className={cn(contactControlSingle, error && "border-error")}
         aria-invalid={Boolean(error)}
       />
-      {error ? <p className="mt-1.5 text-xs text-error">{error}</p> : null}
-    </div>
-  );
-}
-
-function SelectField({
-  id,
-  name,
-  label,
-  placeholder,
-  options,
-  defaultValue,
-  error,
-  required,
-}: {
-  id: string;
-  name: string;
-  label: string;
-  placeholder: string;
-  options: readonly string[];
-  defaultValue?: string;
-  error?: string;
-  required?: boolean;
-}) {
-  return (
-    <div>
-      <label
-        htmlFor={id}
-        className="mb-2 block text-sm font-medium tracking-normal text-white/55"
-      >
-        {label}
-        {required ? <span className="ml-1 text-orange">*</span> : null}
-      </label>
-      <select
-        id={id}
-        name={name}
-        defaultValue={defaultValue ?? ""}
-        required={required}
-        className={cn(selectField, error && "border-error")}
-        aria-invalid={Boolean(error)}
-      >
-        <option value="" disabled className="text-white/40">
-          {placeholder}
-        </option>
-        {options.map((opt) => (
-          <option key={opt} value={opt} className="bg-[#2f2f2f] text-white">
-            {opt}
-          </option>
-        ))}
-      </select>
       {error ? <p className="mt-1.5 text-xs text-error">{error}</p> : null}
     </div>
   );

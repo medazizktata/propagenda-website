@@ -3,6 +3,7 @@
 import { useActionState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { FormField } from '@/components/molecules/FormField';
+import { FormSelect } from '@/components/molecules/FormSelect';
 import { contactCloser } from '@/content/contact';
 import { submitContact } from '@/lib/forms/submitContact';
 import type { ContactFormResult } from '@/types/forms';
@@ -54,66 +55,37 @@ export function ContactForm() {
           error={errors.email}
           required
         />
-        <label className="block text-sm text-white/70">
-          {f.source.label}
-          <select
-            name="source"
-            defaultValue={values.source ?? ''}
+        <FormSelect
+          id="source"
+          name="source"
+          label={f.source.label}
+          placeholder={f.source.placeholder}
+          options={f.source.options}
+          defaultValue={values.source}
+          error={errors.source}
+          required
+        />
+        <div className="grid items-end gap-4 md:grid-cols-2">
+          <FormSelect
+            id="budget"
+            name="budget"
+            label={f.budget.label}
+            placeholder={f.budget.placeholder}
+            options={f.budget.options}
+            defaultValue={values.budget}
+            error={errors.budget}
             required
-            className="mt-1.5 w-full rounded-md border border-white/15 bg-transparent px-3 py-2"
-          >
-            <option value="" disabled>
-              {f.source.placeholder}
-            </option>
-            {f.source.options.map((opt) => (
-              <option key={opt} value={opt}>
-                {opt}
-              </option>
-            ))}
-          </select>
-          {errors.source ? <p className="mt-1 text-sm text-error">{errors.source}</p> : null}
-        </label>
-        <div className="grid gap-4 md:grid-cols-2">
-          <label className="block text-sm text-white/70">
-            {f.budget.label}
-            <select
-              name="budget"
-              defaultValue={values.budget ?? ''}
-              required
-              className="mt-1.5 w-full rounded-md border border-white/15 bg-transparent px-3 py-2"
-            >
-              <option value="" disabled>
-                {f.budget.placeholder}
-              </option>
-              {f.budget.options.map((opt) => (
-                <option key={opt} value={opt}>
-                  {opt}
-                </option>
-              ))}
-            </select>
-            {errors.budget ? <p className="mt-1 text-sm text-error">{errors.budget}</p> : null}
-          </label>
-          <label className="block text-sm text-white/70">
-            {f.timeframe.label}
-            <select
-              name="timeframe"
-              defaultValue={values.timeframe ?? ''}
-              required
-              className="mt-1.5 w-full rounded-md border border-white/15 bg-transparent px-3 py-2"
-            >
-              <option value="" disabled>
-                {f.timeframe.placeholder}
-              </option>
-              {f.timeframe.options.map((opt) => (
-                <option key={opt} value={opt}>
-                  {opt}
-                </option>
-              ))}
-            </select>
-            {errors.timeframe ? (
-              <p className="mt-1 text-sm text-error">{errors.timeframe}</p>
-            ) : null}
-          </label>
+          />
+          <FormSelect
+            id="timeframe"
+            name="timeframe"
+            label={f.timeframe.label}
+            placeholder={f.timeframe.placeholder}
+            options={f.timeframe.options}
+            defaultValue={values.timeframe}
+            error={errors.timeframe}
+            required
+          />
         </div>
         <FormField
           id="message"

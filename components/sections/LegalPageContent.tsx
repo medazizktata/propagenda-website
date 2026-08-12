@@ -238,8 +238,8 @@ function PolicyView({ legal }: { legal: LegalRecord }) {
           {items.map((item) => (
             <section key={item.id} id={item.id} className="scroll-mt-28">
               <header className="border-t border-white/10 pt-6">
-                <h2 className="flex items-baseline gap-4 font-sans text-2xl font-bold leading-tight tracking-tight text-white md:text-[1.7rem]">
-                  <span className="shrink-0 font-mono text-sm font-medium tabular-nums text-white/50">
+                <h2 className="flex items-center gap-4 font-sans text-2xl font-bold leading-tight tracking-tight text-white md:text-[1.7rem]">
+                  <span className="shrink-0 font-mono text-3xl font-semibold tabular-nums leading-none text-orange md:text-4xl">
                     {pad2(item.index)}
                   </span>
                   <span>{item.heading}</span>

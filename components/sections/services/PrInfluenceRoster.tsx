@@ -35,7 +35,7 @@ const PARTNERS: Partner[] = [
       { value: '4.8%', label: 'Avg. engagement' },
       { value: '40+', label: 'Campaigns run' },
     ],
-    image: '/images/portfolio/work-events.png',
+    image: '/images/portfolio/work-events.webp',
   },
   {
     name: 'Bloggers & creators',
@@ -48,7 +48,7 @@ const PARTNERS: Partner[] = [
       { value: '6.2%', label: 'Avg. engagement' },
       { value: '150+', label: 'Creators on roster' },
     ],
-    image: '/images/portfolio/work-food.png',
+    image: '/images/portfolio/work-food.webp',
   },
   {
     name: 'Gamers & streamers',
@@ -61,7 +61,7 @@ const PARTNERS: Partner[] = [
       { value: '35 min', label: 'Avg. watch time' },
       { value: '20+', label: 'Streamers' },
     ],
-    image: '/images/portfolio/work-quickcars.png',
+    image: '/images/portfolio/work-quickcars.webp',
   },
   {
     name: 'Actors & artists',
@@ -74,7 +74,7 @@ const PARTNERS: Partner[] = [
       { value: '5.1%', label: 'Avg. engagement' },
       { value: '30+', label: 'Collaborations' },
     ],
-    image: '/images/portfolio/work-restaurant.png',
+    image: '/images/portfolio/work-restaurant.webp',
   },
   {
     name: 'Press & media',
@@ -87,7 +87,7 @@ const PARTNERS: Partner[] = [
       { value: '200+', label: 'Placements secured' },
       { value: '3×', label: 'Avg. reach lift' },
     ],
-    image: '/images/portfolio/work-ghaftree.png',
+    image: '/images/portfolio/work-ghaftree.webp',
   },
 ];
 
@@ -198,7 +198,7 @@ export function PrInfluenceRoster() {
                   {p.name}
                 </span>
                 <span
-                  className="mt-1 block font-sans font-black leading-[0.85] tabular-nums text-orange [text-shadow:0_2px_22px_rgba(0,0,0,0.65)]"
+                  className="mt-1 block font-sans font-extrabold leading-[0.85] tabular-nums text-orange [text-shadow:0_2px_22px_rgba(0,0,0,0.65)]"
                   style={{ fontSize: 'clamp(2.75rem, 7vw, 4.75rem)' }}
                 >
                   {p.reach}

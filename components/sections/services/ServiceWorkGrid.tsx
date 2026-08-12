@@ -6,12 +6,12 @@ import { cn } from '@/components/ui/cn';
 // show a "selected work" mosaic from the real portfolio renders — an asymmetric editorial
 // layout (feature tile + varied sizes), hover Ken-Burns zoom + caption reveal. Links to /work.
 const WORK = [
-  { img: '/images/portfolio/work-sanapex.png', title: 'Sanapex Interiors' },
-  { img: '/images/portfolio/work-restaurant.png', title: 'Darabzeen Al Ward' },
-  { img: '/images/portfolio/work-quickcars.png', title: 'Quick Cars' },
-  { img: '/images/portfolio/work-ghaftree.png', title: 'Ghaf Tree' },
-  { img: '/images/portfolio/work-events.png', title: 'BIL Events' },
-  { img: '/images/portfolio/work-food.png', title: 'Food & Lifestyle' },
+  { img: '/images/portfolio/work-sanapex.webp', title: 'Sanapex Interiors' },
+  { img: '/images/portfolio/work-restaurant.webp', title: 'Darabzeen Al Ward' },
+  { img: '/images/portfolio/work-quickcars.webp', title: 'Quick Cars' },
+  { img: '/images/portfolio/work-ghaftree.webp', title: 'Ghaf Tree' },
+  { img: '/images/portfolio/work-events.webp', title: 'BIL Events' },
+  { img: '/images/portfolio/work-food.webp', title: 'Food & Lifestyle' },
 ];
 
 // Asymmetric spans — one big feature, one wide, two small, two wide.

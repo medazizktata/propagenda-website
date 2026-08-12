@@ -32,7 +32,7 @@ export const serviceHubCards: ServiceHubCard[] = [
     image: '/images/services/branding-and-visual-identity.jpg',
     tag: 'brand',
     descriptor: 'Logos, identity systems & guidelines',
-    preview: '/images/portfolio/work-sanapex.png',
+    preview: '/images/portfolio/work-sanapex.webp',
   },
   {
     slug: 'public-relations',
@@ -42,7 +42,7 @@ export const serviceHubCards: ServiceHubCard[] = [
     image: '/images/services/public-relations.jpg',
     tag: 'brand',
     descriptor: 'Influencer & celebrity reach',
-    preview: '/images/portfolio/work-food.png',
+    preview: '/images/portfolio/work-food.webp',
   },
   {
     slug: 'online-offline-marketing',
@@ -58,7 +58,7 @@ export const serviceHubCards: ServiceHubCard[] = [
     ],
     tag: 'digital',
     descriptor: 'Campaigns, social & digital ads',
-    preview: '/images/portfolio/work-ghaftree.png',
+    preview: '/images/portfolio/work-ghaftree.webp',
   },
   {
     slug: 'websites',
@@ -68,7 +68,7 @@ export const serviceHubCards: ServiceHubCard[] = [
     image: '/images/services/websites.jpg',
     tag: 'digital',
     descriptor: 'Sites that drive growth',
-    preview: '/images/portfolio/work-quickcars.png',
+    preview: '/images/portfolio/work-quickcars.webp',
   },
   {
     slug: 'mobile-applications',
@@ -78,7 +78,7 @@ export const serviceHubCards: ServiceHubCard[] = [
     image: '/images/services/mobile-apps.jpg',
     tag: 'digital',
     descriptor: 'Apps that delight users',
-    preview: '/images/portfolio/work-sanapex.png',
+    preview: '/images/portfolio/work-sanapex.webp',
   },
   {
     slug: 'events',
@@ -88,7 +88,7 @@ export const serviceHubCards: ServiceHubCard[] = [
     image: '/images/services/events.jpg',
     tag: 'experience',
     descriptor: 'End-to-end event management',
-    preview: '/images/portfolio/work-events.png',
+    preview: '/images/portfolio/work-events.webp',
   },
   {
     slug: 'photography-videography',
@@ -98,6 +98,6 @@ export const serviceHubCards: ServiceHubCard[] = [
     image: '/images/services/photography-vid.jpg',
     tag: 'production',
     descriptor: 'Your brand story, captured',
-    preview: '/images/portfolio/work-food.png',
+    preview: '/images/portfolio/work-food.webp',
   },
 ];

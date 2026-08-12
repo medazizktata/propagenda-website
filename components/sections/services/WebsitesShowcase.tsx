@@ -30,11 +30,11 @@ const BREAKPOINTS: Breakpoint[] = [
 ];
 
 // The mini-site rendered inside the frame — real portfolio renders as stand-in screenshots.
-const HERO_IMG = '/images/portfolio/work-quickcars.png';
+const HERO_IMG = '/images/portfolio/work-quickcars.webp';
 const SITE_CARDS = [
-  { img: '/images/portfolio/work-sanapex.png', title: 'New arrivals' },
-  { img: '/images/portfolio/work-ghaftree.png', title: 'Certified used' },
-  { img: '/images/portfolio/work-restaurant.png', title: 'Finance & trade-in' },
+  { img: '/images/portfolio/work-sanapex.webp', title: 'New arrivals' },
+  { img: '/images/portfolio/work-ghaftree.webp', title: 'Certified used' },
+  { img: '/images/portfolio/work-restaurant.webp', title: 'Finance & trade-in' },
 ];
 const NAV_LINKS = ['Home', 'Models', 'Finance', 'Contact'];
 

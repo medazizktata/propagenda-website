@@ -11,7 +11,7 @@ import { ServiceRow } from './ServiceRow';
 
 /**
  * The Services page core act, in the Propagenda brand: a dark centre panel flanked by two
- * orange rails (BRAND.md mandate), a giant ghost "SERVICES" behind, and the eight services
+ * orange rails (BRAND.md mandate) and the seven services
  * as huge type rows. Hover/focus a row → its real work blooms full-bleed behind the names
  * (fast fade layered over a slow 5s zoom, SMV projectoverview), siblings dim, arrow + caption
  * appear. Rows assemble across the pin (keyed to the lock so they're never pre-composed).
@@ -28,7 +28,7 @@ export function ServicesIndex() {
       const rows = gsap.utils.toArray<HTMLElement>('.services-row-wrap');
 
       if (reducedMotion) {
-        gsap.set(['.services-rail', '.services-ghost', '.services-kicker', ...rows], {
+        gsap.set(['.services-rail', '.services-kicker', ...rows], {
           autoAlpha: 1,
           scaleY: 1,
           y: 0,
@@ -37,7 +37,7 @@ export function ServicesIndex() {
       }
 
       gsap.set('.services-rail', { scaleY: 0, transformOrigin: '50% 50%' });
-      gsap.set(['.services-ghost', '.services-kicker'], { autoAlpha: 0, y: 20 });
+      gsap.set('.services-kicker', { autoAlpha: 0, y: 20 });
       gsap.set(rows, { autoAlpha: 0, y: 16 });
 
       // Launch the reveal MID-TRANSITION — the moment the section is scrolling up into view
@@ -55,7 +55,6 @@ export function ServicesIndex() {
 
       tl.to('.services-rail', { scaleY: 1, ease: 'power2.out', duration: 0.4 }, 0)
         .to('.services-kicker', { autoAlpha: 1, y: 0, ease: 'power2.out', duration: 0.25 }, 0.05)
-        .to('.services-ghost', { autoAlpha: 1, y: 0, ease: 'power2.out', duration: 0.3 }, 0.1)
         .to(rows, { autoAlpha: 1, y: 0, ease: 'power1.out', duration: 0.3, stagger: 0.07 }, 0.22);
     }, sectionRef);
     return () => ctx.revert();
@@ -124,15 +123,6 @@ export function ServicesIndex() {
             style={{ width: 'var(--rail)' }}
           />
 
-          {/* Ghost SERVICES behind the rows. */}
-          <h2
-            aria-hidden
-            className="services-ghost pointer-events-none absolute inset-0 z-0 flex select-none items-center justify-center whitespace-nowrap font-sans font-black uppercase leading-[0.8] tracking-tighter text-white/[0.06]"
-            style={{ fontSize: 'clamp(3rem, 15vw, 15rem)' }}
-          >
-            Services
-          </h2>
-
           {/* Rows + caption — centred column over the full-bleed panel. */}
           <div
             className="relative z-content mx-auto flex h-full w-full max-w-7xl flex-col justify-center pb-12 pt-20 md:pt-24"
@@ -142,7 +132,7 @@ export function ServicesIndex() {
             }}
           >
             <SectionLabel className="services-kicker mb-4 md:mb-6">
-              Services &mdash; 08 capabilities
+              Services &mdash; 07 capabilities
             </SectionLabel>
 
             <ul className="flex flex-col">

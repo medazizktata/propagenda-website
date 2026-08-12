@@ -48,12 +48,12 @@ const SCOPE_VARIANT: Record<ServiceSlug, ScopeVariant> = {
 
 // Temporary imagery for the visual discipline tiles (photography/videography types).
 const DISCIPLINE_IMAGES = [
-  '/images/portfolio/work-food.png',
-  '/images/portfolio/work-restaurant.png',
-  '/images/portfolio/work-events.png',
-  '/images/portfolio/work-sanapex.png',
-  '/images/portfolio/work-quickcars.png',
-  '/images/portfolio/work-ghaftree.png',
+  '/images/portfolio/work-food.webp',
+  '/images/portfolio/work-restaurant.webp',
+  '/images/portfolio/work-events.webp',
+  '/images/portfolio/work-sanapex.webp',
+  '/images/portfolio/work-quickcars.webp',
+  '/images/portfolio/work-ghaftree.webp',
 ];
 
 export function ServiceDetailContent({ service }: { service: ServiceRecord }) {
@@ -216,12 +216,12 @@ export function ServiceDetailContent({ service }: { service: ServiceRecord }) {
 // Branding "What's included" — supplementary icons + preview imagery, by scope-item index.
 const SCOPE_ICONS = ['shapes', 'layers', 'type', 'file', 'book', 'mail'];
 const SCOPE_IMAGES = [
-  '/images/portfolio/work-sanapex.png',
-  '/images/portfolio/work-ghaftree.png',
-  '/images/portfolio/work-restaurant.png',
-  '/images/portfolio/work-quickcars.png',
-  '/images/portfolio/work-events.png',
-  '/images/portfolio/work-food.png',
+  '/images/portfolio/work-sanapex.webp',
+  '/images/portfolio/work-ghaftree.webp',
+  '/images/portfolio/work-restaurant.webp',
+  '/images/portfolio/work-quickcars.webp',
+  '/images/portfolio/work-events.webp',
+  '/images/portfolio/work-food.webp',
 ];
 const SCOPE_BLURBS = [
   'A distinctive primary mark, built to last.',
@@ -406,7 +406,7 @@ function ScopeEditorial({ items }: { items: string[] }) {
           className="sd-reveal group/sc flex items-center gap-6 border-b border-white/10 py-5 md:gap-10"
         >
           <span
-            className="font-sans font-black leading-none text-white/[0.1] transition-colors duration-300 group-hover/sc:text-orange/30"
+            className="font-sans font-extrabold leading-none text-white/[0.1] transition-colors duration-300 group-hover/sc:text-orange/30"
             style={{ fontSize: 'clamp(2.25rem, 5vw, 4rem)' }}
           >
             {num(i)}
@@ -440,21 +440,21 @@ function ScopeEditorial({ items }: { items: string[] }) {
 // across a light table — distinct from the ghost-number rows and every other scope variant. Touch
 // devices see the frames already in colour; reduced motion keeps everything still (no scale).
 const PHOTO_SCOPE_IMG: Record<string, string> = {
-  'Product photography': '/images/portfolio/work-food.png',
-  'Lifestyle & editorial': '/images/portfolio/work-restaurant.png',
-  'Event coverage': '/images/portfolio/work-events.png',
-  'Real estate': '/images/portfolio/work-sanapex.png',
-  'Cinematic video': '/images/portfolio/work-quickcars.png',
-  'Motion graphics': '/images/portfolio/work-ghaftree.png',
-  'Live streaming': '/images/portfolio/work-events.png',
+  'Product photography': '/images/portfolio/work-food.webp',
+  'Lifestyle & editorial': '/images/portfolio/work-restaurant.webp',
+  'Event coverage': '/images/portfolio/work-events.webp',
+  'Real estate': '/images/portfolio/work-sanapex.webp',
+  'Cinematic video': '/images/portfolio/work-quickcars.webp',
+  'Motion graphics': '/images/portfolio/work-ghaftree.webp',
+  'Live streaming': '/images/portfolio/work-events.webp',
 };
 const PHOTO_FRAME_FALLBACK = [
-  '/images/portfolio/work-food.png',
-  '/images/portfolio/work-restaurant.png',
-  '/images/portfolio/work-events.png',
-  '/images/portfolio/work-sanapex.png',
-  '/images/portfolio/work-quickcars.png',
-  '/images/portfolio/work-ghaftree.png',
+  '/images/portfolio/work-food.webp',
+  '/images/portfolio/work-restaurant.webp',
+  '/images/portfolio/work-events.webp',
+  '/images/portfolio/work-sanapex.webp',
+  '/images/portfolio/work-quickcars.webp',
+  '/images/portfolio/work-ghaftree.webp',
 ];
 // Plausible 35mm edge numbering (…23, 24A, 25, 26A…) so the strip reads as a real roll.
 const frameCode = (i: number) => `${21 + i}${i % 2 === 0 ? '' : 'A'}`;
@@ -1016,7 +1016,7 @@ function ScopeTechSpec({ items }: { items: string[] }) {
       >
         <span
           aria-hidden
-          className="pointer-events-none absolute -right-2 top-2 font-sans font-black leading-none text-white/[0.045] select-none"
+          className="pointer-events-none absolute -right-2 top-2 font-sans font-extrabold leading-none text-white/[0.045] select-none"
           style={{ fontSize: 'clamp(4.5rem, 16vw, 10rem)' }}
         >
           {num(safeIndex)}
@@ -1205,7 +1205,7 @@ function ServiceApproach({ phases }: { phases: { title: string; body: string }[]
           {/* Giant scrubbing number + the active phase. */}
           <div className="grid items-center gap-8 lg:grid-cols-[auto_1fr] lg:gap-16">
             <span
-              className="font-sans font-black leading-[0.8] text-orange/90 tabular-nums"
+              className="font-sans font-extrabold leading-[0.8] text-orange/90 tabular-nums"
               style={{ fontSize: 'clamp(5rem, 15vw, 12rem)' }}
             >
               {num(active)}
@@ -1275,12 +1275,12 @@ function ServiceApproach({ phases }: { phases: { title: string; body: string }[]
 
 // Temporary thumbnails for related-work cards (until real per-project images land).
 const RELATED_IMAGES = [
-  '/images/portfolio/work-sanapex.png',
-  '/images/portfolio/work-quickcars.png',
-  '/images/portfolio/work-ghaftree.png',
-  '/images/portfolio/work-events.png',
-  '/images/portfolio/work-restaurant.png',
-  '/images/portfolio/work-food.png',
+  '/images/portfolio/work-sanapex.webp',
+  '/images/portfolio/work-quickcars.webp',
+  '/images/portfolio/work-ghaftree.webp',
+  '/images/portfolio/work-events.webp',
+  '/images/portfolio/work-restaurant.webp',
+  '/images/portfolio/work-food.webp',
 ];
 
 // Related work — visual thumbnail cards (image + title), grayscale→colour on hover.
@@ -1688,14 +1688,14 @@ function IdentityFoundation() {
         </div>
         <div className="grid grid-cols-2 gap-3 border-t border-white/10 pt-5">
           <div className="flex animate-[tier-rise_500ms_ease-out_both] items-center gap-3 rounded-lg bg-white/[0.02] p-4">
-            <span className="font-sans text-4xl font-black leading-none text-white">Aa</span>
+            <span className="font-sans text-4xl font-extrabold leading-none text-white">Aa</span>
             <div>
               <span className="block text-sm font-semibold text-white">Poppins</span>
               <span className="block text-xs text-white/40">Display &amp; body</span>
             </div>
           </div>
           <div className="relative flex animate-[tier-rise_500ms_ease-out_both] items-end overflow-hidden rounded-lg bg-orange p-3">
-            <BrandPattern variant="dense" className="opacity-20 [filter:brightness(0)]" />
+            <BrandPattern variant="frame" half="right" className="opacity-20 [filter:brightness(0)]" />
             <span className="relative text-[0.7rem] font-semibold text-navy/80">Pattern</span>
           </div>
         </div>
@@ -1784,7 +1784,7 @@ const POPPINS_WEIGHTS = [
   { label: 'Regular', cls: 'font-normal' },
   { label: 'Semibold', cls: 'font-semibold' },
   { label: 'Bold', cls: 'font-bold' },
-  { label: 'Black', cls: 'font-black' },
+  { label: 'Black', cls: 'font-extrabold' },
 ];
 
 function TypeSpecimen() {
@@ -1816,9 +1816,9 @@ function TypeSpecimen() {
 // Orange → neutral tint/shade ramp for the extended colour system.
 const COLOUR_TINTS = ['#FBD1AD', '#F9BA80', '#F7A253', '#F58B27', '#606773', '#454C58', '#2A3240', '#0F151F'];
 const TEMPLATE_MOCKS = [
-  '/images/portfolio/work-events.png',
-  '/images/portfolio/work-ghaftree.png',
-  '/images/portfolio/work-restaurant.png',
+  '/images/portfolio/work-events.webp',
+  '/images/portfolio/work-ghaftree.webp',
+  '/images/portfolio/work-restaurant.webp',
 ];
 
 function DevelopedKit() {
@@ -1858,7 +1858,7 @@ function DevelopedKit() {
         <div className="grid gap-3 sm:grid-cols-[1.4fr_1fr]">
           <TypeSpecimen />
           <div className="relative flex min-h-[6rem] items-end overflow-hidden rounded-lg bg-orange p-4">
-            <BrandPattern variant="dense" className="opacity-20 [filter:brightness(0)]" />
+            <BrandPattern variant="frame" half="right" className="opacity-20 [filter:brightness(0)]" />
             <span className="relative text-[0.7rem] font-semibold text-navy/80">Pattern system</span>
           </div>
         </div>
@@ -1931,7 +1931,7 @@ function FocusBento({ items }: { items: string[] }) {
             className="sd-reveal group/fb flex items-center gap-6 border-t border-white/10 py-6 last:border-b md:gap-12 md:py-7"
           >
             <span
-              className="font-sans font-black leading-none text-white/[0.09] transition-colors duration-500 group-hover/fb:text-orange/30"
+              className="font-sans font-extrabold leading-none text-white/[0.09] transition-colors duration-500 group-hover/fb:text-orange/30"
               style={{ fontSize: 'clamp(2.75rem, 7vw, 6rem)' }}
             >
               {num(i)}

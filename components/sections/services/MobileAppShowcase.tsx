@@ -62,11 +62,11 @@ const STAGES: Stage[] = [
 
 const CATEGORIES = ['Popular', 'Grills', 'Healthy', 'Dessert'];
 const DISHES = [
-  { img: '/images/portfolio/work-food.png', name: 'Truffle burger', place: 'Grill House', time: '25 min', rating: '4.9' },
-  { img: '/images/portfolio/work-restaurant.png', name: 'Sunday roast', place: 'The Table', time: '35 min', rating: '4.8' },
-  { img: '/images/portfolio/work-ghaftree.png', name: 'Garden bowl', place: 'Ghaf Tree', time: '20 min', rating: '4.7' },
-  { img: '/images/portfolio/work-food.png', name: 'Spiced lamb wrap', place: 'Souk Kitchen', time: '22 min', rating: '4.8' },
-  { img: '/images/portfolio/work-restaurant.png', name: 'Sea bass ceviche', place: 'The Table', time: '28 min', rating: '4.6' },
+  { img: '/images/portfolio/work-food.webp', name: 'Truffle burger', place: 'Grill House', time: '25 min', rating: '4.9' },
+  { img: '/images/portfolio/work-restaurant.webp', name: 'Sunday roast', place: 'The Table', time: '35 min', rating: '4.8' },
+  { img: '/images/portfolio/work-ghaftree.webp', name: 'Garden bowl', place: 'Ghaf Tree', time: '20 min', rating: '4.7' },
+  { img: '/images/portfolio/work-food.webp', name: 'Spiced lamb wrap', place: 'Souk Kitchen', time: '22 min', rating: '4.8' },
+  { img: '/images/portfolio/work-restaurant.webp', name: 'Sea bass ceviche', place: 'The Table', time: '28 min', rating: '4.6' },
 ];
 
 function scrollAmountForStage(stage: Stage, frac: number) {

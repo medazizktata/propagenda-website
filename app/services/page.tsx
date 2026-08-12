@@ -5,7 +5,7 @@ export const metadata = buildMetadata(
   {
     title: 'Marketing Services | Propagenda',
     description:
-      'Eight integrated service lines from branding and PR to websites, events, and photography. Explore our capabilities.',
+      'Seven integrated service lines from branding and PR to websites, events, and photography. Explore our capabilities.',
   },
   '/services',
 );

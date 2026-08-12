@@ -30,7 +30,7 @@ export interface ServiceDetailConfig {
  */
 export const serviceDetailConfig: Record<ServiceSlug, ServiceDetailConfig> = {
   'branding-visual-identity': {
-    heroImage: '/images/portfolio/work-sanapex.png',
+    heroImage: '/images/portfolio/work-sanapex.webp',
     ctaHeading: 'Ready to build your identity?',
     approach: [
       { title: 'Discovery', body: 'We dig into your business, audience, and market — the brief behind the brief — so the brand is built on insight, not guesswork.' },
@@ -103,7 +103,7 @@ export const serviceDetailConfig: Record<ServiceSlug, ServiceDetailConfig> = {
     ],
   },
   'online-offline-marketing': {
-    heroImage: '/images/portfolio/work-ghaftree.png',
+    heroImage: '/images/portfolio/work-ghaftree.webp',
     ctaHeading: 'Ready to grow?',
     faqs: [
       {
@@ -133,7 +133,7 @@ export const serviceDetailConfig: Record<ServiceSlug, ServiceDetailConfig> = {
     ],
   },
   websites: {
-    heroImage: '/images/portfolio/work-quickcars.png',
+    heroImage: '/images/portfolio/work-quickcars.webp',
     ctaHeading: 'Ready to launch?',
     process: [
       { title: 'Concept', body: 'Goals, audience, and structure mapped before a pixel moves.' },
@@ -170,7 +170,7 @@ export const serviceDetailConfig: Record<ServiceSlug, ServiceDetailConfig> = {
     ],
   },
   'mobile-applications': {
-    heroImage: '/images/portfolio/work-food.png',
+    heroImage: '/images/portfolio/work-food.webp',
     ctaHeading: 'Ready to ship your app?',
     process: [
       { title: 'Discover', body: 'Scope, platforms, core flows.' },
@@ -207,7 +207,7 @@ export const serviceDetailConfig: Record<ServiceSlug, ServiceDetailConfig> = {
     ],
   },
   events: {
-    heroImage: '/images/portfolio/work-events.png',
+    heroImage: '/images/portfolio/work-events.webp',
     ctaHeading: 'Planning an event?',
     faqs: [
       {
@@ -237,7 +237,7 @@ export const serviceDetailConfig: Record<ServiceSlug, ServiceDetailConfig> = {
     ],
   },
   'photography-videography': {
-    heroImage: '/images/portfolio/work-food.png',
+    heroImage: '/images/portfolio/work-food.webp',
     ctaHeading: 'Ready to shoot?',
     disciplines: [
       {

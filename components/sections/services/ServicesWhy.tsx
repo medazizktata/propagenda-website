@@ -43,8 +43,8 @@ const VALUES = [
 
 const CLIENTS = [
   { name: 'Sanapex Interiors', src: '/images/clients/sanapex-interiors.png' },
-  { name: 'P2P Motors', src: '/images/clients/p2p-motors.png' },
-  { name: 'Centralhub', src: '/images/clients/centralhub.png' },
+  { name: 'P2P Motors', src: '/images/clients/p2p-motors.webp' },
+  { name: 'Centralhub', src: '/images/clients/centralhub.webp' },
   { name: 'Ghaf Tree', src: '/images/clients/ghaf-tree.png' },
   { name: 'Dr. Shifa', src: '/images/clients/dr-shifa.png' },
   { name: 'OU Optics', src: '/images/clients/ou-optics.png' },

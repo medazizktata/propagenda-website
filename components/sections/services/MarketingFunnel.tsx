@@ -195,7 +195,7 @@ export function MarketingFunnel() {
               {/* The one bold focal element — the stage index at display scale. */}
               <div className="flex items-center gap-5">
                 <span
-                  className="font-sans font-black leading-[0.8] tabular-nums text-orange"
+                  className="font-sans font-extrabold leading-[0.8] tabular-nums text-orange"
                   style={{ fontSize: 'clamp(3.5rem, 9vw, 6.5rem)' }}
                 >
                   {num(active)}

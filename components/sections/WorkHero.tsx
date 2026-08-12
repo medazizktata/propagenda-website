@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react';
 import { gsap } from '@/lib/motion/gsap';
 import { useReducedMotion } from '@/lib/motion/useReducedMotion';
 import { cn } from '@/components/ui/cn';
+import { ScrollCue } from '@/components/molecules/ScrollCue';
 import { allCaseStudies } from '@/content/work';
 
 /**
@@ -76,14 +77,6 @@ export function WorkHero() {
         autoAlpha: 0.12,
         ease: 'none',
         scrollTrigger: { trigger: el, start: 'top top', end: 'bottom top', scrub: 0.5 },
-      });
-
-      gsap.to('.wh-cue-dot', {
-        y: 9,
-        repeat: -1,
-        yoyo: true,
-        duration: 1.2,
-        ease: 'sine.inOut',
       });
     }, sectionRef);
     return () => ctx.revert();
@@ -198,13 +191,8 @@ export function WorkHero() {
         </div>
       </div>
 
-      {/* Subtle scroll cue — a hairline with a drifting dot, no arrow decoration. */}
-      <div className="wh-line pointer-events-none absolute inset-x-0 bottom-7 z-content hidden items-center justify-center gap-3 md:flex">
-        <span className="text-backstage text-white/55">Scroll</span>
-        <span className="relative h-9 w-px overflow-hidden bg-white/25">
-          <span className="wh-cue-dot absolute inset-x-0 top-0 h-3 -translate-y-3 bg-orange" />
-        </span>
-      </div>
+      {/* Quiet scroll cue — bottom-right, stays out of the headline composition. */}
+      <ScrollCue />
     </section>
   );
 }

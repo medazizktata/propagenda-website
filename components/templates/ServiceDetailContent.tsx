@@ -8,6 +8,7 @@ import { useReducedMotion } from '@/lib/motion/useReducedMotion';
 import { cn } from '@/components/ui/cn';
 import { BrandPattern } from '@/components/ui/BrandPattern';
 import { LogoDrawMark } from '@/components/molecules/LogoDrawMark';
+import { ScrollCue } from '@/components/molecules/ScrollCue';
 import { SectionLabel } from '@/components/ui/SectionLabel';
 import { Button } from '@/components/ui/Button';
 import { ServicesCTA } from '@/components/sections/services/ServicesCTA';
@@ -159,19 +160,13 @@ export function ServiceDetailContent({ service }: { service: ServiceRecord }) {
           </div>
         </div>
 
-        {/* Scroll cue — scrolls to the content below the hero. */}
-        <button
-          type="button"
-          aria-label="Scroll to details"
+        <ScrollCue
+          label="Scroll to details"
           onClick={() =>
             window.scrollTo({ top: Math.round(window.innerHeight * 0.9), behavior: 'smooth' })
           }
-          className="sd-reveal absolute bottom-10 left-1/2 z-content flex h-11 w-11 -translate-x-1/2 items-center justify-center rounded-full border border-orange text-orange transition-hover hover-fine:hover:bg-orange hover-fine:hover:text-navy motion-safe:animate-bounce"
-        >
-          <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5">
-            <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </button>
+          className="sd-reveal"
+        />
       </section>
 
       {/* ── SCOPE — branding gets the reveal list + bento; PR gets the media-forward reveal

@@ -16,6 +16,7 @@ import { cn } from '@/components/ui/cn';
 import { BrandPattern } from '@/components/ui/BrandPattern';
 import { PageCTA } from '@/components/sections/PageCTA';
 import { WorkNextPrev } from '@/components/sections/WorkNextPrev';
+import { ScrollCue } from '@/components/molecules/ScrollCue';
 import { PhotoSwipeLightbox } from '@/components/PhotoSwipeLightbox';
 import { usePhotoSwipe } from '@/hooks/usePhotoSwipe';
 
@@ -217,18 +218,12 @@ function CaseStudyHero({
           </div>
         </div>
 
-        {/* Scroll cue — backstage register, same grammar as the work hub (no bouncing chrome). */}
-        <button
-          type="button"
-          aria-label="Scroll to the story"
+        <ScrollCue
+          label="Scroll to the story"
+          tipClassName="bg-[color:var(--sd-accent)]"
           onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}
-          className="text-backstage absolute bottom-8 left-1/2 z-content flex min-h-11 -translate-x-1/2 items-center gap-3 px-2 text-white/55 transition-hover hover-fine:hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--sd-accent)]"
-        >
-          Scroll
-          <span aria-hidden className="relative h-9 w-px overflow-hidden bg-white/25">
-            <span className="absolute inset-x-0 top-0 h-3 bg-[color:var(--sd-accent)] motion-safe:animate-[video-scan_2.2s_ease-in-out_infinite]" />
-          </span>
-        </button>
+          className="focus-visible:outline-[color:var(--sd-accent)]"
+        />
       </div>
     </section>
   );

@@ -129,7 +129,7 @@ function ServiceIcon({ slug, className }: { slug: string; className?: string }) 
 
 /**
  * Desktop "Services" nav item → a two-pane mega-menu. Hover/focus a service on the left (icon +
- * label, smooth slide toward the preview) and the right pane previews it full-bleed. Reveal is
+ * label, smooth slide toward the preview) and the right pane crossfades its preview. Reveal is
  * CSS (group-hover + focus-within). Desktop only — the mobile menu already lists services.
  */
 export function ServicesNavMenu() {
@@ -190,17 +190,18 @@ export function ServicesNavMenu() {
           aria-hidden
           viewBox="0 0 24 24"
           fill="none"
-          className="h-3 w-3 transition-transform duration-300 group-hover:rotate-180"
+          className="h-3 w-3 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:rotate-180"
         >
           <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </AppLink>
 
-      {/* Mega-menu — hidden until the group is hovered or focused within. */}
+      {/* Mega-menu — ease + fade, no snap-in. */}
       <div
         ref={panelRef}
         className={cn(
-          'invisible absolute left-1/2 top-full z-header -translate-x-1/2 translate-y-2 pt-4 opacity-0 transition-all duration-200 ease-out',
+          'invisible absolute left-1/2 top-full z-header -translate-x-1/2 translate-y-3 pt-4 opacity-0',
+          'transition-[opacity,transform,visibility] duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)]',
           !menuSuppressed &&
             'group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 focus-within:visible focus-within:translate-y-0 focus-within:opacity-100',
         )}
@@ -218,7 +219,7 @@ export function ServicesNavMenu() {
                 <Link
                   href="/services"
                   onClick={dismissMenu}
-                  className="text-xs font-medium text-orange/90 no-underline transition-colors hover-fine:hover:text-orange"
+                  className="text-xs font-medium text-orange/90 no-underline transition-colors duration-300 hover-fine:hover:text-orange"
                 >
                   View all
                 </Link>
@@ -235,23 +236,24 @@ export function ServicesNavMenu() {
                         aria-current={isCurrent ? 'page' : undefined}
                         onClick={dismissMenu}
                         className={cn(
-                          'flex items-center gap-3 border-l-2 py-3 pl-[calc(0.75rem-2px)] pr-3 no-underline transition-[transform,background-color] duration-300 ease-out',
+                          'flex items-center gap-3 border-l-2 py-3 pl-[calc(0.75rem-2px)] pr-3 no-underline',
+                          'transition-[transform,background-color,border-color,color] duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)]',
                           isCurrent
                             ? 'border-orange bg-white/[0.06]'
-                            : 'border-transparent',
+                            : 'border-transparent hover-fine:hover:bg-white/[0.03]',
                           isPreview && !isCurrent ? 'translate-x-1.5' : 'translate-x-0',
                         )}
                       >
                         <ServiceIcon
                           slug={slug}
                           className={cn(
-                            'h-[1.15rem] w-[1.15rem] shrink-0 transition-colors duration-300 ease-out',
+                            'h-[1.15rem] w-[1.15rem] shrink-0 transition-colors duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)]',
                             isCurrent || isPreview ? 'text-orange' : 'text-white/40',
                           )}
                         />
                         <span
                           className={cn(
-                            'text-[0.9rem] leading-tight transition-colors duration-300 ease-out',
+                            'text-[0.9rem] leading-tight transition-[color,font-weight] duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)]',
                             isCurrent || isPreview
                               ? 'font-semibold text-orange'
                               : 'font-medium text-white/70',
@@ -266,30 +268,53 @@ export function ServicesNavMenu() {
               </ul>
             </div>
 
-            {/* ── Preview pane — full-bleed image, content overlaid at the foot ── */}
+            {/* ── Preview — stacked crossfade (no remount / snap) ── */}
             <Link
               href={preview.href}
               onClick={dismissMenu}
-              className="group/pv relative flex flex-col justify-end overflow-hidden no-underline"
+              className="group/pv relative flex min-h-[22rem] flex-col justify-end overflow-hidden no-underline"
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                key={active}
-                src={preview.image}
-                alt=""
-                className="absolute inset-0 h-full w-full animate-[tier-rise_360ms_ease-out_both] object-cover transition-transform duration-700 ease-out group-hover/pv:scale-[1.04]"
+              {SERVICE_MENU.map((s, i) => (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  key={s.href}
+                  src={s.image}
+                  alt=""
+                  className={cn(
+                    'absolute inset-0 h-full w-full object-cover',
+                    'transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]',
+                    'group-hover/pv:scale-[1.03]',
+                    active === i ? 'scale-100 opacity-100' : 'scale-[1.04] opacity-0',
+                  )}
+                />
+              ))}
+              <div
+                aria-hidden
+                className="absolute inset-0 bg-gradient-to-t from-charcoal via-charcoal/70 to-charcoal/10"
               />
-              <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-charcoal via-charcoal/70 to-charcoal/10" />
-              <div key={`t-${active}`} className="relative z-10 animate-[tier-rise_360ms_ease-out_both] p-6">
-                <span className="block font-sans text-lg font-semibold leading-tight text-white [text-shadow:0_1px_12px_rgba(0,0,0,0.85)]">
-                  {preview.label}
-                </span>
-                <p className="mt-2 max-w-[28ch] text-[0.82rem] leading-relaxed text-white/80 [text-shadow:0_1px_10px_rgba(0,0,0,0.7)]">
-                  {preview.blurb}
-                </p>
-                <span className="mt-4 inline-block text-[0.82rem] font-medium text-orange transition-transform duration-300 ease-out group-hover/pv:translate-x-1">
-                  Explore this service
-                </span>
+              <div className="relative z-10 p-6">
+                {SERVICE_MENU.map((s, i) => (
+                  <div
+                    key={s.href}
+                    className={cn(
+                      'transition-[opacity,transform] duration-[450ms] ease-[cubic-bezier(0.22,1,0.36,1)]',
+                      active === i
+                        ? 'relative translate-y-0 opacity-100'
+                        : 'pointer-events-none absolute inset-x-6 bottom-6 translate-y-1.5 opacity-0',
+                    )}
+                    aria-hidden={active !== i}
+                  >
+                    <span className="block font-sans text-lg font-semibold leading-tight text-white [text-shadow:0_1px_12px_rgba(0,0,0,0.85)]">
+                      {s.label}
+                    </span>
+                    <p className="mt-2 max-w-[28ch] text-[0.82rem] leading-relaxed text-white/80 [text-shadow:0_1px_10px_rgba(0,0,0,0.7)]">
+                      {s.blurb}
+                    </p>
+                    <span className="mt-4 inline-block text-[0.82rem] font-medium text-orange transition-transform duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover/pv:translate-x-1">
+                      Explore this service
+                    </span>
+                  </div>
+                ))}
               </div>
             </Link>
           </div>

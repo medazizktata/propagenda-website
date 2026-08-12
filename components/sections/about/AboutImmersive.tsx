@@ -10,6 +10,7 @@ import {
 import { useRouter } from "next/navigation";
 import { aboutContent, type AboutStatement } from "@/content/about";
 import { cn } from "@/components/ui/cn";
+import { CursorHollowPattern } from "@/components/ui/CursorHollowPattern";
 import { gsap } from "@/lib/motion/gsap";
 import { useReducedMotion } from "@/lib/motion/useReducedMotion";
 
@@ -146,6 +147,8 @@ export function AboutImmersive() {
         className="relative h-screen overflow-hidden bg-charcoal"
         aria-label="About Propagenda"
       >
+        <CursorHollowPattern className="z-0" />
+
         {statements.map((statement, i) => {
           const active = i === index;
           return (

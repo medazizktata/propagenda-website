@@ -1079,47 +1079,172 @@ const EVENT_SCOPE_PHASE: Record<string, string> = {
   'Post-event evaluation': 'After the event',
 };
 
-// Events "What's included" — an event run-of-show. Each deliverable hangs off a single connected
-// spine and is grouped by when it happens (before → on the day → after), with a check node that
-// fills orange on hover (the "handled" moment). The connected timeline plus agenda phases are the
-// distinguishing signature — flat, no cards, no numbers or chips — reading as the event schedule we
-// cover end to end, distinct from every other scope variant.
+// Events "What's included" — run-of-show checklist left-aligned with the section label,
+// sticky media on the right that crossfades as each deliverable scrolls into view.
+const EVENT_SCOPE_MEDIA: Record<string, { src: string; kind: 'image' | 'video' }> = {
+  'Event branding & identity': { src: '/images/portfolio/work-events.webp', kind: 'image' },
+  'Marketing materials': { src: '/images/portfolio/work-ghaftree.webp', kind: 'image' },
+  'Full organisation & logistics': { src: '/images/portfolio/work-restaurant.webp', kind: 'image' },
+  'Photography & videography': { src: '/videos/propagenda-marketing.mp4', kind: 'video' },
+  'Social media coverage': { src: '/images/portfolio/work-food.webp', kind: 'image' },
+  'Post-event evaluation': { src: '/images/portfolio/work-sanapex.webp', kind: 'image' },
+};
+
 function ScopeCoverage({ items }: { items: string[] }) {
+  const listRef = useRef<HTMLDivElement>(null);
+  const [active, setActive] = useState(0);
+  const reducedMotion = useReducedMotion();
+
+  useEffect(() => {
+    const root = listRef.current;
+    if (!root || reducedMotion) return;
+    const rows = Array.from(root.querySelectorAll<HTMLElement>('[data-scope-i]'));
+    if (!rows.length) return;
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (!visible) return;
+        const i = Number((visible.target as HTMLElement).dataset.scopeI);
+        if (!Number.isNaN(i)) setActive(i);
+      },
+      { root: null, rootMargin: '-35% 0px -45% 0px', threshold: [0, 0.25, 0.5, 0.75, 1] },
+    );
+    rows.forEach((row) => io.observe(row));
+    return () => io.disconnect();
+  }, [reducedMotion, items]);
+
+  const activeItem = items[active] ?? items[0];
+  const activeMedia = EVENT_SCOPE_MEDIA[activeItem] ?? EVENT_SCOPE_MEDIA[items[0]];
+
   return (
-    <div className="mx-auto max-w-3xl">
-      {items.map((item, i) => {
-        const phase = EVENT_SCOPE_PHASE[item];
-        const isNewPhase = phase && phase !== EVENT_SCOPE_PHASE[items[i - 1]];
-        const isFirst = i === 0;
-        const isLast = i === items.length - 1;
-        return (
-          <div key={item} className="sd-reveal group/cv flex gap-5 md:gap-7">
-            {/* Rail — a continuous spine threading each check node, so the list reads as one timeline. */}
-            <div className="relative flex w-7 shrink-0 flex-col items-center self-stretch">
-              <span aria-hidden className={cn('w-px flex-1', isFirst ? 'bg-transparent' : 'bg-white/12')} />
-              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-white/25 bg-charcoal text-orange transition-all duration-300 ease-out group-hover/cv:scale-110 group-hover/cv:border-orange group-hover/cv:bg-orange group-hover/cv:text-navy">
-                <svg viewBox="0 0 24 24" fill="none" aria-hidden className="h-3.5 w-3.5">
-                  <path d="M5 12.5l4.2 4.2L19 7" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </span>
-              <span aria-hidden className={cn('w-px flex-1', isLast ? 'bg-transparent' : 'bg-white/12')} />
+    <div className="sd-reveal grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(17rem,24rem)] lg:gap-14 xl:gap-16">
+      {/* Checklist — same left edge as "What's included" (no centered max-w-3xl). */}
+      <div ref={listRef} className="min-w-0">
+        {items.map((item, i) => {
+          const phase = EVENT_SCOPE_PHASE[item];
+          const isNewPhase = phase && phase !== EVENT_SCOPE_PHASE[items[i - 1]];
+          const isFirst = i === 0;
+          const isLast = i === items.length - 1;
+          const on = active === i;
+          return (
+            <div
+              key={item}
+              data-scope-i={i}
+              onMouseEnter={() => setActive(i)}
+              onFocus={() => setActive(i)}
+              className="group/cv flex gap-5 md:gap-7"
+            >
+              <div className="relative flex w-7 shrink-0 flex-col items-center self-stretch">
+                <span
+                  aria-hidden
+                  className={cn('w-px flex-1', isFirst ? 'bg-transparent' : 'bg-white/12')}
+                />
+                <span
+                  className={cn(
+                    'flex h-7 w-7 shrink-0 items-center justify-center rounded-full border bg-charcoal text-orange transition-all duration-300 ease-out',
+                    on
+                      ? 'scale-110 border-orange bg-orange text-ink'
+                      : 'border-white/25 group-hover/cv:scale-110 group-hover/cv:border-orange group-hover/cv:bg-orange group-hover/cv:text-ink',
+                  )}
+                >
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden className="h-3.5 w-3.5">
+                    <path
+                      d="M5 12.5l4.2 4.2L19 7"
+                      stroke="currentColor"
+                      strokeWidth="2.4"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </span>
+                <span
+                  aria-hidden
+                  className={cn('w-px flex-1', isLast ? 'bg-transparent' : 'bg-white/12')}
+                />
+              </div>
+              <div className={cn('min-w-0 flex-1 pt-1.5', isLast ? 'pb-1.5' : 'pb-9')}>
+                {isNewPhase && (
+                  <span className="mb-2 block text-sm font-semibold text-orange">{phase}</span>
+                )}
+                <span
+                  className={cn(
+                    'block font-sans font-bold tracking-tight transition-[transform,color] duration-300',
+                    on ? 'translate-x-1 text-white' : 'text-white/85 group-hover/cv:translate-x-1',
+                  )}
+                  style={{ fontSize: 'clamp(1.1rem, 2.2vw, 1.5rem)' }}
+                >
+                  {item}
+                </span>
+                <span className="mt-1 block text-sm leading-relaxed text-white/50">
+                  {EVENT_SCOPE_DESC[item]}
+                </span>
+              </div>
             </div>
-            {/* Content — the phase caption prints once per group, like an agenda heading. */}
-            <div className={cn('min-w-0 flex-1 pt-1.5', isLast ? 'pb-1.5' : 'pb-9')}>
-              {isNewPhase && (
-                <span className="mb-2 block text-sm font-semibold text-orange">{phase}</span>
-              )}
-              <span
-                className="block font-sans font-bold tracking-tight text-white transition-transform duration-300 group-hover/cv:translate-x-1"
-                style={{ fontSize: 'clamp(1.1rem, 2.2vw, 1.5rem)' }}
-              >
-                {item}
-              </span>
-              <span className="mt-1 block text-sm leading-relaxed text-white/50">{EVENT_SCOPE_DESC[item]}</span>
-            </div>
+          );
+        })}
+      </div>
+
+      {/* Sticky stage — image/video crossfades with the active checklist row. */}
+      <div className="relative hidden lg:block">
+        <div className="sticky top-28 overflow-hidden rounded-2xl ring-1 ring-white/12">
+          <div className="relative aspect-[4/5] w-full bg-black">
+            {items.map((item, i) => {
+              const media = EVENT_SCOPE_MEDIA[item];
+              if (!media) return null;
+              const show = active === i;
+              if (media.kind === 'video') {
+                return (
+                  <video
+                    key={item}
+                    src={media.src}
+                    muted
+                    loop
+                    playsInline
+                    autoPlay={show}
+                    aria-hidden
+                    ref={(el) => {
+                      if (!el) return;
+                      if (show) void el.play().catch(() => {});
+                      else el.pause();
+                    }}
+                    className={cn(
+                      'absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ease-out',
+                      show ? 'opacity-100' : 'opacity-0',
+                    )}
+                  />
+                );
+              }
+              return (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  key={item}
+                  src={media.src}
+                  alt=""
+                  className={cn(
+                    'absolute inset-0 h-full w-full object-cover transition-all duration-500 ease-out',
+                    show ? 'scale-100 opacity-100' : 'scale-105 opacity-0',
+                  )}
+                />
+              );
+            })}
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-0 bg-gradient-to-t from-charcoal/80 via-transparent to-transparent"
+            />
+            <p className="absolute inset-x-0 bottom-0 p-5 text-sm font-semibold text-white">
+              {activeItem}
+              {activeMedia?.kind === 'video' ? (
+                <span className="mt-1 block text-xs font-medium uppercase tracking-[0.14em] text-orange">
+                  Live coverage
+                </span>
+              ) : null}
+            </p>
           </div>
-        );
-      })}
+        </div>
+      </div>
     </div>
   );
 }

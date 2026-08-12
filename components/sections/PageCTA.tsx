@@ -16,7 +16,7 @@ const defaults = aboutContent.closer;
 
 /**
  * Canonical subpage closer — charcoal field, two-line headline, support line,
- * email + project pills, and a breathing orange glow behind the type.
+ * email + project pills, and a centered breathing glow that fades at the edges.
  */
 export function PageCTA({
   line1 = defaults.line1,
@@ -33,16 +33,19 @@ export function PageCTA({
         className,
       )}
     >
-      {/* Outer wash — soft ambient fill so the pulse never reads as a hard blob. */}
+      {/* Centered radial bloom — soft falloff to transparent at the edges, pulses in place. */}
       <div
         aria-hidden
-        className="pointer-events-none absolute left-1/2 top-[46%] h-[min(85vw,34rem)] w-[min(110vw,48rem)] -translate-x-1/2 -translate-y-1/2 rounded-full bg-orange/40 blur-[140px] animate-cta-glow-soft motion-reduce:animate-none motion-reduce:opacity-30"
-      />
-      {/* Core bloom — sits behind the orange line; opacity + scale breathe. */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute left-1/2 top-[48%] h-[min(55vw,22rem)] w-[min(75vw,32rem)] -translate-x-1/2 -translate-y-1/2 rounded-full bg-orange blur-[90px] animate-cta-glow motion-reduce:animate-none motion-reduce:opacity-35"
-      />
+        className="pointer-events-none absolute inset-0 flex items-center justify-center"
+      >
+        <div
+          className="aspect-square w-[min(58vw,20rem)] animate-cta-glow motion-reduce:animate-none motion-reduce:opacity-50"
+          style={{
+            background:
+              'radial-gradient(circle at center, rgba(245,139,39,0.55) 0%, rgba(245,139,39,0.25) 32%, rgba(245,139,39,0.08) 58%, transparent 78%)',
+          }}
+        />
+      </div>
 
       <div className="relative z-content mx-auto max-w-3xl">
         <h2

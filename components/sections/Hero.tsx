@@ -45,7 +45,6 @@ export function Hero() {
   const pinRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLDivElement>(null);
   const videoElRef = useRef<HTMLVideoElement>(null);
-  const patternRef = useRef<HTMLDivElement>(null);
   const reducedMotion = useReducedMotion();
   const isDesktop = useMediaQuery('(min-width: 1024px)');
   const [videoOpen, setVideoOpen] = useState(false);
@@ -61,30 +60,6 @@ export function Hero() {
       void el.play().catch(() => {});
     }
   }, [videoOpen]);
-
-  useEffect(() => {
-    if (reducedMotion || !patternRef.current) return;
-    const el = patternRef.current;
-    let raf = 0;
-    const target = { x: 0, y: 0 };
-    const cur = { x: 0, y: 0 };
-    const onMove = (e: MouseEvent) => {
-      target.x = e.clientX / window.innerWidth - 0.5;
-      target.y = e.clientY / window.innerHeight - 0.5;
-    };
-    window.addEventListener('mousemove', onMove);
-    const tick = () => {
-      cur.x += (target.x - cur.x) * 0.05;
-      cur.y += (target.y - cur.y) * 0.05;
-      el.style.transform = `translate3d(${cur.x * 34}px, ${cur.y * 34}px, 0)`;
-      raf = requestAnimationFrame(tick);
-    };
-    tick();
-    return () => {
-      window.removeEventListener('mousemove', onMove);
-      cancelAnimationFrame(raf);
-    };
-  }, [reducedMotion]);
 
   useEffect(() => {
     if (reducedMotion || !pinRef.current) return;
@@ -160,15 +135,7 @@ export function Hero() {
   return (
     <section ref={containerRef} data-seamless-act className="relative h-[290vh]">
       <div ref={pinRef} className="relative h-screen overflow-hidden bg-charcoal">
-        <div
-          ref={patternRef}
-          className="pattern-section-fade pointer-events-none absolute inset-0 will-change-transform"
-        >
-          <div className="absolute -inset-[8%]">
-            <BrandPattern variant="dense" id="hero" half="left" className="opacity-20" />
-          </div>
-        </div>
-
+        {/* Flat ground — the reel and the sentence are the only protagonists here. */}
         <div className="absolute inset-0 isolate">
           <div ref={videoRef} className="absolute inset-0" style={CLIP_STYLE}>
             <div className="absolute inset-0 bg-gradient-to-br from-navy via-charcoal to-black">
@@ -183,6 +150,12 @@ export function Hero() {
               loop
               playsInline
               aria-hidden
+            />
+            {/* Left-weighted scrim — the headline crosses the reel's left edge at rest, and
+                bright frames (white product shots) would otherwise eat the type. */}
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-0 bg-gradient-to-r from-charcoal/75 via-charcoal/25 to-transparent"
             />
             {/* Centered in the clipped panel (tracks clip as it expands). */}
             <div className="pointer-events-auto absolute inset-0 flex items-center justify-center group/play">
@@ -208,13 +181,15 @@ export function Hero() {
           </div>
 
           {isDesktop ? (
-            <div className="hero-3d pointer-events-none absolute inset-0 -translate-y-[5vh]">
+            /* Demoted to supporting cast: smaller, pushed right so it clears the reel panel —
+               the reel and the sentence are the hero's two speakers, the mark is the signature. */
+            <div className="hero-3d pointer-events-none absolute inset-0 -translate-y-[5vh] translate-x-[7vw] scale-[0.82]">
               <HeroLogo3D className="absolute inset-0" />
             </div>
           ) : null}
 
           <div className="pointer-events-none relative flex h-full -translate-y-[5vh] flex-col justify-center px-gutter-m pb-16 pt-28 lg:px-gutter-d">
-            <h1 className="hero-headline mt-10 max-w-[15ch] font-sans text-[clamp(2.5rem,7.4vw,7.5rem)] font-bold uppercase leading-[0.95] tracking-display text-white lg:mt-16 mix-blend-difference">
+            <h1 className="hero-headline mt-10 max-w-[15ch] font-sans text-[clamp(2.5rem,7.4vw,7.5rem)] font-bold uppercase leading-[0.95] tracking-display text-white [text-shadow:0_2px_28px_rgba(0,0,0,0.55)] lg:mt-16">
               {words.map((word, i) => (
                 <span
                   key={`${word}-${i}`}

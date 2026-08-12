@@ -90,7 +90,7 @@ export const contactForm: ContactFormConfig = {
 export const hero = {
   h1: 'WHERE CREATIVITY MEETS STRATEGY',
   subtitle: 'Your 360° Marketing Solutions Partner',
-  cta: { label: 'View Our Portfolio', href: '/work' },
+  cta: { label: 'See the work', href: '/work' },
 };
 
 export const site = {

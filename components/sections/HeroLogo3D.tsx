@@ -191,7 +191,24 @@ export function HeroLogo3D({ className }: { className?: string }) {
       }, 100);
       disposables.push({ dispose: () => window.clearInterval(once) });
     } else {
-      render();
+      // Only render while the canvas is actually on screen — the hero is pinned for
+      // 290vh and then scrolled past; the loop must not burn GPU for the whole session.
+      let running = false;
+      const startLoop = () => {
+        if (running) return;
+        running = true;
+        render();
+      };
+      const stopLoop = () => {
+        running = false;
+        cancelAnimationFrame(raf);
+      };
+      const io = new IntersectionObserver(
+        ([entry]) => (entry.isIntersecting ? startLoop() : stopLoop()),
+        { threshold: 0 },
+      );
+      io.observe(el);
+      disposables.push({ dispose: () => { io.disconnect(); stopLoop(); } });
     }
 
     const onResize = () => {

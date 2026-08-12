@@ -35,6 +35,37 @@ export function Measure({
 }
 
 /**
+ * Backstage label — the IBM Plex Mono "file-label" register (design-DNA §2.3). This is the
+ * monospace deliverable/section-label column the graphichunters services grammar hangs on.
+ * Kept dim by default so it never competes with the Poppins display voice.
+ */
+export function MonoLabel({
+  as: Tag = 'span',
+  tone = 'muted',
+  className,
+  children,
+}: {
+  as?: ElementType;
+  tone?: 'muted' | 'accent' | 'ink';
+  className?: string;
+  children: ReactNode;
+}) {
+  const toneClass =
+    tone === 'accent' ? 'text-orange' : tone === 'ink' ? 'text-navy/70' : 'text-white/50';
+  return (
+    <Tag
+      className={cn(
+        'font-mono text-[0.7rem] font-medium uppercase tracking-label',
+        toneClass,
+        className,
+      )}
+    >
+      {children}
+    </Tag>
+  );
+}
+
+/**
  * Small uppercase tracked eyebrow. Optionally prefixed with a zero-padded index and a
  * short accent rule — the editorial "section marker" seen across both references.
  */

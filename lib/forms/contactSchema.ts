@@ -5,6 +5,15 @@ const sourceOptions = contactCloser.fields.source.options as [string, ...string[
 const budgetOptions = contactCloser.fields.budget.options as [string, ...string[]];
 const timeframeOptions = contactCloser.fields.timeframe.options as [string, ...string[]];
 
+const requiredSelect = (options: [string, ...string[]], emptyMessage: string) =>
+  z
+    .string()
+    .trim()
+    .min(1, emptyMessage)
+    .refine((v): v is (typeof options)[number] => (options as readonly string[]).includes(v), {
+      message: emptyMessage,
+    });
+
 export const contactSchema = z.object({
   name: z
     .string()
@@ -21,9 +30,9 @@ export const contactSchema = z.object({
     .trim()
     .min(1, 'Email is required')
     .email('Enter a valid email address'),
-  source: z.enum(sourceOptions, { message: 'Please select an option' }),
-  budget: z.enum(budgetOptions, { message: 'Please select a budget' }),
-  timeframe: z.enum(timeframeOptions, { message: 'Please select a time frame' }),
+  source: requiredSelect(sourceOptions, 'Please select how you heard about us'),
+  budget: requiredSelect(budgetOptions, 'Please select a budget'),
+  timeframe: requiredSelect(timeframeOptions, 'Please select a time frame'),
   message: z
     .string()
     .trim()

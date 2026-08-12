@@ -1,25 +1,14 @@
 'use server';
 
-import type { ContactFormData, ContactFormResult } from '@/types/forms';
+import type { ContactFormResult } from '@/types/forms';
 import { contactSchema, fieldErrorsFromZod } from './contactSchema';
-
-function readFields(formData: FormData): ContactFormData {
-  return {
-    name: String(formData.get('name') ?? ''),
-    company: String(formData.get('company') ?? ''),
-    email: String(formData.get('email') ?? ''),
-    source: String(formData.get('source') ?? ''),
-    budget: String(formData.get('budget') ?? ''),
-    timeframe: String(formData.get('timeframe') ?? ''),
-    message: String(formData.get('message') ?? ''),
-  };
-}
+import { contactValuesFromFormData } from './contactValues';
 
 export async function submitContact(
   _prev: ContactFormResult,
   formData: FormData,
 ): Promise<ContactFormResult> {
-  const values = readFields(formData);
+  const values = contactValuesFromFormData(formData);
   const parsed = contactSchema.safeParse(values);
 
   if (!parsed.success) {

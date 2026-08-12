@@ -7,11 +7,11 @@ import { cn } from "@/components/ui/cn";
 import { gsap } from "@/lib/motion/gsap";
 
 /**
- * SMV contact request grid — full-viewport 2×2 in a snap scrollport.
- * Mobile: one panel per snap. Desktop: one row per snap.
- * Scroll chains out to the rest of the page after the last stop.
+ * SMV contact request grid — full-viewport snap scrollport.
+ * Small screens: two panels only (scrollable). Desktop 2×2: all four, one row per snap.
  */
 export function ContactRequestGrid() {
+  const mobileOnly = [contactRequests[0], contactRequests[3]] as const;
   const rows = [
     [contactRequests[0], contactRequests[1]],
     [contactRequests[2], contactRequests[3]],
@@ -26,14 +26,16 @@ export function ContactRequestGrid() {
         "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
       )}
     >
+      {/* < md: two panels only — project + hello. */}
       <div className="flex flex-col md:hidden">
-        {contactRequests.map((box) => (
+        {mobileOnly.map((box) => (
           <div key={box.cta} className="h-[100svh] shrink-0 snap-start snap-always">
             <RequestPanel {...box} className="h-full min-h-0" />
           </div>
         ))}
       </div>
 
+      {/* md+: full 2×2 — one snap per row. */}
       <div className="hidden md:flex md:flex-col">
         {rows.map((pair, i) => (
           <div

@@ -1,8 +1,7 @@
 "use client";
 
-import { useActionState, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { contactCloser, whatsapp } from "@/content/contact";
-import { submitContact } from "@/lib/forms/submitContact";
 import { cn } from "@/components/ui/cn";
 import { FormSelect } from "@/components/molecules/FormSelect";
 import {
@@ -10,11 +9,9 @@ import {
   contactControlSingle,
   contactLabel,
 } from "@/components/molecules/contactControl";
+import { useContactForm } from "@/hooks/useContactForm";
 import { gsap } from "@/lib/motion/gsap";
 import { useReducedMotion } from "@/lib/motion/useReducedMotion";
-import type { ContactFormResult } from "@/types/forms";
-
-const initialState: ContactFormResult = { success: false, message: "" };
 
 /**
  * Manifesto + brief form — same row on desktop, stacked on mobile.
@@ -22,9 +19,8 @@ const initialState: ContactFormResult = { success: false, message: "" };
 export function ContactCloser() {
   const ref = useRef<HTMLElement>(null);
   const reducedMotion = useReducedMotion();
-  const [state, formAction, pending] = useActionState(submitContact, initialState);
-  const errors = state.fieldErrors ?? {};
-  const values = state.values ?? {};
+  const { state, formAction, pending, errors, values, onSubmit, formKey } =
+    useContactForm();
   const f = contactCloser.fields;
 
   useEffect(() => {
@@ -115,18 +111,19 @@ export function ContactCloser() {
 
           <div
             data-closer-in
-            className="relative w-full rounded-[2rem] border border-white/12 bg-[#2c2c2c] p-8 shadow-[0_40px_80px_-40px_rgba(0,0,0,0.55)] sm:p-10 lg:p-12"
+            className="relative w-full rounded-[2rem] border border-white/16 bg-[#1a1a1a] p-8 shadow-[0_40px_80px_-40px_rgba(0,0,0,0.55)] sm:p-10 lg:p-12"
           >
             <div className="mb-8">
-              <p className="text-backstage text-white/40">{contactCloser.formEyebrow}</p>
+              <p className="text-backstage text-white/50">{contactCloser.formEyebrow}</p>
               <h3 className="mt-2 font-sans text-2xl font-bold tracking-tight text-white lg:text-3xl">
                 {contactCloser.formTitle}
               </h3>
             </div>
 
             <form
-              key={JSON.stringify(errors) + String(state.success)}
+              key={formKey}
               action={formAction}
+              onSubmit={onSubmit}
               className="flex flex-col gap-5"
               noValidate
             >
@@ -214,9 +211,12 @@ export function ContactCloser() {
                     errors.message && "border-error",
                   )}
                   aria-invalid={Boolean(errors.message)}
+                  aria-describedby={errors.message ? "message-error" : undefined}
                 />
                 {errors.message ? (
-                  <p className="mt-1.5 text-xs text-error">{errors.message}</p>
+                  <p id="message-error" className="mt-1.5 text-xs text-error" role="alert">
+                    {errors.message}
+                  </p>
                 ) : null}
               </div>
 
@@ -307,8 +307,13 @@ function LabeledField({
         required={required}
         className={cn(contactControlSingle, error && "border-error")}
         aria-invalid={Boolean(error)}
+        aria-describedby={error ? `${id}-error` : undefined}
       />
-      {error ? <p className="mt-1.5 text-xs text-error">{error}</p> : null}
+      {error ? (
+        <p id={`${id}-error`} className="mt-1.5 text-xs text-error" role="alert">
+          {error}
+        </p>
+      ) : null}
     </div>
   );
 }

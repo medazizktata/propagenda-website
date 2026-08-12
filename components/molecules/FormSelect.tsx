@@ -50,14 +50,14 @@ export function FormSelect({
         <SelectTrigger
           id={id}
           aria-invalid={Boolean(error)}
+          aria-describedby={error ? `${id}-error` : undefined}
           className={cn(
             contactControlSingle,
             'flex items-center justify-between gap-3 text-left',
-            'w-full min-w-0 bg-white/[0.05] pr-5 pl-5',
+            'w-full min-w-0 pr-5 pl-5',
             'rounded-2xl data-[size=default]:h-14 data-[size=default]:rounded-2xl',
-            'dark:bg-white/[0.05] dark:hover:bg-white/[0.07]',
-            'data-placeholder:text-white/35',
-            '[&_svg]:text-white/40',
+            'data-placeholder:text-white/45',
+            '[&_svg]:text-white/50',
             error && 'border-error',
           )}
         >
@@ -73,7 +73,11 @@ export function FormSelect({
           </SelectGroup>
         </SelectContent>
       </Select>
-      {error ? <p className="mt-1.5 text-xs text-error">{error}</p> : null}
+      {error ? (
+        <p id={`${id}-error`} className="mt-1.5 text-xs text-error" role="alert">
+          {error}
+        </p>
+      ) : null}
     </div>
   );
 }

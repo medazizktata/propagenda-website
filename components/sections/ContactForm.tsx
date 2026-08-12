@@ -1,27 +1,22 @@
 'use client';
 
-import { useActionState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { FormField } from '@/components/molecules/FormField';
 import { FormSelect } from '@/components/molecules/FormSelect';
 import { contactCloser } from '@/content/contact';
-import { submitContact } from '@/lib/forms/submitContact';
-import type { ContactFormResult } from '@/types/forms';
-
-const initialState: ContactFormResult = { success: false, message: '' };
+import { useContactForm } from '@/hooks/useContactForm';
 
 /** Legacy standalone form — mirrors ContactCloser field set. */
 export function ContactForm() {
-  const [state, formAction, pending] = useActionState(submitContact, initialState);
-  const errors = state.fieldErrors ?? {};
-  const values = state.values ?? {};
+  const { state, formAction, pending, errors, values, onSubmit, formKey } = useContactForm();
   const f = contactCloser.fields;
 
   return (
     <div className="max-w-form-min w-full">
       <form
-        key={JSON.stringify(errors) + String(state.success)}
+        key={formKey}
         action={formAction}
+        onSubmit={onSubmit}
         className="w-full max-w-full space-y-4"
         noValidate
       >

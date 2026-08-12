@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import type { LegalRecord } from '@/types/content';
 import { cn } from '@/components/ui/cn';
+import { BrandPattern } from '@/components/ui/BrandPattern';
 import { useReducedMotion } from '@/lib/motion/useReducedMotion';
 
 /* ── helpers ───────────────────────────────────────────────────────────── */
@@ -75,8 +76,10 @@ function AddressLine({ line, strong }: { line: string; strong?: boolean }) {
 function ImprintView({ legal }: { legal: LegalRecord }) {
   const lines = legal.sections[0]?.paragraphs ?? [];
   return (
-    <article className="flex min-h-[68vh] flex-col items-center justify-center bg-charcoal px-gutter-m py-28 text-center lg:py-36">
-      <div className="mx-auto flex max-w-measure flex-col items-center">
+    <article className="relative flex min-h-[100svh] flex-col items-center justify-center overflow-hidden bg-charcoal px-gutter-m py-28 text-center lg:py-36">
+      {/* Full-bleed brand pattern filling the entire viewport behind the identity. */}
+      <BrandPattern variant="dense" className="opacity-[0.16]" />
+      <div className="relative z-content mx-auto flex max-w-measure flex-col items-center">
         <Backstage>Legal</Backstage>
         <h1
           className="mt-6 font-sans font-bold uppercase leading-[0.95] tracking-display text-white"
@@ -162,7 +165,9 @@ function PolicyView({ legal }: { legal: LegalRecord }) {
     const el = document.getElementById(id);
     if (!el) return;
     e.preventDefault();
-    el.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' });
+    // Explicit offset scroll — reliably smooth across browsers, and clears the fixed header.
+    const top = el.getBoundingClientRect().top + window.scrollY - 100;
+    window.scrollTo({ top, behavior: reduced ? 'auto' : 'smooth' });
     if (typeof history !== 'undefined') history.replaceState(null, '', `#${id}`);
     setActive(id);
   };

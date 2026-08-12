@@ -12,7 +12,7 @@ export function ServicesPageContent() {
       <ServicesIndex />
       {/* ACT 3 — Why the studio + client proof */}
       <ServicesWhy />
-      {/* ACT 4 — Close: bold orange CTA. */}
+      {/* ACT 4 — Close: charcoal PageCTA with pulse glow. */}
       <ServicesCTA />
     </>
   );

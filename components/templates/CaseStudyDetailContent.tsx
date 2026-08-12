@@ -14,6 +14,7 @@ import { gsap, registerGsap } from '@/lib/motion/gsap';
 import { useReducedMotion } from '@/lib/motion/useReducedMotion';
 import { cn } from '@/components/ui/cn';
 import { BrandPattern } from '@/components/ui/BrandPattern';
+import { PageCTA } from '@/components/sections/PageCTA';
 import { WorkNextPrev } from '@/components/sections/WorkNextPrev';
 import { PhotoSwipeLightbox } from '@/components/PhotoSwipeLightbox';
 import { usePhotoSwipe } from '@/hooks/usePhotoSwipe';
@@ -120,7 +121,7 @@ export function CaseStudyDetailContent({ study }: CaseStudyDetailContentProps) {
 
       <WorkNextPrev prev={prev} next={next} />
 
-      <ClosingCTA />
+      <PageCTA line1="Ready to start" line2="something next." />
 
       {canOpen && <PhotoSwipeLightbox images={openable} isOpen={isOpen} initialIndex={index} onClose={close} />}
     </div>
@@ -534,40 +535,6 @@ function CaseStudyQuoteBlock({ quote }: { quote: CaseStudyQuote }) {
           &mdash; {quote.author}
         </figcaption>
       </figure>
-    </section>
-  );
-}
-
-/* ───────────────────────── Closing CTA (bespoke, never navy) ───────────────────────── */
-
-function ClosingCTA() {
-  return (
-    <section className="relative overflow-hidden bg-charcoal px-gutter-m py-24 text-center lg:px-gutter-d lg:py-32">
-      <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.06]">
-        <BrandPattern variant="tiled" />
-      </div>
-      <div
-        aria-hidden
-        className="pointer-events-none absolute left-1/2 top-full h-[60%] w-[70%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[color:var(--sd-accent)] opacity-[0.12] blur-[130px]"
-      />
-      <div className="relative z-content mx-auto max-w-3xl">
-        <h2
-          className="font-sans font-bold uppercase leading-[0.95] tracking-tight text-white"
-          style={{ fontSize: 'clamp(2rem, 6vw, 4rem)' }}
-        >
-          Ready to start
-          <span className="text-[color:var(--sd-accent)]">?</span>
-        </h2>
-        <p className="mx-auto mt-5 max-w-xl text-lg text-white/80 md:text-xl">
-          Let&rsquo;s build a brand worth talking about.
-        </p>
-        <Link
-          href="/contact"
-          className="mt-9 inline-flex items-center justify-center rounded-full bg-[color:var(--sd-accent)] px-8 py-4 font-sans text-base font-semibold text-[color:var(--sd-accent-on)] transition-transform duration-300 ease-out hover-fine:hover:-translate-y-0.5"
-        >
-          Contact us
-        </Link>
-      </div>
     </section>
   );
 }

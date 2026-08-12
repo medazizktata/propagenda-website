@@ -1,34 +1,24 @@
-import { Button } from '@/components/ui/Button';
-import { DisplayHeading } from '@/components/ui/DisplayHeading';
+import { PageCTA } from '@/components/sections/PageCTA';
 
 interface CTABandProps {
-  title?: string;
-  ctaLabel?: string;
-  ctaHref?: string;
+  line1?: string;
+  line2?: string;
+  support?: string;
   tertiaryCta?: { label: string; href: string };
 }
 
-export function CTABand({
-  title = 'Ready to start?',
-  ctaLabel = 'Contact Us',
-  ctaHref = '/contact',
-  tertiaryCta,
-}: CTABandProps) {
+/** @deprecated Prefer PageCTA / ClosingCTABand — kept as a thin alias. */
+export function CTABand({ line1, line2, support, tertiaryCta }: CTABandProps) {
   return (
-    <section className="border-t border-border bg-black px-gutter-m py-20 text-center lg:px-gutter-d">
-      <DisplayHeading as="h2" size="display-xs" className="mb-8">
-        {title}
-      </DisplayHeading>
-      <div className="flex flex-wrap items-center justify-center gap-4">
-        <Button href={ctaHref} size="lg">
-          {ctaLabel}
-        </Button>
-        {tertiaryCta && (
-          <Button href={tertiaryCta.href} variant="primary-ghost" size="lg">
-            {tertiaryCta.label}
-          </Button>
-        )}
-      </div>
-    </section>
+    <PageCTA
+      line1={line1}
+      line2={line2}
+      support={support}
+      secondary={
+        tertiaryCta
+          ? { label: tertiaryCta.label, href: tertiaryCta.href }
+          : undefined
+      }
+    />
   );
 }

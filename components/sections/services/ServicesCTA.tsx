@@ -1,42 +1,33 @@
-import { Button } from '@/components/ui/Button';
-import { BrandPattern } from '@/components/ui/BrandPattern';
+import { PageCTA } from '@/components/sections/PageCTA';
 
 interface ServicesCTAProps {
-  /** Headline override (defaults to the hub bookend). */
-  heading?: string;
+  line1?: string;
+  line2?: string;
+  support?: string;
   /** Optional secondary link (e.g. a service's tertiary CTA — "Book your shoot"). */
   tertiary?: { label: string; href: string };
 }
 
 /**
- * Bold full-bleed orange close (brand reserves orange as a surface for CTAs/footers).
- * Used on the services hub (bookends "THE WHOLE BRAND, ONE STUDIO.") and reused on each
- * service detail page with a service-specific heading + optional tertiary link.
+ * Subpage closer — same charcoal + pulse-glow format as About / Work / case studies.
+ * Used on the services hub and each service detail page.
  */
-export function ServicesCTA({ heading = "Let's build it together.", tertiary }: ServicesCTAProps) {
-  const primaryLabel = tertiary?.label ?? 'Start a project';
-  const primaryHref = tertiary?.href ?? '/contact';
-
+export function ServicesCTA({
+  line1 = "Let's build it",
+  line2 = 'together.',
+  support,
+  tertiary,
+}: ServicesCTAProps) {
   return (
-    <section className="relative overflow-hidden bg-orange">
-      {/* Same compositional sheet as the manifesto — cover + half, darkened for orange. */}
-      <BrandPattern
-        variant="frame"
-        half="right"
-        className="!opacity-[0.14] [filter:brightness(0)]"
-      />
-      <div className="relative z-content mx-auto flex max-w-3xl flex-col items-center gap-7 px-gutter-m py-16 text-center lg:px-gutter-d lg:py-20">
-        <h2
-          className="font-sans font-bold uppercase leading-[0.95] tracking-display text-navy"
-          style={{ fontSize: 'clamp(1.85rem, 4.4vw, 3.25rem)' }}
-        >
-          {heading}
-        </h2>
-        <Button href={primaryHref} variant="secondary" size="lg">
-          {primaryLabel}
-          {' →'}
-        </Button>
-      </div>
-    </section>
+    <PageCTA
+      line1={line1}
+      line2={line2}
+      support={support}
+      secondary={
+        tertiary
+          ? { label: tertiary.label, href: tertiary.href }
+          : { label: 'Start a project', href: '/contact' }
+      }
+    />
   );
 }

@@ -206,7 +206,11 @@ export function ServiceDetailContent({ service }: { service: ServiceRecord }) {
       <ServiceNextPrev slug={service.slug} />
 
       {/* ── CTA ──────────────────────────────────────────────────────────── */}
-      <ServicesCTA heading={cfg.ctaHeading} tertiary={service.tertiaryCta} />
+      <ServicesCTA
+        line1={cfg.ctaLine1}
+        line2={cfg.ctaLine2}
+        tertiary={service.tertiaryCta}
+      />
     </div>
   );
 }

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import { aboutContent } from "@/content/about";
 import { AboutServices } from "@/components/sections/about/AboutServices";
 import { AboutTestimonials } from "@/components/sections/about/AboutTestimonials";
@@ -11,13 +10,13 @@ import { useReducedMotion } from "@/lib/motion/useReducedMotion";
 
 /**
  * Plusdrie editorial body — sits under the immersive statement journey.
- * Intro + principles, services rows, team, soft closer.
+ * Intro + principles, services rows, team. Closer lives on AboutPageContent.
  */
 export function AboutStudio() {
   const rootRef = useRef<HTMLElement>(null);
   const reducedMotion = useReducedMotion();
   const [open, setOpen] = useState(0);
-  const { intro, principles, closer } = aboutContent;
+  const { intro, principles } = aboutContent;
 
   useEffect(() => {
     const el = rootRef.current;
@@ -114,51 +113,6 @@ export function AboutStudio() {
       <AboutServices />
 
       <AboutTestimonials />
-
-      {/* Closer */}
-      <div className="relative px-gutter-m py-28 text-center lg:px-gutter-d lg:py-36">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute left-1/2 top-1/2 h-[50%] w-[55%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-orange opacity-[0.08] blur-[140px]"
-        />
-        <div data-about-reveal className="relative z-content mx-auto max-w-3xl">
-          <h2
-            className="font-sans font-bold leading-[1.08] tracking-[-0.025em]"
-            style={{ fontSize: "clamp(2rem, 4.5vw, 3.5rem)" }}
-          >
-            <span className="block text-white">{closer.line1}</span>
-            <span className="block text-orange">{closer.line2}</span>
-          </h2>
-          <p className="mx-auto mt-7 max-w-md text-base leading-relaxed text-white/55">
-            {closer.support}
-          </p>
-          <div className="mt-12 flex flex-wrap items-center justify-center gap-4">
-            <Link
-              href={`mailto:${closer.email}`}
-              className={cn(
-                "inline-flex min-h-12 items-center gap-2 rounded-full bg-orange px-8 py-3.5",
-                "font-sans text-sm font-bold text-black",
-                "transition-[transform,background-color] duration-300 ease-out",
-                "hover-fine:hover:-translate-y-0.5 hover-fine:hover:bg-white",
-              )}
-            >
-              <span aria-hidden>↗</span>
-              {closer.email}
-            </Link>
-            <Link
-              href="/contact"
-              className={cn(
-                "inline-flex min-h-12 items-center rounded-full border border-white/20 px-8 py-3.5",
-                "font-sans text-sm font-bold uppercase tracking-[0.12em] text-white",
-                "transition-[transform,border-color,color] duration-300 ease-out",
-                "hover-fine:hover:-translate-y-0.5 hover-fine:hover:border-orange hover-fine:hover:text-orange",
-              )}
-            >
-              Start a project
-            </Link>
-          </div>
-        </div>
-      </div>
     </section>
   );
 }

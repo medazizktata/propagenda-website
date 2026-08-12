@@ -8,8 +8,9 @@ export interface ProcessStep {
 export interface ServiceDetailConfig {
   /** Full-bleed hero image (real portfolio render). Omit → monogram/pattern hero. */
   heroImage?: string;
-  /** Service-specific CTA headline for the closing orange band. */
-  ctaHeading: string;
+  /** Two-line closing CTA (white / orange) — shared PageCTA format. */
+  ctaLine1: string;
+  ctaLine2: string;
   /** Authored process steps (websites, mobile) — the signature module when the record has none. */
   process?: ProcessStep[];
   /** Interactive "how we work" stepper — an extra section (currently branding). */
@@ -31,7 +32,8 @@ export interface ServiceDetailConfig {
 export const serviceDetailConfig: Record<ServiceSlug, ServiceDetailConfig> = {
   'branding-visual-identity': {
     heroImage: '/images/portfolio/work-sanapex.webp',
-    ctaHeading: 'Ready to build your identity?',
+    ctaLine1: 'Ready to build',
+    ctaLine2: 'your identity.',
     approach: [
       { title: 'Discovery', body: 'We dig into your business, audience, and market — the brief behind the brief — so the brand is built on insight, not guesswork.' },
       { title: 'Strategy', body: 'Positioning, personality, and the story your brand needs to tell. This is the thinking every visual decision is anchored to.' },
@@ -67,7 +69,8 @@ export const serviceDetailConfig: Record<ServiceSlug, ServiceDetailConfig> = {
     ],
   },
   'public-relations': {
-    ctaHeading: 'Ready to get noticed?',
+    ctaLine1: 'Ready to get',
+    ctaLine2: 'noticed.',
     influence: [
       'A-list celebrities',
       'Bloggers & creators',
@@ -104,7 +107,8 @@ export const serviceDetailConfig: Record<ServiceSlug, ServiceDetailConfig> = {
   },
   'online-offline-marketing': {
     heroImage: '/images/portfolio/work-ghaftree.webp',
-    ctaHeading: 'Ready to grow?',
+    ctaLine1: 'Ready to',
+    ctaLine2: 'grow.',
     faqs: [
       {
         q: 'How do you decide the mix between online and offline?',
@@ -134,7 +138,8 @@ export const serviceDetailConfig: Record<ServiceSlug, ServiceDetailConfig> = {
   },
   websites: {
     heroImage: '/images/portfolio/work-quickcars.webp',
-    ctaHeading: 'Ready to launch?',
+    ctaLine1: 'Ready to',
+    ctaLine2: 'launch.',
     process: [
       { title: 'Concept', body: 'Goals, audience, and structure mapped before a pixel moves.' },
       { title: 'Design', body: 'Interfaces that carry your brand and guide the visitor.' },
@@ -171,7 +176,8 @@ export const serviceDetailConfig: Record<ServiceSlug, ServiceDetailConfig> = {
   },
   'mobile-applications': {
     heroImage: '/images/portfolio/work-food.webp',
-    ctaHeading: 'Ready to ship your app?',
+    ctaLine1: 'Ready to ship',
+    ctaLine2: 'your app.',
     process: [
       { title: 'Discover', body: 'Scope, platforms, core flows.' },
       { title: 'Design', body: 'Native UX/UI for iOS and Android.' },
@@ -208,7 +214,8 @@ export const serviceDetailConfig: Record<ServiceSlug, ServiceDetailConfig> = {
   },
   events: {
     heroImage: '/images/portfolio/work-events.webp',
-    ctaHeading: 'Planning an event?',
+    ctaLine1: 'Planning an',
+    ctaLine2: 'event?',
     faqs: [
       {
         q: 'What types of events do you handle?',
@@ -238,7 +245,8 @@ export const serviceDetailConfig: Record<ServiceSlug, ServiceDetailConfig> = {
   },
   'photography-videography': {
     heroImage: '/images/portfolio/work-food.webp',
-    ctaHeading: 'Ready to shoot?',
+    ctaLine1: 'Ready to',
+    ctaLine2: 'shoot.',
     disciplines: [
       {
         label: 'Photography',

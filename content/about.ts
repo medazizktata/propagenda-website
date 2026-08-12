@@ -375,8 +375,4 @@ export const aboutContent = {
       "We're always looking for brands who care about their product — and the people who use it.",
     email: "info@thepropagenda.com",
   },
-
-  cta: {
-    heading: "Let's build what's next.",
-  },
 };

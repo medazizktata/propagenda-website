@@ -168,8 +168,18 @@ const config: Config = {
         'bright-flash-fast': 'brightFlash 0.7s ease-out',
         'spin-slow': 'spin 1.2s linear infinite',
         'hero-360': 'hero360Spin 7s cubic-bezier(0.65, 0, 0.35, 1) infinite',
+        'cta-glow': 'ctaGlow 3.6s ease-in-out infinite',
+        'cta-glow-soft': 'ctaGlowSoft 4.8s ease-in-out infinite',
       },
       keyframes: {
+        ctaGlow: {
+          '0%, 100%': { opacity: '0.28', transform: 'translate(-50%, -50%) scale(0.92)' },
+          '50%': { opacity: '0.55', transform: 'translate(-50%, -50%) scale(1.12)' },
+        },
+        ctaGlowSoft: {
+          '0%, 100%': { opacity: '0.18', transform: 'translate(-50%, -50%) scale(0.95)' },
+          '50%': { opacity: '0.34', transform: 'translate(-50%, -50%) scale(1.08)' },
+        },
         glitch: {
           '0%, 100%': { opacity: '1' },
           '50%': { opacity: '0.85', transform: 'translateX(1px)' },

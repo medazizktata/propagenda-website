@@ -109,14 +109,17 @@ export function VideoHero({ showreel, onPlay }: { showreel: VideoProject; onPlay
         </div>
       </div>
 
-      {/* Sound-off hint (autoplay is always muted). */}
-      <span className="vh-in absolute bottom-8 right-6 z-content hidden items-center gap-2 text-xs text-white/45 lg:right-12 lg:flex">
+      <button
+        type="button"
+        onClick={onPlay}
+        className="vh-in absolute bottom-8 right-6 z-content hidden items-center gap-2 text-xs text-white/45 transition-colors hover-fine:hover:text-orange lg:right-12 lg:flex"
+      >
         <svg viewBox="0 0 24 24" aria-hidden className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M11 5 6 9H3v6h3l5 4V5z" strokeLinejoin="round" />
           <path d="m22 9-6 6M16 9l6 6" strokeLinecap="round" />
         </svg>
         Muted — press play for sound
-      </span>
+      </button>
     </section>
   );
 }

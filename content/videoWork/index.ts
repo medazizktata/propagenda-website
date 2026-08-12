@@ -211,12 +211,35 @@ export const videoProjects: VideoProject[] = [
   },
 ];
 
-// What Propagenda shoots — the capabilities strip.
-export const videoCapabilities: { label: string; blurb: string }[] = [
-  { label: 'Brand films', blurb: 'Cinematic brand stories, cut to move.' },
-  { label: 'Social reels', blurb: 'Short-form vertical, made for the feed.' },
-  { label: 'Product & motion', blurb: 'Product films and animated graphics.' },
-  { label: 'Events & live', blurb: 'Coverage, aftermovies, multi-cam streams.' },
+// What Propagenda shoots — craft list + hover preview media.
+export const videoCapabilities: {
+  label: string;
+  blurb: string;
+  poster: string;
+  src?: string;
+}[] = [
+  {
+    label: 'Brand films',
+    blurb: 'Cinematic brand stories, cut to move.',
+    poster: '/images/video-posters/showreel-marketing.jpg',
+    src: '/videos/showreel-marketing.mp4',
+  },
+  {
+    label: 'Social reels',
+    blurb: 'Short-form vertical, made for the feed.',
+    poster: '/images/video-posters/reel-branding.jpg',
+    src: '/videos/reel-branding.mp4',
+  },
+  {
+    label: 'Product & motion',
+    blurb: 'Product films and animated graphics.',
+    poster: '/images/work/sanapex-interiors/hero.png',
+  },
+  {
+    label: 'Events & live',
+    blurb: 'Coverage, aftermovies, multi-cam streams.',
+    poster: '/images/portfolio/work-events.png',
+  },
 ];
 
 // A real client voice (from the case studies) — surfaced as a pull-quote.

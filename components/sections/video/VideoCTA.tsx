@@ -1,23 +1,26 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import Link from 'next/link';
+import { gsap, registerGsap } from '@/lib/motion/gsap';
 import { useReducedMotion } from '@/lib/motion/useReducedMotion';
 import type { VideoProject } from '@/types/content';
 
-// Video-oriented CTA: the showreel plays *inside* the words "LET'S ROLL." (SVG mask cuts the type
-// out of a charcoal cover so the footage shows only through the letters), with an orange outline
-// keeping it legible over any frame. Autoplays muted only while in view; reduced motion holds a
-// still frame.
+// End-card CTA: full-viewport showreel punched through giant type. Video + SVG mask share
+// one absolute stage (no aspect-strip seam). Thin orange outline only — a heavy stroke reads
+// as a fake rule under the baseline. Autoplays muted while in view.
 export function VideoCTA({ film, onWatch }: { film: VideoProject; onWatch: () => void }) {
-  const bandRef = useRef<HTMLDivElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const reducedMotion = useReducedMotion();
+  const [timecode, setTimecode] = useState('00:00');
+  const maskId = `cta-roll-${useId().replace(/:/g, '')}`;
 
   useEffect(() => {
-    const band = bandRef.current;
+    const section = sectionRef.current;
     const vid = videoRef.current;
-    if (!band || !vid || reducedMotion) return;
+    if (!section || !vid || reducedMotion) return;
+
     const io = new IntersectionObserver(
       (entries) => {
         if (entries[0]?.isIntersecting) {
@@ -27,110 +30,145 @@ export function VideoCTA({ film, onWatch }: { film: VideoProject; onWatch: () =>
           vid.pause();
         }
       },
-      { threshold: 0.35 },
+      { threshold: 0.3 },
     );
-    io.observe(band);
-    return () => io.disconnect();
+    io.observe(section);
+
+    const onTime = () => {
+      const t = Math.floor(vid.currentTime || 0);
+      setTimecode(`${String(Math.floor(t / 60)).padStart(2, '0')}:${String(t % 60).padStart(2, '0')}`);
+    };
+    vid.addEventListener('timeupdate', onTime);
+
+    return () => {
+      io.disconnect();
+      vid.removeEventListener('timeupdate', onTime);
+    };
+  }, [reducedMotion]);
+
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+    registerGsap();
+    const ctx = gsap.context(() => {
+      if (reducedMotion) {
+        gsap.set('.vc-in', { autoAlpha: 1, y: 0 });
+        return;
+      }
+      gsap.fromTo(
+        '.vc-in',
+        { autoAlpha: 0, y: 28 },
+        {
+          autoAlpha: 1,
+          y: 0,
+          duration: 0.85,
+          stagger: 0.1,
+          ease: 'power3.out',
+          scrollTrigger: { trigger: section, start: 'top 72%', once: true },
+        },
+      );
+    }, section);
+    return () => ctx.revert();
   }, [reducedMotion]);
 
   const textProps = {
     x: 600,
-    y: 182,
+    y: 430,
     textAnchor: 'middle' as const,
-    className: 'font-sans',
-    style: { fontWeight: 800, fontSize: 176, letterSpacing: '-6px' },
+    style: {
+      fontWeight: 800,
+      fontSize: 152,
+      letterSpacing: '-6px',
+      fontFamily: 'var(--font-poppins), system-ui, sans-serif',
+    },
   };
 
   return (
-    <section className="relative overflow-hidden bg-charcoal px-gutter-m pb-28 pt-24 text-center lg:px-gutter-d lg:pb-36 lg:pt-32">
-      {/* Warm floor glow — kept clear of the type band so the letter cut-out stays seamless. */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute bottom-0 left-1/2 h-[360px] w-[820px] max-w-[120vw] -translate-x-1/2 translate-y-1/3 rounded-full bg-orange/10 blur-[130px]"
-      />
+    <section
+      ref={sectionRef}
+      className="relative flex min-h-[92svh] flex-col overflow-hidden bg-black"
+    >
+      <div aria-hidden className="absolute inset-0">
+        <video
+          ref={videoRef}
+          src={film.src}
+          poster={film.poster}
+          muted
+          loop
+          playsInline
+          preload="none"
+          className="absolute inset-0 h-full w-full object-cover [filter:contrast(1.25)_saturate(1.5)_brightness(1.28)]"
+        />
+        {/* Warmth through the letter windows when the cut goes dark. */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(245,139,39,0.28)_0%,transparent_58%)]" />
+        <svg
+          viewBox="0 0 1200 800"
+          preserveAspectRatio="xMidYMid slice"
+          className="absolute inset-0 h-full w-full"
+        >
+          <defs>
+            <mask id={maskId} maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse">
+              <rect width="1200" height="800" fill="#fff" />
+              <text {...textProps} fill="#000">
+                LET&apos;S ROLL.
+              </text>
+            </mask>
+          </defs>
+          <rect width="1200" height="800" fill="#000" mask={`url(#${maskId})`} />
+          <text {...textProps} fill="none" stroke="#f58b27" strokeWidth={1.8}>
+            LET&apos;S ROLL.
+          </text>
+        </svg>
+      </div>
 
-      <div className="relative mx-auto max-w-6xl">
-        {/* REC eyebrow */}
-        <div className="mb-9 flex items-center justify-center gap-3 text-[0.7rem] font-bold uppercase tracking-[0.2em] text-white/50">
-          <span className="flex items-center gap-2 text-orange">
-            <span className="h-2 w-2 rounded-full bg-orange motion-safe:animate-pulse" />
-            Rec
+      <div className="relative z-content mx-auto flex w-full max-w-6xl flex-1 flex-col px-gutter-m py-10 lg:px-gutter-d lg:py-14">
+        <div className="vc-in flex items-start justify-between gap-6 text-[0.65rem] font-bold uppercase tracking-[0.22em] text-white/45">
+          <span>
+            Propagenda <span className="text-orange">Film</span>
           </span>
-          <span aria-hidden className="h-3 w-px bg-white/20" />
-          <span>Showreel — 00:27</span>
+          <span className="flex items-center gap-2 tabular-nums text-orange">
+            <span className="h-1.5 w-1.5 rounded-full bg-orange motion-safe:animate-pulse" />
+            {timecode}
+            <span className="text-white/35">/ {film.duration ?? '0:27'}</span>
+          </span>
         </div>
 
-        {/* The words, with the reel playing inside them */}
-        <div ref={bandRef} className="relative mx-auto aspect-[1200/240] w-full max-w-5xl">
-          <video
-            ref={videoRef}
-            src={film.src}
-            poster={film.poster}
-            muted
-            loop
-            playsInline
-            preload="none"
-            aria-hidden
-            className="absolute inset-0 h-full w-full object-cover [filter:contrast(1.15)_saturate(1.3)_brightness(1.04)]"
-          />
-          <svg
-            aria-label="Let's roll."
-            role="img"
-            viewBox="0 0 1200 240"
-            preserveAspectRatio="xMidYMid meet"
-            className="absolute inset-0 h-full w-full"
-          >
-            <defs>
-              <mask id="cta-roll-cut">
-                <rect x="-8" y="-8" width="1216" height="256" fill="white" />
-                <text {...textProps} fill="black">
-                  LET&apos;S ROLL.
-                </text>
-              </mask>
-            </defs>
-            {/* Charcoal cover, punched out by the type → footage shows only through the letters.
-                Oversized past the viewBox so the video's edges never peek out as a seam. */}
-            <rect x="-8" y="-8" width="1216" height="256" fill="#252525" mask="url(#cta-roll-cut)" />
-            {/* Dark halo separates the letters from the background; crisp orange defines them. */}
-            <text {...textProps} fill="none" stroke="#0a0a0a" strokeWidth={7} opacity={0.55}>
-              LET&apos;S ROLL.
-            </text>
-            <text {...textProps} fill="none" stroke="#f58b27" strokeWidth={2.6}>
-              LET&apos;S ROLL.
-            </text>
-          </svg>
-        </div>
+        <div className="flex-1" aria-hidden />
 
-        <p className="mx-auto mt-8 max-w-lg text-lg text-white/70 md:text-xl">
-          Brand films, social reels, motion — let&rsquo;s make yours.
-        </p>
+        <h2 className="sr-only">Let&apos;s roll.</h2>
 
-        <div className="mx-auto mt-10 flex w-full max-w-lg flex-col items-stretch justify-center gap-3.5 sm:w-auto sm:flex-row sm:items-center">
-          <Link
-            href="/contact"
-            className="group inline-flex items-center justify-center gap-2.5 rounded-full bg-orange px-8 py-4 text-sm font-bold uppercase tracking-wider text-black transition-all duration-300 ease-out hover-fine:hover:-translate-y-0.5 hover-fine:hover:shadow-[0_16px_44px_-12px_rgba(245,139,39,0.6)]"
-          >
-            Start a project
-            <svg
-              viewBox="0 0 24 24"
-              aria-hidden
-              className="h-4 w-4 fill-none stroke-current stroke-[2.5] transition-transform duration-300 group-hover:translate-x-1"
+        <div>
+          <p className="vc-in mx-auto max-w-md text-center text-base leading-relaxed text-white/70 md:text-lg">
+            Brand films, social reels, motion — let&rsquo;s make yours.
+          </p>
+
+          <div className="vc-in mt-9 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center sm:gap-4">
+            <Link
+              href="/contact"
+              className="group inline-flex items-center justify-center gap-2.5 rounded-full bg-orange px-7 py-3.5 text-sm font-bold uppercase tracking-wider text-black transition-transform duration-300 ease-out hover-fine:hover:-translate-y-0.5"
             >
-              <path d="M5 12h14M13 6l6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </Link>
-          <button
-            type="button"
-            onClick={onWatch}
-            className="group inline-flex items-center justify-center gap-3 rounded-full border border-white/20 px-7 py-4 text-sm font-bold uppercase tracking-wider text-white transition-colors duration-300 hover-fine:hover:border-orange/60 hover-fine:hover:bg-white/[0.04]"
-          >
-            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-orange text-black transition-transform duration-300 group-hover:scale-110">
-              <svg viewBox="0 0 24 24" aria-hidden className="ml-0.5 h-3.5 w-3.5 fill-current">
-                <path d="M8 5.14v13.72L19 12 8 5.14z" />
+              Start a project
+              <svg
+                viewBox="0 0 24 24"
+                aria-hidden
+                className="h-4 w-4 fill-none stroke-current stroke-[2.5] transition-transform duration-300 group-hover:translate-x-1"
+              >
+                <path d="M5 12h14M13 6l6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
-            </span>
-            Watch the showreel
-          </button>
+            </Link>
+            <button
+              type="button"
+              onClick={onWatch}
+              className="group inline-flex items-center justify-center gap-3 rounded-full border border-white/20 px-7 py-3.5 text-sm font-bold uppercase tracking-wider text-white transition-colors duration-300 hover-fine:hover:border-orange/60 hover-fine:hover:bg-white/[0.04]"
+            >
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-orange text-black transition-transform duration-300 group-hover:scale-110">
+                <svg viewBox="0 0 24 24" aria-hidden className="ml-0.5 h-3.5 w-3.5 fill-current">
+                  <path d="M8 5.14v13.72L19 12 8 5.14z" />
+                </svg>
+              </span>
+              Watch the showreel
+            </button>
+          </div>
         </div>
       </div>
     </section>

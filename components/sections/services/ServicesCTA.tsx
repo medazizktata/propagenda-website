@@ -19,7 +19,12 @@ export function ServicesCTA({ heading = "Let's build it together.", tertiary }: 
 
   return (
     <section className="relative overflow-hidden bg-orange">
-      <BrandPattern variant="tiled" className="!opacity-[0.1] [filter:brightness(0)]" />
+      {/* Same compositional sheet as the manifesto — cover + half, darkened for orange. */}
+      <BrandPattern
+        variant="frame"
+        half="right"
+        className="!opacity-[0.14] [filter:brightness(0)]"
+      />
       <div className="relative z-content mx-auto flex max-w-3xl flex-col items-center gap-7 px-gutter-m py-16 text-center lg:px-gutter-d lg:py-20">
         <h2
           className="font-sans font-bold uppercase leading-[0.95] tracking-display text-navy"

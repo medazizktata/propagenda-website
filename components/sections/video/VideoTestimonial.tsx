@@ -52,9 +52,8 @@ export function VideoTestimonial({ text, author }: { text: string; author: strin
         >
           &ldquo;{text}&rdquo;
         </blockquote>
-        <figcaption className="vt-reveal mt-8 flex items-center gap-4">
-          <span aria-hidden className="h-px w-10 bg-orange" />
-          <span className="text-sm font-semibold uppercase tracking-[0.14em] text-white/70">
+        <figcaption className="vt-reveal mt-8">
+          <span className="text-sm font-semibold uppercase tracking-[0.14em] text-orange">
             {author}
           </span>
         </figcaption>

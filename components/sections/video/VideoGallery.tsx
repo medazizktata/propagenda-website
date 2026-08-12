@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { VideoCard } from '@/components/molecules/VideoCard';
-import { BrandPattern } from '@/components/ui/BrandPattern';
 import { gsap, registerGsap } from '@/lib/motion/gsap';
 import { useReducedMotion } from '@/lib/motion/useReducedMotion';
 import { cn } from '@/components/ui/cn';
@@ -109,14 +108,14 @@ export function VideoGallery({
     setClient(ALL);
   };
 
-  // Header reveal — established safe per-element pattern (fromTo → ends visible, once).
+  // Header + cards reveal on scroll (cards re-bind when the filter set changes).
   useEffect(() => {
     const section = sectionRef.current;
     if (!section) return;
     registerGsap();
     const ctx = gsap.context(() => {
       if (reducedMotion) {
-        gsap.set('.vg-reveal', { autoAlpha: 1, y: 0 });
+        gsap.set('.vg-reveal, .vg-item', { autoAlpha: 1, y: 0, clearProps: 'transform' });
         return;
       }
       gsap.utils.toArray<HTMLElement>('.vg-reveal').forEach((el) => {
@@ -132,9 +131,23 @@ export function VideoGallery({
           },
         );
       });
+      gsap.utils.toArray<HTMLElement>('.vg-item').forEach((el, i) => {
+        gsap.fromTo(
+          el,
+          { autoAlpha: 0, y: 48 },
+          {
+            autoAlpha: 1,
+            y: 0,
+            duration: 0.9,
+            delay: (i % 2) * 0.08,
+            ease: 'power3.out',
+            scrollTrigger: { trigger: el, start: 'top 90%', once: true },
+          },
+        );
+      });
     }, section);
     return () => ctx.revert();
-  }, [reducedMotion]);
+  }, [reducedMotion, category, client]);
 
   // Close the popover on outside click / Escape.
   useEffect(() => {
@@ -156,16 +169,11 @@ export function VideoGallery({
   return (
     <section
       ref={sectionRef}
-      className="relative overflow-hidden py-16 lg:py-24"
+      className="relative overflow-hidden py-20 lg:py-28"
       aria-labelledby="video-gallery-heading"
     >
-      <div aria-hidden className="pattern-section-fade pointer-events-none absolute inset-0 opacity-40">
-        <BrandPattern variant="tiled" />
-      </div>
-
-      <div className="relative z-content mx-auto max-w-7xl px-gutter-m lg:px-gutter-d">
-        {/* Header + filter trigger. The row keeps NO transform (only the title block reveals) so the
-            popover's `position: fixed` resolves against the viewport, not a transformed ancestor. */}
+      <div className="relative z-content mx-auto max-w-[1180px] px-gutter-m lg:px-gutter-d">
+        {/* Header + filter — no transform on this row so the popover's fixed/absolute positioning stays clean. */}
         <div className="relative z-30 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
           <div className="vg-reveal max-w-2xl">
             <h2
@@ -190,7 +198,6 @@ export function VideoGallery({
               </span>
             </p>
 
-            {/* Filter popover */}
             <div ref={popoverRef} className="relative z-40">
               <button
                 type="button"
@@ -266,24 +273,23 @@ export function VideoGallery({
           </div>
         </div>
 
-        {/* Grid — remounts on filter change to replay the CSS entrance stagger. */}
+        {/* 2-col staggered grid — Cuberto rhythm: big gap, right column drops. */}
         {filtered.length > 0 ? (
           <div
             key={`${category}|${client}`}
-            className="vg-grid mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 2xl:grid-cols-3"
+            className="vg-grid mt-14 grid grid-cols-1 gap-x-8 gap-y-8 sm:mt-20 sm:grid-cols-2 sm:gap-x-12 sm:gap-y-10 lg:gap-x-[5.5rem] lg:gap-y-12"
           >
             {filtered.map((project, i) => (
               <div
                 key={project.slug}
-                className="vg-item"
-                style={{ animationDelay: `${Math.min(i, 9) * 55}ms` }}
+                className={cn('vg-item', i % 2 === 1 && 'sm:mt-16 lg:mt-20')}
               >
                 <VideoCard project={project} onOpen={() => onOpen(project)} />
               </div>
             ))}
           </div>
         ) : (
-          <div className="mt-10 rounded-2xl border border-dashed border-white/12 py-16 text-center">
+          <div className="mt-14 py-16 text-center sm:mt-20">
             <p className="text-white/60">No films in this cut yet.</p>
             <button
               type="button"
@@ -296,15 +302,9 @@ export function VideoGallery({
         )}
       </div>
 
-      {/* CSS-only entrances: start hidden only when motion is welcome, always end visible. */}
       <style>{`
         @media (prefers-reduced-motion: no-preference) {
-          .vg-item { opacity: 0; animation: vgIn 0.55s cubic-bezier(0.22, 0.61, 0.36, 1) both; }
           .vg-pop { animation: vgPop 0.16s ease-out; }
-        }
-        @keyframes vgIn {
-          from { opacity: 0; transform: translateY(18px) scale(0.98); }
-          to { opacity: 1; transform: none; }
         }
         @keyframes vgPop {
           from { opacity: 0; transform: translateY(-6px) scale(0.98); }

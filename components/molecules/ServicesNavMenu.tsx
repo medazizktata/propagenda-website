@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { AppLink } from '@/components/ui/Link';
-import { BrandPattern } from '@/components/ui/BrandPattern';
 import { cn } from '@/components/ui/cn';
 
 /**
@@ -145,6 +144,8 @@ export function ServicesNavMenu() {
   const preview = SERVICE_MENU[active];
 
   useEffect(() => {
+    // Sync the previewed service to the current route on navigation (pre-existing behaviour).
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setActive(currentIndex >= 0 ? currentIndex : 0);
     if (isFirstPath.current) {
       isFirstPath.current = false;
@@ -207,10 +208,6 @@ export function ServicesNavMenu() {
         )}
       >
         <div className="relative w-[46rem] max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl border border-white/12 bg-charcoal/95 shadow-[0_28px_70px_-20px_rgba(0,0,0,0.8)] backdrop-blur-md">
-          <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.05]">
-            <BrandPattern variant="tiled" />
-          </div>
-
           <div className="relative grid grid-cols-[1.05fr_0.95fr]">
             {/* ── List ── */}
             <div className="border-r border-white/10 p-3">

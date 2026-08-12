@@ -34,6 +34,7 @@ export function VideoLightbox({ video, isOpen, onClose }: VideoLightboxProps) {
   const titleId = useId();
   const videoRef = useRef<HTMLVideoElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
 
   const [mounted, setMounted] = useState(false);
@@ -99,6 +100,23 @@ export function VideoLightbox({ video, isOpen, onClose }: VideoLightboxProps) {
         el.muted = !el.muted;
         setMuted(el.muted);
       }
+      // Focus trap — modal dialog: Tab cycles inside, never into the page behind.
+      if (e.key === 'Tab' && dialogRef.current) {
+        const focusables = Array.from(
+          dialogRef.current.querySelectorAll<HTMLElement>('button:not([disabled]), [href], input'),
+        ).filter((n) => n.offsetParent !== null);
+        if (!focusables.length) return;
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+        const current = document.activeElement as HTMLElement | null;
+        if (e.shiftKey && (current === first || !dialogRef.current.contains(current))) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && (current === last || !dialogRef.current.contains(current))) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
     };
     window.addEventListener('keydown', onKey);
 
@@ -128,6 +146,7 @@ export function VideoLightbox({ video, isOpen, onClose }: VideoLightboxProps) {
 
   return createPortal(
     <div
+      ref={dialogRef}
       role="dialog"
       aria-modal="true"
       aria-labelledby={video.title ? titleId : undefined}

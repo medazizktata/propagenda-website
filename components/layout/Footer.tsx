@@ -44,7 +44,7 @@ export function Footer() {
             >
               WhatsApp <span aria-hidden>↗</span>
             </a>
-            <p className="max-w-[22ch] text-sm leading-relaxed text-white/45">
+            <p className="max-w-[22ch] text-sm leading-relaxed text-white/60">
               {footer.address}
             </p>
           </div>
@@ -88,7 +88,7 @@ export function Footer() {
             ))}
           </ul>
           <ScrollToTopButton />
-          <p className="text-xs tracking-wide text-white/40 sm:min-w-[12rem] sm:text-right">
+          <p className="text-xs tracking-wide text-white/55 sm:min-w-[12rem] sm:text-right">
             © {year} {footer.copyright}
           </p>
         </div>

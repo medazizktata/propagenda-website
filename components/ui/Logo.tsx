@@ -55,7 +55,12 @@ export function Logo({ variant = 'horizontal', href = '/', className }: LogoProp
   }
 
   return (
-    <Link href={href} className={cn('inline-flex items-center', className)} aria-label="Propagenda home">
+    // Accessible name must contain the visible label (WCAG 2.5.3 label-in-name).
+    <Link
+      href={href}
+      className={cn('inline-flex items-center', className)}
+      aria-label="Propagenda Marketing Services — home"
+    >
       {content}
     </Link>
   );

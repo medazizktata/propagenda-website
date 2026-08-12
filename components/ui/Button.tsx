@@ -16,8 +16,9 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variantClasses: Record<ButtonVariant, string> = {
+  /* Dark text on orange: 7.55:1 — white-on-orange fails WCAG AA at 2.44:1. */
   primary:
-    'bg-orange text-white hover:bg-orange-hover hover-fine:hover:bg-orange-hover uppercase font-bold',
+    'bg-orange text-ink hover:bg-orange-hover hover-fine:hover:bg-orange-hover uppercase font-bold',
   'primary-ghost':
     'border border-border-accent text-orange bg-transparent uppercase font-bold hover-fine:hover:bg-orange/10',
   secondary: 'bg-black text-white uppercase font-bold',

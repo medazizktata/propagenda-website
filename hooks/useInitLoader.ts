@@ -35,20 +35,20 @@ export function isInitLoaderEnabled() {
 export function useInitLoader() {
   const reducedMotion = useReducedMotion();
   const enabled = isInitLoaderEnabled();
-  const [state, setState] = useState<'visible' | 'done'>(() =>
-    enabled && typeof window !== 'undefined' && !hasSeenLoaderThisSession()
-      ? 'visible'
-      : 'done',
-  );
+  // Deterministic across server and client: SSR and first client paint must agree
+  // (a window/sessionStorage branch here caused hydration mismatches). The
+  // seen-this-session check moves into the effect below and dismisses immediately.
+  const [state, setState] = useState<'visible' | 'done'>(() => (enabled ? 'visible' : 'done'));
 
   useEffect(() => {
-    if (!enabled || reducedMotion) {
+    if (!enabled || reducedMotion || hasSeenLoaderThisSession()) {
       setState('done');
     }
   }, [enabled, reducedMotion]);
 
   useEffect(() => {
     if (!enabled || state !== 'visible' || reducedMotion) return;
+    if (hasSeenLoaderThisSession()) return;
 
     markLoaderSeen();
 

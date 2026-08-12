@@ -4,9 +4,14 @@ import { LazyMotion, domAnimation } from 'framer-motion';
 import type { ReactNode } from 'react';
 import { useEffect } from 'react';
 
+// Module-level: StrictMode double-invokes effects in dev, and MSW throws an
+// invariant ("cannot configure an already enabled network") on a second start.
+let mswStarted = false;
+
 export function Providers({ children }: { children: ReactNode }) {
   useEffect(() => {
-    if (process.env.NODE_ENV !== 'development') return;
+    if (process.env.NODE_ENV !== 'development' || mswStarted) return;
+    mswStarted = true;
 
     import('@/msw/browser').then(({ worker }) => {
       worker.start({ onUnhandledRequest: 'bypass' });

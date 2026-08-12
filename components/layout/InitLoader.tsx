@@ -22,12 +22,16 @@ export function InitLoader() {
   const reducedMotion = useReducedMotion();
   const [count, setCount] = useState(0);
   const [removed, setRemoved] = useState(false);
-  const [quote] = useState(() => pickInitLoaderQuote());
+  // Deterministic seed for SSR + first client paint (a random pick differed between
+  // server and client and broke hydration); the real random pick lands post-mount,
+  // before the quote is ever shown (it only renders once `armed`).
+  const [quote, setQuote] = useState(() => pickInitLoaderQuote(0.37));
   const [armed, setArmed] = useState(false);
   const [shellIn, setShellIn] = useState(false);
   const rafRef = useRef(0);
 
   useEffect(() => {
+    setQuote(pickInitLoaderQuote());
     const id = requestAnimationFrame(() => setShellIn(true));
     return () => cancelAnimationFrame(id);
   }, []);

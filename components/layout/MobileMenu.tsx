@@ -9,7 +9,7 @@ import { menuOverlay, menuPanel } from '@/lib/motion/variants';
 import { useReducedMotion } from '@/lib/motion/useReducedMotion';
 import { BrandPattern } from '@/components/ui/BrandPattern';
 import { Logo } from '@/components/ui/Logo';
-import { Button } from '@/components/ui/Button';
+import { HeaderCTA } from '@/components/molecules/HeaderCTA';
 import { cn } from '@/components/ui/cn';
 
 interface MobileMenuProps {
@@ -158,36 +158,32 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
         </div>
 
         <div className="relative z-[1] flex min-h-full flex-col pb-[max(2.5rem,env(safe-area-inset-bottom))]">
-          {/* Top bar — aligned to the site header. */}
-          <div className="flex h-11 shrink-0 items-center justify-between px-gutter-m pt-3">
-            <Logo variant="mark" />
-            <div className="flex items-center gap-2.5">
-              <Button
-                href="/contact"
-                size="sm"
-                className="min-h-0 px-4 py-2 text-[0.7rem] tracking-[0.12em]"
-              >
-                Contact Us
-              </Button>
-              <button
-                type="button"
-                onClick={onClose}
-                aria-label="Close menu"
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-charcoal text-white transition-hover hover-fine:hover:bg-white/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange"
-              >
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  aria-hidden
+          {/* Same chrome as Header — pt-3 outside the h-11 row, mark left, CTA + control gap-3. */}
+          <div className="shrink-0 pt-3">
+            <div className="mx-auto flex h-11 max-w-[1920px] items-center justify-between px-gutter-m">
+              <Logo variant="mark" />
+              <div className="flex items-center gap-3">
+                <HeaderCTA />
+                <button
+                  type="button"
+                  onClick={onClose}
+                  aria-label="Close menu"
+                  className="flex h-9 w-9 items-center justify-center rounded-full bg-charcoal text-white transition-hover hover-fine:hover:bg-white/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange"
                 >
-                  <path d="M6 6l12 12M18 6L6 18" />
-                </svg>
-              </button>
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    aria-hidden
+                  >
+                    <path d="M6 6l12 12M18 6L6 18" />
+                  </svg>
+                </button>
+              </div>
             </div>
           </div>
 

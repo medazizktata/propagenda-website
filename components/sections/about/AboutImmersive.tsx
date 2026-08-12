@@ -180,7 +180,7 @@ export function AboutImmersive() {
                   {statement.pass}
                 </ChoiceButton>
                 {statement.fail ? (
-                  <ChoiceButton onClick={() => onFail(statement.fail!)}>
+                  <ChoiceButton quiet onClick={() => onFail(statement.fail!)}>
                     {statement.fail}
                   </ChoiceButton>
                 ) : null}
@@ -252,18 +252,23 @@ function StatementWords({ text, accent }: { text: string; accent?: boolean }) {
 function ChoiceButton({
   children,
   onClick,
+  quiet,
 }: {
   children: ReactNode;
   onClick: () => void;
+  quiet?: boolean;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
       className={cn(
-        "min-h-12 rounded-full bg-orange px-7 py-3 font-sans text-sm font-bold uppercase tracking-[0.14em] text-white",
-        "transition-[transform,background-color,color] duration-300 ease-out",
-        "hover-fine:hover:-translate-y-0.5 hover-fine:hover:bg-white hover-fine:hover:text-navy",
+        "min-h-12 rounded-full px-7 py-3 font-sans text-sm font-bold uppercase tracking-[0.14em]",
+        quiet
+          ? "border border-white/30 bg-transparent text-white hover-fine:hover:border-white/70"
+          : "bg-orange text-ink hover-fine:hover:bg-white hover-fine:hover:text-navy",
+        "transition-[transform,background-color,color,border-color] duration-300 ease-out",
+        "hover-fine:hover:-translate-y-0.5",
         "active:translate-y-0 active:scale-[0.98]",
         "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange",
       )}

@@ -11,5 +11,11 @@ export const metadata = buildMetadata(
 );
 
 export default function AboutPage() {
-  return <AboutPageContent />;
+  return (
+    <>
+      {/* The immersive statements are giant <p>s by design; the page still needs a heading. */}
+      <h1 className="sr-only">About Propagenda</h1>
+      <AboutPageContent />
+    </>
+  );
 }

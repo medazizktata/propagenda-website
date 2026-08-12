@@ -36,7 +36,7 @@ export const sanapexInteriors = caseStudy(
     client: 'Sanapex Interiors',
     industry: 'Interior Design',
     year: '2024',
-    heroImage: '/images/work/sanapex-interiors/hero.png',
+    heroImage: '/images/work/sanapex-interiors/hero.webp',
     scopeItems: [
       'Logo design and complete brand identity',
       'Brand colors, typography, and visual direction',
@@ -68,13 +68,13 @@ export const sanapexInteriors = caseStudy(
     },
     gallery: [
       {
-        src: '/images/work/sanapex-interiors/hero.png',
+        src: '/images/work/sanapex-interiors/hero.webp',
         alt: 'Sanapex Interiors brand identity system — stationery, catalogue and collateral in a warm sand palette.',
         width: 1241,
         height: 1754,
       },
       {
-        src: '/images/work/sanapex-interiors/gallery-1.png',
+        src: '/images/work/sanapex-interiors/gallery-1.webp',
         alt: 'Sanapex Interiors social campaign featuring editorial interior design projects.',
         width: 1241,
         height: 1754,
@@ -98,7 +98,7 @@ export const p2pMotors = caseStudy(
     client: 'P2P Motors',
     industry: 'Automotive Export',
     year: '2024',
-    heroImage: '/images/work/p2p-motors/hero.png',
+    heroImage: '/images/work/p2p-motors/hero.webp',
     scopeItems: [
       'Logo design and complete brand identity',
       'Brand colors, typography, and visual language',
@@ -133,13 +133,13 @@ export const p2pMotors = caseStudy(
     },
     gallery: [
       {
-        src: '/images/work/p2p-motors/hero.png',
+        src: '/images/work/p2p-motors/hero.webp',
         alt: 'P2P Motors luxury vehicle-export brand identity — gold-on-black stationery, dealer flags, signage and showroom collateral.',
         width: 1241,
         height: 1754,
       },
       {
-        src: '/images/work/p2p-motors/gallery-1.png',
+        src: '/images/work/p2p-motors/gallery-1.webp',
         alt: 'P2P Motors showroom and worldwide-shipping social campaign with premium blacked-out vehicles.',
         width: 1241,
         height: 1754,
@@ -309,7 +309,7 @@ export const zealerz = caseStudy(
     client: 'Zealerz',
     industry: 'LPG Marketplace & Logistics',
     year: '2024',
-    heroImage: '/images/work/zealerz/hero.png',
+    heroImage: '/images/work/zealerz/hero.webp',
     scopeItems: [
       'Logo design and complete brand identity',
       'Visual language reflecting technology, speed, and trust',
@@ -339,7 +339,7 @@ export const zealerz = caseStudy(
     },
     gallery: [
       {
-        src: '/images/work/zealerz/hero.png',
+        src: '/images/work/zealerz/hero.webp',
         alt: 'Zealerz LPG delivery app and brand identity — delivery trucks, gas cylinders and solar in a green industrial palette.',
         width: 1241,
         height: 1754,

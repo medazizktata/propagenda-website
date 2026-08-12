@@ -216,15 +216,17 @@ function CaseStudyHero({
           </div>
         </div>
 
+        {/* Scroll cue — backstage register, same grammar as the work hub (no bouncing chrome). */}
         <button
           type="button"
           aria-label="Scroll to the story"
           onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}
-          className="absolute bottom-8 left-1/2 z-content flex h-11 w-11 -translate-x-1/2 items-center justify-center rounded-full border border-[color:var(--sd-accent)] text-[color:var(--sd-accent)] transition-hover hover-fine:hover:bg-[color:var(--sd-accent)] hover-fine:hover:text-[color:var(--sd-accent-on)] motion-safe:animate-bounce"
+          className="text-backstage absolute bottom-8 left-1/2 z-content flex min-h-11 -translate-x-1/2 items-center gap-3 px-2 text-white/55 transition-hover hover-fine:hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--sd-accent)]"
         >
-          <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5">
-            <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
+          Scroll
+          <span aria-hidden className="relative h-9 w-px overflow-hidden bg-white/25">
+            <span className="absolute inset-x-0 top-0 h-3 bg-[color:var(--sd-accent)] motion-safe:animate-[video-scan_2.2s_ease-in-out_infinite]" />
+          </span>
         </button>
       </div>
     </section>
@@ -341,7 +343,7 @@ function CaseStudyResults({ results }: { results: CaseStudyResult[] }) {
               )}
             >
               <div
-                className="font-sans font-black leading-none text-[color:var(--sd-accent)]"
+                className="font-sans font-extrabold leading-none text-[color:var(--sd-accent)]"
                 style={{ fontSize: 'clamp(3rem, 7vw, 5.5rem)' }}
               >
                 {r.value}
@@ -517,7 +519,7 @@ function CaseStudyQuoteBlock({ quote }: { quote: CaseStudyQuote }) {
       <figure className="relative z-content mx-auto max-w-4xl text-center">
         <span
           aria-hidden
-          className="block font-sans font-black leading-none text-[color:var(--sd-accent)]"
+          className="block font-sans font-extrabold leading-none text-[color:var(--sd-accent)]"
           style={{ fontSize: 'clamp(5rem, 12vw, 9rem)' }}
         >
           &ldquo;

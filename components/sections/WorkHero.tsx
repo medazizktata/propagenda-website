@@ -200,7 +200,7 @@ export function WorkHero() {
 
       {/* Subtle scroll cue — a hairline with a drifting dot, no arrow decoration. */}
       <div className="wh-line pointer-events-none absolute inset-x-0 bottom-7 z-content hidden items-center justify-center gap-3 md:flex">
-        <span className="text-sm text-white/55">Scroll to explore the work</span>
+        <span className="text-backstage text-white/55">Scroll</span>
         <span className="relative h-9 w-px overflow-hidden bg-white/25">
           <span className="wh-cue-dot absolute inset-x-0 top-0 h-3 -translate-y-3 bg-orange" />
         </span>

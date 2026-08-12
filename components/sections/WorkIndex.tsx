@@ -82,9 +82,10 @@ export function WorkIndex({ groups }: WorkIndexProps) {
             <BrandPattern variant="tiled" />
           </div>
         </div>
-        {/* Scrims — keep the giant names legible while the work still reads through. */}
-        <div className="absolute inset-0 bg-charcoal/55" />
-        <div className="absolute inset-0 bg-gradient-to-b from-charcoal via-charcoal/20 to-charcoal/60" />
+        {/* Scrims — names stay legible but the work is the protagonist: keep it bright,
+            weight the shade toward the left column where the names sit. */}
+        <div className="absolute inset-0 bg-charcoal/25" />
+        <div className="absolute inset-0 bg-gradient-to-b from-charcoal via-charcoal/10 to-charcoal/45" />
       </div>
 
       <div className="relative z-content mx-auto flex w-full max-w-6xl flex-col gap-16 md:gap-24">
@@ -94,7 +95,7 @@ export function WorkIndex({ groups }: WorkIndexProps) {
           return (
             <div key={group.id} id={group.id}>
               <div className="work-index-reveal mb-6 md:mb-8">
-                <h2 className="font-sans text-sm font-semibold uppercase tracking-[0.18em] text-orange md:text-base">
+                <h2 className="text-backstage text-white/60 md:text-sm">
                   {group.label}
                 </h2>
               </div>

@@ -76,7 +76,7 @@ export const logoGridBrands = [
   { name: 'Phantom Protection', imageSrc: '/images/clients/phantom-protection.png' },
   { name: 'Global Space Finder', imageSrc: '/images/clients/global-space-finder.png' },
   { name: 'Chez Moda', imageSrc: '/images/clients/chez-moda.png' },
-  { name: 'centralhub', imageSrc: '/images/clients/centralhub.png' },
+  { name: 'centralhub', imageSrc: '/images/clients/centralhub.webp' },
   { name: 'Dr. Shifa', imageSrc: '/images/clients/dr-shifa.png' },
   { name: 'Wing Car Q&C', imageSrc: '/images/clients/wing-car-qc.png' },
 ];

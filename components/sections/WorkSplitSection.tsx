@@ -25,17 +25,17 @@ type Panel = {
 };
 
 const DESIGN_SLIDES = [
-  '/images/portfolio/work-sanapex.png',
-  '/images/portfolio/work-food.png',
-  '/images/portfolio/work-restaurant.png',
-  '/images/portfolio/work-ghaftree.png',
-  '/images/portfolio/work-events.png',
+  '/images/portfolio/work-sanapex.webp',
+  '/images/portfolio/work-food.webp',
+  '/images/portfolio/work-restaurant.webp',
+  '/images/portfolio/work-ghaftree.webp',
+  '/images/portfolio/work-events.webp',
 ] as const;
 
 const PANELS: Panel[] = [
   {
     title: 'Design Work',
-    cta: 'View portfolio',
+    cta: 'See design work',
     href: '/work',
     frames: [DESIGN_SLIDES[1], DESIGN_SLIDES[2], DESIGN_SLIDES[3], DESIGN_SLIDES[0]],
     media: { kind: 'slideshow', slides: [...DESIGN_SLIDES] },
@@ -44,18 +44,18 @@ const PANELS: Panel[] = [
   },
   {
     title: 'Video Work',
-    cta: 'See the work',
+    cta: 'See video work',
     href: '/work',
     frames: [
-      '/images/portfolio/work-events.png',
-      '/images/portfolio/work-quickcars.png',
-      '/images/portfolio/work-ghaftree.png',
-      '/images/portfolio/work-restaurant.png',
+      '/images/portfolio/work-events.webp',
+      '/images/portfolio/work-quickcars.webp',
+      '/images/portfolio/work-ghaftree.webp',
+      '/images/portfolio/work-restaurant.webp',
     ],
     media: {
       kind: 'video',
       src: '/videos/propagenda-marketing.mp4',
-      poster: '/images/portfolio/work-events.png',
+      poster: '/images/portfolio/work-events.webp',
     },
     tone: 'orange',
     side: 'right',

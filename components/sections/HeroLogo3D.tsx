@@ -219,11 +219,14 @@ export function HeroLogo3D({ className }: { className?: string }) {
       }, 100);
       disposables.push({ dispose: () => window.clearInterval(once) });
     } else {
-      // Only render while the canvas is actually on screen — the hero is pinned for
-      // 290vh and then scrolled past; the loop must not burn GPU for the whole session.
+      // Only render while the canvas is on screen — AND not while a programmatic
+      // scroll-to-top is in flight (IntersectionObserver would otherwise restart
+      // the RAF loop mid-scroll and hitch the animation).
       let running = false;
+      let intersecting = false;
+      let suspended = false;
       const startLoop = () => {
-        if (running) return;
+        if (running || suspended || !intersecting) return;
         running = true;
         render();
       };
@@ -231,12 +234,33 @@ export function HeroLogo3D({ className }: { className?: string }) {
         running = false;
         cancelAnimationFrame(raf);
       };
+      const onSuspend = () => {
+        suspended = true;
+        stopLoop();
+      };
+      const onResume = () => {
+        suspended = false;
+        startLoop();
+      };
       const io = new IntersectionObserver(
-        ([entry]) => (entry.isIntersecting ? startLoop() : stopLoop()),
+        ([entry]) => {
+          intersecting = entry.isIntersecting;
+          if (intersecting) startLoop();
+          else stopLoop();
+        },
         { threshold: 0 },
       );
       io.observe(el);
-      disposables.push({ dispose: () => { io.disconnect(); stopLoop(); } });
+      window.addEventListener('hero3d:suspend', onSuspend);
+      window.addEventListener('hero3d:resume', onResume);
+      disposables.push({
+        dispose: () => {
+          io.disconnect();
+          window.removeEventListener('hero3d:suspend', onSuspend);
+          window.removeEventListener('hero3d:resume', onResume);
+          stopLoop();
+        },
+      });
     }
 
     const onResize = () => {

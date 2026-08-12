@@ -1,6 +1,7 @@
 'use client';
 
 import { useReducedMotion } from '@/lib/motion/useReducedMotion';
+import { scrollToTopSmooth } from '@/lib/motion/scrollToTop';
 import { cn } from '@/components/ui/cn';
 
 export function ScrollToTopButton({ className }: { className?: string }) {
@@ -9,12 +10,7 @@ export function ScrollToTopButton({ className }: { className?: string }) {
   return (
     <button
       type="button"
-      onClick={() => {
-        window.scrollTo({
-          top: 0,
-          behavior: reducedMotion ? 'auto' : 'smooth',
-        });
-      }}
+      onClick={() => scrollToTopSmooth({ instant: reducedMotion })}
       className={cn(
         'transition-hover inline-flex h-11 w-11 items-center justify-center rounded-lg bg-orange text-navy shadow-md',
         'hover-fine:hover:bg-orange-hover hover-fine:hover:scale-105',

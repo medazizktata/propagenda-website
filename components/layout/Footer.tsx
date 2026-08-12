@@ -4,7 +4,7 @@ import { AppLink } from '@/components/ui/Link';
 import { SocialIconLink } from '@/components/molecules/SocialIconLink';
 import { ScrollToTopButton } from '@/components/molecules/ScrollToTopButton';
 import { footer, primaryNav, socialLinks } from '@/content/site';
-import { whatsapp } from '@/content/contact';
+import { bookCall, whatsapp } from '@/content/contact';
 
 export function Footer() {
   const year = new Date().getFullYear();
@@ -36,14 +36,26 @@ export function Footer() {
             >
               {footer.email}
             </a>
-            <a
-              href={whatsapp.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-backstage transition-hover inline-flex items-center gap-2 pt-1 text-white/60 hover-fine:hover:text-white"
-            >
-              WhatsApp <span aria-hidden>↗</span>
-            </a>
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-1 pt-1">
+              <a
+                href={whatsapp.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-backstage transition-hover inline-flex items-center gap-2 text-white/60 hover-fine:hover:text-white"
+              >
+                WhatsApp <span aria-hidden>↗</span>
+              </a>
+              {bookCall.url ? (
+                <a
+                  href={bookCall.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-backstage transition-hover inline-flex items-center gap-2 text-white/60 hover-fine:hover:text-white"
+                >
+                  Book a call <span aria-hidden>↗</span>
+                </a>
+              ) : null}
+            </div>
             <p className="max-w-[22ch] text-sm leading-relaxed text-white/60">
               {footer.address}
             </p>

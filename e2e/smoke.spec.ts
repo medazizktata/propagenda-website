@@ -76,6 +76,23 @@ test.describe('brand + accessibility invariants', () => {
     expect(color).toBe('rgb(20, 20, 20)'); // ink — white here fails WCAG at 2.44:1
   });
 
+  test('book-a-call links to a real scheduling target', async ({ page }) => {
+    test.skip(test.info().project.name !== 'desktop', 'desktop only');
+    await prime(page);
+    await page.goto('/contact');
+    const external = /^https:\/\//;
+    const link = page.getByRole('link', { name: 'BOOK A CALL' }).first();
+    await expect(link).toHaveAttribute('href', external);
+    await expect(link).toHaveAttribute('target', '_blank');
+    const footerLink = page.locator('footer').getByRole('link', { name: /book a call/i });
+    await expect(footerLink).toHaveAttribute('href', external);
+    await page.goto('/');
+    await page.evaluate(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'instant' as ScrollBehavior }));
+    await expect(
+      page.locator('main').getByRole('link', { name: /book a call/i }).first(),
+    ).toHaveAttribute('href', external, { timeout: 10_000 });
+  });
+
   test('footer closes with the brand verdict', async ({ page }) => {
     test.skip(test.info().project.name !== 'desktop', 'desktop only');
     await prime(page);

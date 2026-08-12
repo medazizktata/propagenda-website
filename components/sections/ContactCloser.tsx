@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { contactCloser, whatsapp } from "@/content/contact";
+import { bookCall, contactCloser, whatsapp } from "@/content/contact";
 import { cn } from "@/components/ui/cn";
 import { FormSelect } from "@/components/molecules/FormSelect";
 import {
@@ -102,6 +102,18 @@ export function ContactCloser() {
               >
                 WhatsApp {whatsapp.number} <span aria-hidden>↗</span>
               </a>
+              {/* Scheduled call — our own styled link out, never a provider widget.
+                  Hidden entirely when no booking URL is configured. */}
+              {bookCall.url ? (
+                <a
+                  href={bookCall.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-backstage inline-flex items-center gap-2 text-white/65 transition-colors hover-fine:hover:text-white"
+                >
+                  {bookCall.label} <span aria-hidden>↗</span>
+                </a>
+              ) : null}
             </div>
 
             <p className="text-backstage mt-8 text-white/35">
@@ -242,6 +254,21 @@ export function ContactCloser() {
                   role="status"
                 >
                   {state.message}
+                </p>
+              ) : null}
+              {/* Post-submit accelerator: the brief stays primary; hot leads can jump
+                  straight to a scheduled intro call. */}
+              {state.success && bookCall.url ? (
+                <p className="text-center text-sm text-white/70">
+                  {bookCall.successPrompt}{' '}
+                  <a
+                    href={bookCall.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-semibold text-orange transition-colors hover-fine:hover:text-white"
+                  >
+                    {bookCall.label} <span aria-hidden>↗</span>
+                  </a>
                 </p>
               ) : null}
             </form>

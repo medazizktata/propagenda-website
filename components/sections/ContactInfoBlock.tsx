@@ -1,6 +1,6 @@
 import { ContactInfoRow } from '@/components/molecules/ContactInfoRow';
 import { footer } from '@/content/site';
-import { whatsapp } from '@/content/contact';
+import { bookCall, whatsapp } from '@/content/contact';
 
 interface ContactInfoBlockProps {
   showWhatsApp?: boolean;
@@ -21,6 +21,14 @@ export function ContactInfoBlock({ showWhatsApp = false }: ContactInfoBlockProps
             label={whatsapp.label}
             value={whatsapp.display}
             href={whatsapp.href}
+            external
+          />
+        ) : null}
+        {bookCall.url ? (
+          <ContactInfoRow
+            label="Intro call"
+            value={bookCall.label}
+            href={bookCall.url}
             external
           />
         ) : null}

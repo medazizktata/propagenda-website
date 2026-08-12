@@ -36,8 +36,10 @@ Brand line: "Where creativity meets strategy." Tagline: "Looking for the better 
 - Dubai, UAE (Al Quoz Industrial Area 2); GCC market norms apply (WhatsApp is a real business
   channel; trust signals matter; mobile-first).
 - **Conversion hierarchy (confirmed 2026-08-12): the brief form leads.** The qualified-lead form
-  (name/company/email/source/budget/timeframe/brief) is the primary CTA everywhere; WhatsApp and
-  phone are secondary channels, always present, never the headline ask.
+  (name/company/email/source/budget/timeframe/brief) is the primary CTA everywhere; WhatsApp,
+  phone, and the scheduled intro call (`NEXT_PUBLIC_BOOKING_URL`, currently Calendly) are
+  secondary channels, always present, never the headline ask. Scheduling renders as the site's
+  own styled links — never a third-party widget/badge.
 - **Arabic is the next milestone (confirmed 2026-08-12)**, not a launch requirement: ship EN now,
   keep tokens/layout RTL-ready, treat full AR content as its own project. Candidate faces are
   documented in `docs/rework/05-design-diagnosis.md` (Cairo display · Almarai/Tajawal functional).

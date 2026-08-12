@@ -132,10 +132,10 @@ function RequestPanel({
           onMouseLeave={stop}
           className={cn(
             "mt-8 inline-flex min-h-[3.25rem] items-center justify-center rounded-full bg-white px-10 py-3.5",
-            "font-sans text-[0.8rem] font-extrabold uppercase tracking-[0.16em] text-orange",
+            "font-sans text-[0.8rem] font-extrabold uppercase tracking-[0.16em] text-ink",
             "shadow-[0_12px_40px_-8px_rgba(0,0,0,0.55)] ring-1 ring-white/20",
             "transition-[transform,background-color,color,box-shadow] duration-300 ease-out",
-            "hover-fine:hover:-translate-y-1 hover-fine:hover:bg-orange hover-fine:hover:text-white hover-fine:hover:shadow-[0_16px_48px_-10px_rgba(245,139,39,0.55)]",
+            "hover-fine:hover:-translate-y-1 hover-fine:hover:bg-orange hover-fine:hover:text-ink hover-fine:hover:shadow-[0_16px_48px_-10px_rgba(245,139,39,0.55)]",
             "active:translate-y-0 active:scale-[0.97]",
             "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange",
           )}

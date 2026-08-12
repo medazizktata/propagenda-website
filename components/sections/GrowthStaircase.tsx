@@ -86,7 +86,7 @@ export function GrowthStaircase() {
               <div className="gs-tread mb-6 h-1.5 w-full origin-left rounded-full bg-orange will-change-transform" />
               <div className="gs-step-body will-change-transform">
                 <p
-                  className="font-sans font-black leading-none text-orange"
+                  className="font-sans font-extrabold leading-none text-orange"
                   style={{ fontSize: 'clamp(2.75rem, 4.5vw, 4rem)' }}
                 >
                   {s.step}

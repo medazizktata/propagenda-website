@@ -1,20 +1,18 @@
 'use client';
 
 import { useRef, useEffect, useState } from 'react';
-import { BrandPattern } from '@/components/ui/BrandPattern';
-import { cn } from '@/components/ui/cn';
 import { designPrintInstall } from '@/content/home';
 import { gsap } from '@/lib/motion/gsap';
 import { useReducedMotion } from '@/lib/motion/useReducedMotion';
 
 // The pool of real work samples a visitor can cycle through by clicking a card.
 const WORK_IMAGES = [
-  '/images/portfolio/work-sanapex.png',
-  '/images/portfolio/work-quickcars.png',
-  '/images/portfolio/work-food.png',
-  '/images/portfolio/work-events.png',
-  '/images/portfolio/work-ghaftree.png',
-  '/images/portfolio/work-restaurant.png',
+  '/images/portfolio/work-sanapex.webp',
+  '/images/portfolio/work-quickcars.webp',
+  '/images/portfolio/work-food.webp',
+  '/images/portfolio/work-events.webp',
+  '/images/portfolio/work-ghaftree.webp',
+  '/images/portfolio/work-restaurant.webp',
 ];
 
 // A clickable work-sample image: clicking it CROSSFADES to the next sample (two stacked
@@ -73,13 +71,13 @@ function WorkCardImage({ initial }: { initial: string }) {
 // proportional at any size; `grad` is a neutral charcoal→black tint (never navy).
 type ScatterCard = { x: number; y: number; rot: number; w: number; grad: string; video?: boolean; img?: string };
 const CARDS: ScatterCard[] = [
-  { x: -33, y: -25, rot: 0, w: 15, grad: 'from-charcoal to-black', img: '/images/portfolio/work-sanapex.png' },
-  { x: -33, y: 0, rot: 0, w: 15, grad: 'from-black to-charcoal', img: '/images/portfolio/work-quickcars.png' },
-  { x: -33, y: 25, rot: 0, w: 15, grad: 'from-charcoal to-black', img: '/images/portfolio/work-events.png' },
-  { x: 33, y: -25, rot: 0, w: 15, grad: 'from-black to-charcoal', img: '/images/portfolio/work-food.png' },
+  { x: -33, y: -25, rot: 0, w: 15, grad: 'from-charcoal to-black', img: '/images/portfolio/work-sanapex.webp' },
+  { x: -33, y: 0, rot: 0, w: 15, grad: 'from-black to-charcoal', img: '/images/portfolio/work-quickcars.webp' },
+  { x: -33, y: 25, rot: 0, w: 15, grad: 'from-charcoal to-black', img: '/images/portfolio/work-events.webp' },
+  { x: 33, y: -25, rot: 0, w: 15, grad: 'from-black to-charcoal', img: '/images/portfolio/work-food.webp' },
   { x: 0, y: 0, rot: 0, w: 17, video: true, grad: 'from-charcoal to-black' },
-  { x: 33, y: 0, rot: 0, w: 15, grad: 'from-charcoal to-black', img: '/images/portfolio/work-ghaftree.png' },
-  { x: 33, y: 25, rot: 0, w: 15, grad: 'from-black to-charcoal', img: '/images/portfolio/work-restaurant.png' },
+  { x: 33, y: 0, rot: 0, w: 15, grad: 'from-charcoal to-black', img: '/images/portfolio/work-ghaftree.webp' },
+  { x: 33, y: 25, rot: 0, w: 15, grad: 'from-black to-charcoal', img: '/images/portfolio/work-restaurant.webp' },
 ];
 
 // The opening frame (SMV step 9): the cards begin STACKED like a deck near the centre —
@@ -104,16 +102,14 @@ const WORD_SCATTER = [
 
 export function DesignPrintInstallPopup() {
   const sectionRef = useRef<HTMLElement>(null);
-  const patternRef = useRef<HTMLDivElement>(null);
   const cardsRef = useRef<HTMLDivElement>(null);
   const reducedMotion = useReducedMotion();
 
-  // Mouse-move parallax: section pattern drifts lightly, cards drift more.
+  // Mouse-move parallax on the card deck only (the ground stays flat and still).
   useEffect(() => {
     if (reducedMotion) return;
-    const patternEl = patternRef.current;
     const cardsEl = cardsRef.current;
-    if (!patternEl || !cardsEl) return;
+    if (!cardsEl) return;
     let raf = 0;
     const target = { x: 0, y: 0 };
     const cur = { x: 0, y: 0 };
@@ -125,7 +121,6 @@ export function DesignPrintInstallPopup() {
     const tick = () => {
       cur.x += (target.x - cur.x) * 0.06;
       cur.y += (target.y - cur.y) * 0.06;
-      patternEl.style.transform = `translate3d(${cur.x * 30}px, ${cur.y * 30}px, 0)`;
       cardsEl.style.transform = `translate3d(${cur.x * 60}px, ${cur.y * 60}px, 0)`;
       raf = requestAnimationFrame(tick);
     };
@@ -282,12 +277,6 @@ export function DesignPrintInstallPopup() {
   return (
     <section ref={sectionRef} data-seamless-act className="relative h-[320vh]">
       <div className="sticky top-0 flex h-screen items-center justify-center overflow-hidden bg-charcoal">
-        <div className="pattern-section-fade pointer-events-none absolute inset-0">
-          <div ref={patternRef} className="absolute -inset-[8%] will-change-transform">
-            <BrandPattern variant="dense" id="dpi" half="right" className="opacity-20" />
-          </div>
-        </div>
-
         {/* Scattered media cards (parallax layer, behind the statement so it stays legible).
             `isolate` keeps each card's z-index (video card on top of the deck) LOCAL to this
             group, so the layer as a whole stays a plain sibling in DOM order — that lets the
@@ -314,25 +303,25 @@ export function DesignPrintInstallPopup() {
                 /* Real client work (temporary fill) — click a card to crossfade to another. */
                 <WorkCardImage initial={card.img ?? WORK_IMAGES[0]} />
               )}
+              {/* Type is this act's protagonist — the deck reads as supporting cast, so every
+                  card carries a quiet scrim that keeps the statement legible over it. */}
+              <div aria-hidden className="pointer-events-none absolute inset-0 bg-charcoal/40" />
             </div>
           ))}
         </div>
 
         {/* Absolutely centered (optical) — raised above true midpoint so the stack
             reads as center-screen, each word squarely centered on the axis. */}
-        <h2 className="pointer-events-none absolute left-1/2 top-[48%] flex w-full max-w-[100vw] -translate-x-1/2 -translate-y-1/2 flex-col items-center text-center font-sans font-bold uppercase leading-[0.82] tracking-tight text-orange">
+        <h2 className="pointer-events-none absolute left-1/2 top-[48%] flex w-full max-w-[100vw] -translate-x-1/2 -translate-y-1/2 flex-col items-center text-center font-sans font-bold uppercase leading-[0.82] tracking-tight text-white [text-shadow:0_2px_24px_rgba(0,0,0,0.6)]">
           {words.map((word, i) => (
             <span
               key={word}
-              className={cn(
-                'dpi-word block w-full text-center will-change-transform',
-                // The middle word ("PRINT") is white and sits over the live video card — blend
-                // it against whatever is behind so it stays legible on bright/white frames too.
-                i === 1 && 'text-white mix-blend-difference',
-              )}
+              className="dpi-word block w-full text-center will-change-transform"
               style={{ fontSize: 'clamp(3rem, 12vw, 12rem)' }}
             >
               {word}
+              {/* The verdict lands on the last word — orange full stop, the brand's period. */}
+              {i === words.length - 1 && <span className="text-orange">.</span>}
             </span>
           ))}
         </h2>

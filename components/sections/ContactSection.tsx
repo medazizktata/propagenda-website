@@ -101,7 +101,7 @@ export function ContactSection() {
               you within a day.
             </p>
             <Button href="/contact" size="lg">
-              Get in touch
+              Start your project
             </Button>
           </div>
         </div>

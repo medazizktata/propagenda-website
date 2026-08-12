@@ -78,7 +78,7 @@ export function MethodologySection() {
                   <span className="block h-3.5 w-3.5 origin-center rounded-full bg-orange ring-4 ring-charcoal transition-transform duration-300 ease-out group-hover:scale-[1.7] group-hover:shadow-[0_0_18px_rgba(245,139,39,0.85)]" />
                   {/* Only the text content lifts on hover. */}
                   <div className="transition-transform duration-300 ease-out group-hover:-translate-y-2">
-                    <p className="mt-7 font-sans text-5xl font-black leading-none text-orange">{step.step}</p>
+                    <p className="mt-7 font-sans text-5xl font-extrabold leading-none text-orange">{step.step}</p>
                     <h3 className="mt-4 text-lg font-bold uppercase tracking-wide text-white transition-colors duration-300 group-hover:text-orange">
                       {step.label}
                     </h3>

@@ -14,10 +14,11 @@ const poppins = Poppins({
   display: 'swap',
 });
 
-/** Backstage register: mono caps for eyebrows, metadata, scroll cues, trust lines. */
+/** Backstage register (design DNA §2.3): mono caps for eyebrows, section numbers,
+    deliverable-label columns, metadata, scroll cues. 400 for meta, 500 for labels. */
 const plexMono = IBM_Plex_Mono({
   subsets: ['latin'],
-  weight: ['500'],
+  weight: ['400', '500'],
   variable: '--font-mono',
   display: 'swap',
 });

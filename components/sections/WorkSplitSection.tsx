@@ -255,7 +255,19 @@ export function WorkSplitSection() {
         yPercent: 0,
       });
       gsap.set(sectionRef.current.querySelectorAll('.work-btn'), { opacity: 1, yPercent: 0 });
-      return;
+
+      const st = ScrollTrigger.create({
+        trigger: sectionRef.current,
+        start: 'top top',
+        end: 'bottom bottom',
+        onToggle: (self) => {
+          document.documentElement.toggleAttribute('data-header-veil-off', self.isActive);
+        },
+      });
+      return () => {
+        document.documentElement.removeAttribute('data-header-veil-off');
+        st.kill();
+      };
     }
 
     const ctx = gsap.context(() => {
@@ -330,10 +342,17 @@ export function WorkSplitSection() {
         end: 'bottom bottom',
         pinSpacing: false,
         anticipatePin: 1,
+        // Charcoal header veil muddies this act — kill it only while pinned.
+        onToggle: (self) => {
+          document.documentElement.toggleAttribute('data-header-veil-off', self.isActive);
+        },
       });
     }, sectionRef);
 
-    return () => ctx.revert();
+    return () => {
+      document.documentElement.removeAttribute('data-header-veil-off');
+      ctx.revert();
+    };
   }, [reducedMotion]);
 
   return (
@@ -347,7 +366,7 @@ export function WorkSplitSection() {
         </div>
 
         {PANELS.map((panel) => (
-          <CurtainPanel key={panel.href} panel={panel} />
+          <CurtainPanel key={panel.title} panel={panel} />
         ))}
       </div>
     </section>

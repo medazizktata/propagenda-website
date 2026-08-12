@@ -8,8 +8,6 @@ import { primaryNav, serviceNav } from '@/content/site';
 import { menuOverlay, menuPanel } from '@/lib/motion/variants';
 import { useReducedMotion } from '@/lib/motion/useReducedMotion';
 import { BrandPattern } from '@/components/ui/BrandPattern';
-import { Logo } from '@/components/ui/Logo';
-import { HeaderCTA } from '@/components/molecules/HeaderCTA';
 import { cn } from '@/components/ui/cn';
 
 interface MobileMenuProps {
@@ -75,20 +73,21 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
         onClose();
         return;
       }
-      // Focus trap — body scroll is locked while the overlay is up, so Tab must
-      // cycle inside the panel instead of walking into the page behind it.
-      if (e.key === 'Tab' && panelRef.current) {
+      // Include live header chrome (logo / CTA / hamburger→×) in the trap.
+      if (e.key === 'Tab') {
+        const scope = panelRef.current?.closest('header') ?? panelRef.current;
+        if (!scope) return;
         const focusables = Array.from(
-          panelRef.current.querySelectorAll<HTMLElement>('a[href], button:not([disabled])'),
+          scope.querySelectorAll<HTMLElement>('a[href], button:not([disabled])'),
         ).filter((n) => n.offsetParent !== null);
         if (!focusables.length) return;
         const first = focusables[0];
         const last = focusables[focusables.length - 1];
         const current = document.activeElement as HTMLElement | null;
-        if (e.shiftKey && (current === first || !panelRef.current.contains(current))) {
+        if (e.shiftKey && (current === first || !scope.contains(current))) {
           e.preventDefault();
           last.focus();
-        } else if (!e.shiftKey && (current === last || !panelRef.current.contains(current))) {
+        } else if (!e.shiftKey && (current === last || !scope.contains(current))) {
           e.preventDefault();
           first.focus();
         }
@@ -97,10 +96,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
 
     document.body.style.overflow = 'hidden';
     window.addEventListener('keydown', onKeyDown);
-    const first =
-      panelRef.current?.querySelector<HTMLElement>('[data-menu-focus]') ??
-      panelRef.current?.querySelector<HTMLElement>('a, button');
-    first?.focus();
+    // Keep focus on the hamburger (now ×) — don't jump into the link stack.
 
     return () => {
       document.body.style.overflow = '';
@@ -108,7 +104,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
     };
   }, [open, onClose]);
 
-  // Close on any client navigation (covers the logo + Contact pill, which have no explicit onClick).
+  // Close on route change (logo / Contact Us live in the header chrome).
   useEffect(() => {
     onCloseRef.current();
   }, [pathname]);
@@ -138,7 +134,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
   return (
     <m.div
       id="mobile-menu"
-      className="fixed inset-0 z-navbox lg:hidden"
+      className="fixed inset-0 z-0 lg:hidden"
       initial={false}
       animate={open ? 'open' : 'closed'}
       variants={menuOverlay}
@@ -157,38 +153,9 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
           <BrandPattern variant="dense" half="right" className="opacity-[0.22]" />
         </div>
 
-        <div className="relative z-[1] flex min-h-full flex-col pb-[max(2.5rem,env(safe-area-inset-bottom))]">
-          {/* Same chrome as Header — pt-3 outside the h-11 row, mark left, CTA + control gap-3. */}
-          <div className="shrink-0 pt-3">
-            <div className="mx-auto flex h-11 max-w-[1920px] items-center justify-between px-gutter-m">
-              <Logo variant="mark" />
-              <div className="flex items-center gap-3">
-                <HeaderCTA />
-                <button
-                  type="button"
-                  onClick={onClose}
-                  aria-label="Close menu"
-                  className="flex h-9 w-9 items-center justify-center rounded-full bg-charcoal text-white transition-hover hover-fine:hover:bg-white/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange"
-                >
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    aria-hidden
-                  >
-                    <path d="M6 6l12 12M18 6L6 18" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Giant primary stack. */}
-          <m.ul variants={listVariants} className="mt-[12vh] flex flex-col pl-gutter-m pr-4">
+        {/* No duplicate top bar — header chrome stays put; only hamburger→× morphs. */}
+        <div className="relative z-[1] flex min-h-full flex-col pt-[var(--header-height)] pb-[max(2.5rem,env(safe-area-inset-bottom))]">
+          <m.ul variants={listVariants} className="mt-[8vh] flex flex-col pl-gutter-m pr-4">
             {primaryNav.map((navItem, i) => {
               const active = isActive(navItem.href);
               const isServices = navItem.href === '/services';
@@ -291,6 +258,8 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
                     data-menu-focus={i === 0 ? '' : undefined}
                     className="group block w-fit rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange"
                   >
+                    {/* RollLabel's animated glyphs are aria-hidden — this carries the name. */}
+                    <span className="sr-only">{navItem.label}</span>
                     <span className={labelClass(active)} style={LABEL_STYLE}>
                       <RollLabel text={navItem.label} style={LABEL_STYLE} />
                     </span>

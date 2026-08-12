@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { serviceHubCards } from '@/content/servicesHub';
-import { gsap } from '@/lib/motion/gsap';
+import { gsap, ScrollTrigger } from '@/lib/motion/gsap';
 import { useReducedMotion } from '@/lib/motion/useReducedMotion';
 import { cn } from '@/components/ui/cn';
 import { BrandPattern } from '@/components/ui/BrandPattern';
@@ -24,6 +24,17 @@ export function ServicesIndex() {
   useEffect(() => {
     const el = sectionRef.current;
     if (!el) return;
+
+    const veil = ScrollTrigger.create({
+      trigger: el,
+      start: 'top top',
+      end: 'bottom bottom',
+      // Charcoal header veil muddies the orange rails — kill it while this act is locked.
+      onToggle: (self) => {
+        document.documentElement.toggleAttribute('data-header-veil-off', self.isActive);
+      },
+    });
+
     const ctx = gsap.context(() => {
       const rows = gsap.utils.toArray<HTMLElement>('.services-row-wrap');
 
@@ -57,7 +68,12 @@ export function ServicesIndex() {
         .to('.services-kicker', { autoAlpha: 1, y: 0, ease: 'power2.out', duration: 0.25 }, 0.05)
         .to(rows, { autoAlpha: 1, y: 0, ease: 'power1.out', duration: 0.3, stagger: 0.07 }, 0.22);
     }, sectionRef);
-    return () => ctx.revert();
+
+    return () => {
+      document.documentElement.removeAttribute('data-header-veil-off');
+      veil.kill();
+      ctx.revert();
+    };
   }, [reducedMotion]);
 
   const activeCard = active != null ? serviceHubCards[active] : null;

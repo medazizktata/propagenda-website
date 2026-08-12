@@ -9,6 +9,7 @@ import { HeaderCTA } from '@/components/molecules/HeaderCTA';
 import { HamburgerButton } from '@/components/molecules/HamburgerButton';
 import { MobileMenu } from '@/components/layout/MobileMenu';
 import { primaryNav } from '@/content/site';
+import { cn } from '@/components/ui/cn';
 
 /** Scroll distance (px) over which the feather veil eases in. */
 const FILL_RANGE_PX = 96;
@@ -36,15 +37,32 @@ export function Header() {
     };
   }, [pathname]);
 
+  // Sections (e.g. work-split pin) can suppress the charcoal veil via this attr.
+  const [veilOff, setVeilOff] = useState(false);
+  useEffect(() => {
+    const root = document.documentElement;
+    const sync = () => setVeilOff(root.hasAttribute('data-header-veil-off'));
+    sync();
+    const mo = new MutationObserver(sync);
+    mo.observe(root, { attributes: true, attributeFilter: ['data-header-veil-off'] });
+    return () => mo.disconnect();
+  }, []);
+
   return (
-    <header className="fixed inset-x-0 top-0 z-header bg-transparent pt-3">
+    <header
+      className={cn(
+        'fixed inset-x-0 top-0 z-header bg-transparent pt-3',
+        menuOpen && 'z-navbox',
+      )}
+    >
       {/* Veil — solid through the nav row (nothing may ghost behind the links), then feathers. */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-0 top-0 h-[8.5rem] bg-gradient-to-b from-charcoal from-45% via-charcoal/85 via-65% to-transparent transition-opacity duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]"
-        style={{ opacity: fill }}
+        style={{ opacity: menuOpen || veilOff ? 0 : fill }}
       />
-      <div className="relative mx-auto flex h-11 max-w-[1920px] items-center justify-between px-gutter-m lg:px-gutter-d">
+      {/* Chrome sits above the full-screen menu — only the hamburger morphs to ×. */}
+      <div className="relative z-20 mx-auto flex h-11 max-w-[1920px] items-center justify-between px-gutter-m lg:px-gutter-d">
         <Logo variant="mark" className="lg:hidden" />
         <Logo className="hidden lg:inline-flex" />
         <nav className="hidden items-center gap-5 lg:flex" aria-label="Primary">

@@ -117,13 +117,44 @@ export function HeroLogo3D({ className }: { className?: string }) {
     // --- Mouse-driven rotation ---
     const target = { x: 0, y: 0 };
     const cur = { x: 0, y: 0 };
+    const raycaster = new THREE.Raycaster();
+
+    const hitLogo = (clientX: number, clientY: number) => {
+      if (!group.children.length) return false;
+      const rect = renderer.domElement.getBoundingClientRect();
+      if (
+        clientX < rect.left ||
+        clientX > rect.right ||
+        clientY < rect.top ||
+        clientY > rect.bottom
+      ) {
+        return false;
+      }
+      const ndc = new THREE.Vector2(
+        ((clientX - rect.left) / rect.width) * 2 - 1,
+        -((clientY - rect.top) / rect.height) * 2 + 1,
+      );
+      raycaster.setFromCamera(ndc, camera);
+      return raycaster.intersectObject(group, true).length > 0;
+    };
+
     const onMove = (e: MouseEvent) => {
       target.x = (e.clientX / window.innerWidth - 0.5) * 2;
       target.y = (e.clientY / window.innerHeight - 0.5) * 2;
+
+      // Canvas sits under pointer-events-none — drive cursor from a window raycast.
+      const hot = hitLogo(e.clientX, e.clientY);
+      if (hot && el.dataset.logoHot !== '1') {
+        el.dataset.logoHot = '1';
+        document.body.style.cursor = 'pointer';
+      } else if (!hot && el.dataset.logoHot === '1') {
+        el.dataset.logoHot = '0';
+        document.body.style.removeProperty('cursor');
+      }
     };
     window.addEventListener('mousemove', onMove);
 
-    // --- Click-to-toggle colour (orange ↔ white) with a spin + glow ---
+    // --- Click-to-toggle colour (orange → white → black) with a full spin + glow ---
     let colorIndex = 0;
     let fromIndex = 0;
     let spinTarget = 0;
@@ -131,24 +162,21 @@ export function HeroLogo3D({ className }: { className?: string }) {
     let transStart = -1;
     const fromColor = COLOR_ORANGE.clone();
     const toColor = COLOR_ORANGE.clone();
-    const raycaster = new THREE.Raycaster();
     const onClick = (e: MouseEvent) => {
       if (!logoMaterial) return;
-      const rect = renderer.domElement.getBoundingClientRect();
-      const ndc = new THREE.Vector2(
-        ((e.clientX - rect.left) / rect.width) * 2 - 1,
-        -((e.clientY - rect.top) / rect.height) * 2 + 1,
-      );
-      raycaster.setFromCamera(ndc, camera);
-      if (raycaster.intersectObject(group, true).length === 0) return;
+      // Let real UI (play, CTA, nav) win — the canvas is full-bleed under them.
+      const t = e.target as HTMLElement | null;
+      if (t?.closest('a, button, input, textarea, select, [role="button"]')) return;
+      if (!hitLogo(e.clientX, e.clientY)) return;
       fromIndex = colorIndex;
-      colorIndex = (colorIndex + 1) % COLOR_CYCLE.length; // orange → white → black → …
+      colorIndex = (colorIndex + 1) % COLOR_CYCLE.length;
       fromColor.copy(logoMaterial.color);
       toColor.copy(COLOR_CYCLE[colorIndex]);
       transStart = (performance.now() - start) / 1000;
-      spinTarget += Math.PI * 2; // one full turn per click
+      spinTarget += Math.PI * 2;
     };
-    renderer.domElement.addEventListener('click', onClick);
+    // Window listener: Hero keeps the 3D layer pointer-events-none so the reel stays clickable.
+    window.addEventListener('click', onClick);
 
     const start = performance.now();
     let raf = 0;
@@ -224,7 +252,8 @@ export function HeroLogo3D({ className }: { className?: string }) {
       cancelAnimationFrame(raf);
       window.removeEventListener('mousemove', onMove);
       window.removeEventListener('resize', onResize);
-      renderer.domElement.removeEventListener('click', onClick);
+      window.removeEventListener('click', onClick);
+      if (el.dataset.logoHot === '1') document.body.style.removeProperty('cursor');
       disposables.forEach((d) => d.dispose());
       envTex.dispose();
       pmrem.dispose();

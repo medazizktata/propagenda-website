@@ -19,10 +19,19 @@ const HeroLogo3D = dynamic(
 const HERO_VIDEO_SRC = '/videos/propagenda-marketing.mp4';
 const ACCENT_WORD = 'CREATIVITY';
 
-const CLIP_REST = { t: 8, r: 37, b: 10, l: 37, rad: 24 };
-const CLIP_WIDE = { t: 0, r: 0, b: 0, l: 0, rad: 0 };
+type ClipInset = { t: number; r: number; b: number; l: number; rad: number };
 
-function clipVars(c: typeof CLIP_REST) {
+/**
+ * Rest clip — portrait reel that stays wide enough on small screens, but sits on the
+ * RIGHT so the stacked headline owns the left column (centered wide clips ate "STRATEGY").
+ */
+const CLIP_REST_NARROW: ClipInset = { t: 10, r: 5, b: 14, l: 42, rad: 18 }; // ~53% right card
+const CLIP_REST_MD: ClipInset = { t: 9, r: 7, b: 11, l: 40, rad: 20 }; // ~53% right
+const CLIP_REST_LG: ClipInset = { t: 8, r: 12, b: 10, l: 38, rad: 24 }; // ~50% right-biased
+const CLIP_REST_XL: ClipInset = { t: 8, r: 18, b: 10, l: 44, rad: 24 }; // ~38% desktop reel
+const CLIP_WIDE: ClipInset = { t: 0, r: 0, b: 0, l: 0, rad: 0 };
+
+function clipVars(c: ClipInset) {
   return {
     '--clip-t': c.t,
     '--clip-r': c.r,
@@ -32,10 +41,9 @@ function clipVars(c: typeof CLIP_REST) {
   };
 }
 
-const CLIP_STYLE = {
+const CLIP_PATH_STYLE = {
   clipPath:
     'inset(calc(var(--clip-t) * 1%) calc(var(--clip-r) * 1%) calc(var(--clip-b) * 1%) calc(var(--clip-l) * 1%) round calc(var(--clip-rad) * 1px))',
-  ...clipVars(CLIP_REST),
 } as CSSProperties;
 
 const SPREAD = [-120, 150, -170, 130];
@@ -46,8 +54,18 @@ export function Hero() {
   const videoRef = useRef<HTMLDivElement>(null);
   const videoElRef = useRef<HTMLVideoElement>(null);
   const reducedMotion = useReducedMotion();
+  const isMd = useMediaQuery('(min-width: 768px)');
   const isDesktop = useMediaQuery('(min-width: 1024px)');
+  const isXl = useMediaQuery('(min-width: 1440px)');
   const [videoOpen, setVideoOpen] = useState(false);
+
+  const clipRest = isXl
+    ? CLIP_REST_XL
+    : isDesktop
+      ? CLIP_REST_LG
+      : isMd
+        ? CLIP_REST_MD
+        : CLIP_REST_NARROW;
 
   const closeVideo = useCallback(() => setVideoOpen(false), []);
 
@@ -87,10 +105,10 @@ export function Hero() {
           anticipatePin: 1,
         },
       });
-      gsap.set(videoRef.current, clipVars(CLIP_REST));
+      gsap.set(videoRef.current, clipVars(clipRest));
       tl.fromTo(
         videoRef.current,
-        clipVars(CLIP_REST),
+        clipVars(clipRest),
         { ...clipVars(CLIP_WIDE), ease: 'power2.inOut', duration: 0.72, immediateRender: false },
         0,
       )
@@ -127,7 +145,7 @@ export function Hero() {
     }, pinRef);
 
     return () => ctx.revert();
-  }, [reducedMotion, isDesktop]);
+  }, [reducedMotion, isDesktop, clipRest]);
 
   const words = hero.h1.split(' ');
   const subParts = hero.subtitle.split('360°');
@@ -137,7 +155,11 @@ export function Hero() {
       <div ref={pinRef} className="relative h-screen overflow-hidden bg-charcoal">
         {/* Flat ground — the reel and the sentence are the only protagonists here. */}
         <div className="absolute inset-0 isolate">
-          <div ref={videoRef} className="absolute inset-0" style={CLIP_STYLE}>
+          <div
+            ref={videoRef}
+            className="absolute inset-0"
+            style={{ ...CLIP_PATH_STYLE, ...clipVars(clipRest) }}
+          >
             <div className="absolute inset-0 bg-gradient-to-br from-navy via-charcoal to-black">
               <BrandPattern variant="tiled" id="hero-video" />
             </div>
@@ -151,11 +173,10 @@ export function Hero() {
               playsInline
               aria-hidden
             />
-            {/* Left-weighted scrim — the headline crosses the reel's left edge at rest, and
-                bright frames (white product shots) would otherwise eat the type. */}
+            {/* Scrim — heavier on the left edge where type meets the reel. */}
             <div
               aria-hidden
-              className="pointer-events-none absolute inset-0 bg-gradient-to-r from-charcoal/75 via-charcoal/25 to-transparent"
+              className="pointer-events-none absolute inset-0 bg-gradient-to-r from-charcoal/90 via-charcoal/45 to-transparent max-lg:from-charcoal/80 max-lg:via-charcoal/35"
             />
             {/* Centered in the clipped panel (tracks clip as it expands). */}
             <div className="pointer-events-auto absolute inset-0 flex items-center justify-center group/play">
@@ -188,8 +209,9 @@ export function Hero() {
             </div>
           ) : null}
 
-          <div className="pointer-events-none relative flex h-full -translate-y-[5vh] flex-col justify-center px-gutter-m pb-16 pt-28 lg:px-gutter-d">
-            <h1 className="hero-headline mt-10 max-w-[15ch] font-sans text-[clamp(2.5rem,7.4vw,7.5rem)] font-bold uppercase leading-[0.95] tracking-display text-white [text-shadow:0_2px_28px_rgba(0,0,0,0.55)] lg:mt-16">
+          {/* Left column owns the sentence — stays clear of the right-parked reel on narrow. */}
+          <div className="pointer-events-none relative z-content flex h-full flex-col justify-center px-gutter-m pb-16 pt-28 max-lg:max-w-[58%] max-lg:justify-start max-lg:pt-32 lg:-translate-y-[5vh] lg:max-w-none lg:px-gutter-d">
+            <h1 className="hero-headline mt-6 max-w-[11ch] font-sans text-[clamp(2.15rem,10.5vw,7.5rem)] font-bold uppercase leading-[0.92] tracking-display text-white [text-shadow:0_2px_20px_rgba(0,0,0,0.75),0_0_48px_rgba(37,37,37,0.85)] sm:max-w-[13ch] sm:mt-8 lg:mt-16 lg:max-w-[15ch] lg:leading-[0.95]">
               {words.map((word, i) => (
                 <span
                   key={`${word}-${i}`}
@@ -202,7 +224,7 @@ export function Hero() {
                 </span>
               ))}
             </h1>
-            <p className="hero-meta mt-5 whitespace-nowrap text-xs font-bold uppercase tracking-[0.16em] text-white sm:text-sm">
+            <p className="hero-meta mt-5 max-w-[18ch] text-xs font-bold uppercase leading-snug tracking-[0.14em] text-white sm:max-w-none sm:whitespace-nowrap sm:text-sm sm:tracking-[0.16em]">
               {subParts[0]}
               <span className="inline-block align-middle text-base font-extrabold text-orange motion-safe:animate-hero-360 sm:text-lg">
                 360&deg;

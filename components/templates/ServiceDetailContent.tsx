@@ -1,6 +1,6 @@
 'use client';
 
-import { Fragment, useEffect, useRef, useState, type ReactNode } from 'react';
+import { Fragment, useEffect, useRef, type ReactNode } from 'react';
 import Link from 'next/link';
 import type { ServiceRecord, ServiceSlug } from '@/types/content';
 import { SERVICE_SLUGS } from '@/types/content';
@@ -9,6 +9,7 @@ import { useReducedMotion } from '@/lib/motion/useReducedMotion';
 import { cn } from '@/components/ui/cn';
 import { Measure, LeadText, MonoLabel, pad2 } from '@/components/ui/Editorial';
 import { ServiceNextPrev } from '@/components/sections/services/ServiceNextPrev';
+import { FAQAccordion } from '@/components/sections/FAQAccordion';
 import { serviceDetailConfig, type ProcessStep } from '@/components/sections/services/serviceDetailConfig';
 
 /* ────────────────────────────────────────────────────────────────────────────
@@ -553,51 +554,11 @@ function RelatedRows({ items }: { items: { label: string; href: string }[] }) {
 /* ───────────────────────────── FAQ ───────────────────────────── */
 
 function Faq({ faqs }: { faqs: { q: string; a: string }[] }) {
-  const [open, setOpen] = useState<number | null>(0);
+  // Reusable accordion with cuberto-style elastic-string dividers that pluck toward
+  // the cursor and spring back. Same open/toggle behavior as before, plus the effect.
   return (
-    <div className="sd-reveal border-t border-white/10">
-      {faqs.map((f, i) => {
-        const isOpen = open === i;
-        return (
-          <div key={f.q} className="border-b border-white/10">
-            <button
-              type="button"
-              onClick={() => setOpen(isOpen ? null : i)}
-              aria-expanded={isOpen}
-              className="flex w-full items-center justify-between gap-6 py-5 text-left"
-            >
-              <span
-                className={cn(
-                  'font-sans text-base font-semibold tracking-tight transition-colors duration-200 md:text-lg',
-                  isOpen ? 'text-orange' : 'text-white',
-                )}
-              >
-                {f.q}
-              </span>
-              <span
-                aria-hidden
-                className={cn(
-                  'relative flex h-6 w-6 shrink-0 items-center justify-center transition-transform duration-300 ease-out',
-                  isOpen && 'rotate-45',
-                )}
-              >
-                <span className="absolute h-0.5 w-3.5 rounded-full bg-orange" />
-                <span className="absolute h-3.5 w-0.5 rounded-full bg-orange" />
-              </span>
-            </button>
-            <div
-              className={cn(
-                'grid transition-all duration-300 ease-out',
-                isOpen ? 'grid-rows-[1fr] pb-5 opacity-100' : 'grid-rows-[0fr] opacity-0',
-              )}
-            >
-              <div className="overflow-hidden">
-                <p className="max-w-measure pr-8 text-[0.95rem] leading-[1.7] text-white/70">{f.a}</p>
-              </div>
-            </div>
-          </div>
-        );
-      })}
+    <div className="sd-reveal">
+      <FAQAccordion items={faqs.map((f) => ({ question: f.q, answer: f.a }))} />
     </div>
   );
 }

@@ -52,7 +52,7 @@
   --secondary: #1a1a1a;
   --secondary-foreground: #ffffff;
   --muted: rgba(255, 255, 255, 0.08);
-  --muted-foreground: rgba(255, 255, 255, 0.55);
+  --muted-foreground: rgba(255, 255, 255, 0.65);
   --accent: rgba(245, 139, 39, 0.16);
   --accent-foreground: #f58b27;
   --destructive: #dc2626;
@@ -332,8 +332,12 @@ main {
   --color-destructive: var(--destructive);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
+  /* Brand `text-muted` = readable secondary copy. Shadcn's `--muted` is a surface
+     wash (white/8%) — wiring --color-muted to it makes every subtitle vanish. */
+  --color-muted: var(--color-text-muted);
+  --color-muted-subtle: rgba(255, 255, 255, 0.45);
   --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
+  --color-muted-surface: var(--muted);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-secondary: var(--secondary);
   --color-primary-foreground: var(--primary-foreground);
@@ -365,7 +369,7 @@ main {
   --secondary: #1a1a1a;
   --secondary-foreground: #ffffff;
   --muted: rgba(255, 255, 255, 0.08);
-  --muted-foreground: rgba(255, 255, 255, 0.55);
+  --muted-foreground: rgba(255, 255, 255, 0.65);
   --accent: rgba(245, 139, 39, 0.16);
   --accent-foreground: #f58b27;
   --destructive: #dc2626;

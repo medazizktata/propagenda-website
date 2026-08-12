@@ -73,7 +73,8 @@ export const contactRequests = [
     rows: ["NEW BUSINESS", "BRANDS", "FOUNDERS"],
     cta: "START A PROJECT",
     button: "BOOK A CALL",
-    href: "#contact-form",
+    // The panel promises a call — honor it with the real scheduling link (see bookCall).
+    href: "https://calendly.com/propagendamarketing/intro-call",
     image:
       "https://images.unsplash.com/photo-1541746972996-4e0b0f43e02a?auto=format&fit=crop&w=1600&q=80",
   },
@@ -102,6 +103,18 @@ export const contactRequests = [
       "https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=1600&q=80",
   },
 ] as const;
+
+/**
+ * Scheduled intro call (Calendly). The site renders its own styled buttons/links —
+ * never the Calendly widget or badge. Swap `url` for the live event link once the
+ * account's event type exists; everything reading this updates with it.
+ */
+export const bookCall = {
+  url: 'https://calendly.com/propagendamarketing/intro-call',
+  label: 'Book a call',
+  /** Post-submit accelerator line on the brief form's success state. */
+  successPrompt: 'Want to talk sooner? Book a 20-minute intro call',
+};
 
 export const whatsapp = {
   label: "WhatsApp",

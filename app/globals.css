@@ -185,6 +185,17 @@ main {
   }
 }
 
+/* Contact request panels — soft bob on the flow cue between audience + CTA. */
+@keyframes contact-cue {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(6px);
+  }
+}
+
 /* Photography selective (rack) focus. Each frame rests a hair out of focus; hovering a card
    pulls IT sharp — but only after the reticle "hunts" (transition-delay), so the unblur lands
    at the end of the focus animation. Only on hover-capable devices; touch stays sharp. */

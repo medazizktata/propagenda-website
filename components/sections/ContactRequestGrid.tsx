@@ -108,11 +108,20 @@ function RequestPanel({
 
         <span
           aria-hidden
-          className="mt-6 flex flex-col text-2xl leading-[0.75] text-orange"
+          className="mt-7 flex h-14 items-center justify-center text-orange motion-safe:animate-[contact-cue_1.6s_ease-in-out_infinite]"
         >
-          <span>↓</span>
-          <span>↓</span>
-          <span>↓</span>
+          <svg
+            viewBox="0 0 24 48"
+            className="h-12 w-6"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.75"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M12 4v28" />
+            <path d="m5 26 7 10 7-10" />
+          </svg>
         </span>
 
         <p

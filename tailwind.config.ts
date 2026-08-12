@@ -15,6 +15,8 @@ const config: Config = {
         },
         navy: '#0f151f',
         charcoal: '#252525',
+        /** Near-black for text on orange surfaces (7.55:1 vs white's failing 2.44:1). */
+        ink: '#141414',
         surface: {
           DEFAULT: '#252525',
           deep: '#000000',
@@ -39,6 +41,8 @@ const config: Config = {
       },
       fontFamily: {
         sans: ['var(--font-poppins)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        /** Backstage register — eyebrows, metadata, scroll cues, trust lines. Never CTAs. */
+        mono: ['var(--font-mono)', 'ui-monospace', 'SFMono-Regular', 'monospace'],
         arabic: ['Cairo', 'Tajawal', 'var(--font-poppins)', 'sans-serif'],
       },
       fontSize: {

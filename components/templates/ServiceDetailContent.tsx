@@ -365,6 +365,8 @@ function ServiceScope({ service }: { service: ServiceRecord }) {
         className={cn(
           'relative z-content mx-auto max-w-6xl',
           variant === 'techspec' && 'max-w-[88rem]',
+          // Events coverage needs room for a large sticky stage beside the checklist.
+          variant === 'coverage' && 'max-w-[92rem]',
         )}
       >
         <SectionLabel className="sd-reveal mb-8">What&apos;s included</SectionLabel>
@@ -1053,14 +1055,14 @@ function ScopeTechSpec({ items }: { items: string[] }) {
   );
 }
 
-// One-line descriptor per event deliverable — grounds the coverage list in the real work.
+// Short descriptors — keep the checklist scannable beside the sticky stage.
 const EVENT_SCOPE_DESC: Record<string, string> = {
-  'Event branding & identity': 'A name, look, and key visual made for the event alone.',
-  'Marketing materials': 'Invites, signage, stage, and print — designed and produced.',
-  'Full organisation & logistics': 'Venue, vendors, timings, and the run-of-show on the day.',
-  'Photography & videography': 'Every moment captured, edited, and delivered.',
-  'Social media coverage': 'Teasers, countdowns, and live posting throughout.',
-  'Post-event evaluation': 'An honest read on the results against the goals we set.',
+  'Event branding & identity': 'Name, look, and key visual.',
+  'Marketing materials': 'Invites, signage, and print.',
+  'Full organisation & logistics': 'Venue, vendors, and run-of-show.',
+  'Photography & videography': 'Shot, edited, and delivered.',
+  'Social media coverage': 'Teasers through live posting.',
+  'Post-event evaluation': 'Results against the brief.',
 };
 
 // Each deliverable maps to where it lands in the event's run-of-show, so the checklist reads as a
@@ -1115,7 +1117,7 @@ function ScopeCoverage({ items }: { items: string[] }) {
   const activeMedia = EVENT_SCOPE_MEDIA[activeItem] ?? EVENT_SCOPE_MEDIA[items[0]];
 
   return (
-    <div className="sd-reveal grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(17rem,24rem)] lg:gap-14 xl:gap-16">
+    <div className="sd-reveal grid items-start gap-10 lg:grid-cols-[minmax(0,0.85fr)_minmax(28rem,1.35fr)] lg:gap-12 xl:gap-16">
       {/* Checklist — same left edge as "What's included" (no centered max-w-3xl). */}
       <div ref={listRef} className="min-w-0">
         {items.map((item, i) => {
@@ -1182,10 +1184,10 @@ function ScopeCoverage({ items }: { items: string[] }) {
         })}
       </div>
 
-      {/* Sticky stage — image/video crossfades with the active checklist row. */}
-      <div className="relative hidden lg:block">
-        <div className="sticky top-28 overflow-hidden rounded-2xl ring-1 ring-white/12">
-          <div className="relative aspect-[4/5] w-full bg-black">
+      {/* Sticky stage — fills the right rail; crossfades with the active checklist row. */}
+      <div className="relative hidden min-w-0 lg:block">
+        <div className="sticky top-24 overflow-hidden rounded-2xl ring-1 ring-white/12">
+          <div className="relative aspect-[3/4] w-full bg-black">
             {items.map((item, i) => {
               const media = EVENT_SCOPE_MEDIA[item];
               if (!media) return null;

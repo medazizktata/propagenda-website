@@ -8,14 +8,15 @@ import { isRouteUnlocked, openComingSoonModal } from '@/lib/softLaunch';
 export type TransitionPhase = 'idle' | 'cover' | 'reveal';
 
 /** Orange wipe fills the screen, then fade-out reveals the new route. */
-export const COVER_MS = 340;
-export const REVEAL_MS = 280;
-/** Time the stacked quote stays readable after the wipe covers the screen. */
-export const QUOTE_HOLD_MS = 480;
+export const COVER_MS = 300;
+export const REVEAL_MS = 240;
+/** Beat after the wipe covers the screen (quote reads as texture, not a pause). */
+export const QUOTE_HOLD_MS = 120;
 const COVER_COMPLETE_MS = COVER_MS + 30;
-/** Extra hold on home so Three can mount under the cover before fade-out. */
-const HOME_3D_BEAT_MS = 160;
-const HOME_3D_MAX_WAIT_MS = 4500;
+/** Extra hold on home so Three can mount under the cover before fade-out.
+    Capped low — the hero renders its video/headline immediately; the 3D mark may pop in late. */
+const HOME_3D_BEAT_MS = 100;
+const HOME_3D_MAX_WAIT_MS = 1200;
 
 function isHomePath(path: string) {
   return path === '/' || path === '';

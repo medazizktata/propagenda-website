@@ -27,7 +27,7 @@ function Wordmark() {
   return (
     <span className="flex flex-col leading-none">
       <span className="text-sm font-bold lowercase tracking-tight text-white">Propagenda</span>
-      <span className="mt-0.5 text-[0.55rem] font-medium uppercase tracking-[0.2em] text-muted">
+      <span className="mt-0.5 text-[0.55rem] font-medium uppercase tracking-[0.2em] text-white/55">
         Marketing Services
       </span>
     </span>

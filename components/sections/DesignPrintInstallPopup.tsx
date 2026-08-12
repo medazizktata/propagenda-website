@@ -286,7 +286,13 @@ export function DesignPrintInstallPopup() {
             <div
               key={i}
               className="dpi-card absolute left-1/2 top-1/2 overflow-hidden rounded-lg shadow-lg ring-1 ring-white/10 will-change-transform"
-              style={{ width: `${card.w}vw`, aspectRatio: '3 / 4', zIndex: card.video ? 2 : 1 }}
+              style={{
+                // Floor hard on small viewports (15vw ≈ 56px on a phone); cap at the
+                // designed vw so desktop stays the same.
+                width: `clamp(${card.video ? '12rem' : '10.5rem'}, ${card.w * 2.4}vw, ${card.w}vw)`,
+                aspectRatio: '3 / 4',
+                zIndex: card.video ? 2 : 1,
+              }}
             >
               <div className={`absolute inset-0 bg-gradient-to-br ${card.grad}`} />
               {card.video ? (

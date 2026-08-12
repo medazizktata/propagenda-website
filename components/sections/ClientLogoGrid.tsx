@@ -69,68 +69,67 @@ export function ClientLogoGrid() {
   return (
     <section ref={sectionRef} className="relative h-[120vh] bg-charcoal md:h-[125vh]">
       <div className="sticky top-0 flex h-screen items-center justify-center overflow-hidden bg-charcoal">
-        <div className="absolute inset-x-0 top-24 z-content flex justify-center px-6 lg:top-28">
-          <p className="clients-intro max-w-xl text-center text-sm font-medium tracking-wide text-white/70 md:text-base">
-            Brands that trust us to shape how they show up.
-          </p>
-        </div>
-
         <h2 className="sr-only">Clients</h2>
         <div
           aria-hidden
-          className="clients-wordmark pointer-events-none absolute inset-0 z-0 flex select-none items-center justify-center whitespace-nowrap font-sans font-extrabold uppercase leading-none tracking-tighter text-white/10"
+          className="clients-wordmark pointer-events-none absolute inset-0 z-0 flex select-none items-center justify-center whitespace-nowrap font-sans font-extrabold uppercase leading-none tracking-tighter text-white/[0.18]"
           style={{ fontSize: 'clamp(4rem, 18vw, 18rem)' }}
         >
           Clients
         </div>
 
-        <div
-          className="relative z-content mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-4 gap-y-3.5 px-5 text-center font-sans font-bold uppercase tracking-tight text-white [text-shadow:0_2px_12px_rgba(0,0,0,0.75)] sm:gap-x-5 sm:gap-y-4 sm:px-6 md:gap-x-6"
-          style={{ fontSize: 'clamp(1.05rem, 0.7rem + 2.4vw, 1.25rem)' }}
-        >
-          {clientLogos.map((brand) => {
-            // Real extracted client logo (content/home.ts); names without one don't morph.
-            const logo = brand.logo ? `/images/clients/${brand.logo}` : null;
-            const content = (
-              <>
-                <span
-                  className={cn(
-                    'transition-opacity duration-300 ease-out',
-                    logo && 'group-hover/logo:opacity-0',
-                  )}
-                >
-                  {brand.name}
-                  <span className="text-orange">.</span>
-                </span>
-                {logo ? (
+        <div className="relative z-content mx-auto flex max-w-6xl flex-col items-center px-5 sm:px-6">
+          <p className="clients-intro mb-5 max-w-xl text-center text-sm font-medium tracking-wide text-white/70 md:mb-6 md:text-base">
+            Brands that trust us to shape how they show up.
+          </p>
+          <div
+            className="flex flex-wrap items-center justify-center gap-x-4 gap-y-3.5 text-center font-sans font-bold uppercase tracking-tight text-white [text-shadow:0_2px_12px_rgba(0,0,0,0.75)] sm:gap-x-5 sm:gap-y-4 md:gap-x-6"
+            style={{ fontSize: 'clamp(1.05rem, 0.7rem + 2.4vw, 1.25rem)' }}
+          >
+            {clientLogos.map((brand) => {
+              // Real extracted client logo (content/home.ts); names without one don't morph.
+              const logo = brand.logo ? `/images/clients/${brand.logo}` : null;
+              const content = (
+                <>
                   <span
-                    aria-hidden
-                    className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 ease-out group-hover/logo:opacity-100"
+                    className={cn(
+                      'transition-opacity duration-300 ease-out',
+                      logo && 'group-hover/logo:opacity-0',
+                    )}
                   >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={logo}
-                      alt=""
-                      className="h-[1.7em] w-auto max-w-[7em] shrink-0 object-contain brightness-0 invert"
-                    />
+                    {brand.name}
+                    <span className="text-orange">.</span>
                   </span>
-                ) : null}
-              </>
-            );
-            const cls = cn(
-              'client-name group/logo relative inline-flex items-center whitespace-nowrap',
-              brand.url && 'cursor-pointer',
-            );
-            return brand.url ? (
-              <a key={brand.name} href={brand.url} target="_blank" rel="noopener noreferrer" className={cls}>
-                {content}
-              </a>
-            ) : (
-              <span key={brand.name} className={cls}>
-                {content}
-              </span>
-            );
-          })}
+                  {logo ? (
+                    <span
+                      aria-hidden
+                      className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 ease-out group-hover/logo:opacity-100"
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={logo}
+                        alt=""
+                        className="h-[1.7em] w-auto max-w-[7em] shrink-0 object-contain brightness-0 invert"
+                      />
+                    </span>
+                  ) : null}
+                </>
+              );
+              const cls = cn(
+                'client-name group/logo relative inline-flex items-center whitespace-nowrap',
+                brand.url && 'cursor-pointer',
+              );
+              return brand.url ? (
+                <a key={brand.name} href={brand.url} target="_blank" rel="noopener noreferrer" className={cls}>
+                  {content}
+                </a>
+              ) : (
+                <span key={brand.name} className={cls}>
+                  {content}
+                </span>
+              );
+            })}
+          </div>
         </div>
       </div>
     </section>

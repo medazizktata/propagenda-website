@@ -22,13 +22,13 @@ const ACCENT_WORD = 'CREATIVITY';
 type ClipInset = { t: number; r: number; b: number; l: number; rad: number };
 
 /**
- * Rest clip — portrait reel that stays wide enough on small screens, but sits on the
- * RIGHT so the stacked headline owns the left column (centered wide clips ate "STRATEGY").
+ * Rest clip — centered portrait reel (equal L/R). Wide enough on small screens
+ * so it never reads as a hairline; tighter on xl for the classic showreel panel.
  */
-const CLIP_REST_NARROW: ClipInset = { t: 10, r: 5, b: 14, l: 42, rad: 18 }; // ~53% right card
-const CLIP_REST_MD: ClipInset = { t: 9, r: 7, b: 11, l: 40, rad: 20 }; // ~53% right
-const CLIP_REST_LG: ClipInset = { t: 8, r: 12, b: 10, l: 38, rad: 24 }; // ~50% right-biased
-const CLIP_REST_XL: ClipInset = { t: 8, r: 18, b: 10, l: 44, rad: 24 }; // ~38% desktop reel
+const CLIP_REST_NARROW: ClipInset = { t: 10, r: 12, b: 14, l: 12, rad: 18 }; // ~76% centered
+const CLIP_REST_MD: ClipInset = { t: 9, r: 20, b: 11, l: 20, rad: 20 }; // ~60% centered
+const CLIP_REST_LG: ClipInset = { t: 8, r: 28, b: 10, l: 28, rad: 24 }; // ~44% centered
+const CLIP_REST_XL: ClipInset = { t: 8, r: 34, b: 10, l: 34, rad: 24 }; // ~32% centered
 const CLIP_WIDE: ClipInset = { t: 0, r: 0, b: 0, l: 0, rad: 0 };
 
 function clipVars(c: ClipInset) {
@@ -173,11 +173,18 @@ export function Hero() {
               playsInline
               aria-hidden
             />
-            {/* Scrim — heavier on the left edge where type meets the reel. */}
+            {/* Scrim — keeps the left headline readable over the centered reel. */}
             <div
               aria-hidden
-              className="pointer-events-none absolute inset-0 bg-gradient-to-r from-charcoal/90 via-charcoal/45 to-transparent max-lg:from-charcoal/80 max-lg:via-charcoal/35"
+              className="pointer-events-none absolute inset-0 bg-gradient-to-r from-charcoal/85 via-charcoal/35 to-charcoal/20"
             />
+            {/* Gloss — specular sheen + rim catch so the clipped panel reads as polished glass. */}
+            <div aria-hidden className="pointer-events-none absolute inset-0">
+              <div className="absolute inset-0 bg-[linear-gradient(125deg,rgba(255,255,255,0.22)_0%,rgba(255,255,255,0.06)_18%,transparent_42%)]" />
+              <div className="absolute inset-x-[12%] top-0 h-[42%] bg-[radial-gradient(ellipse_at_50%_0%,rgba(255,255,255,0.18),transparent_70%)]" />
+              <div className="absolute inset-0 shadow-[inset_0_1px_0_rgba(255,255,255,0.28),inset_0_-1px_0_rgba(255,255,255,0.06),inset_1px_0_0_rgba(255,255,255,0.1),inset_-1px_0_0_rgba(255,255,255,0.04)]" />
+              <div className="absolute inset-x-[18%] bottom-[8%] h-[28%] bg-[radial-gradient(ellipse_at_50%_100%,rgba(255,255,255,0.07),transparent_72%)]" />
+            </div>
             {/* Centered in the clipped panel (tracks clip as it expands). */}
             <div className="pointer-events-auto absolute inset-0 flex items-center justify-center group/play">
               <button
@@ -209,9 +216,9 @@ export function Hero() {
             </div>
           ) : null}
 
-          {/* Left column owns the sentence — stays clear of the right-parked reel on narrow. */}
-          <div className="pointer-events-none relative z-content flex h-full flex-col justify-center px-gutter-m pb-16 pt-28 max-lg:max-w-[58%] max-lg:justify-start max-lg:pt-32 lg:-translate-y-[5vh] lg:max-w-none lg:px-gutter-d">
-            <h1 className="hero-headline mt-6 max-w-[11ch] font-sans text-[clamp(2.15rem,10.5vw,7.5rem)] font-bold uppercase leading-[0.92] tracking-display text-white [text-shadow:0_2px_20px_rgba(0,0,0,0.75),0_0_48px_rgba(37,37,37,0.85)] sm:max-w-[13ch] sm:mt-8 lg:mt-16 lg:max-w-[15ch] lg:leading-[0.95]">
+          {/* Headline left; subtitle + CTA centered on the full viewport width. */}
+          <div className="pointer-events-none relative z-content flex h-full flex-col justify-center px-gutter-m pb-16 pt-28 lg:-translate-y-[5vh] lg:px-gutter-d">
+            <h1 className="hero-headline mt-6 max-w-[11ch] self-start font-sans text-[clamp(2.15rem,10.5vw,7.5rem)] font-bold uppercase leading-[0.92] tracking-display text-white [text-shadow:0_2px_20px_rgba(0,0,0,0.75),0_0_48px_rgba(37,37,37,0.85)] sm:mt-8 sm:max-w-[13ch] lg:mt-16 lg:max-w-[15ch] lg:leading-[0.95]">
               {words.map((word, i) => (
                 <span
                   key={`${word}-${i}`}
@@ -224,17 +231,20 @@ export function Hero() {
                 </span>
               ))}
             </h1>
-            <p className="hero-meta mt-5 max-w-[18ch] text-xs font-bold uppercase leading-snug tracking-[0.14em] text-white sm:max-w-none sm:whitespace-nowrap sm:text-sm sm:tracking-[0.16em]">
-              {subParts[0]}
-              <span className="inline-block align-middle text-base font-extrabold text-orange motion-safe:animate-hero-360 sm:text-lg">
-                360&deg;
-              </span>
-              {subParts[1]}
-            </p>
-            <div className="hero-meta pointer-events-auto mt-5">
-              <Button href={hero.cta.href} size="lg">
-                {hero.cta.label}
-              </Button>
+
+            <div className="mt-5 flex max-w-[22ch] flex-col items-start text-left sm:max-w-none">
+              <p className="hero-meta text-xs font-bold uppercase leading-snug tracking-[0.14em] text-white sm:whitespace-nowrap sm:text-sm sm:tracking-[0.16em]">
+                {subParts[0]}
+                <span className="inline-block align-middle text-base font-extrabold text-orange motion-safe:animate-hero-360 sm:text-lg">
+                  360&deg;
+                </span>
+                {subParts[1]}
+              </p>
+              <div className="hero-meta pointer-events-auto mt-5">
+                <Button href={hero.cta.href} size="lg">
+                  {hero.cta.label}
+                </Button>
+              </div>
             </div>
           </div>
         </div>

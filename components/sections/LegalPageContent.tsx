@@ -165,11 +165,27 @@ function PolicyView({ legal }: { legal: LegalRecord }) {
     const el = document.getElementById(id);
     if (!el) return;
     e.preventDefault();
-    // Explicit offset scroll — reliably smooth across browsers, and clears the fixed header.
-    const top = el.getBoundingClientRect().top + window.scrollY - 100;
-    window.scrollTo({ top, behavior: reduced ? 'auto' : 'smooth' });
     if (typeof history !== 'undefined') history.replaceState(null, '', `#${id}`);
     setActive(id);
+
+    // Manual rAF tween — native scrollTo({behavior:'smooth'}) is suppressed by some
+    // Chromium builds, so we animate scrollY ourselves (offset clears the fixed header).
+    const start = window.scrollY;
+    const dist = el.getBoundingClientRect().top + start - 100 - start;
+    if (reduced || Math.abs(dist) < 2) {
+      window.scrollTo(0, start + dist);
+      return;
+    }
+    const duration = Math.min(720, Math.max(340, Math.abs(dist) * 0.6));
+    const ease = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+    let startTs: number | null = null;
+    const step = (ts: number) => {
+      if (startTs === null) startTs = ts;
+      const p = Math.min(1, (ts - startTs) / duration);
+      window.scrollTo(0, start + dist * ease(p));
+      if (p < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
   };
 
   return (

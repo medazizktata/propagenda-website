@@ -24,12 +24,17 @@
 }
 
 :root {
+  /* ── Brand tokens — THE single source of truth for color. Everything below
+        (semantic layer, shadcn/Base-UI layer) derives from these. The Tailwind
+        theme (tailwind.config.ts) mirrors these values; change them here first. ── */
   --color-orange: #f58b27;
   --color-orange-hover: #e07d1f;
   --color-navy: #0f151f;
   --color-charcoal: #252525;
   --color-black: #000000;
   --color-white: #ffffff;
+  /* Near-black for text on orange (7.55:1 — white on orange fails at 2.44:1). */
+  --color-ink: #141414;
   --color-primary: var(--color-orange);
   --color-surface: var(--color-charcoal);
   --color-surface-deep: var(--color-black);
@@ -41,38 +46,41 @@
   --header-height: 56px;
   --grain-opacity: 0.3;
   --vh: 1vh;
-  --background: #252525;
-  --foreground: #ffffff;
-  --card: #2f2f2f;
-  --card-foreground: #ffffff;
-  --popover: #2a2a2a;
-  --popover-foreground: #ffffff;
-  --primary: #f58b27;
-  --primary-foreground: #141414;
+
+  /* ── shadcn/Base-UI semantic layer — DERIVED, never hardcoded. Only elevated
+        surfaces that have no brand token yet carry their own literal. ── */
+  --background: var(--color-charcoal);
+  --foreground: var(--color-white);
+  --card: #2f2f2f; /* elevated surface (form card) — no brand token yet */
+  --card-foreground: var(--color-white);
+  --popover: #2a2a2a; /* floating surface (select menu) — no brand token yet */
+  --popover-foreground: var(--color-white);
+  --primary: var(--color-orange);
+  --primary-foreground: var(--color-ink);
   --secondary: #1a1a1a;
-  --secondary-foreground: #ffffff;
+  --secondary-foreground: var(--color-white);
   --muted: rgba(255, 255, 255, 0.08);
-  --muted-foreground: rgba(255, 255, 255, 0.65);
-  --accent: rgba(245, 139, 39, 0.16);
-  --accent-foreground: #f58b27;
+  --muted-foreground: var(--color-text-muted);
+  --accent: color-mix(in srgb, var(--color-orange) 16%, transparent);
+  --accent-foreground: var(--color-orange);
   --destructive: #dc2626;
-  --border: rgba(255, 255, 255, 0.12);
+  --border: var(--color-border);
   --input: rgba(255, 255, 255, 0.1);
-  --ring: #f58b27;
-  --chart-1: #f58b27;
+  --ring: var(--color-orange);
+  --chart-1: var(--color-orange);
   --chart-2: rgba(255, 255, 255, 0.55);
   --chart-3: rgba(255, 255, 255, 0.35);
   --chart-4: rgba(255, 255, 255, 0.2);
-  --chart-5: #141414;
+  --chart-5: var(--color-ink);
   --radius: 0.75rem;
   --sidebar: #1a1a1a;
-  --sidebar-foreground: #ffffff;
-  --sidebar-primary: #f58b27;
-  --sidebar-primary-foreground: #141414;
-  --sidebar-accent: rgba(245, 139, 39, 0.16);
-  --sidebar-accent-foreground: #f58b27;
-  --sidebar-border: rgba(255, 255, 255, 0.12);
-  --sidebar-ring: #f58b27;
+  --sidebar-foreground: var(--color-white);
+  --sidebar-primary: var(--color-orange);
+  --sidebar-primary-foreground: var(--color-ink);
+  --sidebar-accent: color-mix(in srgb, var(--color-orange) 16%, transparent);
+  --sidebar-accent-foreground: var(--color-orange);
+  --sidebar-border: var(--color-border);
+  --sidebar-ring: var(--color-orange);
 }
 
 html {

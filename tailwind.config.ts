@@ -4,6 +4,9 @@ const config: Config = {
   content: ['./app/**/*.{ts,tsx}', './components/**/*.{ts,tsx}'],
   theme: {
     extend: {
+      /* Color values MIRROR the canonical brand tokens in app/globals.css :root
+         (kept literal here so Tailwind opacity modifiers like orange/20 keep working).
+         When changing a brand color: globals.css first, then this mirror. */
       colors: {
         orange: {
           DEFAULT: '#f58b27',

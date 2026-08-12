@@ -15,43 +15,43 @@ const SERVICE_MENU = [
   {
     label: 'Branding',
     href: '/services/branding-visual-identity',
-    image: '/images/portfolio/work-sanapex.png',
+    image: '/images/portfolio/work-sanapex.webp',
     blurb: 'Logos, identity systems, and guidelines that make you unmistakable.',
   },
   {
     label: 'Public Relations',
     href: '/services/public-relations',
-    image: '/images/portfolio/work-ghaftree.png',
+    image: '/images/portfolio/work-ghaftree.webp',
     blurb: 'Influencers, media, and celebrity reach that get you noticed.',
   },
   {
     label: 'Online & Offline Marketing',
     href: '/services/online-offline-marketing',
-    image: '/images/portfolio/work-events.png',
+    image: '/images/portfolio/work-events.webp',
     blurb: 'Full-funnel campaigns, content, and ads that grow you.',
   },
   {
     label: 'Websites',
     href: '/services/websites',
-    image: '/images/portfolio/work-quickcars.png',
+    image: '/images/portfolio/work-quickcars.webp',
     blurb: 'High-performing sites and landing pages, concept to launch.',
   },
   {
     label: 'Mobile Applications',
     href: '/services/mobile-applications',
-    image: '/images/portfolio/work-food.png',
+    image: '/images/portfolio/work-food.webp',
     blurb: 'Native-feeling iOS & Android apps, first sketch to store.',
   },
   {
     label: 'Events',
     href: '/services/events',
-    image: '/images/portfolio/work-events.png',
+    image: '/images/portfolio/work-events.webp',
     blurb: 'End-to-end event branding, production, and coverage.',
   },
   {
     label: 'Photography & Videography',
     href: '/services/photography-videography',
-    image: '/images/portfolio/work-food.png',
+    image: '/images/portfolio/work-food.webp',
     blurb: 'Product, lifestyle, and cinematic video that sells.',
   },
 ] as const;
@@ -160,17 +160,29 @@ export function ServicesNavMenu() {
 
   const dismissMenu = () => setMenuSuppressed(true);
 
+  // Keyboard: Escape closes the menu and returns focus to the trigger, so keyboard
+  // users aren't forced to Tab through all eight links to get out.
+  const onKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      setMenuSuppressed(true);
+      const trigger = rootRef.current?.querySelector<HTMLElement>('a[href="/services"]');
+      trigger?.focus();
+    }
+  };
+
   return (
     <div
       ref={rootRef}
       className="group relative"
       onMouseEnter={() => setMenuSuppressed(false)}
       onMouseLeave={() => setMenuSuppressed(false)}
+      onKeyDown={onKeyDown}
     >
       <AppLink
         href="/services"
         variant="nav"
         active={onServices}
+        aria-haspopup="menu"
         className="flex items-center gap-1 px-1.5 py-1 text-[0.7rem] font-semibold tracking-[0.14em]"
       >
         Services

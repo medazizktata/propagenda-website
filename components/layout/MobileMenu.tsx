@@ -32,7 +32,30 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
     if (!open) return;
 
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') {
+        onClose();
+        return;
+      }
+      // Focus trap — body scroll is locked while the overlay is up, so Tab must
+      // cycle inside the panel instead of walking into the page behind it.
+      if (e.key === 'Tab' && panelRef.current) {
+        const focusables = Array.from(
+          panelRef.current.querySelectorAll<HTMLElement>(
+            'a[href], button:not([disabled])',
+          ),
+        ).filter((n) => n.offsetParent !== null);
+        if (!focusables.length) return;
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+        const current = document.activeElement as HTMLElement | null;
+        if (e.shiftKey && (current === first || !panelRef.current.contains(current))) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && (current === last || !panelRef.current.contains(current))) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
     };
 
     document.body.style.overflow = 'hidden';
@@ -78,7 +101,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
   return (
     <m.div
       id="mobile-menu"
-      className="fixed inset-0 z-navbox md:hidden"
+      className="fixed inset-0 z-navbox lg:hidden"
       initial={false}
       animate={open ? 'open' : 'closed'}
       variants={menuOverlay}
@@ -146,17 +169,12 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
                     data-menu-focus={i === 0 ? '' : undefined}
                     className={cn(
                       'relative flex items-center gap-4 py-[0.12em] font-sans text-nav-mobile font-bold uppercase transition-colors duration-300',
+                      'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange',
                       active
                         ? 'text-white'
-                        : 'text-transparent [-webkit-text-stroke:1.25px_rgba(255,255,255,0.26)] hover-fine:hover:text-white active:text-white',
+                        : 'text-white/35 hover-fine:hover:text-white active:text-white',
                     )}
                   >
-                    {i === 0 && (
-                      <span
-                        aria-hidden
-                        className="absolute -left-[1.9rem] top-1/2 h-[3px] w-6 -translate-y-1/2 rounded-full bg-orange"
-                      />
-                    )}
                     <span>{navItem.label}</span>
                     {active && (
                       <span
@@ -173,7 +191,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
           {/* Services — quieter secondary cluster, pinned toward the bottom. Single column so the
               longer labels never wrap or clip. */}
           <div className="mt-auto shrink-0 px-gutter-m pt-12">
-            <p className="mb-3 font-sans text-2xs font-semibold uppercase tracking-label text-orange/80">
+            <p className="text-backstage mb-3 text-white/50">
               Services
             </p>
             <ul className="flex flex-col">

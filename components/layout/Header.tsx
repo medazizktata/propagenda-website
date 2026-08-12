@@ -38,10 +38,10 @@ export function Header() {
 
   return (
     <header className="fixed inset-x-0 top-0 z-header bg-transparent pt-3">
-      {/* Soft veil — content under the bar feathers out (restored). Opacity follows scroll. */}
+      {/* Veil — solid through the nav row (nothing may ghost behind the links), then feathers. */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-[9.5rem] bg-gradient-to-b from-charcoal from-20% via-charcoal/80 via-55% to-transparent transition-opacity duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]"
+        className="pointer-events-none absolute inset-x-0 top-0 h-[8.5rem] bg-gradient-to-b from-charcoal from-45% via-charcoal/85 via-65% to-transparent transition-opacity duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]"
         style={{ opacity: fill }}
       />
       <div className="relative mx-auto flex h-11 max-w-[1920px] items-center justify-between px-gutter-m lg:px-gutter-d">

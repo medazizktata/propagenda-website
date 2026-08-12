@@ -11,6 +11,7 @@ interface AppLinkProps {
   external?: boolean;
   children: ReactNode;
   className?: string;
+  'aria-haspopup'?: 'menu';
 }
 
 const variantClasses: Record<LinkVariant, string> = {
@@ -28,6 +29,7 @@ export function AppLink({
   external,
   children,
   className,
+  'aria-haspopup': ariaHasPopup,
 }: AppLinkProps) {
   const classes = cn(
     variantClasses[variant],
@@ -43,6 +45,7 @@ export function AppLink({
         target="_blank"
         rel="noopener noreferrer"
         aria-current={active ? 'page' : undefined}
+        aria-haspopup={ariaHasPopup}
       >
         {children}
       </a>
@@ -50,7 +53,12 @@ export function AppLink({
   }
 
   return (
-    <Link href={href} className={classes} aria-current={active ? 'page' : undefined}>
+    <Link
+      href={href}
+      className={classes}
+      aria-current={active ? 'page' : undefined}
+      aria-haspopup={ariaHasPopup}
+    >
       {children}
     </Link>
   );

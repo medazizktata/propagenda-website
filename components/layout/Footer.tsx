@@ -4,13 +4,24 @@ import { AppLink } from '@/components/ui/Link';
 import { SocialIconLink } from '@/components/molecules/SocialIconLink';
 import { ScrollToTopButton } from '@/components/molecules/ScrollToTopButton';
 import { footer, primaryNav, socialLinks } from '@/content/site';
+import { whatsapp } from '@/content/contact';
 
 export function Footer() {
   const year = new Date().getFullYear();
 
   return (
     <footer className="bg-black text-white">
-      <div className="border-t border-white/10 px-gutter-m pb-12 pt-10 lg:px-gutter-d lg:pb-14 lg:pt-12">
+      {/* The brand's own tagline as the site's closing verdict — every page ends on voice,
+          not on a link list. */}
+      <div className="border-t border-white/10 px-gutter-m pt-14 lg:px-gutter-d lg:pt-20">
+        <p className="font-sans font-extrabold uppercase leading-[0.95] text-white text-display-sm">
+          Looking for the
+          <br />
+          better future<span className="text-orange">.</span>
+        </p>
+      </div>
+
+      <div className="px-gutter-m pb-12 pt-12 lg:px-gutter-d lg:pb-14 lg:pt-16">
         <div className="grid items-start gap-8 lg:grid-cols-12 lg:gap-6">
           <div className="space-y-2 lg:col-span-4">
             <a
@@ -24,6 +35,14 @@ export function Footer() {
               className="transition-hover block text-sm leading-none tracking-wide text-white/75 hover-fine:hover:text-orange md:text-base"
             >
               {footer.email}
+            </a>
+            <a
+              href={whatsapp.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-backstage transition-hover inline-flex items-center gap-2 pt-1 text-white/60 hover-fine:hover:text-white"
+            >
+              WhatsApp <span aria-hidden>↗</span>
             </a>
             <p className="max-w-[22ch] text-sm leading-relaxed text-white/45">
               {footer.address}

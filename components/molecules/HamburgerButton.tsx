@@ -9,7 +9,7 @@ export function HamburgerButton({ open, onClick }: HamburgerButtonProps) {
   return (
     <button
       type="button"
-      className="flex h-9 w-9 flex-col items-center justify-center gap-1 md:hidden"
+      className="flex h-9 w-9 flex-col items-center justify-center gap-1 lg:hidden"
       aria-expanded={open}
       aria-controls="mobile-menu"
       aria-label={open ? 'Close menu' : 'Open menu'}

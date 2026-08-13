@@ -31,10 +31,7 @@ export function ContactRequestGrid() {
       aria-label="Ways to reach us"
       className={cn(
         "relative h-[100svh] overflow-y-auto overscroll-y-auto border-b border-white/10",
-        // Proximity, not mandatory: panels still settle into place when close, but wheel,
-        // trackpad, and keyboard users can scroll straight through — a nested mandatory
-        // scrollport traps scrolling inconsistently across browsers.
-        "snap-y snap-proximity scroll-smooth [-webkit-overflow-scrolling:touch]",
+        "snap-y snap-mandatory scroll-smooth [-webkit-overflow-scrolling:touch]",
         "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
       )}
     >

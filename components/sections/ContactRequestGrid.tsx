@@ -5,6 +5,7 @@ import Link from "next/link";
 import { bookCall, contactRequests } from "@/content/contact";
 import { cn } from "@/components/ui/cn";
 import { gsap } from "@/lib/motion/gsap";
+import { useReducedMotion } from "@/lib/motion/useReducedMotion";
 import { showToast } from "@/components/ui/toast";
 
 /**
@@ -30,7 +31,10 @@ export function ContactRequestGrid() {
       aria-label="Ways to reach us"
       className={cn(
         "relative h-[100svh] overflow-y-auto overscroll-y-auto border-b border-white/10",
-        "snap-y snap-mandatory scroll-smooth [-webkit-overflow-scrolling:touch]",
+        // Proximity, not mandatory: panels still settle into place when close, but wheel,
+        // trackpad, and keyboard users can scroll straight through — a nested mandatory
+        // scrollport traps scrolling inconsistently across browsers.
+        "snap-y snap-proximity scroll-smooth [-webkit-overflow-scrolling:touch]",
         "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
       )}
     >
@@ -71,8 +75,11 @@ function RequestPanel({
 }: (typeof contactRequests)[number] & { className?: string; notice?: string }) {
   const btnRef = useRef<HTMLAnchorElement>(null);
   const external = href.startsWith("mailto:") || href.startsWith("http");
+  const reducedMotion = useReducedMotion();
 
   const wiggle = () => {
+    // 25Hz rotation jitter — never for users who asked for reduced motion.
+    if (reducedMotion) return;
     const el = btnRef.current;
     if (!el) return;
     gsap.killTweensOf(el);

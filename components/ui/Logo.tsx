@@ -54,14 +54,20 @@ export function Logo({ variant = 'horizontal', href = '/', className }: LogoProp
     );
   }
 
+  // WCAG 2.5.3 (label-in-name): when the wordmark is visible, its text IS the
+  // accessible name — an aria-label that doesn't mirror it exactly trips the audit.
+  // Only the image-only mark needs an explicit label ("home" context comes free via
+  // the sr-only suffix in both cases).
+  const wordmarkVisible = variant !== 'mark';
+
   return (
-    // Accessible name must contain the visible label (WCAG 2.5.3 label-in-name).
     <Link
       href={href}
       className={cn('inline-flex items-center', className)}
-      aria-label="Propagenda Marketing Services — home"
+      aria-label={wordmarkVisible ? undefined : 'Propagenda — home'}
     >
       {content}
+      {wordmarkVisible ? <span className="sr-only"> — home</span> : null}
     </Link>
   );
 }

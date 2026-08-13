@@ -304,7 +304,7 @@ export function VideoLightbox({ video, isOpen, onClose }: VideoLightboxProps) {
                 )}
               </button>
 
-              <span className="ml-1.5 tabular-nums text-[11px] tracking-wide text-white/55">
+              <span className="ml-1.5 tabular-nums text-meta tracking-wide text-white/55">
                 {formatTime(current)}
                 <span className="text-white/30"> / </span>
                 {formatTime(duration)}

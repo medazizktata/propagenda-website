@@ -106,7 +106,7 @@ export function FAQAccordion({
                 )}
               >
                 <div className="overflow-hidden">
-                  <p className="w-full pr-10 text-[0.95rem] leading-relaxed text-white/65 md:pr-16">
+                  <p className="w-full pr-10 text-control leading-relaxed text-white/65 md:pr-16">
                     {item.answer}
                   </p>
                 </div>

@@ -226,7 +226,7 @@ export function AboutTestimonials() {
 
                 <p
                   className={cn(
-                    "mt-3 flex-1 text-[0.95rem] leading-relaxed sm:text-base",
+                    "mt-3 flex-1 text-control leading-relaxed sm:text-base",
                     featured ? "text-black/90" : "text-white/80",
                   )}
                 >

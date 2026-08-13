@@ -68,7 +68,7 @@ export const videoProjects: VideoProject[] = [
     category: 'Brand Films',
     description: 'A fit-out studio, on screen.',
     src: '',
-    poster: '/images/work/sanapex-interiors/hero.png',
+    poster: '/images/work/sanapex-interiors/hero.webp',
     ...P,
   },
   {
@@ -78,7 +78,7 @@ export const videoProjects: VideoProject[] = [
     category: 'Social Reels',
     description: 'Before-and-after, made for the feed.',
     src: '',
-    poster: '/images/work/sanapex-interiors/gallery-1.png',
+    poster: '/images/work/sanapex-interiors/gallery-1.webp',
     ...P,
   },
   {
@@ -88,7 +88,7 @@ export const videoProjects: VideoProject[] = [
     category: 'Automotive',
     description: 'Cars, ports, and paperwork — shot with intent.',
     src: '',
-    poster: '/images/work/p2p-motors/hero.png',
+    poster: '/images/work/p2p-motors/hero.webp',
     ...P,
   },
   {
@@ -98,7 +98,7 @@ export const videoProjects: VideoProject[] = [
     category: 'Social Reels',
     description: 'A walk across the forecourt.',
     src: '',
-    poster: '/images/work/p2p-motors/gallery-1.png',
+    poster: '/images/work/p2p-motors/gallery-1.webp',
     ...P,
   },
   {
@@ -108,7 +108,7 @@ export const videoProjects: VideoProject[] = [
     category: 'Product & Motion',
     description: 'A calmer, cleaner store — on film.',
     src: '',
-    poster: '/images/work/dose-pharmacy/hero.png',
+    poster: '/images/work/dose-pharmacy/hero.webp',
     ...P,
   },
   {
@@ -118,7 +118,7 @@ export const videoProjects: VideoProject[] = [
     category: 'Real Estate',
     description: 'A property, room by room.',
     src: '',
-    poster: '/images/work/clemson-porter-properties/hero.png',
+    poster: '/images/work/clemson-porter-properties/hero.webp',
     ...P,
   },
   {
@@ -128,7 +128,7 @@ export const videoProjects: VideoProject[] = [
     category: 'Social Reels',
     description: 'Listings that move fast.',
     src: '',
-    poster: '/images/work/clemson-porter-properties/gallery-1.png',
+    poster: '/images/work/clemson-porter-properties/gallery-1.webp',
     ...P,
   },
   {
@@ -138,7 +138,7 @@ export const videoProjects: VideoProject[] = [
     category: 'Brand Films',
     description: 'Four decades of heritage, on film.',
     src: '',
-    poster: '/images/work/emirates-agro/hero.png',
+    poster: '/images/work/emirates-agro/hero.webp',
     ...P,
   },
   {
@@ -148,7 +148,7 @@ export const videoProjects: VideoProject[] = [
     category: 'Product & Motion',
     description: 'From the field to the shelf.',
     src: '',
-    poster: '/images/work/emirates-agro/gallery-1.png',
+    poster: '/images/work/emirates-agro/gallery-1.webp',
     ...P,
   },
   {
@@ -158,7 +158,7 @@ export const videoProjects: VideoProject[] = [
     category: 'Social Reels',
     description: 'Ordering gas, made simple.',
     src: '',
-    poster: '/images/work/zealerz/hero.png',
+    poster: '/images/work/zealerz/hero.webp',
     ...P,
   },
   {
@@ -168,7 +168,7 @@ export const videoProjects: VideoProject[] = [
     category: 'Automotive',
     description: 'The forecourt, in thirty seconds.',
     src: '',
-    poster: '/images/portfolio/work-quickcars.png',
+    poster: '/images/portfolio/work-quickcars.webp',
     ...P,
   },
   {
@@ -178,7 +178,7 @@ export const videoProjects: VideoProject[] = [
     category: 'Food & Hospitality',
     description: 'Garden to table, in motion.',
     src: '',
-    poster: '/images/portfolio/work-ghaftree.png',
+    poster: '/images/portfolio/work-ghaftree.webp',
     ...P,
   },
   {
@@ -188,7 +188,7 @@ export const videoProjects: VideoProject[] = [
     category: 'Social Reels',
     description: 'The menu, plated for the feed.',
     src: '',
-    poster: '/images/portfolio/work-food.png',
+    poster: '/images/portfolio/work-food.webp',
     ...P,
   },
   {
@@ -197,7 +197,7 @@ export const videoProjects: VideoProject[] = [
     category: 'Food & Hospitality',
     description: 'Hospitality with the lights on.',
     src: '',
-    poster: '/images/portfolio/work-restaurant.png',
+    poster: '/images/portfolio/work-restaurant.webp',
     ...P,
   },
   {
@@ -206,7 +206,7 @@ export const videoProjects: VideoProject[] = [
     category: 'Events',
     description: 'The night, cut to relive.',
     src: '',
-    poster: '/images/portfolio/work-events.png',
+    poster: '/images/portfolio/work-events.webp',
     ...P,
   },
 ];
@@ -233,12 +233,12 @@ export const videoCapabilities: {
   {
     label: 'Product & motion',
     blurb: 'Product films and animated graphics.',
-    poster: '/images/work/sanapex-interiors/hero.png',
+    poster: '/images/work/sanapex-interiors/hero.webp',
   },
   {
     label: 'Events & live',
     blurb: 'Coverage, aftermovies, multi-cam streams.',
-    poster: '/images/portfolio/work-events.png',
+    poster: '/images/portfolio/work-events.webp',
   },
 ];
 

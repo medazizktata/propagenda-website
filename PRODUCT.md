@@ -60,7 +60,13 @@ Brand line: "Where creativity meets strategy." Tagline: "Looking for the better 
 ## Brand Commitments
 
 - Poppins is brand law (brand PDF) — never swap the family; expression comes from weight/scale
-  and the mono backstage register (currently IBM Plex Mono), not new faces.
+  and the mono backstage register, not new faces.
+- Mono register: **IBM Plex Mono — a decided choice, not a default** (2026-08-13). Rationale: at
+  the register's 10–13px caps sizes face character is marginal, and the Plex family's first-class
+  Arabic sibling (IBM Plex Sans Arabic) gives the confirmed Arabic milestone cross-script
+  coherence no alternative mono offers. Revisit only if the bilingual build changes direction.
+- Recurring type sizes must use tokens (`display-section`, `meta-sm/meta/meta-lg`, `control`);
+  one-off display clamps on hero/statement acts are per-act art direction and may stay inline.
 - Black + orange (#f58b27) identity. Orange is punctuation (<5% of a screen: one CTA, terminal
   periods, active states) or a deliberate flood — never wallpaper. Text on orange is near-black
   `ink` (#141414, 7.55:1); white-on-orange is banned (2.44:1).

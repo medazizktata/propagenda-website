@@ -122,9 +122,14 @@ function FrameStack({
 
   useEffect(() => {
     if (media.kind !== 'video') return;
-    videoRefs.current.forEach((el) => {
+    // Only the FRONT layer plays — the rear curtain layers are fully covered by it
+    // once the wipe completes, so playing all four just spins up duplicate decoders
+    // of the same file. Rear layers hold their poster frame (visible only for the
+    // sub-second wipe), front carries the motion.
+    const front = LAYER_IDS.length - 1;
+    videoRefs.current.forEach((el, i) => {
       if (!el) return;
-      if (hovered) {
+      if (hovered && i === front) {
         void el.play().catch(() => {});
       } else {
         el.pause();

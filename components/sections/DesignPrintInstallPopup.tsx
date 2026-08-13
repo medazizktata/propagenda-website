@@ -35,7 +35,11 @@ function WorkCardImage({ initial }: { initial: string }) {
     <button
       type="button"
       onClick={cycle}
-      aria-label="Show another work sample"
+      // Decorative pointer-only easter egg: the cards overlap while the deck is piled
+      // (failing target-size spacing) and six identical buttons are pure noise for
+      // keyboard/screen-reader users — so it's presentational: no tab stop, no a11y node.
+      tabIndex={-1}
+      aria-hidden
       className="pointer-events-auto absolute inset-0 h-full w-full cursor-pointer transition duration-300 hover:brightness-110"
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}

@@ -110,7 +110,7 @@ function ChannelColumn({
         {items.map((c) => (
           <li key={c} className="flex items-center gap-2.5 py-2">
             <span aria-hidden className="h-1 w-1 shrink-0 rounded-full bg-orange/70" />
-            <span className="text-[0.95rem] text-white/75">{c}</span>
+            <span className="text-control text-white/75">{c}</span>
           </li>
         ))}
       </ul>
@@ -130,8 +130,7 @@ export function MarketingFunnel() {
       <div className="relative z-content mx-auto max-w-6xl">
         <SectionLabel className="sd-reveal mb-4">The full funnel</SectionLabel>
         <h2
-          className="sd-reveal mb-10 max-w-3xl font-sans font-bold uppercase leading-[0.95] tracking-display text-white"
-          style={{ fontSize: 'clamp(1.6rem, 3.6vw, 2.75rem)' }}
+          className="sd-reveal mb-10 max-w-3xl font-sans font-bold uppercase leading-[0.95] tracking-display text-display-section text-white"
         >
           One journey, online and offline.
         </h2>
@@ -205,7 +204,7 @@ export function MarketingFunnel() {
                     Stage {active + 1} of {STAGES.length}
                   </span>
                   <h3 className="font-sans text-2xl font-bold text-white lg:text-3xl">{stage.name}</h3>
-                  <p className="mt-1 max-w-md text-[0.95rem] leading-relaxed text-white/60">{stage.goal}</p>
+                  <p className="mt-1 max-w-md text-control leading-relaxed text-white/60">{stage.goal}</p>
                 </div>
               </div>
 

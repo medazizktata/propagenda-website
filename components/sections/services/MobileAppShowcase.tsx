@@ -205,7 +205,7 @@ function StatusBar({ platform, dark }: { platform: Platform; dark: boolean }) {
   if (platform === 'ios') {
     return (
       <div className="relative flex h-9 shrink-0 items-center justify-between px-5 pt-1">
-        <span className={cn('text-[11px] font-semibold tabular-nums', clock)}>9:41</span>
+        <span className={cn('text-meta font-semibold tabular-nums', clock)}>9:41</span>
         {/* Dynamic Island */}
         <span aria-hidden className="absolute left-1/2 top-1.5 h-5 w-16 -translate-x-1/2 rounded-full bg-black" />
         <StatusIcons tone={tone} />
@@ -220,7 +220,7 @@ function StatusBar({ platform, dark }: { platform: Platform; dark: boolean }) {
       </span>
       <span className="flex items-center gap-2">
         <StatusIcons tone={tone} />
-        <span className={cn('text-[11px] font-medium tabular-nums', clock)}>9:41</span>
+        <span className={cn('text-meta font-medium tabular-nums', clock)}>9:41</span>
       </span>
     </div>
   );
@@ -292,7 +292,7 @@ function TabBar({ platform, active }: { platform: Platform; active: number }) {
           )}
         >
           <Glyph kind={t.kind} className={cn('h-5 w-5', i === active ? 'text-orange' : 'text-navy/45')} />
-          {i === active && <span className="text-[11px] font-semibold text-orange">{t.label}</span>}
+          {i === active && <span className="text-meta font-semibold text-orange">{t.label}</span>}
         </div>
       ))}
     </div>
@@ -356,7 +356,7 @@ function WireframeScreen({ platform }: { platform: Platform }) {
         <span className="h-2.5 w-3/5 rounded-full bg-navy/12" />
         <span
           className={cn(
-            'mt-2 flex h-11 items-center justify-center border-2 border-dashed border-navy/25 text-[12px] font-medium text-navy/35',
+            'mt-2 flex h-11 items-center justify-center border-2 border-dashed border-navy/25 text-meta-lg font-medium text-navy/35',
             platform === 'ios' ? 'rounded-xl' : 'rounded-full',
           )}
         >
@@ -386,7 +386,7 @@ function OnboardingScreen({ platform }: { platform: Platform }) {
         >
           Get started
         </span>
-        <span className="mt-3 text-center text-[12px] text-white/60">Already have an account? Sign in</span>
+        <span className="mt-3 text-center text-meta-lg text-white/60">Already have an account? Sign in</span>
       </div>
     </div>
   );
@@ -400,7 +400,7 @@ function HomeScreen({ platform }: { platform: Platform }) {
           {/* Search field */}
           <div className="flex items-center gap-2 rounded-xl bg-black/[0.04] px-3 py-2.5">
             <Glyph kind="search" className="h-4 w-4 text-navy/40" />
-            <span className="text-[12px] text-navy/40">Search dishes, places…</span>
+            <span className="text-meta-lg text-navy/40">Search dishes, places…</span>
           </div>
           {/* Category chips */}
           <div className="mt-3 flex gap-2 overflow-hidden">
@@ -408,7 +408,7 @@ function HomeScreen({ platform }: { platform: Platform }) {
               <span
                 key={c}
                 className={cn(
-                  'whitespace-nowrap rounded-full px-3 py-1 text-[11px] font-medium',
+                  'whitespace-nowrap rounded-full px-3 py-1 text-meta font-medium',
                   i === 0 ? 'bg-orange text-navy' : 'bg-black/[0.05] text-navy/60',
                 )}
               >
@@ -429,11 +429,11 @@ function HomeScreen({ platform }: { platform: Platform }) {
               </span>
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-[13px] font-semibold text-navy">{d.name}</span>
-                <span className="mt-0.5 block text-[11px] text-navy/45">
+                <span className="mt-0.5 block text-meta text-navy/45">
                   {d.place} · {d.time}
                 </span>
               </span>
-              <span className="flex shrink-0 items-center gap-1 text-[11px] font-semibold text-navy">
+              <span className="flex shrink-0 items-center gap-1 text-meta font-semibold text-navy">
                 <Star className="h-3 w-3 text-orange" />
                 {d.rating}
               </span>
@@ -466,23 +466,23 @@ function DetailScreen({ platform }: { platform: Platform }) {
           <h4 className="font-sans text-[17px] font-bold text-navy">{FEATURE.name}</h4>
           <div className="mt-1.5 flex items-center gap-2">
             <RatingStars value={5} />
-            <span className="text-[12px] font-semibold text-navy">{FEATURE.rating}</span>
-            <span className="text-[11px] text-navy/40">· 1,240 ratings</span>
+            <span className="text-meta-lg font-semibold text-navy">{FEATURE.rating}</span>
+            <span className="text-meta text-navy/40">· 1,240 ratings</span>
           </div>
-          <p className="mt-2.5 text-[12px] leading-relaxed text-navy/55">
+          <p className="mt-2.5 text-meta-lg leading-relaxed text-navy/55">
             Aged beef, black truffle mayo, and smoked cheddar in a toasted brioche bun. From {FEATURE.place}.
           </p>
-          <p className="mt-2 text-[12px] leading-relaxed text-navy/45">
+          <p className="mt-2 text-meta-lg leading-relaxed text-navy/45">
             Served with hand-cut fries and house pickles. Customise spice level and add-ons before checkout.
           </p>
           <div className="mt-3 flex items-baseline gap-1">
             <span className="font-sans text-[22px] font-bold text-navy">AED 48</span>
-            <span className="text-[11px] text-navy/40">· {FEATURE.time} delivery</span>
+            <span className="text-meta text-navy/40">· {FEATURE.time} delivery</span>
           </div>
           <div className="mt-4 space-y-2 border-t border-black/[0.06] pt-3">
-            <p className="text-[11px] font-semibold uppercase tracking-wide text-navy/40">Add-ons</p>
-            <p className="text-[12px] text-navy/55">Truffle fries · AED 12</p>
-            <p className="text-[12px] text-navy/55">Extra patty · AED 18</p>
+            <p className="text-meta font-semibold uppercase tracking-wide text-navy/40">Add-ons</p>
+            <p className="text-meta-lg text-navy/55">Truffle fries · AED 12</p>
+            <p className="text-meta-lg text-navy/55">Extra patty · AED 18</p>
           </div>
         </div>
         <div className="mt-auto shrink-0 border-t border-black/[0.05] p-3.5">
@@ -512,15 +512,15 @@ function OrderScreen({ platform }: { platform: Platform }) {
         <Glyph kind="check" className="h-8 w-8" />
       </span>
       <h4 className="mt-5 font-sans text-[19px] font-bold text-navy">Order placed</h4>
-      <p className="mt-2 text-[12px] leading-relaxed text-navy/55">
+      <p className="mt-2 text-meta-lg leading-relaxed text-navy/55">
         Your {FEATURE.name.toLowerCase()} from {FEATURE.place} is being prepared.
       </p>
       <div className="mt-5 w-full max-w-[80%] border-t border-black/[0.08] pt-4">
-        <div className="flex items-center justify-between text-[12px]">
+        <div className="flex items-center justify-between text-meta-lg">
           <span className="text-navy/45">Estimated arrival</span>
           <span className="font-semibold text-navy">{FEATURE.time}</span>
         </div>
-        <div className="mt-2 flex items-center justify-between text-[12px]">
+        <div className="mt-2 flex items-center justify-between text-meta-lg">
           <span className="text-navy/45">Total paid</span>
           <span className="font-semibold text-navy">AED 48</span>
         </div>
@@ -719,7 +719,7 @@ export function MobileAppShowcase() {
             <ol className="w-full min-w-0 lg:pt-2">
               {STAGES.map((s, i) => (
                 <li key={s.name} className="flex gap-4 border-b border-white/10 py-5 last:border-b-0">
-                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-white/25 text-[12px] font-bold tabular-nums text-orange">
+                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-white/25 text-meta-lg font-bold tabular-nums text-orange">
                     {i + 1}
                   </span>
                   <div className="min-w-0">
@@ -773,7 +773,7 @@ export function MobileAppShowcase() {
                       <div className="flex flex-col items-center">
                         <span
                           className={cn(
-                            'flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-[12px] font-bold tabular-nums transition-all duration-300',
+                            'flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-meta-lg font-bold tabular-nums transition-all duration-300',
                             on
                               ? 'scale-110 border-orange bg-orange text-navy'
                               : done

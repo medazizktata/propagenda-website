@@ -154,7 +154,7 @@ function MiniSite({ bp }: { bp: Breakpoint }) {
             {NAV_LINKS.map((l, i) => (
               <li
                 key={l}
-                className={cn('text-[10px] sm:text-xs', i === 0 ? 'font-semibold text-orange' : 'text-navy/60')}
+                className={cn('text-meta-sm sm:text-xs', i === 0 ? 'font-semibold text-orange' : 'text-navy/60')}
               >
                 {l}
               </li>
@@ -174,7 +174,7 @@ function MiniSite({ bp }: { bp: Breakpoint }) {
           >
             Find your next car.
           </p>
-          <span className="mt-1.5 inline-block rounded bg-orange px-2 py-0.5 text-[9px] font-semibold text-navy sm:mt-2 sm:px-2.5 sm:py-1 sm:text-[10px]">
+          <span className="mt-1.5 inline-block rounded bg-orange px-2 py-0.5 text-[9px] font-semibold text-navy sm:mt-2 sm:px-2.5 sm:py-1 sm:text-meta-sm">
             Browse models
           </span>
         </div>
@@ -192,7 +192,7 @@ function MiniSite({ bp }: { bp: Breakpoint }) {
                 <img src={card.img} alt="" className="h-full w-full object-cover" />
               </div>
               <div className="px-2 py-1.5 sm:px-2.5 sm:py-2">
-                <span className="block truncate text-[10px] font-semibold text-navy sm:text-[11px]">{card.title}</span>
+                <span className="block truncate text-meta-sm font-semibold text-navy sm:text-meta">{card.title}</span>
                 <span className="mt-0.5 block h-1.5 w-2/3 rounded-full bg-black/[0.08]" />
               </div>
             </div>
@@ -216,9 +216,9 @@ function BrowserChrome({ dims }: { dims: string }) {
           <rect x="5" y="11" width="14" height="9" rx="1.6" stroke="currentColor" strokeWidth="2" />
           <path d="M8 11V8a4 4 0 0 1 8 0v3" stroke="currentColor" strokeWidth="2" />
         </svg>
-        <span className="truncate text-[10px] text-navy/55 sm:text-[11px]">quickcars.ae</span>
+        <span className="truncate text-meta-sm text-navy/55 sm:text-meta">quickcars.ae</span>
       </div>
-      <span className="hidden shrink-0 text-[10px] tabular-nums text-navy/40 sm:block sm:text-[11px]">{dims}</span>
+      <span className="hidden shrink-0 text-meta-sm tabular-nums text-navy/40 sm:block sm:text-meta">{dims}</span>
     </div>
   );
 }
@@ -438,12 +438,11 @@ export function WebsitesShowcase() {
       <div className="relative z-content mx-auto max-w-6xl">
         <SectionLabel className="sd-reveal mb-4">The build</SectionLabel>
         <h2
-          className="sd-reveal mb-4 max-w-3xl font-sans font-bold uppercase leading-[0.95] tracking-display text-white"
-          style={{ fontSize: 'clamp(1.6rem, 3.6vw, 2.75rem)' }}
+          className="sd-reveal mb-4 max-w-3xl font-sans font-bold uppercase leading-[0.95] tracking-display text-display-section text-white"
         >
           See it at every size.
         </h2>
-        <p className="sd-reveal mb-8 max-w-xl text-[0.95rem] leading-relaxed text-white/60 md:text-base">
+        <p className="sd-reveal mb-8 max-w-xl text-control leading-relaxed text-white/60 md:text-base">
           Responsive by design, fast by default. Switch the view and watch the layout adapt.
         </p>
 
@@ -525,7 +524,7 @@ export function WebsitesShowcase() {
                     {v.value}
                   </span>
                   <span className="mt-1 text-xs text-white/45 sm:text-sm">{v.label}</span>
-                  <span className="mt-3 inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-orange">
+                  <span className="mt-3 inline-flex items-center gap-1.5 text-meta font-semibold uppercase tracking-wider text-orange">
                     <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-orange" />
                     Good
                   </span>

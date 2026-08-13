@@ -102,7 +102,7 @@ export const moreWork = [
 export type ClientBrand = { name: string; url?: string; logo?: string };
 export const clientLogos: ClientBrand[] = [
   { name: 'Sanapex Interiors', url: 'https://sanapexinteriors.com/', logo: 'sanapex-interiors.png' },
-  { name: 'P2P Motors', url: 'https://p2pmotors.com/', logo: 'p2p-motors.png' },
+  { name: 'P2P Motors', url: 'https://p2pmotors.com/', logo: 'p2p-motors.webp' },
   { name: 'Dose Pharmacy' },
   { name: 'Clemson Porter Properties', url: 'https://clemsonporter.com/' },
   { name: 'Emirates Agro', url: 'https://emiratesagro.ae/' },
@@ -115,7 +115,7 @@ export const clientLogos: ClientBrand[] = [
   { name: 'Phantom Protection', url: 'https://www.ppfphantom.com/', logo: 'phantom-protection.png' },
   { name: 'Global Space Finder', logo: 'global-space-finder.png' },
   { name: 'Chez Moda', logo: 'chez-moda.png' },
-  { name: 'centralhub', url: 'https://centralhub.ae/', logo: 'centralhub.png' },
+  { name: 'centralhub', url: 'https://centralhub.ae/', logo: 'centralhub.webp' },
   { name: '3L Events', logo: '3l-events.png' },
   { name: 'Alla Doresu', logo: 'alla-doresu.png' },
   { name: 'Quick Car', url: 'https://www.instagram.com/quick_cars_dxb/', logo: 'quick-car.png' },

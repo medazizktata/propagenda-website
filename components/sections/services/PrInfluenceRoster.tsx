@@ -103,13 +103,12 @@ export function PrInfluenceRoster() {
       <div className="relative z-content mx-auto max-w-6xl">
         <SectionLabel className="sd-reveal mb-4">Who we connect you with</SectionLabel>
         <h2
-          className="sd-reveal mb-4 max-w-3xl font-sans font-bold uppercase leading-[0.95] tracking-display text-white"
-          style={{ fontSize: 'clamp(1.6rem, 3.6vw, 2.75rem)' }}
+          className="sd-reveal mb-4 max-w-3xl font-sans font-bold uppercase leading-[0.95] tracking-display text-display-section text-white"
         >
           An influence roster with real reach.
         </h2>
         {/* Deck — sets up the interaction and folds in the network-at-scale figure. */}
-        <p className="sd-reveal mb-10 max-w-2xl text-[0.95rem] leading-relaxed text-white/60 md:text-base">
+        <p className="sd-reveal mb-10 max-w-2xl text-control leading-relaxed text-white/60 md:text-base">
           From household names to niche creators and earned press — a curated roster reaching more
           than 50 million people across the region. Select a partner to see the reach behind it.
         </p>
@@ -210,7 +209,7 @@ export function PrInfluenceRoster() {
             </div>
 
             <div key={`d-${active}`} className="mt-6 shrink-0 motion-safe:animate-[tier-rise_450ms_ease-out_both]">
-              <p className="max-w-xl text-[0.95rem] leading-relaxed text-white/70 md:text-base">
+              <p className="max-w-xl text-control leading-relaxed text-white/70 md:text-base">
                 {p.blurb}
               </p>
               {/* Spec-sheet metrics — hairline-separated, reads as a media dossier, not a card. */}

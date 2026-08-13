@@ -91,7 +91,7 @@ export function VideoCard({ project, onOpen }: { project: VideoProject; onOpen?:
         )}
       </div>
 
-      <p className="max-w-[34ch] text-[0.95rem] leading-snug text-white/55 transition-colors duration-500 group-hover/card:text-white/70 md:text-base">
+      <p className="max-w-[34ch] text-control leading-snug text-white/55 transition-colors duration-500 group-hover/card:text-white/70 md:text-base">
         <span className="font-semibold text-white">{captionLead}</span>
         <span aria-hidden> – </span>
         <span>{captionTrail}</span>

@@ -165,7 +165,7 @@ export function ComingSoonModal() {
 
           <div className="mt-6 h-px w-16 bg-orange/80" aria-hidden />
 
-          <p className="mt-6 max-w-[34ch] text-sm leading-relaxed text-white/65 sm:text-[0.95rem]">
+          <p className="mt-6 max-w-[34ch] text-sm leading-relaxed text-white/65 sm:text-control">
             {softLaunchCopy.body}
           </p>
 

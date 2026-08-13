@@ -1006,7 +1006,7 @@ function ScopeTechSpec({ items }: { items: string[] }) {
               >
                 {num(i)}
               </span>
-              <span className="mt-1 block font-sans text-sm font-bold leading-snug lg:text-[0.95rem]">{label}</span>
+              <span className="mt-1 block font-sans text-sm font-bold leading-snug lg:text-control">{label}</span>
             </button>
           );
         })}
@@ -1323,8 +1323,7 @@ function ServiceApproach({ phases }: { phases: { title: string; body: string }[]
         <div className="relative z-content mx-auto w-full max-w-6xl">
           <SectionLabel className="mb-4">How we work</SectionLabel>
           <h2
-            className="mb-12 max-w-3xl font-sans font-bold uppercase leading-[0.95] tracking-display text-white"
-            style={{ fontSize: 'clamp(1.6rem, 3.6vw, 2.75rem)' }}
+            className="mb-12 max-w-3xl font-sans font-bold uppercase leading-[0.95] tracking-display text-display-section text-white"
           >
             From brief to launch.
           </h2>
@@ -1495,8 +1494,7 @@ function ModuleShell({
         <SectionLabel className="sd-reveal mb-4">{label}</SectionLabel>
         {title && (
           <h2
-            className="sd-reveal mb-8 max-w-3xl font-sans font-bold uppercase leading-[0.95] tracking-display text-white"
-            style={{ fontSize: 'clamp(1.6rem, 3.6vw, 2.75rem)' }}
+            className="sd-reveal mb-8 max-w-3xl font-sans font-bold uppercase leading-[0.95] tracking-display text-display-section text-white"
           >
             {title}
           </h2>
@@ -1742,7 +1740,7 @@ function TierCards({ service }: { service: ServiceRecord }) {
                 <span className="text-sm text-white/40">Kit preview</span>
                 <span className="text-sm font-medium capitalize text-orange">{tier.name}</span>
               </div>
-              <p className="mt-3 max-w-xl text-[0.95rem] leading-relaxed text-white/60">{meta.tagline}</p>
+              <p className="mt-3 max-w-xl text-control leading-relaxed text-white/60">{meta.tagline}</p>
 
               {active === 0 ? <BasicKit deliverables={meta.deliverables} /> : <DevelopedKit />}
             </div>
@@ -2165,11 +2163,11 @@ function VideoTile({ src, label }: { src: string; label: string }) {
         className="pointer-events-none absolute inset-x-0 top-0 h-10 bg-gradient-to-b from-white/15 to-transparent opacity-0 group-hover/vt:opacity-100 group-hover/vt:motion-safe:animate-[video-scan_2.6s_linear_infinite]"
       />
       {/* REC + timecode. */}
-      <span className="pointer-events-none absolute left-3 top-3 z-10 flex items-center gap-1.5 font-mono text-[10px] font-bold uppercase tracking-wider text-white opacity-0 transition-opacity duration-300 group-hover/vt:opacity-100">
+      <span className="pointer-events-none absolute left-3 top-3 z-10 flex items-center gap-1.5 font-mono text-meta-sm font-bold uppercase tracking-wider text-white opacity-0 transition-opacity duration-300 group-hover/vt:opacity-100">
         <span className="h-2 w-2 rounded-full bg-red-500 motion-safe:animate-pulse" />
         REC
       </span>
-      <span className="pointer-events-none absolute right-3 top-3 z-10 font-mono text-[10px] tabular-nums text-white/75 opacity-0 transition-opacity duration-300 group-hover/vt:opacity-100">
+      <span className="pointer-events-none absolute right-3 top-3 z-10 font-mono text-meta-sm tabular-nums text-white/75 opacity-0 transition-opacity duration-300 group-hover/vt:opacity-100">
         00:00:24
       </span>
       {/* Play button — faint on touch (no hover), full on hover. */}

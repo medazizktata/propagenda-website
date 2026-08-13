@@ -129,8 +129,7 @@ export function EventsJourney() {
         <div className="relative z-content mx-auto max-w-6xl">
           <SectionLabel className="mb-4">The run of show</SectionLabel>
           <h2
-            className="mb-10 max-w-3xl font-sans font-bold uppercase leading-[0.95] tracking-display text-white"
-            style={{ fontSize: 'clamp(1.6rem, 3.6vw, 2.75rem)' }}
+            className="mb-10 max-w-3xl font-sans font-bold uppercase leading-[0.95] tracking-display text-display-section text-white"
           >
             From the brief to the final frame.
           </h2>
@@ -190,8 +189,7 @@ export function EventsJourney() {
         <div className="relative z-content mx-auto w-full max-w-6xl">
           <SectionLabel className="mb-4">The run of show</SectionLabel>
           <h2
-            className="mb-3 max-w-3xl font-sans font-bold uppercase leading-[0.95] tracking-display text-white"
-            style={{ fontSize: 'clamp(1.6rem, 3.6vw, 2.75rem)' }}
+            className="mb-3 max-w-3xl font-sans font-bold uppercase leading-[0.95] tracking-display text-display-section text-white"
           >
             From the brief to the final frame.
           </h2>

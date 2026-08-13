@@ -77,6 +77,19 @@ const config: Config = {
         'display-2xl': ['clamp(5rem, 18vw, 22rem)', { lineHeight: '0.9', letterSpacing: '0.02em' }],
         'nav-mobile': ['clamp(3rem, 15vw, 8rem)', { lineHeight: '0.78', letterSpacing: '0.015em' }],
         'nav-mobile-landscape': ['clamp(2rem, 7.5vw, 5rem)', { lineHeight: '0.78', letterSpacing: '0.015em' }],
+        /* ── Promoted from recurring arbitrary values (token audit, phase 2). BARE values
+           on purpose — no baked line-height/tracking — so swapping a call site from the
+           arbitrary form to the token is pixel-identical. Policy: one-off display clamps
+           on hero/statement compositions are per-act art direction and may stay inline;
+           RECURRING sizes must live here. ── */
+        /* Service-showcase section headings (MarketingFunnel, WebsitesShowcase, …). */
+        'display-section': 'clamp(1.6rem, 3.6vw, 2.75rem)',
+        /* Micro-label family — chips, badges, tab labels, tiny metadata. */
+        'meta-sm': '10px',
+        meta: '11px',
+        'meta-lg': '12px',
+        /* Form-control / dense-UI body size. */
+        control: '0.95rem',
       },
       letterSpacing: {
         // "tracking-display" — referenced by DisplayHeading (was undefined/dead).

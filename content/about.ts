@@ -1,11 +1,74 @@
+/**
+ * /about content — ONE page whose OLD and NEW looks are interleaved:
+ *
+ *  1. AboutImmersive — the SMV-style click-to-advance statement journey. Its LAST
+ *     milestone IS the manifesto's opening line ("WE MAKE BRANDS IMPOSSIBLE TO
+ *     IGNORE.", `launch: true`); its button launches the manifesto (`statements`).
+ *  2. AboutManifesto — the scroll-illuminated typographic manifesto (`hero`, `body`,
+ *     `closer`), which plays its typing reveal + "Play it safe?" gate, then ties its
+ *     "…refuse to be forgotten." closer into…
+ *  3. The Plusdrie editorial body: studio intro + principles (`intro`, `principles`),
+ *     the service rows (`services`) and the testimonial marquee (`testimonials`).
+ *  4. One closing CTA (`cta`).
+ *
+ * Everything lives on a single `aboutContent` object so both looks share one import.
+ * Legible-by-default: the manifesto tokens render bright; the dim→bright pass is a
+ * GSAP enhancement (see AboutManifesto.tsx).
+ */
+
+/* ------------------------------------------------------------------ */
+/* NEW look — manifesto types                                          */
+/* ------------------------------------------------------------------ */
+
+/** One word (or run of words) inside a manifesto line. */
+export type ManifestoToken = {
+  text: string;
+  /** Paint this run orange (the brand's "one word in accent" device). */
+  accent?: boolean;
+  /** Draw a rough, hand-drawn annotation around/under this run. */
+  annotate?: "circle" | "underline";
+  /** Give this run an ambient (idle) orange glow pulse. */
+  glow?: boolean;
+};
+
+export type ManifestoLine = ManifestoToken[];
+
+/** One selectable answer in the interactive Q&A beat. */
+export type QAOption = {
+  label: string;
+  /** The answer Propagenda would give; drives the playful reply's tone. */
+  onBrand: boolean;
+  /** Short, self-aware response shown when this option is picked. */
+  reply: string;
+};
+
+/** A block of the illuminated body: either plain lines or an interactive Q&A. */
+export type ManifestoBlock =
+  | { kind: "lines"; lines: ManifestoLine[] }
+  | {
+      kind: "qa";
+      /** The prompt. */
+      question: string;
+      /** The pickable answers; the hand-drawn circle animates to your choice. */
+      options: QAOption[];
+      /** Sensible default selection (must match one option label). */
+      defaultLabel: string;
+    };
+
+/* ------------------------------------------------------------------ */
+/* OLD look — immersive statement types                                */
+/* ------------------------------------------------------------------ */
+
 export type AboutSegment = {
   text: string;
   accent?: boolean;
+  /** Draw a rough, hand-drawn annotation around/under this run (last milestone). */
+  annotate?: "circle" | "underline";
 };
 
 export type AboutStatement = {
   segments: AboutSegment[];
-  /** Advances to the next statement (or scrolls to studio on the last one). */
+  /** Advances to the next statement (or, on the last one, launches the manifesto). */
   pass: string;
   /** Optional "wrong" choice — triggers the fail marquee. */
   fail?: string;
@@ -13,9 +76,14 @@ export type AboutStatement = {
   passHref?: string;
   /** If set on last statement, scroll to this id instead of navigating. */
   passScrollId?: string;
+  /** Last milestone: its button LAUNCHES the manifesto (typing reveal + gate). */
+  launch?: boolean;
 };
 
 export const aboutContent = {
+  /* ============================================================ */
+  /* OLD look — the SMV immersive statement journey (top of page)  */
+  /* ============================================================ */
   statements: [
     {
       segments: [
@@ -50,16 +118,19 @@ export const aboutContent = {
       pass: "THAT'S US.",
     },
     {
+      // The LAST milestone IS the manifesto's opening line. Its button launches the
+      // manifesto (typing reveal + "Play it safe?" gate) instead of advancing.
       segments: [
-        { text: "YOUR BRAND " },
-        { text: "DESERVES MORE.", accent: true },
-        { text: " LET'S PROVE IT." },
+        { text: "WE MAKE BRANDS " },
+        { text: "IMPOSSIBLE", accent: true, annotate: "circle" },
+        { text: " TO IGNORE." },
       ],
-      pass: "MEET THE STUDIO",
-      passScrollId: "about-studio",
+      pass: "SHOW ME",
+      launch: true,
     },
   ] satisfies AboutStatement[],
 
+  /** OLD look — Plusdrie editorial intro + principles accordion. */
   intro: {
     label: "About us",
     statement:
@@ -69,25 +140,26 @@ export const aboutContent = {
   principles: [
     {
       title: "We keep things sharp",
-      body: "No fluff process decks. We go straight to the heart of the brief and build from clarity — so what we make is something people actually feel.",
+      body: "No fluff process decks. We go straight to the heart of the brief and build from clarity, so what we make is something people actually feel.",
     },
     {
       title: "We don't compromise on craft",
-      body: "Every brand touchpoint should earn attention. Strategy, design, and execution stay in one room — that's how the work stays coherent.",
+      body: "Every brand touchpoint should earn attention. Strategy, design, and execution stay in one room. That's how the work stays coherent.",
     },
     {
       title: "We act as partners",
-      body: "We're not a vendor that disappears after delivery. We show up like an extension of your team — honest, fast, and invested in the outcome.",
+      body: "We're not a vendor that disappears after delivery. We show up like an extension of your team. Honest, fast, and invested in the outcome.",
     },
   ],
 
+  /** OLD look — service rows with swappable image collages. */
   services: {
     label: "Our services",
     items: [
       {
         slug: "branding-visual-identity",
         title: "Branding",
-        body: "Identity systems that make your brand credible, memorable, and ready to scale — from first mark to full guidelines.",
+        body: "Identity systems that make your brand credible, memorable, and ready to scale, from first mark to full guidelines.",
         cta: "More about branding",
         options: [
           {
@@ -143,7 +215,7 @@ export const aboutContent = {
       {
         slug: "websites",
         title: "Websites",
-        body: "High-performing sites and landing pages — designed, built, and tuned to drive growth from day one.",
+        body: "High-performing sites and landing pages, designed, built, and tuned to drive growth from day one.",
         cta: "More about websites",
         options: [
           {
@@ -191,7 +263,7 @@ export const aboutContent = {
       {
         slug: "online-offline-marketing",
         title: "Marketing",
-        body: "Campaigns that work online and offline — strategy, content, social, and ads built to perform.",
+        body: "Campaigns that work online and offline. Strategy, content, social, and ads built to perform.",
         cta: "More about marketing",
         options: [
           {
@@ -247,7 +319,7 @@ export const aboutContent = {
       {
         slug: "photography-videography",
         title: "Photo & Video",
-        body: "Product, lifestyle, events, and cinematic production — your brand story, captured properly.",
+        body: "Product, lifestyle, events, and cinematic production. Your brand story, captured properly.",
         cta: "More about photo & video",
         options: [
           {
@@ -303,30 +375,13 @@ export const aboutContent = {
     ],
   },
 
-  team: {
-    label: "Meet the team",
-    statement:
-      "A focused studio of specialists that act as an extension of your brand.",
-    members: [
-      { name: "Laith Al Aqqad", role: "Manager" },
-      { name: "Jihen Jerbi", role: "Art Director" },
-      { name: "Mohamed Aziz Ktata", role: "Video Editor" },
-      { name: "Shahin Nahdi", role: "Video Editor" },
-      { name: "Ayhem Nahdi", role: "Video Editor × Web Developer" },
-      { name: "Khawla Ghribi", role: "Graphic Designer" },
-      { name: "Ryma Farhani", role: "Graphic Designer" },
-    ],
-    image:
-      "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&w=1600&q=80",
-    imageAlt: "Propagenda team together",
-  },
-
+  /** OLD look — testimonial marquee. */
   testimonials: {
     label: "What clients say",
     items: [
       {
         quote:
-          "Propagenda moved fast without losing the craft. They felt like an extension of our team — and the brand finally looks like the company we are.",
+          "Propagenda moved fast without losing the craft. They felt like an extension of our team, and the brand finally looks like the company we are.",
         name: "Omar Al Rashid",
         role: "Founder, Sanapex Interiors",
         logo: "/images/clients/sanapex-interiors.png",
@@ -334,7 +389,7 @@ export const aboutContent = {
       },
       {
         quote:
-          "Clear strategy, sharp execution. From identity to campaigns, everything stayed coherent — and people actually noticed.",
+          "Clear strategy, sharp execution. From identity to campaigns, everything stayed coherent, and people actually noticed.",
         name: "Sara Mansoor",
         role: "Marketing Lead, Ghaf Tree",
         logo: "/images/clients/ghaf-tree.png",
@@ -343,7 +398,7 @@ export const aboutContent = {
       },
       {
         quote:
-          "They don't do filler. Briefs get answered with work that performs — online and offline — without the agency theatre.",
+          "They don't do filler. Briefs get answered with work that performs, online and offline, without the agency theatre.",
         name: "Khalid Farouk",
         role: "Operations, Quick Car",
         logo: "/images/clients/quick-car.png",
@@ -351,7 +406,7 @@ export const aboutContent = {
       },
       {
         quote:
-          "End-to-end partners. Brand, content, and launches handled with the same standard — honest, invested, and on time.",
+          "End-to-end partners. Brand, content, and launches handled with the same standard: honest, invested, and on time.",
         name: "Nour Haddad",
         role: "Brand Manager, P2P Motors",
         logo: "/images/clients/p2p-motors.webp",
@@ -368,6 +423,73 @@ export const aboutContent = {
     ],
   },
 
+  /* ============================================================ */
+  /* NEW look — the scroll-illuminated manifesto                   */
+  /* ============================================================ */
+  /* Opens DIRECTLY on the first body paragraph (no restated hero — the
+     immersive's last milestone already showed "WE MAKE BRANDS IMPOSSIBLE TO
+     IGNORE."). Body paragraphs type in document order as the launch auto-scroll
+     glides through them; the LAST block is the "Play it safe?" gate, which appears
+     after the final paragraph, pauses the auto-scroll, and (on NO) bridges into the
+     old content below. */
+  body: [
+    {
+      kind: "lines",
+      lines: [
+        [{ text: "Most marketing asks to be liked." }],
+        [{ text: "We'd rather be " }, { text: "remembered.", accent: true }],
+      ],
+    },
+    {
+      kind: "lines",
+      lines: [
+        [{ text: "Design. Branding. Film. Digital." }],
+        [
+          { text: "One studio, " },
+          { text: "cut to move", accent: true, annotate: "underline" },
+          { text: "." },
+        ],
+      ],
+    },
+    {
+      kind: "lines",
+      lines: [
+        [{ text: "No templates. No filler. No noise." }],
+        [{ text: "Every frame " }, { text: "earns its place.", accent: true }],
+      ],
+    },
+    {
+      // The final typed paragraph. The gate appears right after this lands.
+      kind: "lines",
+      lines: [
+        [{ text: "Brands that move people," }],
+        [
+          { text: "and refuse to be " },
+          { text: "forgotten", accent: true, annotate: "underline" },
+          { text: "." },
+        ],
+      ],
+    },
+    {
+      // The END gate: pauses the auto-scroll after the last paragraph. NO resumes
+      // and glides into the old content; YES holds with "Ha, no.".
+      kind: "qa",
+      question: "Play it safe?",
+      options: [
+        { label: "YES", onBrand: false, reply: "Ha, no." },
+        { label: "NO", onBrand: true, reply: "Correct." },
+      ],
+      defaultLabel: "NO",
+    },
+  ] satisfies ManifestoBlock[],
+
+  cta: {
+    heading: "Let's make some noise.",
+    line1: "Let's make",
+    line2: "some noise.",
+  },
+
+  // Canonical subpage closer — consumed site-wide by PageCTA / ServicesCTA / CTA bands.
   closer: {
     line1: "Let's work together to",
     line2: "grow your brand.",

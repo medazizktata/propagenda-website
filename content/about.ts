@@ -483,6 +483,27 @@ export const aboutContent = {
     },
   ] satisfies ManifestoBlock[],
 
+  /**
+   * Impact stats band — proof figures shown above the closing CTA.
+   *
+   * PLACEHOLDER VALUES: every `value` below is a believable placeholder, NOT a real
+   * figure. Replace all four with real, verified numbers before launch (and adjust
+   * `decimals`/`suffix` to match). Labels are intentional for a Dubai 360° studio.
+   */
+  stats: {
+    eyebrow: "By the numbers",
+    items: [
+      // PLACEHOLDER — replace with the real figure before launch
+      { value: 120, decimals: 0, suffix: "+", label: "Projects delivered" },
+      // PLACEHOLDER — replace with the real figure before launch
+      { value: 3.2, decimals: 1, suffix: "×", label: "Avg client growth" },
+      // PLACEHOLDER — replace with the real figure before launch
+      { value: 40, decimals: 0, suffix: "M+", label: "Audience reached" },
+      // PLACEHOLDER — replace with the real figure before launch
+      { value: 7, decimals: 0, suffix: "+", label: "Years active" },
+    ],
+  },
+
   cta: {
     heading: "Let's make some noise.",
     line1: "Let's make",

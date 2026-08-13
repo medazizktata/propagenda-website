@@ -4,6 +4,7 @@ import { useState } from "react";
 import { AboutImmersive } from "@/components/sections/about/AboutImmersive";
 import { AboutManifesto } from "@/components/sections/about/AboutManifesto";
 import { AboutStudio } from "@/components/sections/about/AboutStudio";
+import { AboutStats } from "@/components/sections/about/AboutStats";
 import { ServicesCTA } from "@/components/sections/services/ServicesCTA";
 import { aboutContent } from "@/content/about";
 
@@ -40,6 +41,9 @@ export function AboutPageContent() {
 
       {/* OLD look continues: studio intro + principles → services → testimonials */}
       <AboutStudio />
+
+      {/* Proof: impact stats band (count-up on enter), last content before the CTA */}
+      <AboutStats />
 
       {/* One CTA, at the true end of the page */}
       <ServicesCTA line1={aboutContent.cta.line1} line2={aboutContent.cta.line2} />

@@ -12,6 +12,7 @@ import { ScrollCue } from '@/components/molecules/ScrollCue';
 import { SectionLabel } from '@/components/ui/SectionLabel';
 import { Button } from '@/components/ui/Button';
 import { ServicesCTA } from '@/components/sections/services/ServicesCTA';
+import { FAQAccordion } from '@/components/sections/FAQAccordion';
 import { ServiceNextPrev } from '@/components/sections/services/ServiceNextPrev';
 import { ServiceWorkGrid } from '@/components/sections/services/ServiceWorkGrid';
 import { PrInfluenceRoster } from '@/components/sections/services/PrInfluenceRoster';
@@ -1446,52 +1447,12 @@ function ServiceRelatedWork({ items }: { items: { label: string; href: string }[
 
 // FAQ accordion — sentence-case questions, a plus→× toggle, one panel open at a time.
 function ServiceFAQ({ faqs }: { faqs: { q: string; a: string }[] }) {
-  const [open, setOpen] = useState<number | null>(0);
+  // Reusable accordion with cuberto-style elastic-string dividers that pluck toward the
+  // cursor and spring back. Same +→× toggle behavior, plus the string-release effect.
   return (
     <ModuleShell label="FAQ" title="Common questions.">
       <div className="sd-reveal">
-        {faqs.map((f, i) => {
-          const isOpen = open === i;
-          return (
-            <div key={f.q} className="border-t border-white/10 last:border-b">
-              <button
-                type="button"
-                onClick={() => setOpen(isOpen ? null : i)}
-                aria-expanded={isOpen}
-                className="flex w-full items-center justify-between gap-6 py-5 text-left"
-              >
-                <span
-                  className={cn(
-                    'font-sans text-base font-semibold transition-colors duration-200 md:text-lg',
-                    isOpen ? 'text-orange' : 'text-white',
-                  )}
-                >
-                  {f.q}
-                </span>
-                <span
-                  aria-hidden
-                  className={cn(
-                    'relative flex h-6 w-6 shrink-0 items-center justify-center transition-transform duration-300 ease-out',
-                    isOpen && 'rotate-45',
-                  )}
-                >
-                  <span className="absolute h-0.5 w-3.5 rounded-full bg-orange" />
-                  <span className="absolute h-3.5 w-0.5 rounded-full bg-orange" />
-                </span>
-              </button>
-              <div
-                className={cn(
-                  'grid transition-all duration-300 ease-out',
-                  isOpen ? 'grid-rows-[1fr] pb-5 opacity-100' : 'grid-rows-[0fr] opacity-0',
-                )}
-              >
-                <div className="overflow-hidden">
-                  <p className="max-w-measure pr-8 text-[0.95rem] leading-[1.7] text-white/75">{f.a}</p>
-                </div>
-              </div>
-            </div>
-          );
-        })}
+        <FAQAccordion items={faqs.map((f) => ({ question: f.q, answer: f.a }))} />
       </div>
     </ModuleShell>
   );

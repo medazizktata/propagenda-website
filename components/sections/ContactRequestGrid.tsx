@@ -2,9 +2,10 @@
 
 import { useRef } from "react";
 import Link from "next/link";
-import { contactRequests } from "@/content/contact";
+import { bookCall, contactRequests } from "@/content/contact";
 import { cn } from "@/components/ui/cn";
 import { gsap } from "@/lib/motion/gsap";
+import { showToast } from "@/components/ui/toast";
 
 /**
  * SMV contact request grid — full-viewport snap scrollport.
@@ -16,6 +17,13 @@ export function ContactRequestGrid() {
     [contactRequests[0], contactRequests[1]],
     [contactRequests[2], contactRequests[3]],
   ] as const;
+
+  // Defensive guard: with no scheduling URL configured, the "Book a call" CTA
+  // degrades to the brief form (#contact-form). Surface a toast on activation so
+  // it explains itself instead of silently scrolling / no-oping.
+  const bookingNotice = bookCall.url ? undefined : bookCall.unavailableNotice;
+  const noticeFor = (box: (typeof contactRequests)[number]) =>
+    box.button === "BOOK A CALL" ? bookingNotice : undefined;
 
   return (
     <section
@@ -30,7 +38,7 @@ export function ContactRequestGrid() {
       <div className="flex flex-col md:hidden">
         {mobileOnly.map((box) => (
           <div key={box.cta} className="h-[100svh] shrink-0 snap-start snap-always">
-            <RequestPanel {...box} className="h-full min-h-0" />
+            <RequestPanel {...box} notice={noticeFor(box)} className="h-full min-h-0" />
           </div>
         ))}
       </div>
@@ -43,7 +51,7 @@ export function ContactRequestGrid() {
             className="grid h-[100svh] shrink-0 snap-start snap-always grid-cols-2"
           >
             {pair.map((box) => (
-              <RequestPanel key={box.cta} {...box} className="h-full min-h-0" />
+              <RequestPanel key={box.cta} {...box} notice={noticeFor(box)} className="h-full min-h-0" />
             ))}
           </div>
         ))}
@@ -59,7 +67,8 @@ function RequestPanel({
   href,
   image,
   className,
-}: (typeof contactRequests)[number] & { className?: string }) {
+  notice,
+}: (typeof contactRequests)[number] & { className?: string; notice?: string }) {
   const btnRef = useRef<HTMLAnchorElement>(null);
   const external = href.startsWith("mailto:") || href.startsWith("http");
 
@@ -139,6 +148,7 @@ function RequestPanel({
           {...(external
             ? { target: "_blank", rel: "noopener noreferrer" }
             : {})}
+          onClick={notice ? () => showToast(notice) : undefined}
           onMouseEnter={wiggle}
           onMouseLeave={stop}
           className={cn(

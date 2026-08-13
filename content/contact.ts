@@ -79,6 +79,12 @@ export const bookCall = {
   url: process.env.NEXT_PUBLIC_BOOKING_URL ?? '',
   label: 'Book a call',
   successPrompt: 'Want to talk sooner? Book a 30-minute intro call',
+  /**
+   * Shown (as a toast) if a book-a-call CTA is activated while no scheduling URL
+   * is configured, so the action explains itself instead of silently no-ops.
+   */
+  unavailableNotice:
+    "Live scheduling isn't live yet — drop your brief below and we'll set up the call within a day.",
 };
 
 export const contactRequests = [

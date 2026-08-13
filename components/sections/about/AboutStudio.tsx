@@ -45,13 +45,15 @@ export function AboutStudio() {
       <div className="relative px-gutter-m py-24 lg:px-gutter-d lg:py-32">
         <div className="mx-auto grid max-w-[1920px] items-center gap-16 lg:grid-cols-2 lg:gap-24">
           <div data-about-reveal className="relative">
-            {/* Shape-only monogram — brand presence without competing with the statement */}
+            {/* Single restrained monogram — brand presence, NOT wallpaper. Dialed to
+                ~4.5% opacity to respect the "no logo-pattern wallpaper above ~4%" law
+                (one designed moment, not a tiled sheet). */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/images/brand/logo-monogram.svg"
               alt=""
               aria-hidden
-              className="pointer-events-none absolute -left-[8%] top-1/2 w-[min(70%,22rem)] -translate-y-[42%] select-none opacity-[0.14] lg:-left-[12%] lg:w-[min(85%,28rem)]"
+              className="pointer-events-none absolute -left-[8%] top-1/2 w-[min(70%,22rem)] -translate-y-[42%] select-none opacity-[0.045] lg:-left-[12%] lg:w-[min(85%,28rem)]"
               draggable={false}
             />
             <div className="relative z-content">

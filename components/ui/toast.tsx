@@ -1,63 +1,74 @@
 'use client';
 
+import type { ReactNode } from 'react';
+import { Toast } from '@base-ui/react/toast';
+import { cn } from '@/components/ui/cn';
+
 /**
- * Minimal, dependency-free toast. Call `showToast(message)` from any client
- * component to surface a transient, self-dismissing notice — used as a graceful
- * fallback when an action can't complete (e.g. a book-a-call CTA with no
- * scheduling URL configured) so nothing silently no-ops on screen.
+ * Toast notifications built on the shadcn (base-nova / Base UI) Toast primitive.
  *
- * Self-contained: injects its own container + styles once, is announced via
- * aria-live, respects reduced-motion, and needs no provider in the tree.
+ * `showToast(message)` can be called from anywhere — even outside React — via a
+ * standalone manager, so call sites stay a one-liner. `<AppToastProvider>` mounts
+ * once (in Providers) to wrap the app and render the viewport. Used as a graceful
+ * fallback when an action can't complete on screen (e.g. a book-a-call CTA with
+ * no scheduling URL configured) instead of a silent no-op.
  */
 
-const CONTAINER_ID = 'app-toast-root';
-let stylesInjected = false;
+/** Standalone manager so `showToast` doesn't need the `useToastManager` hook. */
+export const toastManager = Toast.createToastManager();
 
-function ensureRoot(): HTMLElement | null {
-  if (typeof document === 'undefined') return null;
-
-  if (!stylesInjected) {
-    const style = document.createElement('style');
-    style.dataset.appToast = '';
-    style.textContent = `
-      #${CONTAINER_ID}{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;gap:8px;width:min(92vw,420px);pointer-events:none}
-      .app-toast{pointer-events:auto;cursor:pointer;background:#252525;color:#fff;border:1px solid rgba(255,255,255,.1);border-left:3px solid #f58b27;border-radius:12px;padding:12px 16px;font:500 14px/1.5 var(--font-poppins),system-ui,sans-serif;box-shadow:0 16px 40px -12px rgba(0,0,0,.6);opacity:0;transform:translateY(8px);transition:opacity .28s ease,transform .28s ease}
-      .app-toast.is-in{opacity:1;transform:translateY(0)}
-      @media (prefers-reduced-motion: reduce){.app-toast{transition:none}}
-    `;
-    document.head.appendChild(style);
-    stylesInjected = true;
-  }
-
-  let root = document.getElementById(CONTAINER_ID);
-  if (!root) {
-    root = document.createElement('div');
-    root.id = CONTAINER_ID;
-    document.body.appendChild(root);
-  }
-  return root;
+export function showToast(
+  message: string,
+  opts?: { title?: string; timeout?: number },
+): void {
+  if (!message) return;
+  toastManager.add({
+    title: opts?.title,
+    description: message,
+    timeout: opts?.timeout ?? 5000,
+  });
 }
 
-export function showToast(message: string, opts?: { duration?: number }): void {
-  const root = ensureRoot();
-  if (!root || !message) return;
+function ToastList() {
+  const { toasts } = Toast.useToastManager();
+  return toasts.map((toast) => (
+    <Toast.Root
+      key={toast.id}
+      toast={toast}
+      className={cn(
+        'flex w-full items-start gap-3 rounded-xl border border-white/10 border-l-[3px] border-l-orange bg-charcoal px-4 py-3',
+        'shadow-[0_16px_40px_-12px_rgb(0_0_0_/_0.6)]',
+        'transition-[opacity,transform] duration-300 ease-out motion-reduce:transition-none',
+        'data-[starting-style]:translate-y-3 data-[starting-style]:opacity-0',
+        'data-[ending-style]:translate-y-3 data-[ending-style]:opacity-0',
+      )}
+    >
+      <div className="min-w-0 flex-1">
+        {toast.title ? (
+          <Toast.Title className="font-sans text-sm font-semibold leading-snug text-white" />
+        ) : null}
+        <Toast.Description className="font-sans text-sm leading-relaxed text-white/85" />
+      </div>
+      <Toast.Close
+        aria-label="Dismiss"
+        className="-mr-1 shrink-0 rounded-md px-1 text-lg leading-none text-white/45 transition-colors hover-fine:hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange"
+      >
+        <span aria-hidden>×</span>
+      </Toast.Close>
+    </Toast.Root>
+  ));
+}
 
-  const el = document.createElement('div');
-  el.className = 'app-toast';
-  el.setAttribute('role', 'status');
-  el.setAttribute('aria-live', 'polite');
-  el.textContent = message;
-
-  let removed = false;
-  const dismiss = () => {
-    if (removed) return;
-    removed = true;
-    el.classList.remove('is-in');
-    window.setTimeout(() => el.remove(), 300);
-  };
-
-  el.addEventListener('click', dismiss);
-  root.appendChild(el);
-  requestAnimationFrame(() => el.classList.add('is-in'));
-  window.setTimeout(dismiss, opts?.duration ?? 4500);
+/** Mount once (in Providers). Wraps the app so `useToastManager` works everywhere. */
+export function AppToastProvider({ children }: { children: ReactNode }) {
+  return (
+    <Toast.Provider toastManager={toastManager}>
+      {children}
+      <Toast.Portal>
+        <Toast.Viewport className="fixed inset-x-0 bottom-6 z-[9999] mx-auto flex w-[min(92vw,420px)] flex-col gap-2 px-4 outline-none">
+          <ToastList />
+        </Toast.Viewport>
+      </Toast.Portal>
+    </Toast.Provider>
+  );
 }

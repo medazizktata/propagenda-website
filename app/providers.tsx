@@ -3,6 +3,7 @@
 import { LazyMotion, domAnimation } from 'framer-motion';
 import type { ReactNode } from 'react';
 import { useEffect } from 'react';
+import { AppToastProvider } from '@/components/ui/toast';
 
 // Module-level: StrictMode double-invokes effects in dev, and MSW throws an
 // invariant ("cannot configure an already enabled network") on a second start.
@@ -20,7 +21,7 @@ export function Providers({ children }: { children: ReactNode }) {
 
   return (
     <LazyMotion features={domAnimation} strict>
-      {children}
+      <AppToastProvider>{children}</AppToastProvider>
     </LazyMotion>
   );
 }

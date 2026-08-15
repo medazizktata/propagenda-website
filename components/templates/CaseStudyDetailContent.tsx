@@ -478,11 +478,41 @@ function CaseStudyGalleryMosaic({
   canOpen: boolean;
   onOpenAt: (i: number) => void;
 }) {
+  const gridRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const grid = gridRef.current;
+    if (!grid) return;
+    const ctx = gsap.context(() => {
+      grid.querySelectorAll<HTMLElement>('[data-mosaic-img]').forEach((el) => {
+        gsap.fromTo(
+          el,
+          { yPercent: -8 },
+          {
+            yPercent: 8,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: el.parentElement,
+              start: 'top bottom',
+              end: 'bottom top',
+              scrub: true,
+            },
+          },
+        );
+      });
+    }, grid);
+    return () => ctx.revert();
+  }, []);
+
   return (
     <section className="relative bg-charcoal px-gutter-m py-16 lg:px-gutter-d lg:py-24">
       <div className="mx-auto max-w-7xl">
         <SectionHeading>More visuals</SectionHeading>
-        <div className="grid auto-rows-[9.5rem] grid-flow-dense grid-cols-2 gap-3 md:auto-rows-[12rem] md:grid-cols-4 md:gap-4">
+        <div
+          ref={gridRef}
+          className="grid auto-rows-[9.5rem] grid-flow-dense grid-cols-2 gap-3 md:auto-rows-[12rem] md:grid-cols-4 md:gap-4"
+        >
           {images.map((image, i) => (
             <button
               key={`${image.alt}-${i}`}
@@ -496,12 +526,18 @@ function CaseStudyGalleryMosaic({
                 spanClass(images.length, i),
               )}
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={image.src}
-                alt={image.alt}
-                className="h-full w-full object-cover transition-transform duration-[1200ms] ease-out hover-fine:group-hover/tile:scale-[1.06]"
-              />
+              {/* Parallax layer — taller than the tile so the scroll shift never reveals an edge. */}
+              <div
+                data-mosaic-img
+                className="pointer-events-none absolute inset-x-0 top-[-14%] h-[128%] will-change-transform"
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={image.src}
+                  alt={image.alt}
+                  className="h-full w-full object-cover transition-transform duration-[1200ms] ease-out hover-fine:group-hover/tile:scale-[1.06]"
+                />
+              </div>
             </button>
           ))}
         </div>

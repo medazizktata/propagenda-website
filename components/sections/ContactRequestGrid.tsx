@@ -29,6 +29,7 @@ export function ContactRequestGrid() {
   return (
     <section
       aria-label="Ways to reach us"
+      data-lenis-prevent
       className={cn(
         "relative h-[100svh] overflow-y-auto overscroll-y-auto border-b border-white/10",
         "snap-y snap-mandatory scroll-smooth [-webkit-overflow-scrolling:touch]",

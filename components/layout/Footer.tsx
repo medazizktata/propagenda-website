@@ -26,13 +26,13 @@ export function Footer() {
           <div className="space-y-2 lg:col-span-4">
             <a
               href={`tel:${footer.phone.replace(/\s/g, '')}`}
-              className="transition-hover block text-sm leading-none tracking-wide text-white/75 hover-fine:hover:text-orange md:text-base"
+              className="transition-hover block font-mono text-sm leading-none tracking-wide text-white/75 hover-fine:hover:text-orange md:text-base"
             >
               {footer.phone}
             </a>
             <a
               href={`mailto:${footer.email}`}
-              className="transition-hover block text-sm leading-none tracking-wide text-white/75 hover-fine:hover:text-orange md:text-base"
+              className="transition-hover block font-mono text-sm leading-none tracking-wide text-white/75 hover-fine:hover:text-orange md:text-base"
             >
               {footer.email}
             </a>
@@ -56,7 +56,7 @@ export function Footer() {
                 </a>
               ) : null}
             </div>
-            <p className="max-w-[22ch] text-sm leading-relaxed text-white/60">
+            <p className="max-w-[24ch] font-mono text-sm leading-relaxed text-white/60">
               {footer.address}
             </p>
           </div>

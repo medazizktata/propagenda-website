@@ -927,7 +927,18 @@ function ScopeStack({ items }: { items: string[] }) {
                           <ul className="mt-3 grid gap-1.5">
                             {detail.points.map((pt) => (
                               <li key={pt} className="flex items-start gap-2.5 text-sm text-white/55">
-                                <span aria-hidden className="mt-[0.55em] h-[2px] w-3 shrink-0 rounded bg-orange" />
+                                <svg
+                                  aria-hidden
+                                  viewBox="0 0 24 24"
+                                  className="mt-[0.1em] h-[1.05em] w-[1.05em] shrink-0 text-orange"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2.5"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                >
+                                  <path d="M4 12.5l5 5L20 6" />
+                                </svg>
                                 {pt}
                               </li>
                             ))}

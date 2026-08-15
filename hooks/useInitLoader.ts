@@ -22,6 +22,15 @@ function markLoaderSeen() {
   }
 }
 
+/** Embedded device-preview iframe (`?preview=1`): never show the intro splash inside it. */
+function isEmbeddedPreview() {
+  try {
+    return window.location.search.includes('preview=1');
+  } catch {
+    return false;
+  }
+}
+
 /** Opt out with NEXT_PUBLIC_FF_INIT_LOADER=false (or legacy NEXT_PUBLIC_INIT_LOADER). */
 export function isInitLoaderEnabled() {
   return ffInitLoader;
@@ -41,7 +50,10 @@ export function useInitLoader() {
   const [state, setState] = useState<'visible' | 'done'>(() => (enabled ? 'visible' : 'done'));
 
   useEffect(() => {
-    if (!enabled || reducedMotion || hasSeenLoaderThisSession()) {
+    if (!enabled || reducedMotion || hasSeenLoaderThisSession() || isEmbeddedPreview()) {
+      // SSR-safe by design: the initial state is deterministic (see above), so the client-only
+      // dismiss — seen this session / reduced-motion / embedded preview — must land post-mount.
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional client dismiss
       setState('done');
     }
   }, [enabled, reducedMotion]);

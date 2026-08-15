@@ -18,15 +18,18 @@ import { useReducedMotion } from '@/lib/motion/useReducedMotion';
 type Breakpoint = {
   id: 'desktop' | 'tablet' | 'mobile';
   label: string;
+  /** Physical shell width in the stage (what the bezel morphs to). */
   width: string;
+  /** Emulated CSS viewport width the embed renders at, then scales down to fit the shell. */
+  vw: number;
   dims: string;
   cols: number;
 };
 
 const BREAKPOINTS: Breakpoint[] = [
-  { id: 'desktop', label: 'Desktop', width: '100%', dims: '1280 × 800', cols: 3 },
-  { id: 'tablet', label: 'Tablet', width: '420px', dims: '768 × 1024', cols: 2 },
-  { id: 'mobile', label: 'Mobile', width: '260px', dims: '375 × 812', cols: 1 },
+  { id: 'desktop', label: 'Desktop', width: '100%', vw: 1280, dims: '1280 × 800', cols: 3 },
+  { id: 'tablet', label: 'Tablet', width: '420px', vw: 768, dims: '768 × 1024', cols: 2 },
+  { id: 'mobile', label: 'Mobile', width: '260px', vw: 375, dims: '375 × 812', cols: 1 },
 ];
 
 // Supporting web-vitals figures beside the score gauge (all illustrative, all "good").
@@ -130,15 +133,47 @@ function ScoreGauge({ score, run, reduced }: { score: number; run: boolean; redu
   );
 }
 
-/** Live preview of the real Propagenda home page, reflowing inside the device screen. */
-function MiniSite() {
+/**
+ * Live, lightweight "minified home" preview (see app/preview/page.tsx). It renders at the
+ * target viewport width (`vw`) and is scaled down to fit the device screen — so each breakpoint
+ * shows the home page's *real* layout (desktop nav at 1280, the tablet reflow at 768, the true
+ * mobile stack at 375) instead of squashing the page into the physical frame width. The same
+ * iframe stays mounted across breakpoints: only its `width` changes, so the embed reflows live.
+ */
+function MiniSite({ vw }: { vw: number }) {
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const [box, setBox] = useState({ w: 0, h: 0 });
+
+  useEffect(() => {
+    const wrap = wrapRef.current;
+    if (!wrap) return;
+    const measure = () => setBox({ w: wrap.clientWidth, h: wrap.clientHeight });
+    measure();
+    if (typeof ResizeObserver === 'undefined') return;
+    const ro = new ResizeObserver(measure);
+    ro.observe(wrap);
+    return () => ro.disconnect();
+  }, []);
+
+  const scale = box.w > 0 ? box.w / vw : 0;
+
   return (
-    <iframe
-      src="/?preview=1"
-      title="Live preview of the Propagenda home page"
-      loading="lazy"
-      className="min-h-0 w-full flex-1 border-0 bg-charcoal"
-    />
+    <div ref={wrapRef} className="relative min-h-0 w-full flex-1 overflow-hidden bg-charcoal">
+      {scale > 0 && (
+        <iframe
+          src="/preview?preview=1"
+          title="Live preview of the Propagenda home page"
+          loading="lazy"
+          className="absolute left-0 top-0 border-0 bg-charcoal"
+          style={{
+            width: vw,
+            height: Math.ceil(box.h / scale),
+            transform: `scale(${scale})`,
+            transformOrigin: 'top left',
+          }}
+        />
+      )}
+    </div>
   );
 }
 
@@ -429,7 +464,7 @@ export function WebsitesShowcase() {
               style={{ maxWidth: bp.width }}
             >
               <DeviceMockup bp={bp} reduced={!!reducedMotion}>
-                <MiniSite />
+                <MiniSite vw={bp.vw} />
               </DeviceMockup>
             </div>
           </div>

@@ -22,14 +22,13 @@ type Breakpoint = {
   width: string;
   /** Emulated CSS viewport width the embed renders at, then scales down to fit the shell. */
   vw: number;
-  dims: string;
   cols: number;
 };
 
 const BREAKPOINTS: Breakpoint[] = [
-  { id: 'desktop', label: 'Desktop', width: '100%', vw: 1280, dims: '1280 × 800', cols: 3 },
-  { id: 'tablet', label: 'Tablet', width: '420px', vw: 768, dims: '768 × 1024', cols: 2 },
-  { id: 'mobile', label: 'Mobile', width: '260px', vw: 375, dims: '375 × 812', cols: 1 },
+  { id: 'desktop', label: 'Desktop', width: '100%', vw: 1280, cols: 3 },
+  { id: 'tablet', label: 'Tablet', width: '420px', vw: 768, cols: 2 },
+  { id: 'mobile', label: 'Mobile', width: '260px', vw: 375, cols: 1 },
 ];
 
 // Supporting web-vitals figures beside the score gauge (all illustrative, all "good").
@@ -177,7 +176,7 @@ function MiniSite({ vw }: { vw: number }) {
   );
 }
 
-function BrowserChrome({ dims }: { dims: string }) {
+function BrowserChrome() {
   return (
     <div className="flex shrink-0 items-center gap-2.5 border-b border-black/5 bg-[#eceff3] px-3 py-2 sm:gap-3 sm:px-3.5 sm:py-2.5">
       <div className="flex items-center gap-1.5">
@@ -192,7 +191,6 @@ function BrowserChrome({ dims }: { dims: string }) {
         </svg>
         <span className="truncate text-meta-sm text-navy/55 sm:text-meta">thepropagenda.com</span>
       </div>
-      <span className="hidden shrink-0 text-meta-sm tabular-nums text-navy/40 sm:block sm:text-meta">{dims}</span>
     </div>
   );
 }
@@ -289,7 +287,7 @@ function DeviceMockup({ bp, children, reduced }: { bp: Breakpoint; children: Rea
               isMobile ? 'max-h-0 opacity-0' : 'max-h-14 opacity-100',
             )}
           >
-            <BrowserChrome dims={bp.dims} />
+            <BrowserChrome />
           </div>
 
           {children}

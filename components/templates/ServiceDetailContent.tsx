@@ -745,28 +745,61 @@ const WEB_LAYER_KIND: Record<string, string> = {
   'Ongoing management': 'care',
 };
 
-// Click-to-reveal detail for each website layer. PLACEHOLDER copy — replace `body`
-// and `points` with the real content per deliverable (kept in one place to edit).
-const WEB_SCOPE_DETAIL: Record<string, { body: string; points: string[] }> = {
+// Click-to-reveal detail for each website layer — body copy, a few key points, and an
+// on-theme image. Edit all of it in this one map.
+const WEB_SCOPE_DETAIL: Record<
+  string,
+  { body: string; points: string[]; image?: string; alt?: string }
+> = {
   'Website design & development': {
-    body: 'PLACEHOLDER — how you design and build custom sites from the ground up.',
-    points: ['PLACEHOLDER point', 'PLACEHOLDER point', 'PLACEHOLDER point'],
+    body: 'Custom sites designed and built from the ground up — never a template. Strategy, design, and development stay in one room, so the result is fast, on-brand, and easy for your team to run.',
+    points: [
+      'Bespoke design, hand-coded clean',
+      'Responsive across every screen size',
+      'A CMS your team can actually use',
+    ],
+    image: '/images/portfolio/work-quickcars.webp',
+    alt: 'Custom website and brand work by Propagenda',
   },
   'Landing pages': {
-    body: 'PLACEHOLDER — your focused, high-converting campaign pages.',
-    points: ['PLACEHOLDER point', 'PLACEHOLDER point'],
+    body: 'Focused pages built to convert — one goal, one message, zero distraction. Ideal for launches, ads, and campaigns where every click has to earn its place.',
+    points: [
+      'Conversion-first structure',
+      'Copy and layout tuned to the offer',
+      'Built to load in under two seconds',
+    ],
+    image: '/images/portfolio/work-restaurant.webp',
+    alt: 'High-converting landing page work',
   },
   'UX/UI': {
-    body: 'PLACEHOLDER — your UX/UI approach, from wireframes to shipped interface.',
-    points: ['PLACEHOLDER point', 'PLACEHOLDER point', 'PLACEHOLDER point'],
+    body: 'Interfaces that are intuitive to navigate and quick to grasp. We map the journey, prototype the flow, and pressure-test it with real people before a line of production code.',
+    points: [
+      'Wireframes into interactive prototypes',
+      'A design system with reusable components',
+      'Usability passes before anything ships',
+    ],
+    image: '/images/portfolio/work-sanapex.webp',
+    alt: 'UX and UI design system work',
   },
   'Performance optimization': {
-    body: 'PLACEHOLDER — how you keep sites fast with healthy Core Web Vitals.',
-    points: ['PLACEHOLDER point', 'PLACEHOLDER point'],
+    body: 'Fast loads, clean code, and healthy Core Web Vitals. We tune images, scripts, and delivery so the site feels instant — which users reward and search engines rank.',
+    points: [
+      'Core Web Vitals in the green',
+      'Image and asset optimization',
+      'CDN and caching dialed in',
+    ],
+    image: '/images/portfolio/work-ghaftree.webp',
+    alt: 'Performance-optimized website work',
   },
   'Ongoing management': {
-    body: 'PLACEHOLDER — hosting, updates, security, and steady improvement.',
-    points: ['PLACEHOLDER point', 'PLACEHOLDER point', 'PLACEHOLDER point'],
+    body: 'Hosting, updates, security, and steady improvement. We keep the site healthy long after launch, so it never goes stale and never catches you off guard.',
+    points: [
+      'Managed hosting with backups',
+      'Security patches and uptime monitoring',
+      'Iterative improvements every month',
+    ],
+    image: '/images/portfolio/work-food.webp',
+    alt: 'Ongoing website management and improvement',
   },
 };
 
@@ -887,17 +920,30 @@ function ScopeStack({ items }: { items: string[] }) {
               >
                 <div className="overflow-hidden">
                   {detail && (
-                    <div className="pb-6 pl-6 pr-5 md:pl-[4.75rem]">
-                      <p className="max-w-xl text-sm leading-relaxed text-white/70">{detail.body}</p>
-                      {detail.points.length > 0 && (
-                        <ul className="mt-3 grid gap-1.5">
-                          {detail.points.map((pt) => (
-                            <li key={pt} className="flex items-start gap-2.5 text-sm text-white/55">
-                              <span aria-hidden className="mt-[0.55em] h-[2px] w-3 shrink-0 rounded bg-orange" />
-                              {pt}
-                            </li>
-                          ))}
-                        </ul>
+                    <div className="flex flex-col gap-5 pb-6 pl-6 pr-5 md:flex-row md:items-start md:gap-7 md:pl-[4.75rem]">
+                      <div className="min-w-0 flex-1">
+                        <p className="max-w-xl text-sm leading-relaxed text-white/70">{detail.body}</p>
+                        {detail.points.length > 0 && (
+                          <ul className="mt-3 grid gap-1.5">
+                            {detail.points.map((pt) => (
+                              <li key={pt} className="flex items-start gap-2.5 text-sm text-white/55">
+                                <span aria-hidden className="mt-[0.55em] h-[2px] w-3 shrink-0 rounded bg-orange" />
+                                {pt}
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                      {detail.image && (
+                        <div className="relative aspect-[4/3] w-full shrink-0 overflow-hidden rounded-lg ring-1 ring-white/10 md:w-52 lg:w-60">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={detail.image}
+                            alt={detail.alt ?? ''}
+                            loading="lazy"
+                            className="h-full w-full object-cover"
+                          />
+                        </div>
                       )}
                     </div>
                   )}

@@ -134,6 +134,50 @@ export const loaderPresets = {
     curtain: 'wipe-right',
   },
 
+  // ── Per-service presets — each service detail page gets its own line ──
+  brandingService: {
+    lines: ['A BRAND', 'THEY', "CAN'T", 'FORGET.'],
+    attribution: 'BRANDING',
+    entrance: 'meet',
+    curtain: 'iris',
+  },
+  prService: {
+    lines: ['GET', 'PEOPLE', 'TALKING.'],
+    attribution: 'PUBLIC RELATIONS',
+    entrance: 'rise',
+    curtain: 'burst',
+  },
+  marketingService: {
+    lines: ['SEEN', 'WHERE IT', 'COUNTS.'],
+    attribution: 'MARKETING',
+    entrance: 'horizon',
+    curtain: 'wipe-up',
+  },
+  websitesService: {
+    lines: ['SITES', 'BUILT TO', 'CONVERT.'],
+    attribution: 'WEBSITES',
+    entrance: 'clarify',
+    curtain: 'slash',
+  },
+  mobileService: {
+    lines: ['APPS', 'FOR EVERY', 'POCKET.'],
+    attribution: 'MOBILE APPS',
+    entrance: 'rise',
+    curtain: 'fold',
+  },
+  eventsService: {
+    lines: ['MOMENTS', 'WORTH', 'SHOWING', 'UP FOR.'],
+    attribution: 'EVENTS',
+    entrance: 'meet',
+    curtain: 'blinds',
+  },
+  photoVideoService: {
+    lines: ['EVERY', 'FRAME', 'EARNS', 'ITS PLACE.'],
+    attribution: 'PHOTO & VIDEO',
+    entrance: 'horizon',
+    curtain: 'wipe-down',
+  },
+
   // ── Init-only variants (first-load pool) ───────────────────
   looking: {
     lines: ['LOOKING', 'FOR THE', 'BETTER', 'FUTURE.'],
@@ -185,6 +229,13 @@ export const routeLoaderPresets: Record<string, LoaderPresetId> = {
   '/privacy': 'privacy',
   '/terms': 'terms',
   '/imprint': 'imprint',
+  '/services/branding-visual-identity': 'brandingService',
+  '/services/public-relations': 'prService',
+  '/services/online-offline-marketing': 'marketingService',
+  '/services/websites': 'websitesService',
+  '/services/mobile-applications': 'mobileService',
+  '/services/events': 'eventsService',
+  '/services/photography-videography': 'photoVideoService',
 };
 
 /** First-load rotation — ids into `loaderPresets`. */

@@ -2,9 +2,7 @@
 
 import { WorkHero } from '@/components/sections/WorkHero';
 import { WorkIndex } from '@/components/sections/WorkIndex';
-import { LogoWallGrid } from '@/components/sections/LogoWallGrid';
 import { ClosingCTABand } from '@/components/sections/ClosingCTABand';
-import { logoGridBrands } from '@/content/workHub';
 import { allCaseStudies } from '@/content/work';
 
 // Real case studies (with their heroImages, client, industry, year) drive the index —
@@ -28,7 +26,6 @@ export function WorkPageContent() {
     <>
       <WorkHero />
       <WorkIndex groups={categoryGroups} />
-      <LogoWallGrid brands={logoGridBrands} />
       <ClosingCTABand />
     </>
   );

@@ -326,7 +326,7 @@ export function DesignPrintInstallPopup() {
           {words.map((word, i) => (
             <span
               key={word}
-              className="dpi-word block w-full text-center will-change-transform"
+              className="dpi-word pointer-events-auto block w-full text-center text-white transition-colors duration-300 will-change-transform hover-fine:hover:text-orange"
               style={{ fontSize: 'clamp(3rem, 12vw, 12rem)' }}
             >
               {word}

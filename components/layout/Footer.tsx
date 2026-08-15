@@ -5,6 +5,7 @@ import { SocialIconLink } from '@/components/molecules/SocialIconLink';
 import { ScrollToTopButton } from '@/components/molecules/ScrollToTopButton';
 import { footer, primaryNav, socialLinks } from '@/content/site';
 import { bookCall, whatsapp } from '@/content/contact';
+import { WhatsAppGlyph, CalendarGlyph } from '@/components/ui/ChannelGlyphs';
 
 export function Footer() {
   const year = new Date().getFullYear();
@@ -43,6 +44,7 @@ export function Footer() {
                 rel="noopener noreferrer"
                 className="text-backstage transition-hover inline-flex items-center gap-2 text-white/60 hover-fine:hover:text-white"
               >
+                <WhatsAppGlyph />
                 WhatsApp <span aria-hidden>↗</span>
               </a>
               {bookCall.url ? (
@@ -52,6 +54,7 @@ export function Footer() {
                   rel="noopener noreferrer"
                   className="text-backstage transition-hover inline-flex items-center gap-2 text-white/60 hover-fine:hover:text-white"
                 >
+                  <CalendarGlyph />
                   Book a call <span aria-hidden>↗</span>
                 </a>
               ) : null}

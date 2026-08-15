@@ -17,6 +17,7 @@ export function CustomCursor() {
   const dotRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (window.location.search.includes('preview=1')) return; // embedded preview: no cursor
     const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)');
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
     if (!finePointer.matches || reduced.matches) return;

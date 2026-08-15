@@ -21,6 +21,7 @@ declare global {
  */
 export function SmoothScroll() {
   useEffect(() => {
+    if (window.location.search.includes('preview=1')) return; // embedded preview: native scroll
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
     const lenis = new Lenis({

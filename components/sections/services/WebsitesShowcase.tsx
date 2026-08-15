@@ -29,15 +29,6 @@ const BREAKPOINTS: Breakpoint[] = [
   { id: 'mobile', label: 'Mobile', width: '260px', dims: '375 × 812', cols: 1 },
 ];
 
-// The mini-site rendered inside the frame — real portfolio renders as stand-in screenshots.
-const HERO_IMG = '/images/portfolio/work-quickcars.webp';
-const SITE_CARDS = [
-  { img: '/images/portfolio/work-sanapex.webp', title: 'New arrivals' },
-  { img: '/images/portfolio/work-ghaftree.webp', title: 'Certified used' },
-  { img: '/images/portfolio/work-restaurant.webp', title: 'Finance & trade-in' },
-];
-const NAV_LINKS = ['Home', 'Models', 'Finance', 'Contact'];
-
 // Supporting web-vitals figures beside the score gauge (all illustrative, all "good").
 const VITALS = [
   { label: 'Accessibility', value: '100' },
@@ -139,67 +130,15 @@ function ScoreGauge({ score, run, reduced }: { score: number; run: boolean; redu
   );
 }
 
-/** Mini-site that reflows inside the device screen. */
-function MiniSite({ bp }: { bp: Breakpoint }) {
+/** Live preview of the real Propagenda home page, reflowing inside the device screen. */
+function MiniSite() {
   return (
-    <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden bg-white">
-      <div className="flex shrink-0 items-center justify-between border-b border-black/[0.06] px-3 py-2.5 sm:px-4 sm:py-3">
-        <span className="font-sans text-sm font-bold tracking-tight text-navy">Quick Cars</span>
-        {bp.id === 'mobile' ? (
-          <svg viewBox="0 0 24 24" fill="none" aria-hidden className="h-4 w-4 text-navy/70">
-            <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-          </svg>
-        ) : (
-          <ul className="flex items-center gap-3 sm:gap-4">
-            {NAV_LINKS.map((l, i) => (
-              <li
-                key={l}
-                className={cn('text-meta-sm sm:text-xs', i === 0 ? 'font-semibold text-orange' : 'text-navy/60')}
-              >
-                {l}
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-
-      <div className="relative h-[42%] min-h-[6.5rem] overflow-hidden">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={HERO_IMG} alt="" className="h-full w-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-t from-navy/85 via-navy/35 to-transparent" />
-        <div className="absolute inset-x-3 bottom-2.5 sm:inset-x-4 sm:bottom-3">
-          <p
-            className="font-sans font-bold leading-tight text-white"
-            style={{ fontSize: 'clamp(0.85rem, 2.2vw, 1.4rem)' }}
-          >
-            Find your next car.
-          </p>
-          <span className="mt-1.5 inline-block rounded bg-orange px-2 py-0.5 text-[9px] font-semibold text-navy sm:mt-2 sm:px-2.5 sm:py-1 sm:text-meta-sm">
-            Browse models
-          </span>
-        </div>
-      </div>
-
-      <div className="min-h-0 flex-1 overflow-hidden p-3 sm:p-4">
-        <div
-          className="grid gap-2.5 transition-all duration-500 ease-out sm:gap-3"
-          style={{ gridTemplateColumns: `repeat(${bp.cols}, minmax(0, 1fr))` }}
-        >
-          {SITE_CARDS.map((card) => (
-            <div key={card.title} className="overflow-hidden rounded-lg ring-1 ring-black/[0.06]">
-              <div className="relative aspect-[4/3]">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={card.img} alt="" className="h-full w-full object-cover" />
-              </div>
-              <div className="px-2 py-1.5 sm:px-2.5 sm:py-2">
-                <span className="block truncate text-meta-sm font-semibold text-navy sm:text-meta">{card.title}</span>
-                <span className="mt-0.5 block h-1.5 w-2/3 rounded-full bg-black/[0.08]" />
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
+    <iframe
+      src="/?preview=1"
+      title="Live preview of the Propagenda home page"
+      loading="lazy"
+      className="min-h-0 w-full flex-1 border-0 bg-charcoal"
+    />
   );
 }
 
@@ -216,7 +155,7 @@ function BrowserChrome({ dims }: { dims: string }) {
           <rect x="5" y="11" width="14" height="9" rx="1.6" stroke="currentColor" strokeWidth="2" />
           <path d="M8 11V8a4 4 0 0 1 8 0v3" stroke="currentColor" strokeWidth="2" />
         </svg>
-        <span className="truncate text-meta-sm text-navy/55 sm:text-meta">quickcars.ae</span>
+        <span className="truncate text-meta-sm text-navy/55 sm:text-meta">thepropagenda.com</span>
       </div>
       <span className="hidden shrink-0 text-meta-sm tabular-nums text-navy/40 sm:block sm:text-meta">{dims}</span>
     </div>
@@ -490,7 +429,7 @@ export function WebsitesShowcase() {
               style={{ maxWidth: bp.width }}
             >
               <DeviceMockup bp={bp} reduced={!!reducedMotion}>
-                <MiniSite bp={bp} />
+                <MiniSite />
               </DeviceMockup>
             </div>
           </div>

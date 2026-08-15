@@ -33,19 +33,16 @@ export function PageCTA({
         className,
       )}
     >
-      {/* Centered radial bloom — soft falloff to transparent at the edges, pulses in place. */}
+      {/* Centered radial bloom — fades fully to transparent well before the section
+          edges so there is no hard box/overflow clip; pulses gently in place. */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 flex items-center justify-center"
-      >
-        <div
-          className="aspect-square w-[min(58vw,20rem)] animate-cta-glow motion-reduce:animate-none motion-reduce:opacity-50"
-          style={{
-            background:
-              'radial-gradient(circle at center, rgba(245,139,39,0.55) 0%, rgba(245,139,39,0.25) 32%, rgba(245,139,39,0.08) 58%, transparent 78%)',
-          }}
-        />
-      </div>
+        className="animate-cta-glow pointer-events-none absolute inset-0 motion-reduce:animate-none motion-reduce:opacity-50"
+        style={{
+          background:
+            'radial-gradient(38% 42% at 50% 52%, rgba(245,139,39,0.42) 0%, rgba(245,139,39,0.18) 38%, rgba(245,139,39,0.05) 62%, transparent 78%)',
+        }}
+      />
 
       <div className="relative z-content mx-auto max-w-3xl">
         <h2

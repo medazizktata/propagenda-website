@@ -149,7 +149,6 @@ export function ServicesNavMenu() {
   const [hl, setHl] = useState({ y: 0, h: 0, ready: false });
   useEffect(() => {
     const el = liRefs.current[active];
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (el) setHl({ y: el.offsetTop, h: el.offsetHeight, ready: true });
   }, [active]);
 

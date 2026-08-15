@@ -745,6 +745,31 @@ const WEB_LAYER_KIND: Record<string, string> = {
   'Ongoing management': 'care',
 };
 
+// Click-to-reveal detail for each website layer. PLACEHOLDER copy — replace `body`
+// and `points` with the real content per deliverable (kept in one place to edit).
+const WEB_SCOPE_DETAIL: Record<string, { body: string; points: string[] }> = {
+  'Website design & development': {
+    body: 'PLACEHOLDER — how you design and build custom sites from the ground up.',
+    points: ['PLACEHOLDER point', 'PLACEHOLDER point', 'PLACEHOLDER point'],
+  },
+  'Landing pages': {
+    body: 'PLACEHOLDER — your focused, high-converting campaign pages.',
+    points: ['PLACEHOLDER point', 'PLACEHOLDER point'],
+  },
+  'UX/UI': {
+    body: 'PLACEHOLDER — your UX/UI approach, from wireframes to shipped interface.',
+    points: ['PLACEHOLDER point', 'PLACEHOLDER point', 'PLACEHOLDER point'],
+  },
+  'Performance optimization': {
+    body: 'PLACEHOLDER — how you keep sites fast with healthy Core Web Vitals.',
+    points: ['PLACEHOLDER point', 'PLACEHOLDER point'],
+  },
+  'Ongoing management': {
+    body: 'PLACEHOLDER — hosting, updates, security, and steady improvement.',
+    points: ['PLACEHOLDER point', 'PLACEHOLDER point', 'PLACEHOLDER point'],
+  },
+};
+
 // Websites "What's included" — an exploded 3D layer stack. The deliverables are flat planes stacked
 // in perspective (perspective + rotateX + per-plane translateZ), each with only a hairline top edge
 // and a wireframe glyph of that layer — so the section reads as the site itself being built up in
@@ -755,6 +780,7 @@ const WEB_LAYER_KIND: Record<string, string> = {
 function ScopeStack({ items }: { items: string[] }) {
   const reducedMotion = useReducedMotion();
   const [active, setActive] = useState(0);
+  const [open, setOpen] = useState<number | null>(null);
   return (
     <div className="sd-reveal [perspective-origin:50%_28%] [perspective:1500px]">
       <div
@@ -763,22 +789,20 @@ function ScopeStack({ items }: { items: string[] }) {
       >
         {items.map((item, i) => {
           const on = active === i;
+          const isOpen = open === i;
+          const lit = on || isOpen;
+          const detail = WEB_SCOPE_DETAIL[item];
           return (
-            <button
+            <div
               key={item}
-              type="button"
               onMouseEnter={() => setActive(i)}
-              onFocus={() => setActive(i)}
-              className={cn(
-                'group/ly relative flex w-full items-center gap-5 border-t py-5 pl-6 pr-5 text-left md:gap-7 md:pl-8',
-                on ? 'border-orange/70' : 'border-white/12',
-              )}
+              className={cn('group/ly relative w-full border-t', lit ? 'border-orange/70' : 'border-white/12')}
               style={
                 reducedMotion
                   ? undefined
                   : {
-                      transform: `translateZ(${i * 8 + (on ? 44 : 0)}px) translateY(${on ? -4 : 0}px)`,
-                      boxShadow: on ? '0 26px 55px -30px rgba(245,139,39,0.65)' : 'none',
+                      transform: `translateZ(${i * 8 + (lit ? 44 : 0)}px) translateY(${lit ? -4 : 0}px)`,
+                      boxShadow: lit ? '0 26px 55px -30px rgba(245,139,39,0.65)' : 'none',
                       transition:
                         'transform 0.45s cubic-bezier(0.22,1,0.36,1), box-shadow 0.45s ease, border-color 0.3s ease',
                     }
@@ -793,7 +817,7 @@ function ScopeStack({ items }: { items: string[] }) {
                 aria-hidden
                 className={cn(
                   'pointer-events-none absolute inset-0 bg-gradient-to-r from-orange/[0.1] via-orange/[0.03] to-transparent transition-opacity duration-300',
-                  on ? 'opacity-100' : 'opacity-0',
+                  lit ? 'opacity-100' : 'opacity-0',
                 )}
               />
               {/* Leading edge — an orange spine that grows as the layer lifts. */}
@@ -801,39 +825,85 @@ function ScopeStack({ items }: { items: string[] }) {
                 aria-hidden
                 className={cn(
                   'absolute left-0 top-0 h-full w-[3px] origin-top bg-orange transition-transform duration-300 ease-out',
-                  on ? 'scale-y-100' : 'scale-y-0',
+                  lit ? 'scale-y-100' : 'scale-y-0',
                 )}
               />
-              <span
-                className={cn(
-                  'relative shrink-0 transition-colors duration-300',
-                  on ? 'text-orange' : 'text-white/35',
-                )}
+              {/* Header — click to reveal this layer's detail. */}
+              <button
+                type="button"
+                onFocus={() => setActive(i)}
+                onClick={() => setOpen(isOpen ? null : i)}
+                aria-expanded={isOpen}
+                className="relative flex w-full items-center gap-5 py-5 pl-6 pr-5 text-left md:gap-7 md:pl-8"
               >
-                <LayerMotif kind={WEB_LAYER_KIND[item]} className="h-7 w-9" />
-              </span>
-              <span className="relative min-w-0 flex-1">
                 <span
                   className={cn(
-                    'block font-sans font-bold tracking-tight transition-colors duration-300',
-                    on ? 'text-white' : 'text-white/75',
+                    'relative shrink-0 transition-colors duration-300',
+                    lit ? 'text-orange' : 'text-white/35',
                   )}
-                  style={{ fontSize: 'clamp(1.05rem, 2vw, 1.4rem)' }}
                 >
-                  {item}
+                  <LayerMotif kind={WEB_LAYER_KIND[item]} className="h-7 w-9" />
                 </span>
-                {WEB_SCOPE_DESC[item] && (
+                <span className="relative min-w-0 flex-1">
                   <span
                     className={cn(
-                      'mt-1 block text-sm leading-relaxed transition-colors duration-300',
-                      on ? 'text-white/60' : 'text-white/35',
+                      'block font-sans font-bold tracking-tight transition-colors duration-300',
+                      lit ? 'text-white' : 'text-white/75',
                     )}
+                    style={{ fontSize: 'clamp(1.05rem, 2vw, 1.4rem)' }}
                   >
-                    {WEB_SCOPE_DESC[item]}
+                    {item}
                   </span>
+                  {WEB_SCOPE_DESC[item] && (
+                    <span
+                      className={cn(
+                        'mt-1 block text-sm leading-relaxed transition-colors duration-300',
+                        lit ? 'text-white/60' : 'text-white/35',
+                      )}
+                    >
+                      {WEB_SCOPE_DESC[item]}
+                    </span>
+                  )}
+                </span>
+                {/* Reveal affordance. */}
+                <span
+                  aria-hidden
+                  className={cn(
+                    'relative shrink-0 text-orange transition-transform duration-300',
+                    isOpen ? 'rotate-180' : 'rotate-0',
+                  )}
+                >
+                  <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="m6 9 6 6 6-6" />
+                  </svg>
+                </span>
+              </button>
+              {/* In-place reveal — unfolds within the lifted plane (animated height). */}
+              <div
+                className={cn(
+                  'relative grid transition-[grid-template-rows,opacity] duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)]',
+                  isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0',
                 )}
-              </span>
-            </button>
+              >
+                <div className="overflow-hidden">
+                  {detail && (
+                    <div className="pb-6 pl-6 pr-5 md:pl-[4.75rem]">
+                      <p className="max-w-xl text-sm leading-relaxed text-white/70">{detail.body}</p>
+                      {detail.points.length > 0 && (
+                        <ul className="mt-3 grid gap-1.5">
+                          {detail.points.map((pt) => (
+                            <li key={pt} className="flex items-start gap-2.5 text-sm text-white/55">
+                              <span aria-hidden className="mt-[0.55em] h-[2px] w-3 shrink-0 rounded bg-orange" />
+                              {pt}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
           );
         })}
       </div>

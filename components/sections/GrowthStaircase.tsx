@@ -40,7 +40,7 @@ export function GrowthStaircase() {
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: '.gs-stairs',
-          start: 'top 58%',
+          start: 'top 74%',
           toggleActions: 'play none none reverse',
         },
       });

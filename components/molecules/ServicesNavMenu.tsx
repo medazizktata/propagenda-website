@@ -143,6 +143,16 @@ export function ServicesNavMenu() {
   const [menuSuppressed, setMenuSuppressed] = useState(false);
   const preview = SERVICE_MENU[active];
 
+  // Sliding highlight — one element that glides to the active/hovered option, so moving
+  // between options reads as a single smooth motion instead of two cross-fading boxes.
+  const liRefs = useRef<(HTMLLIElement | null)[]>([]);
+  const [hl, setHl] = useState({ y: 0, h: 0, ready: false });
+  useEffect(() => {
+    const el = liRefs.current[active];
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (el) setHl({ y: el.offsetTop, h: el.offsetHeight, ready: true });
+  }, [active]);
+
   useEffect(() => {
     // Sync the previewed service to the current route on navigation (pre-existing behaviour).
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -221,23 +231,37 @@ export function ServicesNavMenu() {
                   View all
                 </Link>
               </div>
-              <ul className="flex flex-col">
+              <ul className="relative flex flex-col">
+                {/* One highlight that glides between options — smooth, not a cross-fade. */}
+                <span
+                  aria-hidden
+                  className="pointer-events-none absolute inset-x-0 z-0 border-l-2 border-orange bg-white/[0.06] transition-[transform,height,opacity] duration-[320ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
+                  style={{
+                    transform: `translateY(${hl.y}px)`,
+                    height: hl.h,
+                    opacity: hl.ready ? 1 : 0,
+                  }}
+                />
                 {SERVICE_MENU.map((s, i) => {
                   const isCurrent = pathname === s.href;
                   const isPreview = active === i;
                   const slug = s.href.split('/').pop() ?? '';
                   return (
-                    <li key={s.href} onMouseEnter={() => setActive(i)} onFocus={() => setActive(i)}>
+                    <li
+                      key={s.href}
+                      ref={(el) => {
+                        liRefs.current[i] = el;
+                      }}
+                      onMouseEnter={() => setActive(i)}
+                      onFocus={() => setActive(i)}
+                    >
                       <Link
                         href={s.href}
                         aria-current={isCurrent ? 'page' : undefined}
                         onClick={dismissMenu}
                         className={cn(
-                          'flex items-center gap-3 border-l-2 py-3 pl-[calc(0.75rem-2px)] pr-3 no-underline',
-                          'transition-[transform,background-color,border-color,color] duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)]',
-                          isCurrent
-                            ? 'border-orange bg-white/[0.06]'
-                            : 'border-transparent hover-fine:hover:bg-white/[0.03]',
+                          'relative z-[1] flex items-center gap-3 border-l-2 border-transparent py-3 pl-[calc(0.75rem-2px)] pr-3 no-underline',
+                          'transition-transform duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)]',
                           isPreview && !isCurrent ? 'translate-x-1.5' : 'translate-x-0',
                         )}
                       >

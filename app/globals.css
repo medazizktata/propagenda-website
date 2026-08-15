@@ -331,19 +331,11 @@ main {
   color: var(--color-orange);
 }
 
-/* ── Custom cursor (fine-pointer only; JS toggles .has-custom-cursor) ─────────
-   A single solid orange dot with mix-blend-difference so it stays visible on any
-   background (orange on dark, inverts to blue on light). Grows over interactive
-   elements; the native I-beam is kept over text fields. See CustomCursor.tsx. ── */
-.has-custom-cursor,
-.has-custom-cursor * {
-  cursor: none !important;
-}
-.has-custom-cursor input,
-.has-custom-cursor textarea,
-.has-custom-cursor [contenteditable='true'] {
-  cursor: text !important;
-}
+/* ── Custom cursor follower (fine-pointer only) ───────────────────────────────
+   A solid orange dot with mix-blend-difference that trails the pointer and stays
+   visible on any background (orange on dark, inverts to blue on light). The NATIVE
+   cursor is kept and rides on top of the dot — this only augments it. Grows over
+   interactive elements. See components/ui/CustomCursor.tsx. ──────────────────── */
 .cursor-dot {
   position: fixed;
   top: 0;
@@ -365,9 +357,6 @@ main {
 .cursor-dot.is-active {
   width: 44px;
   height: 44px;
-}
-.has-custom-cursor.cursor-over-text .cursor-dot {
-  opacity: 0 !important;
 }
 
 /* Interactive affordance — hover targets always show a pointer. */

@@ -4,14 +4,14 @@ import { useEffect, useRef } from 'react';
 import { gsap } from '@/lib/motion/gsap';
 
 /**
- * Site-wide custom cursor (MicDrop-style): a single solid orange dot with
- * `mix-blend-mode: difference`, so it stays visible on any background (reads
- * orange on dark, inverts to blue on light). It follows the pointer with a
- * slight lag and grows over interactive elements.
+ * Site-wide custom cursor follower (MicDrop-style): a single solid orange dot with
+ * `mix-blend-mode: difference`, so it stays visible on any background (orange on
+ * dark, inverts to blue on light). It trails the pointer with a slight lag and
+ * grows over interactive elements.
  *
- * Only active on a fine pointer (mouse) and when reduced-motion is NOT requested —
- * touch devices and reduced-motion users keep the native cursor. The native I-beam
- * is preserved over text fields so forms stay usable.
+ * This only AUGMENTS the pointer — the native cursor stays visible and rides on top
+ * of the dot. Fine-pointer + non-reduced-motion only (touch / reduced-motion users
+ * simply don't get the follower).
  */
 export function CustomCursor() {
   const dotRef = useRef<HTMLDivElement>(null);
@@ -24,10 +24,7 @@ export function CustomCursor() {
     const dot = dotRef.current;
     if (!dot) return;
 
-    const root = document.documentElement;
-    root.classList.add('has-custom-cursor');
     gsap.set(dot, { xPercent: -50, yPercent: -50 });
-
     const x = gsap.quickTo(dot, 'x', { duration: 0.14, ease: 'power3' });
     const y = gsap.quickTo(dot, 'y', { duration: 0.14, ease: 'power3' });
 
@@ -46,13 +43,9 @@ export function CustomCursor() {
     };
 
     const GROW = 'a, button, [role="button"], label, summary, select, [data-cursor="grow"]';
-    const TEXT =
-      'input:not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="checkbox"]):not([type="radio"]), textarea, [contenteditable="true"]';
     const over = (e: PointerEvent) => {
       const el = e.target as Element | null;
-      const isText = !!el?.closest?.(TEXT);
-      dot.classList.toggle('is-active', !isText && !!el?.closest?.(GROW));
-      root.classList.toggle('cursor-over-text', isText);
+      dot.classList.toggle('is-active', !!el?.closest?.(GROW));
     };
 
     window.addEventListener('pointermove', move, { passive: true });
@@ -63,7 +56,6 @@ export function CustomCursor() {
       window.removeEventListener('pointermove', move);
       window.removeEventListener('pointerover', over);
       document.removeEventListener('mouseleave', hide);
-      root.classList.remove('has-custom-cursor', 'cursor-over-text');
     };
   }, []);
 

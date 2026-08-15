@@ -48,7 +48,7 @@ const CLIP_PATH_STYLE = {
 
 const SPREAD = [-120, 150, -170, 130];
 
-export function Hero() {
+export function Hero({ flat = false }: { flat?: boolean }) {
   const containerRef = useRef<HTMLElement>(null);
   const pinRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLDivElement>(null);
@@ -80,7 +80,9 @@ export function Hero() {
   }, [videoOpen]);
 
   useEffect(() => {
-    if (reducedMotion || !pinRef.current) return;
+    // `flat` (embedded /preview): no pin / scroll-scrub — render the hero as a static
+    // single viewport so the minified home scrolls normally inside the device iframe.
+    if (reducedMotion || flat || !pinRef.current) return;
 
     const ctx = gsap.context(() => {
       gsap.from('.hero-headline', { opacity: 0, y: 30, duration: 0.7, ease: 'power3.out' });
@@ -145,13 +147,13 @@ export function Hero() {
     }, pinRef);
 
     return () => ctx.revert();
-  }, [reducedMotion, isDesktop, clipRest]);
+  }, [reducedMotion, isDesktop, clipRest, flat]);
 
   const words = hero.h1.split(' ');
   const subParts = hero.subtitle.split('360°');
 
   return (
-    <section ref={containerRef} data-seamless-act className="relative h-[290vh]">
+    <section ref={containerRef} data-seamless-act className={cn('relative', flat ? 'h-screen' : 'h-[290vh]')}>
       <div ref={pinRef} className="relative h-screen overflow-hidden bg-charcoal">
         {/* Flat ground — the reel and the sentence are the only protagonists here. */}
         <div className="absolute inset-0 isolate">
@@ -208,9 +210,11 @@ export function Hero() {
             </div>
           </div>
 
-          {isDesktop ? (
+          {isDesktop && !flat ? (
             /* Demoted to supporting cast: smaller, pushed right so it clears the reel panel —
-               the reel and the sentence are the hero's two speakers, the mark is the signature. */
+               the reel and the sentence are the hero's two speakers, the mark is the signature.
+               Skipped in `flat` (embedded preview) — the WebGL canvas is heavy and the mini
+               frame doesn't need it. */
             <div className="hero-3d pointer-events-none absolute inset-0 -translate-y-[5vh] translate-x-[7vw] scale-[0.82]">
               <HeroLogo3D className="absolute inset-0" />
             </div>

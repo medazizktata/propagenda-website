@@ -104,14 +104,14 @@ const WORD_SCATTER = [
   { x: 20, y: -1, rot: 9 },
 ] as const;
 
-export function DesignPrintInstallPopup() {
+export function DesignPrintInstallPopup({ flat = false }: { flat?: boolean }) {
   const sectionRef = useRef<HTMLElement>(null);
   const cardsRef = useRef<HTMLDivElement>(null);
   const reducedMotion = useReducedMotion();
 
   // Mouse-move parallax on the card deck only (the ground stays flat and still).
   useEffect(() => {
-    if (reducedMotion) return;
+    if (reducedMotion || flat) return;
     const cardsEl = cardsRef.current;
     if (!cardsEl) return;
     let raf = 0;
@@ -133,10 +133,13 @@ export function DesignPrintInstallPopup() {
       window.removeEventListener('mousemove', onMove);
       cancelAnimationFrame(raf);
     };
-  }, [reducedMotion]);
+  }, [reducedMotion, flat]);
 
   useEffect(() => {
-    if (!sectionRef.current) return;
+    // `flat` (embedded /preview): no scroll-scrub. The deck is placed in its resting grid via
+    // CSS vw/vh transforms (below) so it stays responsive when the iframe changes breakpoint,
+    // and the statement + subline render at their default full opacity.
+    if (!sectionRef.current || flat) return;
     const vw = () => window.innerWidth;
     const vh = () => window.innerHeight;
 
@@ -274,13 +277,19 @@ export function DesignPrintInstallPopup() {
     }, sectionRef);
 
     return () => ctx.revert();
-  }, [reducedMotion]);
+  }, [reducedMotion, flat]);
 
   const words = designPrintInstall.headline.split('·').map((s) => s.trim());
 
   return (
-    <section ref={sectionRef} data-seamless-act className="relative h-[320vh]">
-      <div className="sticky top-0 flex h-screen items-center justify-center overflow-hidden bg-charcoal">
+    <section ref={sectionRef} data-seamless-act className={flat ? 'relative' : 'relative h-[320vh]'}>
+      <div
+        className={
+          flat
+            ? 'relative flex min-h-screen items-center justify-center overflow-hidden bg-charcoal'
+            : 'sticky top-0 flex h-screen items-center justify-center overflow-hidden bg-charcoal'
+        }
+      >
         {/* Scattered media cards (parallax layer, behind the statement so it stays legible).
             `isolate` keeps each card's z-index (video card on top of the deck) LOCAL to this
             group, so the layer as a whole stays a plain sibling in DOM order — that lets the
@@ -296,6 +305,11 @@ export function DesignPrintInstallPopup() {
                 width: `clamp(${card.video ? '12rem' : '10.5rem'}, ${card.w * 2.4}vw, ${card.w}vw)`,
                 aspectRatio: '3 / 4',
                 zIndex: card.video ? 2 : 1,
+                // Flat (preview): CSS stands in for the GSAP transform — centre the card, then
+                // offset into its resting-grid slot in viewport units so it reflows on resize.
+                ...(flat
+                  ? { transform: `translate(-50%, -50%) translate(${card.x}vw, ${card.y}vh)` }
+                  : null),
               }}
             >
               <div className={`absolute inset-0 bg-gradient-to-br ${card.grad}`} />

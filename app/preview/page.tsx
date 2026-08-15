@@ -15,11 +15,14 @@ export const metadata: Metadata = {
 };
 
 export default function PreviewPage() {
+  // `flat` renders each act at natural height with no scroll-pins/scrubs, so the embed is a
+  // plain, scrollable page — the full-page pin choreography doesn't survive a short, scaled
+  // iframe (it mismeasures, rams the nav into the hero and eats the scroll).
   return (
     <SeamlessActs>
-      <Hero />
-      <ManifestoSection />
-      <DesignPrintInstallPopup />
+      <Hero flat />
+      <ManifestoSection flat />
+      <DesignPrintInstallPopup flat />
     </SeamlessActs>
   );
 }

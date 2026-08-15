@@ -11,13 +11,15 @@ import { cn } from '@/components/ui/cn';
 // word-by-word as you scroll through — never invisible.
 const ACCENT_WORDS = new Set(['brand’s', "brand's", 'story', 'story.']);
 
-export function ManifestoSection() {
+export function ManifestoSection({ flat = false }: { flat?: boolean }) {
   const containerRef = useRef<HTMLElement>(null);
   const stickyRef = useRef<HTMLDivElement>(null);
   const reducedMotion = useReducedMotion();
 
   useEffect(() => {
-    if (reducedMotion || !containerRef.current) return;
+    // `flat` (embedded /preview): skip the scroll-scrub brighten and drop the 200vh sticky
+    // rail — the quote renders full-opacity in a single natural-height panel.
+    if (reducedMotion || flat || !containerRef.current) return;
     const ctx = gsap.context(() => {
       // Brighten plays across the smooth sticky GLIDE + HOLD: it launches the moment the
       // words rise into view (mid-transition from the hero — no GSAP pin, so no snap),
@@ -44,16 +46,19 @@ export function ManifestoSection() {
       );
     }, containerRef);
     return () => ctx.revert();
-  }, [reducedMotion]);
+  }, [reducedMotion, flat]);
 
   const words = manifestoQuote.split(' ');
 
   return (
-    <section ref={containerRef} data-seamless-act className="relative h-[200vh]">
+    <section ref={containerRef} data-seamless-act className={cn('relative', flat ? '' : 'h-[200vh]')}>
       <div
         ref={stickyRef}
         // Transparent over SeamlessActs charcoal + tiled pattern — one continuous surface.
-        className="manifesto-pin sticky top-0 flex h-screen items-center overflow-hidden bg-charcoal px-gutter-m lg:px-gutter-d"
+        className={cn(
+          'flex items-center overflow-hidden bg-charcoal px-gutter-m lg:px-gutter-d',
+          flat ? 'relative min-h-screen' : 'manifesto-pin sticky top-0 h-screen',
+        )}
       >
         <div className="pattern-section-fade pointer-events-none absolute inset-0">
           <BrandPattern variant="frame" id="manifesto" half="right" />

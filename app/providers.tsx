@@ -4,6 +4,7 @@ import { LazyMotion, domAnimation } from 'framer-motion';
 import type { ReactNode } from 'react';
 import { useEffect } from 'react';
 import { AppToastProvider } from '@/components/ui/toast';
+import { CustomCursor } from '@/components/ui/CustomCursor';
 
 // Module-level: StrictMode double-invokes effects in dev, and MSW throws an
 // invariant ("cannot configure an already enabled network") on a second start.
@@ -21,7 +22,10 @@ export function Providers({ children }: { children: ReactNode }) {
 
   return (
     <LazyMotion features={domAnimation} strict>
-      <AppToastProvider>{children}</AppToastProvider>
+      <AppToastProvider>
+        {children}
+        <CustomCursor />
+      </AppToastProvider>
     </LazyMotion>
   );
 }

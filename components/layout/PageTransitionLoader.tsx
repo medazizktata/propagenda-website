@@ -11,12 +11,14 @@ import {
 import { LoaderQuoteText } from '@/components/molecules/LoaderQuoteText';
 import { LoaderSplashLogo } from '@/components/molecules/LoaderSplashLogo';
 import { LoaderCurtainShell } from '@/components/molecules/LoaderCurtainShell';
+import { ffComplexCurtain } from '@/lib/featureFlags';
 import { cn } from '@/components/ui/cn';
 
 const QUOTE_ARM_MS = Math.round(COVER_MS * 0.5);
 
 /**
- * Cover punch → logo always on → quote → bright scale-out reveal.
+ * Cover punch → logo always on → quote → bright scale-out reveal (complex curtain), or a clean
+ * Cuberto-style panel wipe when NEXT_PUBLIC_FF_COMPLEX_CURTAIN=false.
  */
 export function PageTransitionLoader() {
   const { phase, targetPath } = usePageTransition();
@@ -26,7 +28,9 @@ export function PageTransitionLoader() {
   const [quoteArmed, setQuoteArmed] = useState(false);
 
   useEffect(() => {
+    if (!ffComplexCurtain) return;
     if (phase !== 'cover' || !targetPath) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- sync the loader's display state to the nav phase
     setQuote(quoteForPath(targetPath));
     setCurtain(curtainForPath(targetPath));
     setQuoteArmed(false);
@@ -37,12 +41,29 @@ export function PageTransitionLoader() {
 
   useEffect(() => {
     if (phase === 'idle') {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- reset loader state when the transition ends
       setQuote(null);
       setQuoteArmed(false);
     }
   }, [phase]);
 
   if (phase === 'idle') return null;
+
+  // Cuberto-style: one solid panel wipes up over the page (cover), then retracts off the top
+  // (reveal). No quote, logo or pattern — just the clean directional wipe.
+  if (!ffComplexCurtain) {
+    return (
+      <div className="pointer-events-none fixed inset-0 z-loader" aria-hidden>
+        <div
+          className={cn(
+            'absolute inset-0 bg-orange will-change-transform',
+            phase === 'cover' && 'animate-cuberto-cover',
+            phase === 'reveal' && 'animate-cuberto-reveal',
+          )}
+        />
+      </div>
+    );
+  }
 
   return (
     <div

@@ -11,6 +11,8 @@
  *   NEXT_PUBLIC_FF_PAGE_LEGAL=true   (privacy / terms / imprint)
  * Kill soft launch entirely (all pages public):
  *   NEXT_PUBLIC_FF_SOFT_LAUNCH=false
+ * Clean Cuberto-style page transition instead of the ornate orange curtain:
+ *   NEXT_PUBLIC_FF_COMPLEX_CURTAIN=false
  *
  * Legacy aliases still work: NEXT_PUBLIC_SOFT_LAUNCH, NEXT_PUBLIC_INIT_LOADER.
  *
@@ -44,6 +46,13 @@ export const ffInitLoader = parseFlag(
   process.env.NEXT_PUBLIC_FF_INIT_LOADER ?? process.env.NEXT_PUBLIC_INIT_LOADER,
   true,
 );
+
+/**
+ * Page-transition style. Default (on): the ornate per-route orange curtain — quote + logo +
+ * nine cover variants. Set NEXT_PUBLIC_FF_COMPLEX_CURTAIN=false for the clean Cuberto-style
+ * transition: a single solid panel that wipes up over the page and retracts off the top.
+ */
+export const ffComplexCurtain = parseFlag(process.env.NEXT_PUBLIC_FF_COMPLEX_CURTAIN, true);
 
 /** Per-route unlocks while soft launch is active. Default: locked (false). */
 export const pageFlags = {

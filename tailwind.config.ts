@@ -193,6 +193,10 @@ const config: Config = {
         'loader-cover-burst': 'loaderCoverBurst 0.36s cubic-bezier(0.22,1,0.36,1) both',
         'loader-cover-fold': 'loaderCoverFold 0.38s cubic-bezier(0.76,0,0.24,1) both',
         'loader-cover-blind': 'loaderCoverBlind 0.26s cubic-bezier(0.76,0,0.24,1) both',
+        // Cuberto-style clean panel wipe (NEXT_PUBLIC_FF_COMPLEX_CURTAIN=false): a single solid
+        // panel wipes up over the page, then retracts off the top — one continuous direction.
+        'cuberto-cover': 'cubertoCover 0.34s cubic-bezier(0.65,0,0.35,1) both',
+        'cuberto-reveal': 'cubertoReveal 0.32s cubic-bezier(0.65,0,0.35,1) forwards',
         'fade-in': 'fadeIn 0.3s ease-out',
         'fade-up': 'fadeUp 0.5s ease-out',
         'bright-flash': 'brightFlash 1s ease-out',
@@ -241,6 +245,14 @@ const config: Config = {
         loaderContentOut: {
           '0%': { opacity: '1', transform: 'scale(1) translateY(0)' },
           '100%': { opacity: '0', transform: 'scale(0.94) translateY(-12px)' },
+        },
+        cubertoCover: {
+          '0%': { transform: 'scaleY(0)', transformOrigin: '50% 100%' },
+          '100%': { transform: 'scaleY(1)', transformOrigin: '50% 100%' },
+        },
+        cubertoReveal: {
+          '0%': { transform: 'scaleY(1)', transformOrigin: '50% 0%' },
+          '100%': { transform: 'scaleY(0)', transformOrigin: '50% 0%' },
         },
         loaderCoverWipeUp: {
           '0%': { transform: 'scaleY(0)', transformOrigin: 'bottom', opacity: '0' },

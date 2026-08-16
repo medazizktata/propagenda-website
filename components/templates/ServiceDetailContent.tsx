@@ -392,7 +392,7 @@ function ServiceScope({ service }: { service: ServiceRecord }) {
 const PHOTO_SCOPE_DESC: Record<string, string> = {
   'Product photography': 'Clean, considered shots that make products sell.',
   'Lifestyle & editorial': 'Brand stories told through people, mood, and place.',
-  'Event coverage': 'The whole day captured — candids, details, and key moments.',
+  'Event coverage': 'The whole day captured, candids, details, and key moments.',
   'Real estate': 'Interiors and spaces shot to feel bright and inviting.',
   'Cinematic video': 'Brand films, product reels, and testimonials, shot and cut.',
   'Motion graphics': 'Animated logos, explainers, and titles that move.',
@@ -614,7 +614,7 @@ const MARKETING_SCOPE_DESC: Record<string, string> = {
   'Content marketing': 'Articles, guides, and assets that earn attention.',
   'Influencer marketing': 'The right creators, matched to your audience.',
   'Digital ads': 'Paid search, social, and display that convert.',
-  'Print & production': 'Signage, large-format, and branded collateral — produced and installed.',
+  'Print & production': 'Signage, large-format, and branded collateral, produced and installed.',
 };
 
 // Marketing "What's included" — an editorial capability index. The lead discipline is featured
@@ -752,7 +752,7 @@ const WEB_SCOPE_DETAIL: Record<
   { body: string; points: string[]; image?: string; alt?: string }
 > = {
   'Website design & development': {
-    body: 'Custom sites designed and built from the ground up — never a template. Strategy, design, and development stay in one room, so the result is fast, on-brand, and easy for your team to run.',
+    body: 'Custom sites designed and built from the ground up, never a template. Strategy, design, and development stay in one room, so the result is fast, on-brand, and easy for your team to run.',
     points: [
       'Bespoke design, hand-coded clean',
       'Responsive across every screen size',
@@ -762,7 +762,7 @@ const WEB_SCOPE_DETAIL: Record<
     alt: 'Custom website and brand work by Propagenda',
   },
   'Landing pages': {
-    body: 'Focused pages built to convert — one goal, one message, zero distraction. Ideal for launches, ads, and campaigns where every click has to earn its place.',
+    body: 'Focused pages built to convert, one goal, one message, zero distraction. Ideal for launches, ads, and campaigns where every click has to earn its place.',
     points: [
       'Conversion-first structure',
       'Copy and layout tuned to the offer',
@@ -782,7 +782,7 @@ const WEB_SCOPE_DETAIL: Record<
     alt: 'UX and UI design system work',
   },
   'Performance optimization': {
-    body: 'Fast loads, clean code, and healthy Core Web Vitals. We tune images, scripts, and delivery so the site feels instant — which users reward and search engines rank.',
+    body: 'Fast loads, clean code, and healthy Core Web Vitals. We tune images, scripts, and delivery so the site feels instant, which users reward and search engines rank.',
     points: [
       'Core Web Vitals in the green',
       'Image and asset optimization',
@@ -1647,7 +1647,7 @@ type Deliverable = { label: string; icon: string; sample?: string };
 const TIER_META: { summary: string; tagline: string; deliverables: Deliverable[] }[] = [
   {
     summary: 'The essentials, ready to launch.',
-    tagline: 'A clean, consistent identity — the foundation your brand runs on.',
+    tagline: 'A clean, consistent identity, the foundation your brand runs on.',
     deliverables: [
       { label: 'Business card', icon: 'card' },
       { label: 'Letterhead', icon: 'file' },
@@ -1656,7 +1656,7 @@ const TIER_META: { summary: string; tagline: string; deliverables: Deliverable[]
   },
   {
     summary: 'The complete system, end to end.',
-    tagline: 'Everything in Basic — plus the voice, messaging, and materials to run the whole brand.',
+    tagline: 'Everything in Basic, plus the voice, messaging, and materials to run the whole brand.',
     // Fully-fledged modules: each carries a sample so Developed reads as a real, complete
     // brand book — not the same board as Basic with two extra rows.
     deliverables: [
@@ -2036,7 +2036,7 @@ const TEMPLATE_MOCKS = [
 function DevelopedKit() {
   return (
     <div className="mt-6 flex flex-col gap-8">
-      <BrandModule label="Logo suite" desc="Primary, reversed and monochrome — one mark for every surface.">
+      <BrandModule label="Logo suite" desc="Primary, reversed and monochrome, one mark for every surface.">
         <div className="grid grid-cols-3 gap-3">
           <LogoTile tone="dark" />
           <LogoTile tone="orange" />
@@ -2107,7 +2107,7 @@ function DevelopedKit() {
         <div>
           <span className="block text-sm font-semibold text-white">Brand guidelines book</span>
           <span className="block text-xs leading-relaxed text-white/45">
-            Usage, spacing, do&rsquo;s &amp; don&rsquo;ts and co-branding — the whole system, documented.
+            Usage, spacing, do&rsquo;s &amp; don&rsquo;ts and co-branding: the whole system, documented.
           </span>
         </div>
       </div>

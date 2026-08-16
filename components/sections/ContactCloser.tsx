@@ -147,7 +147,7 @@ export function ContactCloser() {
             </div>
 
             <p className="text-backstage mt-8 text-white/35">
-              Al Quoz · Dubai · <DubaiTime /> GST — replies within a day
+              Al Quoz · Dubai · <DubaiTime /> GST · replies within a day
             </p>
           </div>
 

@@ -18,27 +18,27 @@ const accents = [
 
 export const featuredWorkEntries: WorkHubEntry[] = [
   {
-    title: 'Sanapex Interiors — Full Branding & Digital Presence',
+    title: 'Sanapex Interiors: Full Branding & Digital Presence',
     teaser:
       'Sanapex Interiors is a high-end interior design studio focused on residential and commercial spaces.',
     href: '/work/sanapex-interiors',
     accent: accents[0],
   },
   {
-    title: 'P2P Motors — Full Branding & Visual Identity',
+    title: 'P2P Motors: Full Branding & Visual Identity',
     teaser:
       'P2P Motors is a Dubai-based export company specializing in luxury, electric, and specialty vehicles.',
     href: '/work/p2p-motors',
     accent: accents[1],
   },
   {
-    title: 'Dose Pharmacy — Branding & Fit-Out Design',
+    title: 'Dose Pharmacy: Branding & Fit-Out Design',
     teaser: 'Dose Pharmacy is a modern retail pharmacy based in Riyadh.',
     href: '/work/dose-pharmacy',
     accent: accents[2],
   },
   {
-    title: 'Clemson Porter Properties — Full Rebranding',
+    title: 'Clemson Porter Properties: Full Rebranding',
     teaser:
       'Clemson Porter is a UAE-based property brokerage working with clients across the globe.',
     href: '/work/clemson-porter-properties',
@@ -48,14 +48,14 @@ export const featuredWorkEntries: WorkHubEntry[] = [
 
 export const moreWorkEntries: WorkHubEntry[] = [
   {
-    title: 'Emirates Agro — Rebranding & Visual Identity',
+    title: 'Emirates Agro: Rebranding & Visual Identity',
     teaser:
       'Emirates Agro is a global supplier of agricultural products, fertilizers, and petrochemical raw materials, operating under the Madameek Group.',
     href: '/work/emirates-agro',
     accent: accents[4],
   },
   {
-    title: 'Zealerz — Branding & Visual Identity',
+    title: 'Zealerz: Branding & Visual Identity',
     teaser:
       'Zealerz is a Dubai-based virtual marketplace aiming to transform the LPG supply chain.',
     href: '/work/zealerz',

@@ -97,7 +97,7 @@ export function ContactSection() {
           </div>
           <div className="contact-form flex flex-col items-start justify-center gap-6">
             <p className="max-w-md text-lg leading-relaxed text-white/70 md:text-xl">
-              Tell us about your brand and where you want to take it — we&apos;ll get back to
+              Tell us about your brand and where you want to take it. We&apos;ll get back to
               you within a day.
             </p>
             <Button href="/contact" size="lg">

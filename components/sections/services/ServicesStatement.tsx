@@ -105,7 +105,7 @@ export function ServicesStatement() {
             <span className="svc-stmt-line block text-orange">one studio.</span>
           </h1>
           <p className="svc-stmt-line mt-8 max-w-md text-base leading-relaxed text-white/75 [text-shadow:0_1px_16px_rgba(0,0,0,0.6)] md:text-lg">
-            Seven integrated capabilities &mdash; from the first logo to the full launch, and
+            Seven integrated capabilities: from the first logo to the full launch, and
             everything that carries your brand in between.
           </p>
         </div>

@@ -57,7 +57,7 @@ export function PhotoVideoHeroTitle({ className }: { className?: string }) {
         className,
       )}
       style={titleStyle}
-      aria-label="Photography and Videography — alternating headline"
+      aria-label="Photography and Videography, alternating headline"
     >
       <span className="inline-flex items-baseline justify-center whitespace-nowrap">
         <span

@@ -11,7 +11,7 @@ export const showreel: VideoProject = {
   width: 1280,
   height: 720,
   duration: '0:27',
-  description: 'Strategy, content, design, production — cut to move.',
+  description: 'Strategy, content, design, production. Cut to move.',
 };
 
 // ── Filterable archive ──────────────────────────────────────────────────────
@@ -86,7 +86,7 @@ export const videoProjects: VideoProject[] = [
     title: 'Export, in motion',
     client: 'P2P Motors',
     category: 'Automotive',
-    description: 'Cars, ports, and paperwork — shot with intent.',
+    description: 'Cars, ports, and paperwork, shot with intent.',
     src: '',
     poster: '/images/work/p2p-motors/hero.webp',
     ...P,
@@ -106,7 +106,7 @@ export const videoProjects: VideoProject[] = [
     title: 'Retail launch film',
     client: 'Dose Pharmacy',
     category: 'Product & Motion',
-    description: 'A calmer, cleaner store — on film.',
+    description: 'A calmer, cleaner store, on film.',
     src: '',
     poster: '/images/work/dose-pharmacy/hero.webp',
     ...P,
@@ -244,6 +244,6 @@ export const videoCapabilities: {
 
 // A real client voice (from the case studies) — surfaced as a pull-quote.
 export const videoTestimonial: { text: string; author: string } = {
-  text: 'Wherever a client meets us — showroom, socials, or a signed export deal — we look like one serious brand.',
+  text: 'Wherever a client meets us (showroom, socials, or a signed export deal), we look like one serious brand.',
   author: 'Managing Director, P2P Motors',
 };

@@ -148,7 +148,7 @@ export function ServicesIndex() {
             }}
           >
             <SectionLabel className="services-kicker mb-4 md:mb-6">
-              Services &mdash; 07 capabilities
+              Services · 07 capabilities
             </SectionLabel>
 
             <ul className="flex flex-col">

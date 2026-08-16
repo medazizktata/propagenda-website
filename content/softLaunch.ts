@@ -3,6 +3,6 @@ export const softLaunchCopy = {
   eyebrow: 'Soft launch',
   titleLead: 'Still',
   titleAccent: 'cooking',
-  body: 'This page isn’t live yet. What’s open stays open — the rest drops soon.',
+  body: 'This page isn’t live yet. What’s open stays open. The rest drops soon.',
   cta: 'Got it',
 } as const;

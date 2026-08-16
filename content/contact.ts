@@ -63,7 +63,7 @@ export const contactCloser = {
     },
     message: {
       label: "Tell us about the project",
-      placeholder: "Scope, goals, links — anything that helps us reply usefully.",
+      placeholder: "Scope, goals, links, anything that helps us reply usefully.",
     },
   },
 };
@@ -84,7 +84,7 @@ export const bookCall = {
    * is configured, so the action explains itself instead of silently no-ops.
    */
   unavailableNotice:
-    "Live scheduling isn't live yet — drop your brief below and we'll set up the call within a day.",
+    "Live scheduling isn't live yet. Drop your brief below and we'll set up the call within a day.",
 };
 
 export const contactRequests = [

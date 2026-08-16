@@ -515,7 +515,7 @@ export const aboutContent = {
     line1: "Let's work together to",
     line2: "grow your brand.",
     support:
-      "We're always looking for brands who care about their product — and the people who use it.",
+      "We're always looking for brands who care about their product, and the people who use it.",
     email: "info@thepropagenda.com",
   },
 };

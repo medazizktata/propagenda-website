@@ -139,7 +139,7 @@ export function VideoCTA({ film, onWatch }: { film: VideoProject; onWatch: () =>
 
         <div>
           <p className="vc-in mx-auto max-w-md text-center text-base leading-relaxed text-white/70 md:text-lg">
-            Brand films, social reels, motion — let&rsquo;s make yours.
+            Brand films, social reels, motion. Let&rsquo;s make yours.
           </p>
 
           <div className="vc-in mt-9 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center sm:gap-4">

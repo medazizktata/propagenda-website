@@ -37,12 +37,12 @@ export const growthStaircase = {
   headingLead: 'Built to',
   headingAccent: 'grow',
   intro:
-    'Every brand we build is a step up — from a credible start to the reference your whole category chases.',
+    'Every brand we build is a step up, from a credible start to the reference your whole category chases.',
   steps: [
     {
       step: '01',
       label: 'Establish',
-      body: 'A credible, unmistakable foundation — identity, voice, and the system behind it.',
+      body: 'A credible, unmistakable foundation: identity, voice, and the system behind it.',
     },
     {
       step: '02',

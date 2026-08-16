@@ -84,7 +84,7 @@ export function VideoHero({ showreel, onPlay }: { showreel: VideoProject; onPlay
             </span>
           </h1>
           <p className="vh-in mt-7 max-w-xl text-base leading-relaxed text-white/80 [text-shadow:0_1px_16px_rgba(0,0,0,0.6)] md:text-lg">
-            Brand films, social reels, and motion — Propagenda&rsquo;s work, cut to move.
+            Brand films, social reels, and motion. Propagenda&rsquo;s work, cut to move.
           </p>
           <div className="vh-in mt-9 flex flex-wrap items-center gap-4">
             <button
@@ -118,7 +118,7 @@ export function VideoHero({ showreel, onPlay }: { showreel: VideoProject; onPlay
           <path d="M11 5 6 9H3v6h3l5 4V5z" strokeLinejoin="round" />
           <path d="m22 9-6 6M16 9l6 6" strokeLinecap="round" />
         </svg>
-        Muted — press play for sound
+        Muted. Press play for sound
       </button>
     </section>
   );

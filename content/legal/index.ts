@@ -67,7 +67,7 @@ export const privacy: LegalRecord = {
   ],
   seo: {
     title: 'Privacy Policy | Propagenda',
-    description: 'Privacy policy for Propagenda Marketing Services — UAE-facing standard template.',
+    description: 'Privacy policy for Propagenda Marketing Services, UAE-facing standard template.',
   },
 };
 
@@ -91,7 +91,7 @@ export const terms: LegalRecord = {
     {
       heading: 'Intellectual Property',
       paragraphs: [
-        'All content on this website — including text, visuals, logos, case studies, and design assets — is owned by Propagenda Marketing Services or used with permission.',
+        'All content on this website, including text, visuals, logos, case studies, and design assets, is owned by Propagenda Marketing Services or used with permission.',
         'You may not copy, reproduce, distribute, or create derivative works without our prior written consent.',
       ],
     },
@@ -148,7 +148,7 @@ export const imprint: LegalRecord = {
   ],
   seo: {
     title: 'Imprint | Propagenda',
-    description: 'Legal imprint — company name, address, and contact details.',
+    description: 'Legal imprint, company name, address, and contact details.',
   },
 };
 

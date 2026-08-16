@@ -35,36 +35,36 @@ export const serviceDetailConfig: Record<ServiceSlug, ServiceDetailConfig> = {
     ctaLine1: 'Ready to build',
     ctaLine2: 'your identity.',
     approach: [
-      { title: 'Discovery', body: 'We dig into your business, audience, and market — the brief behind the brief — so the brand is built on insight, not guesswork.' },
+      { title: 'Discovery', body: 'We dig into your business, audience, and market: the brief behind the brief, so the brand is built on insight, not guesswork.' },
       { title: 'Strategy', body: 'Positioning, personality, and the story your brand needs to tell. This is the thinking every visual decision is anchored to.' },
-      { title: 'Identity', body: 'Logo, colour, type, and pattern come together into a distinctive visual system — designed to work everywhere your brand shows up.' },
-      { title: 'Guidelines', body: 'Every rule documented — usage, spacing, do’s and don’ts — so the brand stays consistent no matter who’s using it.' },
-      { title: 'Rollout', body: 'Stationery, collateral, and templates produced and applied — your new identity, launched and ready to run.' },
+      { title: 'Identity', body: 'Logo, colour, type, and pattern come together into a distinctive visual system, designed to work everywhere your brand shows up.' },
+      { title: 'Guidelines', body: 'Every rule documented: usage, spacing, do’s and don’ts, so the brand stays consistent no matter who’s using it.' },
+      { title: 'Rollout', body: 'Stationery, collateral, and templates produced and applied: your new identity, launched and ready to run.' },
     ],
     faqs: [
       {
         q: 'How long does a branding project take?',
-        a: 'Most identities take three to six weeks, depending on scope. A full developed system — with strategy, guidelines, and collateral — runs a little longer. You’ll get a clear timeline before we start.',
+        a: 'Most identities take three to six weeks, depending on scope. A full developed system, with strategy, guidelines, and collateral, runs a little longer. You’ll get a clear timeline before we start.',
       },
       {
         q: 'What’s the difference between Basic and Developed branding?',
-        a: 'Basic covers the visual essentials: logo, colours, type, pattern, and stationery. Developed adds the full system — brand strategy, voice and messaging, a complete guidelines book, and marketing collateral.',
+        a: 'Basic covers the visual essentials: logo, colours, type, pattern, and stationery. Developed adds the full system, brand strategy, voice and messaging, a complete guidelines book, and marketing collateral.',
       },
       {
         q: 'Do we own our logo and brand files?',
-        a: 'Yes. Once the project is complete, full ownership of your final logo and brand assets is yours — delivered in every format you’ll need.',
+        a: 'Yes. Once the project is complete, full ownership of your final logo and brand assets is yours, delivered in every format you’ll need.',
       },
       {
         q: 'Can you refresh our existing brand instead of starting over?',
-        a: 'Absolutely. If your brand has equity worth keeping, we’ll evolve it — sharpening the identity while retaining what your audience already recognises.',
+        a: 'Absolutely. If your brand has equity worth keeping, we’ll evolve it, sharpening the identity while retaining what your audience already recognises.',
       },
       {
         q: 'What do you need from us to get started?',
-        a: 'A short brief and a conversation. We dig into your business, audience, and goals during Discovery — you don’t need anything prepared beyond a sense of where you want to go.',
+        a: 'A short brief and a conversation. We dig into your business, audience, and goals during Discovery. You don’t need anything prepared beyond a sense of where you want to go.',
       },
       {
         q: 'What files will we receive?',
-        a: 'Print and digital formats for every asset — vector logos (SVG, EPS, PDF), raster versions (PNG, JPG), your colour and type specifications, and a guidelines document.',
+        a: 'Print and digital formats for every asset, vector logos (SVG, EPS, PDF), raster versions (PNG, JPG), your colour and type specifications, and a guidelines document.',
       },
     ],
   },
@@ -81,27 +81,27 @@ export const serviceDetailConfig: Record<ServiceSlug, ServiceDetailConfig> = {
     faqs: [
       {
         q: 'How do you choose the right influencers for our brand?',
-        a: 'We match on audience, not just follower count — who their community actually is, how engaged it is, and whether their values fit yours. Relevance and authenticity beat raw reach every time, so every partner is vetted before we recommend them.',
+        a: 'We match on audience, not just follower count: who their community actually is, how engaged it is, and whether their values fit yours. Relevance and authenticity beat raw reach every time, so every partner is vetted before we recommend them.',
       },
       {
         q: 'How do you measure reach and ROI?',
-        a: 'We track the metrics tied to your goals — reach and impressions, engagement rate, click-throughs, referral traffic, and earned-media value — and report against clear benchmarks set before the campaign goes live.',
+        a: 'We track the metrics tied to your goals, reach and impressions, engagement rate, click-throughs, referral traffic, and earned-media value, and report against clear benchmarks set before the campaign goes live.',
       },
       {
         q: 'Can you help if we are facing a reputation or crisis situation?',
-        a: 'Yes. We handle reputation management and crisis communications — from a rapid holding statement to a full response plan — protecting your credibility while keeping messaging consistent across every channel.',
+        a: 'Yes. We handle reputation management and crisis communications, from a rapid holding statement to a full response plan, protecting your credibility while keeping messaging consistent across every channel.',
       },
       {
         q: 'Do partnerships include category exclusivity?',
-        a: 'They can. Where it matters, we negotiate exclusivity so your chosen faces are not promoting a competitor during — or shortly after — your campaign. The terms are agreed up front and written into every collaboration.',
+        a: 'They can. Where it matters, we negotiate exclusivity so your chosen faces are not promoting a competitor during, or shortly after, your campaign. The terms are agreed up front and written into every collaboration.',
       },
       {
         q: 'How long before we start to see results?',
-        a: 'Influencer and social activations can drive visibility within days of going live. Earned press coverage and lasting credibility build over weeks — most campaigns run across one to three months for meaningful, measurable impact.',
+        a: 'Influencer and social activations can drive visibility within days of going live. Earned press coverage and lasting credibility build over weeks, most campaigns run across one to three months for meaningful, measurable impact.',
       },
       {
         q: 'Is sponsored content clearly disclosed?',
-        a: 'Always. Every paid partnership follows advertising-disclosure standards and platform rules — clear labelling protects both your brand and the creator, and audiences trust transparent partnerships more.',
+        a: 'Always. Every paid partnership follows advertising-disclosure standards and platform rules, clear labelling protects both your brand and the creator, and audiences trust transparent partnerships more.',
       },
     ],
   },
@@ -112,11 +112,11 @@ export const serviceDetailConfig: Record<ServiceSlug, ServiceDetailConfig> = {
     faqs: [
       {
         q: 'How do you decide the mix between online and offline?',
-        a: 'It follows your audience and goals, not a fixed formula. We map where your customers actually spend attention across the funnel, then weight the budget toward the channels — digital, physical, or both — that move them from awareness to loyalty most efficiently.',
+        a: 'It follows your audience and goals, not a fixed formula. We map where your customers actually spend attention across the funnel, then weight the budget toward the channels (digital, physical, or both) that move them from awareness to loyalty most efficiently.',
       },
       {
         q: 'What budget do we need, and can we start small and scale?',
-        a: 'Yes. We can start lean on a few high-intent channels, prove what works, then reinvest the winners and scale spend as returns come in. You set the monthly budget and we allocate it across the funnel — no long lock-ins to get going.',
+        a: 'Yes. We can start lean on a few high-intent channels, prove what works, then reinvest the winners and scale spend as returns come in. You set the monthly budget and we allocate it across the funnel. No long lock-ins to get going.',
       },
       {
         q: 'Which channels are right for my business?',
@@ -124,7 +124,7 @@ export const serviceDetailConfig: Record<ServiceSlug, ServiceDetailConfig> = {
       },
       {
         q: 'How do you report on performance and attribution?',
-        a: 'You get a clear dashboard tied to the metrics that matter — reach, engagement, leads, cost per acquisition, and return on ad spend — reviewed on a regular cadence. For offline activity we use trackable codes, landing pages, and lift analysis so every channel earns its place.',
+        a: 'You get a clear dashboard tied to the metrics that matter, reach, engagement, leads, cost per acquisition, and return on ad spend, reviewed on a regular cadence. For offline activity we use trackable codes, landing pages, and lift analysis so every channel earns its place.',
       },
       {
         q: 'How long before we see results?',
@@ -132,7 +132,7 @@ export const serviceDetailConfig: Record<ServiceSlug, ServiceDetailConfig> = {
       },
       {
         q: 'Do we own the content and ad accounts you create?',
-        a: 'Yes. Ad accounts, campaign data, and the content we produce are yours — set up under your ownership from the start, so nothing is held hostage if we ever part ways.',
+        a: 'Yes. Ad accounts, campaign data, and the content we produce are yours, set up under your ownership from the start, so nothing is held hostage if we ever part ways.',
       },
     ],
   },
@@ -158,7 +158,7 @@ export const serviceDetailConfig: Record<ServiceSlug, ServiceDetailConfig> = {
       },
       {
         q: 'Do you handle hosting and domains?',
-        a: 'We do. We can set up fast, secure hosting, connect your domain, and configure SSL and email — or work with your existing providers if you prefer. Either way you keep full ownership of the domain and accounts.',
+        a: 'We do. We can set up fast, secure hosting, connect your domain, and configure SSL and email, or work with your existing providers if you prefer. Either way you keep full ownership of the domain and accounts.',
       },
       {
         q: 'Will the site work well on mobile?',
@@ -188,11 +188,11 @@ export const serviceDetailConfig: Record<ServiceSlug, ServiceDetailConfig> = {
     faqs: [
       {
         q: 'Should we build native or cross-platform?',
-        a: 'It depends on the app. Cross-platform (React Native or Flutter) ships one codebase to both stores faster and costs less to maintain, which suits most products. Where an app leans hard on device hardware, heavy graphics, or platform-specific features, we build fully native in Swift or Kotlin. We recommend the right approach after understanding your goals — you are never pushed into one by default.',
+        a: 'It depends on the app. Cross-platform (React Native or Flutter) ships one codebase to both stores faster and costs less to maintain, which suits most products. Where an app leans hard on device hardware, heavy graphics, or platform-specific features, we build fully native in Swift or Kotlin. We recommend the right approach after understanding your goals. You are never pushed into one by default.',
       },
       {
         q: 'Do you build for both iOS and Android?',
-        a: 'Yes. We design and ship for both platforms, and the app respects each one — iOS conventions on iPhone, Material patterns on Android — so it feels native rather than ported. With a cross-platform build, both versions come from a single codebase and stay in sync as we release updates.',
+        a: 'Yes. We design and ship for both platforms, and the app respects each one: iOS conventions on iPhone, Material patterns on Android, so it feels native rather than ported. With a cross-platform build, both versions come from a single codebase and stay in sync as we release updates.',
       },
       {
         q: 'How long does it take to build an app?',
@@ -200,11 +200,11 @@ export const serviceDetailConfig: Record<ServiceSlug, ServiceDetailConfig> = {
       },
       {
         q: 'Do you handle App Store and Play Store submission?',
-        a: 'We do — it is part of the Ship phase. We prepare the store listings, screenshots, and metadata, set up your developer accounts, and manage the review and release process end to end. You keep full ownership of the accounts and the published app.',
+        a: 'We do. It is part of the Ship phase. We prepare the store listings, screenshots, and metadata, set up your developer accounts, and manage the review and release process end to end. You keep full ownership of the accounts and the published app.',
       },
       {
         q: 'Can you build the back-end and APIs too?',
-        a: 'Yes. Most apps need a server, database, and APIs behind them, and we build and integrate those as part of the project — secure authentication, live data, payments, notifications, and third-party services. If you already have a back-end, we integrate cleanly with your existing APIs.',
+        a: 'Yes. Most apps need a server, database, and APIs behind them, and we build and integrate those as part of the project, secure authentication, live data, payments, notifications, and third-party services. If you already have a back-end, we integrate cleanly with your existing APIs.',
       },
       {
         q: 'What happens after the app launches?',
@@ -219,11 +219,11 @@ export const serviceDetailConfig: Record<ServiceSlug, ServiceDetailConfig> = {
     faqs: [
       {
         q: 'What types of events do you handle?',
-        a: 'Corporate launches, conferences, exhibitions, brand activations, and private celebrations — among others. Whatever the format or scale, we bring the same end-to-end approach: branding, production, coverage, and the logistics that hold it all together.',
+        a: 'Corporate launches, conferences, exhibitions, brand activations, and private celebrations, among others. Whatever the format or scale, we bring the same end-to-end approach: branding, production, coverage, and the logistics that hold it all together.',
       },
       {
         q: 'How far in advance should we book you?',
-        a: 'The earlier the better — around six to eight weeks gives us room to shape the concept, build the identity, and produce everything properly. We do take on tighter timelines when we can, so it is always worth asking.',
+        a: 'The earlier the better, around six to eight weeks gives us room to shape the concept, build the identity, and produce everything properly. We do take on tighter timelines when we can, so it is always worth asking.',
       },
       {
         q: 'Do you cover the event on the day itself?',
@@ -231,7 +231,7 @@ export const serviceDetailConfig: Record<ServiceSlug, ServiceDetailConfig> = {
       },
       {
         q: 'Can you run virtual or hybrid events?',
-        a: 'We do. Alongside in-person events, we handle live streaming, virtual staging, and hybrid formats — so an audience in the room and an audience at home get the same considered experience.',
+        a: 'We do. Alongside in-person events, we handle live streaming, virtual staging, and hybrid formats, so an audience in the room and an audience at home get the same considered experience.',
       },
       {
         q: 'Can you work to our budget?',
@@ -269,27 +269,27 @@ export const serviceDetailConfig: Record<ServiceSlug, ServiceDetailConfig> = {
     faqs: [
       {
         q: 'What do you shoot?',
-        a: 'Both stills and motion. On the photo side that’s products, lifestyle and editorial, food, events, real estate, portraits, and drone; on video it’s brand films, product and explainer videos, testimonials, motion graphics, and live streaming. If it needs to be captured well we cover it — often photo and video from the same shoot.',
+        a: 'Both stills and motion. On the photo side that’s products, lifestyle and editorial, food, events, real estate, portraits, and drone; on video it’s brand films, product and explainer videos, testimonials, motion graphics, and live streaming. If it needs to be captured well we cover it, often photo and video from the same shoot.',
       },
       {
         q: 'Do you charge by the half-day or full-day?',
-        a: 'Both. A half-day covers around four hours on location or in studio — ideal for a focused product set or a short interview — while a full day runs about eight hours for larger shoots with multiple setups, looks, or locations. We recommend the right length once we’ve seen the shot list, and we’re clear about what each one covers.',
+        a: 'Both. A half-day covers around four hours on location or in studio, ideal for a focused product set or a short interview, while a full day runs about eight hours for larger shoots with multiple setups, looks, or locations. We recommend the right length once we’ve seen the shot list, and we’re clear about what each one covers.',
       },
       {
         q: 'How long does editing take, and what’s the turnaround?',
-        a: 'Most photo galleries and video edits are delivered within about two weeks of the shoot, with a first set of previews sooner. Every image is professionally retouched and every video colour-graded and cut to your brief; if you’re working to a launch date, tell us early and we’ll build the schedule around it — rush turnaround is available when you need it.',
+        a: 'Most photo galleries and video edits are delivered within about two weeks of the shoot, with a first set of previews sooner. Every image is professionally retouched and every video colour-graded and cut to your brief; if you’re working to a launch date, tell us early and we’ll build the schedule around it, rush turnaround is available when you need it.',
       },
       {
         q: 'Who owns the photos and videos, and what usage rights do we get?',
-        a: 'You do. Final delivered images and videos come with full commercial usage rights for your brand — website, social, ads, and print — with no recurring licence fees. Where a shoot involves talent, music, or a rented location, any third-party usage terms are agreed and shared up front so there are no surprises later.',
+        a: 'You do. Final delivered images and videos come with full commercial usage rights for your brand, website, social, ads, and print, with no recurring licence fees. Where a shoot involves talent, music, or a rented location, any third-party usage terms are agreed and shared up front so there are no surprises later.',
       },
       {
         q: 'Do you do video and reels as well as photography?',
-        a: 'Yes — video is half of what we do. Alongside full brand films we shoot short-form vertical content and reels made for Instagram, TikTok, and social feeds, and we can capture them on the same day as your photos so everything shares one consistent look.',
+        a: 'Yes, video is half of what we do. Alongside full brand films we shoot short-form vertical content and reels made for Instagram, TikTok, and social feeds, and we can capture them on the same day as your photos so everything shares one consistent look.',
       },
       {
         q: 'Do you shoot on location or in a studio?',
-        a: 'Whichever suits the work. We shoot on location — your venue, site, or space — and in a controlled studio setup for products, portraits, and clean-background work. For bigger projects we scout and secure the right location as part of pre-production, and photo and video can run on separate days or be combined into one.',
+        a: 'Whichever suits the work. We shoot on location, your venue, site, or space, and in a controlled studio setup for products, portraits, and clean-background work. For bigger projects we scout and secure the right location as part of pre-production, and photo and video can run on separate days or be combined into one.',
       },
     ],
   },

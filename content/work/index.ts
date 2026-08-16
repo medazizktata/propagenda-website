@@ -15,7 +15,7 @@ function caseStudy(
     h1,
     tier,
     category,
-    overview: `${title} case study — content from CONTENT_MAPPING.md.`,
+    overview: `${title} case study, content from CONTENT_MAPPING.md.`,
     scopeItems: ['Branding', 'Digital presence'],
     gallery: [],
     seo: { title: `${title} | Propagenda`, description },
@@ -25,8 +25,8 @@ function caseStudy(
 
 export const sanapexInteriors = caseStudy(
   'sanapex-interiors',
-  'Sanapex Interiors — Full Branding & Digital Presence',
-  'SANAPEX INTERIORS — FULL BRANDING & DIGITAL PRESENCE',
+  'Sanapex Interiors: Full Branding & Digital Presence',
+  'SANAPEX INTERIORS: FULL BRANDING & DIGITAL PRESENCE',
   'featured',
   'Property & interiors',
   'Full visual identity and digital presence for a high-end interior design studio in Dubai.',
@@ -59,7 +59,7 @@ export const sanapexInteriors = caseStudy(
     challenge:
       'World-class craft. A brand that still looked improvised.',
     approach:
-      'Logo to website — one refined system, built to signal premium from the first glance.',
+      'Logo to website: one refined system, built to signal premium from the first glance.',
     outcome:
       'Every touchpoint now reads as high-end before the first meeting.',
     quote: {
@@ -69,7 +69,7 @@ export const sanapexInteriors = caseStudy(
     gallery: [
       {
         src: '/images/work/sanapex-interiors/hero.webp',
-        alt: 'Sanapex Interiors brand identity system — stationery, catalogue and collateral in a warm sand palette.',
+        alt: 'Sanapex Interiors brand identity system, stationery, catalogue and collateral in a warm sand palette.',
         width: 1241,
         height: 1754,
       },
@@ -87,8 +87,8 @@ export const sanapexInteriors = caseStudy(
 
 export const p2pMotors = caseStudy(
   'p2p-motors',
-  'P2P Motors — Full Branding & Visual Identity',
-  'P2P MOTORS — FULL BRANDING & VISUAL IDENTITY',
+  'P2P Motors: Full Branding & Visual Identity',
+  'P2P MOTORS: FULL BRANDING & VISUAL IDENTITY',
   'featured',
   'Automotive',
   'Case study: bold branding for a Dubai luxury and specialty vehicle export company.',
@@ -124,17 +124,17 @@ export const p2pMotors = caseStudy(
     challenge:
       'Global scale. Branding that still felt local and soft.',
     approach:
-      'Full branding — profile, socials, flags, showroom — one confident system.',
+      'Full branding: profile, socials, flags, showroom. One confident system.',
     outcome:
       'Digital to physical, every surface now says premium and international.',
     quote: {
-      text: 'Wherever a client meets us — showroom, socials, or a signed export deal — we look like one serious brand.',
+      text: 'Wherever a client meets us (showroom, socials, or a signed export deal), we look like one serious brand.',
       author: 'Managing Director, P2P Motors',
     },
     gallery: [
       {
         src: '/images/work/p2p-motors/hero.webp',
-        alt: 'P2P Motors luxury vehicle-export brand identity — gold-on-black stationery, dealer flags, signage and showroom collateral.',
+        alt: 'P2P Motors luxury vehicle-export brand identity, gold-on-black stationery, dealer flags, signage and showroom collateral.',
         width: 1241,
         height: 1754,
       },
@@ -152,14 +152,14 @@ export const p2pMotors = caseStudy(
 
 export const dosePharmacy = caseStudy(
   'dose-pharmacy',
-  'Dose Pharmacy — Branding & Fit-Out Design',
-  'DOSE PHARMACY — BRANDING & FIT-OUT DESIGN',
+  'Dose Pharmacy: Branding & Fit-Out Design',
+  'DOSE PHARMACY: BRANDING & FIT-OUT DESIGN',
   'featured',
   'Healthcare & retail',
   'Case study: retail pharmacy branding and spatial fit-out in Riyadh.',
   {
     overview:
-      'A modern Riyadh pharmacy. Clean brand, warm fit-out — trust you can walk into.',
+      'A modern Riyadh pharmacy. Clean brand, warm fit-out: trust you can walk into.',
     client: 'Dose Pharmacy',
     industry: 'Retail Pharmacy',
     year: '2023',
@@ -184,7 +184,7 @@ export const dosePharmacy = caseStudy(
       { label: 'Footfall uplift (pilot store)', value: '+35%' },
     ],
     challenge:
-      'Clinical trust and retail warmth — most pharmacies pick one and miss.',
+      'Clinical trust and retail warmth. Most pharmacies pick one and miss.',
     approach:
       'Identity into space: packaging, signage, and shopfront as one system.',
     outcome:
@@ -201,8 +201,8 @@ export const dosePharmacy = caseStudy(
 
 export const clemsonPorterProperties = caseStudy(
   'clemson-porter-properties',
-  'Clemson Porter Properties — Full Rebranding',
-  'CLEMSON PORTER PROPERTIES — FULL REBRANDING',
+  'Clemson Porter Properties: Full Rebranding',
+  'CLEMSON PORTER PROPERTIES: FULL REBRANDING',
   'featured',
   'Property & interiors',
   'Case study: quiet-luxury rebranding for a UAE property brokerage.',
@@ -218,7 +218,7 @@ export const clemsonPorterProperties = caseStudy(
       'Company profile design',
       'Stationery and print materials',
       'Visual direction focused on quiet luxury and trust',
-      'The new brand is subtle, confident, and timeless — built to resonate with high-net-worth individuals and global investors.',
+      'The new brand is subtle, confident, and timeless, built to resonate with high-net-worth individuals and global investors.',
     ],
     deliverables: [
       'Full logo redesign and brand identity system',
@@ -235,9 +235,9 @@ export const clemsonPorterProperties = caseStudy(
     challenge:
       'High-value clients. A brand that still looked dated.',
     approach:
-      'Full rebrand — restrained mark, quiet luxury, zero noise.',
+      'Full rebrand, restrained mark, quiet luxury, zero noise.',
     outcome:
-      'Subtle, confident, timeless — built for private capital.',
+      'Subtle, confident, timeless, built for private capital.',
     quote: {
       text: 'It finally feels like a brand our kind of client expects to see.',
       author: 'CEO, Clemson Porter Properties',
@@ -250,8 +250,8 @@ export const clemsonPorterProperties = caseStudy(
 
 export const emiratesAgro = caseStudy(
   'emirates-agro',
-  'Emirates Agro — Rebranding & Visual Identity',
-  'EMIRATES AGRO — REBRANDING & VISUAL IDENTITY',
+  'Emirates Agro: Rebranding & Visual Identity',
+  'EMIRATES AGRO: REBRANDING & VISUAL IDENTITY',
   'more',
   'Industry & energy',
   'Case study: heritage-forward rebranding for a global agricultural supplier.',
@@ -283,7 +283,7 @@ export const emiratesAgro = caseStudy(
     challenge:
       'Deep heritage. A brand that no longer looked global.',
     approach:
-      'Greens, clarity, trust — identity rooted in land and scale.',
+      'Greens, clarity, trust: identity rooted in land and scale.',
     outcome:
       'Four decades of legacy, one modern visual language.',
     quote: {
@@ -298,8 +298,8 @@ export const emiratesAgro = caseStudy(
 
 export const zealerz = caseStudy(
   'zealerz',
-  'Zealerz — Branding & Visual Identity',
-  'ZEALERZ — BRANDING & VISUAL IDENTITY',
+  'Zealerz: Branding & Visual Identity',
+  'ZEALERZ: BRANDING & VISUAL IDENTITY',
   'more',
   'Industry & energy',
   'Case study: brand identity and app design for an LPG marketplace.',
@@ -330,17 +330,17 @@ export const zealerz = caseStudy(
     challenge:
       'A low-trust category. A product that had to feel instant.',
     approach:
-      'Identity + app — tech energy, zero friction.',
+      'Identity + app, tech energy, zero friction.',
     outcome:
       'Ordering LPG finally feels as simple as it should.',
     quote: {
-      text: 'Ordering gas should feel this simple — the brand and app finally make it so.',
+      text: 'Ordering gas should feel this simple. The brand and app finally make it so.',
       author: 'Founder, Zealerz',
     },
     gallery: [
       {
         src: '/images/work/zealerz/hero.webp',
-        alt: 'Zealerz LPG delivery app and brand identity — delivery trucks, gas cylinders and solar in a green industrial palette.',
+        alt: 'Zealerz LPG delivery app and brand identity, delivery trucks, gas cylinders and solar in a green industrial palette.',
         width: 1241,
         height: 1754,
       },

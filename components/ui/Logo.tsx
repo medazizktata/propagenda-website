@@ -64,10 +64,10 @@ export function Logo({ variant = 'horizontal', href = '/', className }: LogoProp
     <Link
       href={href}
       className={cn('inline-flex items-center', className)}
-      aria-label={wordmarkVisible ? undefined : 'Propagenda — home'}
+      aria-label={wordmarkVisible ? undefined : 'Propagenda, home'}
     >
       {content}
-      {wordmarkVisible ? <span className="sr-only"> — home</span> : null}
+      {wordmarkVisible ? <span className="sr-only">, home</span> : null}
     </Link>
   );
 }

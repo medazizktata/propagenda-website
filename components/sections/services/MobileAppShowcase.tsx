@@ -41,7 +41,7 @@ const STAGES: Stage[] = [
   {
     name: 'Design',
     screen: 'onboarding',
-    detail: 'Wireframes to native UI — type, colour, one clear action.',
+    detail: 'Wireframes to native UI, type, colour, one clear action.',
   },
   {
     name: 'Prototype',

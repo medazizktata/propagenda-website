@@ -185,7 +185,7 @@ export function WorkHero() {
             <span className="block text-orange">work.</span>
           </h1>
           <p className="wh-line mt-8 max-w-md text-base leading-relaxed text-white/75 [text-shadow:0_1px_16px_rgba(0,0,0,0.6)] md:text-lg">
-            A selection of the brands we&rsquo;ve built, refined, and launched &mdash; identity to
+            A selection of the brands we&rsquo;ve built, refined, and launched: identity to
             interface.
           </p>
         </div>

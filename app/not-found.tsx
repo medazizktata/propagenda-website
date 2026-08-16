@@ -24,7 +24,7 @@ export default function NotFound() {
           <span className="text-orange">.</span>
         </h1>
         <p className="mx-auto mt-8 max-w-md text-base leading-relaxed text-white/55 md:text-lg">
-          This page doesn&apos;t exist — or it moved. Let&apos;s get you back to
+          This page doesn&apos;t exist, or it moved. Let&apos;s get you back to
           something worth seeing.
         </p>
 

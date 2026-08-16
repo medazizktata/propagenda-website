@@ -8,7 +8,7 @@ import { BrandPattern } from '@/components/ui/BrandPattern';
 const VALUES = [
   {
     title: 'One studio, every capability',
-    desc: 'Branding, PR, marketing, web, and production — from first strategy to launch — handled by one integrated team.',
+    desc: 'Branding, PR, marketing, web, and production, from first strategy to launch, handled by one integrated team.',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
         <polygon points="12 2 2 7 12 12 22 7 12 2" />
@@ -19,7 +19,7 @@ const VALUES = [
   },
   {
     title: 'Strategy before design',
-    desc: 'Every visual and every campaign is anchored to a clear brand strategy — decisions with a reason, not guesswork.',
+    desc: 'Every visual and every campaign is anchored to a clear brand strategy, decisions with a reason, not guesswork.',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
         <circle cx="12" cy="12" r="10" />

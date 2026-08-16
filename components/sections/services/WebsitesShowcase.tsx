@@ -551,7 +551,7 @@ export function WebsitesShowcase() {
                   Built to perform.
                 </h3>
                 <p className="mt-1.5 text-sm leading-relaxed text-white/55">
-                  Fast and search-ready on every device — Core Web Vitals, not assumptions.
+                  Fast and search-ready on every device: Core Web Vitals, not assumptions.
                 </p>
               </div>
             </div>

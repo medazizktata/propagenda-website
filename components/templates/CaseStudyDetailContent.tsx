@@ -569,8 +569,9 @@ function CaseStudyQuoteBlock({ quote }: { quote: CaseStudyQuote }) {
         >
           {quote.text}
         </blockquote>
-        <figcaption className="sd-reveal mt-8 text-lg font-medium text-white/70">
-          &mdash; {quote.author}
+        <figcaption className="sd-reveal mt-8 flex items-center gap-3 text-lg font-medium text-white/70">
+          <span aria-hidden className="h-px w-8 shrink-0 bg-orange" />
+          {quote.author}
         </figcaption>
       </figure>
     </section>

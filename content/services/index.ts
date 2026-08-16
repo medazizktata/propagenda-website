@@ -11,7 +11,7 @@ function service(
     slug,
     title,
     h1,
-    overview: `${title} overview — content from CONTENT_MAPPING.md.`,
+    overview: `${title} overview, content from CONTENT_MAPPING.md.`,
     scopeItems: ['Scope item placeholder'],
     gallery: [],
     seo: { title: `${title} | Propagenda`, description },
@@ -23,7 +23,7 @@ export const brandingVisualIdentity = service(
   'branding-visual-identity',
   'Branding',
   'BRANDING',
-  'Strategy-first branding — logo, identity systems, stationery tiers, and brand guidelines for Dubai businesses.',
+  'Strategy-first branding, logo, identity systems, stationery tiers, and brand guidelines for Dubai businesses.',
   {
     overview:
       'From logo design to visual identity development and uplifting, our team of branding experts is dedicated to helping you establish a credible and trustworthy brand that drives long-term success for your business.',
@@ -95,10 +95,10 @@ export const onlineOfflineMarketing = service(
   'online-offline-marketing',
   'Online & Offline Marketing',
   'ONLINE & OFFLINE MARKETING',
-  'Digital campaigns, social media, content marketing, influencer marketing, and digital ads — online and offline.',
+  'Digital campaigns, social media, content marketing, influencer marketing, and digital ads, online and offline.',
   {
     overview:
-      'Campaigns that work online and offline — strategy, content, social, ads, and print, built to perform.',
+      'Campaigns that work online and offline: strategy, content, social, ads, and print, built to perform.',
     scopeItems: [
       'Brand strategy',
       'Digital marketing campaigns',
@@ -160,7 +160,7 @@ export const mobileApplications = service(
   'User-friendly mobile apps that enhance your brand and delight users.',
   {
     overview:
-      'From first sketch to store launch — apps that strengthen your brand and delight users.',
+      'From first sketch to store launch: apps that strengthen your brand and delight users.',
     scopeItems: [
       'iOS & Android apps',
       'Cross-platform development',
@@ -176,7 +176,7 @@ export const events = service(
   'events',
   'Events',
   'EVENTS',
-  'Full event branding, organization, photo/video, and social — from planning to flawless execution.',
+  'Full event branding, organization, photo/video, and social, from planning to flawless execution.',
   {
     overview:
       'From start to finish. From planning to evaluation. No matter what type of event you are planning, we can help you make it a success. We have the experience and expertise to handle every aspect of event organization and management.',
@@ -211,10 +211,10 @@ export const photographyVideography = service(
   'photography-videography',
   'Photography & Videography',
   'PHOTOGRAPHY & VIDEOGRAPHY',
-  'Brand, product, lifestyle, and real-estate photography that makes your identity look as considered as it is — with supporting video when a story needs motion.',
+  'Brand, product, lifestyle, and real-estate photography that makes your identity look as considered as it is, with supporting video when a story needs motion.',
   {
     overview:
-      'Design-led visual content, led by photography: product, brand, lifestyle, editorial, food, real estate, portraits, events, and drone — every frame art-directed to match your identity. Video is a supporting layer for when motion tells the story better: short brand films, product and testimonial clips, and motion graphics.',
+      'Design-led visual content, led by photography: product, brand, lifestyle, editorial, food, real estate, portraits, events, and drone. Every frame art-directed to match your identity. Video is a supporting layer for when motion tells the story better: short brand films, product and testimonial clips, and motion graphics.',
     scopeItems: [
       'Product & brand photography',
       'Lifestyle & editorial',

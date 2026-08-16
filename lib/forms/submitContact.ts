@@ -43,5 +43,5 @@ export async function submitContact(
     }
   }
 
-  return { success: true, message: 'Thank you — we will be in touch shortly.' };
+  return { success: true, message: 'Thank you, we will be in touch shortly.' };
 }

@@ -18,9 +18,7 @@ export function DetailOverview({ title, overview, scopeItems, type }: DetailOver
         <ul className="mt-8 max-w-prose-fixed space-y-3">
           {scopeItems.map((item) => (
             <li key={item} className="flex gap-3 text-sm uppercase tracking-wide">
-              <span className="text-orange" aria-hidden>
-                —
-              </span>
+              <span aria-hidden className="mt-[0.45em] h-1.5 w-1.5 shrink-0 rounded-[1px] bg-orange" />
               <span>{item}</span>
             </li>
           ))}

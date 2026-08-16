@@ -7,7 +7,7 @@ export const metadata = buildMetadata(
   {
     title: 'Contact Us | Propagenda',
     description:
-      'Book a free consultation — phone, email, WhatsApp, or contact form. Al Quoz, Dubai.',
+      'Book a free consultation, phone, email, WhatsApp, or contact form. Al Quoz, Dubai.',
   },
   '/contact',
 );

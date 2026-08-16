@@ -184,7 +184,7 @@ export function VideoGallery({
               The work, in motion<span className="text-orange">.</span>
             </h2>
             <p className="mt-4 text-base text-white/65 md:text-lg">
-              Films and reels across every brand we shoot — tap any cut to watch it full-screen.
+              Films and reels across every brand we shoot. Tap any cut to watch it full-screen.
             </p>
           </div>
 

@@ -27,7 +27,7 @@ const PARTNERS: Partner[] = [
   {
     name: 'A-list celebrities',
     blurb:
-      'Household names whose endorsement lends instant authority — regional film, music, and sports stars your audience already follows.',
+      'Household names whose endorsement lends instant authority, regional film, music, and sports stars your audience already follows.',
     reach: '25M+',
     reachLabel: 'Combined following',
     example: 'Launch events, red-carpet appearances, and signature endorsements.',
@@ -40,7 +40,7 @@ const PARTNERS: Partner[] = [
   {
     name: 'Bloggers & creators',
     blurb:
-      'Trusted niche voices with loyal communities — lifestyle, food, travel, and beauty creators who turn a mention into momentum.',
+      'Trusted niche voices with loyal communities, lifestyle, food, travel, and beauty creators who turn a mention into momentum.',
     reach: '12M+',
     reachLabel: 'Combined reach',
     example: 'Sponsored reviews, unboxings, and day-in-the-life features.',
@@ -53,7 +53,7 @@ const PARTNERS: Partner[] = [
   {
     name: 'Gamers & streamers',
     blurb:
-      'Live audiences that show up every session — Twitch and YouTube streamers whose watch-time converts attention into action.',
+      'Live audiences that show up every session, Twitch and YouTube streamers whose watch-time converts attention into action.',
     reach: '8M+',
     reachLabel: 'Monthly viewers',
     example: 'Sponsored streams, in-game integrations, and tournament tie-ins.',
@@ -66,7 +66,7 @@ const PARTNERS: Partner[] = [
   {
     name: 'Actors & artists',
     blurb:
-      'Cultural credibility from stage and screen — actors, musicians, and visual artists who align your brand with real craft.',
+      'Cultural credibility from stage and screen, actors, musicians, and visual artists who align your brand with real craft.',
     reach: '10M+',
     reachLabel: 'Combined audience',
     example: 'Brand ambassadorships, creative collaborations, and feature spots.',
@@ -79,7 +79,7 @@ const PARTNERS: Partner[] = [
   {
     name: 'Press & media',
     blurb:
-      "Earned coverage money can't buy — placements across the region's leading publications, broadcast, and digital press.",
+      "Earned coverage money can't buy, placements across the region's leading publications, broadcast, and digital press.",
     reach: '50+',
     reachLabel: 'Media outlets',
     example: 'Press releases, features, interviews, and launch coverage.',
@@ -109,7 +109,7 @@ export function PrInfluenceRoster() {
         </h2>
         {/* Deck — sets up the interaction and folds in the network-at-scale figure. */}
         <p className="sd-reveal mb-10 max-w-2xl text-control leading-relaxed text-white/60 md:text-base">
-          From household names to niche creators and earned press — a curated roster reaching more
+          From household names to niche creators and earned press: a curated roster reaching more
           than 50 million people across the region. Select a partner to see the reach behind it.
         </p>
 

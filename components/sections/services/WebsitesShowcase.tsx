@@ -174,31 +174,39 @@ function MiniSite({ vw }: { vw: number }) {
 
   const scale = box.w > 0 ? box.w / vw : 0;
 
-  // Live interaction. The parent page runs Lenis, which forces `iframe { pointer-events: none }`
-  // whenever smooth-scroll is on (globals.css) and swallows the wheel — so by default the embed
-  // can't be scrolled and any wheel over it just scrolls the page. Clicking the device turns it
-  // "live": we pause the parent Lenis (the wheel now reaches the embed and the page holds still)
-  // and re-enable pointer events on the iframe. Moving the pointer off the device hands scrolling
-  // back to the page.
+  // Live interaction. The embed can't just "receive the wheel": the parent runs Lenis (which
+  // neutralises iframes and owns the wheel) and native wheel routing into a transform-scaled
+  // iframe is unreliable. So clicking the device goes "live" and we drive the embed's scroll
+  // ourselves — pause the parent Lenis (page holds still) and forward every wheel delta to the
+  // iframe's own scrollBy. The iframe stays pointer-events:none so the wheel lands on the wrapper.
+  // Moving the pointer off the device hands scrolling back to the page.
   const [live, setLive] = useState(false);
   useEffect(() => {
+    const wrap = wrapRef.current;
     if (live) window.__lenis?.stop();
     else window.__lenis?.start();
-    if (!live) return;
+    if (!live || !wrap) return;
 
-    // While live the iframe captures the pointer, so the wrapper's own pointerleave can't be
-    // trusted — watch the window and hand scrolling back to the page once the pointer is
-    // clearly outside the device.
+    const onWheel = (e: WheelEvent) => {
+      const cw = wrap.querySelector('iframe')?.contentWindow;
+      if (!cw) return;
+      e.preventDefault();
+      // Normalise line/page delta modes to pixels so mouse wheels and trackpads feel the same.
+      const factor = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? wrap.clientHeight : 1;
+      cw.scrollBy(0, e.deltaY * factor);
+    };
+    wrap.addEventListener('wheel', onWheel, { passive: false });
+
     const onMove = (e: PointerEvent) => {
-      const wrap = wrapRef.current;
-      if (!wrap) return;
       const r = wrap.getBoundingClientRect();
       if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) {
         setLive(false);
       }
     };
     window.addEventListener('pointermove', onMove, { passive: true });
+
     return () => {
+      wrap.removeEventListener('wheel', onWheel);
       window.removeEventListener('pointermove', onMove);
       window.__lenis?.start();
     };
@@ -221,14 +229,16 @@ function MiniSite({ vw }: { vw: number }) {
             height: Math.ceil(box.h / scale),
             transform: `scale(${scale})`,
             transformOrigin: 'top left',
-            pointerEvents: live ? 'auto' : 'none',
+            // Always inert to the pointer: the wrapper catches the wheel and we forward it to the
+            // iframe's scroll (see the effect above). Keeps the wheel off the iframe and stops the
+            // preview navigating on stray clicks.
+            pointerEvents: 'none',
           }}
         />
       )}
 
-      {/* Click-to-scroll gate — covers the embed while it's inert (Lenis owns the wheel and the
-          iframe is pointer-events:none). Clicking it goes live; it hides so the embed takes the
-          wheel directly. */}
+      {/* Click-to-scroll gate — covers the embed while it's inert. Clicking it goes live, and the
+          wrapper then forwards wheel deltas into the embed's scroll. */}
       {scale > 0 && !live && (
         <button
           type="button"

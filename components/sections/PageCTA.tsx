@@ -40,7 +40,7 @@ export function PageCTA({
         className="animate-cta-glow pointer-events-none absolute inset-0 motion-reduce:animate-none motion-reduce:opacity-50"
         style={{
           background:
-            'radial-gradient(38% 42% at 50% 52%, rgba(245,139,39,0.42) 0%, rgba(245,139,39,0.18) 38%, rgba(245,139,39,0.05) 62%, transparent 78%)',
+            'radial-gradient(circle clamp(15rem, 38vw, 24rem) at 50% 52%, rgba(245,139,39,0.42) 0%, rgba(245,139,39,0.18) 38%, rgba(245,139,39,0.05) 62%, transparent 78%)',
         }}
       />
 

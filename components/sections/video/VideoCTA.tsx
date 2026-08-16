@@ -100,7 +100,7 @@ export function VideoCTA({ film, onWatch }: { film: VideoProject; onWatch: () =>
           className="absolute inset-0 h-full w-full object-cover [filter:contrast(1.25)_saturate(1.5)_brightness(1.28)]"
         />
         {/* Warmth through the letter windows when the cut goes dark. */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(245,139,39,0.28)_0%,transparent_58%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(245,139,39,0.28)_0%,transparent_58%)]" />
         <svg
           viewBox="0 0 1200 800"
           preserveAspectRatio="xMidYMid slice"

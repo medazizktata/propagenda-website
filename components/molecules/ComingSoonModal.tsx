@@ -94,7 +94,7 @@ export function ComingSoonModal() {
         aria-label="Dismiss"
         className={cn(
           'absolute inset-0 transition-opacity duration-300',
-          'bg-[radial-gradient(ellipse_at_center,rgba(245,139,39,0.22)_0%,transparent_55%),rgba(15,21,31,0.82)]',
+          'bg-[radial-gradient(circle_at_center,rgba(245,139,39,0.22)_0%,transparent_55%),rgba(15,21,31,0.82)]',
           entered ? 'opacity-100' : 'opacity-0',
         )}
         onClick={close}

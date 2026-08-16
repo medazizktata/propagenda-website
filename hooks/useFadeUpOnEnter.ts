@@ -24,13 +24,14 @@ export function useFadeUpOnEnter(
       // hero above — can never leave the section blank. Motion only nudges position.
       gsap.from(el.querySelectorAll(selector), {
         ...(translateOnly ? {} : { opacity: 0 }),
-        y: 40,
-        duration: 0.6,
-        stagger: 0.1,
-        ease: 'power2.out',
+        // Cuberto-style: a longer travel that settles on an expo.out glide (no snap/bounce).
+        y: 56,
+        duration: 0.9,
+        stagger: 0.09,
+        ease: 'expo.out',
         scrollTrigger: {
           trigger: el,
-          start: 'top 80%',
+          start: 'top 82%',
           once: true,
         },
       });

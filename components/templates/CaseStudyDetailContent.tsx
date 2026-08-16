@@ -56,10 +56,11 @@ export function CaseStudyDetailContent({ study }: CaseStudyDetailContentProps) {
     const ctx = gsap.context(() => {
       gsap.utils.toArray<HTMLElement>('.sd-reveal').forEach((item) => {
         gsap.from(item, {
-          y: 30,
-          duration: 0.8,
-          ease: 'power3.out',
-          scrollTrigger: { trigger: item, start: 'top 92%', once: true },
+          // Cuberto-style long settle (translate-only stays anti-blank).
+          y: 56,
+          duration: 0.9,
+          ease: 'expo.out',
+          scrollTrigger: { trigger: item, start: 'top 88%', once: true },
         });
       });
     }, rootRef);

@@ -87,13 +87,14 @@ export function ServiceDetailContent({ service }: { service: ServiceRecord }) {
       items.forEach((item) => {
         gsap.fromTo(
           item,
-          { autoAlpha: 0, y: 28 },
+          { autoAlpha: 0, y: 56 },
           {
             autoAlpha: 1,
             y: 0,
-            duration: 0.7,
-            ease: 'power2.out',
-            scrollTrigger: { trigger: item, start: 'top 88%', once: true },
+            // Cuberto-style long settle — content glides into place rather than snapping.
+            duration: 0.9,
+            ease: 'expo.out',
+            scrollTrigger: { trigger: item, start: 'top 85%', once: true },
           },
         );
       });

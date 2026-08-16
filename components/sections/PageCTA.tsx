@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { aboutContent } from '@/content/about';
 import { cn } from '@/components/ui/cn';
+import { RevealHeading } from '@/components/ui/RevealHeading';
 
 export interface PageCTAProps {
   line1?: string;
@@ -45,13 +46,14 @@ export function PageCTA({
       />
 
       <div className="relative z-content mx-auto max-w-3xl">
-        <h2
+        <RevealHeading
+          as="h2"
           className="font-sans font-bold leading-[1.08] tracking-[-0.025em]"
           style={{ fontSize: 'clamp(2rem, 4.5vw, 3.5rem)' }}
         >
           <span className="block text-white">{line1}</span>
           <span className="block text-orange">{line2}</span>
-        </h2>
+        </RevealHeading>
         {support ? (
           <p className="mx-auto mt-7 max-w-md text-base leading-relaxed text-white/55">
             {support}

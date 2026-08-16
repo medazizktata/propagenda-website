@@ -223,13 +223,14 @@ export function Hero({ flat = false }: { flat?: boolean }) {
           ) : null}
 
           {/* Headline left; subtitle + CTA centered on the full viewport width. In `flat`
-              (embedded preview) the emulated viewport is short and wide, so centring would
-              ride the tall headline up under the fixed nav — top-align it instead, clearing
-              the header with pt-28 and letting the panel grow (the embed scrolls). */}
+              (embedded preview) the content flows (min-h-screen + justify-center): on a tall
+              emulated viewport (mobile/tablet) it centres cleanly; on the short, wide desktop
+              viewport the tall headline simply exceeds the min-height, so it packs from pt-28
+              (clearing the fixed nav) and the overflow scrolls instead of riding up. */}
           <div
             className={cn(
               'pointer-events-none relative z-content flex flex-col px-gutter-m pb-16 pt-28 lg:px-gutter-d',
-              flat ? 'min-h-screen justify-start' : 'h-full justify-center lg:-translate-y-[5vh]',
+              flat ? 'min-h-screen justify-center' : 'h-full justify-center lg:-translate-y-[5vh]',
             )}
           >
             <h1 className="hero-headline mt-6 max-w-[11ch] self-start font-sans text-[clamp(2.15rem,10.5vw,7.5rem)] font-bold uppercase leading-[0.92] tracking-display text-white [text-shadow:0_2px_20px_rgba(0,0,0,0.75),0_0_48px_rgba(37,37,37,0.85)] sm:mt-8 sm:max-w-[13ch] lg:mt-16 lg:max-w-[15ch] lg:leading-[0.95]">

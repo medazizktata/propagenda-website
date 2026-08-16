@@ -132,6 +132,24 @@ function ScoreGauge({ score, run, reduced }: { score: number; run: boolean; redu
   );
 }
 
+/** Vertical scroll cue (up + down chevrons) for the click-to-scroll gate. */
+function ScrollCue() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+      className="h-3.5 w-3.5"
+    >
+      <path d="M8 9l4-4 4 4M8 15l4 4 4-4" />
+    </svg>
+  );
+}
+
 /**
  * Live, lightweight "minified home" preview (see app/preview/page.tsx). It renders at the
  * target viewport width (`vw`) and is scaled down to fit the device screen — so each breakpoint
@@ -156,8 +174,42 @@ function MiniSite({ vw }: { vw: number }) {
 
   const scale = box.w > 0 ? box.w / vw : 0;
 
+  // Live interaction. The parent page runs Lenis, which forces `iframe { pointer-events: none }`
+  // whenever smooth-scroll is on (globals.css) and swallows the wheel — so by default the embed
+  // can't be scrolled and any wheel over it just scrolls the page. Clicking the device turns it
+  // "live": we pause the parent Lenis (the wheel now reaches the embed and the page holds still)
+  // and re-enable pointer events on the iframe. Moving the pointer off the device hands scrolling
+  // back to the page.
+  const [live, setLive] = useState(false);
+  useEffect(() => {
+    if (live) window.__lenis?.stop();
+    else window.__lenis?.start();
+    if (!live) return;
+
+    // While live the iframe captures the pointer, so the wrapper's own pointerleave can't be
+    // trusted — watch the window and hand scrolling back to the page once the pointer is
+    // clearly outside the device.
+    const onMove = (e: PointerEvent) => {
+      const wrap = wrapRef.current;
+      if (!wrap) return;
+      const r = wrap.getBoundingClientRect();
+      if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) {
+        setLive(false);
+      }
+    };
+    window.addEventListener('pointermove', onMove, { passive: true });
+    return () => {
+      window.removeEventListener('pointermove', onMove);
+      window.__lenis?.start();
+    };
+  }, [live]);
+
   return (
-    <div ref={wrapRef} className="relative min-h-0 w-full flex-1 overflow-hidden bg-charcoal">
+    <div
+      ref={wrapRef}
+      onPointerLeave={() => setLive(false)}
+      className="relative min-h-0 w-full flex-1 overflow-hidden bg-charcoal"
+    >
       {scale > 0 && (
         <iframe
           src="/preview?preview=1"
@@ -169,8 +221,26 @@ function MiniSite({ vw }: { vw: number }) {
             height: Math.ceil(box.h / scale),
             transform: `scale(${scale})`,
             transformOrigin: 'top left',
+            pointerEvents: live ? 'auto' : 'none',
           }}
         />
+      )}
+
+      {/* Click-to-scroll gate — covers the embed while it's inert (Lenis owns the wheel and the
+          iframe is pointer-events:none). Clicking it goes live; it hides so the embed takes the
+          wheel directly. */}
+      {scale > 0 && !live && (
+        <button
+          type="button"
+          onClick={() => setLive(true)}
+          aria-label="Click to scroll the preview"
+          className="group absolute inset-0 z-10 flex cursor-pointer items-end justify-center pb-5"
+        >
+          <span className="inline-flex items-center gap-2 rounded-full bg-charcoal/85 px-3.5 py-2 text-meta font-semibold uppercase tracking-[0.16em] text-white/90 ring-1 ring-white/15 backdrop-blur-sm transition-transform duration-300 ease-out group-hover:-translate-y-0.5">
+            <ScrollCue />
+            Click to scroll
+          </span>
+        </button>
       )}
     </div>
   );

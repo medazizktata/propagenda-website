@@ -9,22 +9,41 @@ import { HeaderCTA } from '@/components/molecules/HeaderCTA';
 import { HamburgerButton } from '@/components/molecules/HamburgerButton';
 import { MobileMenu } from '@/components/layout/MobileMenu';
 import { primaryNav } from '@/content/site';
+import { useReducedMotion } from '@/lib/motion/useReducedMotion';
 import { cn } from '@/components/ui/cn';
 
 /** Scroll distance (px) over which the feather veil eases in. */
 const FILL_RANGE_PX = 96;
+/** Only start hiding the bar once you've scrolled past it (px). */
+const HIDE_AFTER_PX = 140;
 
 export function Header() {
   const pathname = usePathname();
+  const reducedMotion = useReducedMotion();
   const [menuOpen, setMenuOpen] = useState(false);
   const [fill, setFill] = useState(0);
+  // Auto-hide: the bar retracts up when you scroll down, and drops back in the moment you
+  // scroll up — so the content gets the screen while you read, the nav is a flick away.
+  const [hidden, setHidden] = useState(false);
 
   useEffect(() => {
     let raf = 0;
+    let lastY = window.scrollY;
     const update = () => {
       raf = 0;
-      const next = Math.min(1, Math.max(0, window.scrollY / FILL_RANGE_PX));
+      const y = window.scrollY;
+      const next = Math.min(1, Math.max(0, y / FILL_RANGE_PX));
       setFill((prev) => (Math.abs(prev - next) < 0.01 ? prev : next));
+
+      if (reducedMotion) {
+        lastY = y;
+      } else if (Math.abs(y - lastY) > 6) {
+        // Down + past the bar → hide; any upward move → reveal.
+        if (y > lastY && y > HIDE_AFTER_PX) setHidden(true);
+        else if (y < lastY) setHidden(false);
+        lastY = y;
+      }
+      if (y <= HIDE_AFTER_PX) setHidden(false); // always shown near the top
     };
     const onScroll = () => {
       if (!raf) raf = requestAnimationFrame(update);
@@ -35,7 +54,7 @@ export function Header() {
       window.removeEventListener('scroll', onScroll);
       if (raf) cancelAnimationFrame(raf);
     };
-  }, [pathname]);
+  }, [pathname, reducedMotion]);
 
   // Sections (e.g. work-split pin) can suppress the charcoal veil via this attr.
   const [veilOff, setVeilOff] = useState(false);
@@ -51,8 +70,12 @@ export function Header() {
   return (
     <header
       className={cn(
-        'fixed inset-x-0 top-0 z-header bg-transparent pt-3',
+        'fixed inset-x-0 top-0 z-header bg-transparent pt-3 will-change-transform',
+        'transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]',
         menuOpen && 'z-navbox',
+        // -10rem clears the 8.5rem veil too, so nothing peeks while hidden. Never hide with
+        // the mobile menu open.
+        hidden && !menuOpen && '-translate-y-[10rem]',
       )}
     >
       {/* Veil — solid through the nav row (nothing may ghost behind the links), then feathers. */}

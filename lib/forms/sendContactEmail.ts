@@ -1,5 +1,6 @@
 import { Resend } from 'resend';
 import type { ContactSchema } from './contactSchema';
+import { buildContactEmailBodies } from './contactEmailTemplate';
 
 export type SendContactResult =
   | { ok: true; skipped?: boolean }
@@ -17,31 +18,6 @@ function resolveTo(): string | null {
 
 function resolveFrom(): string {
   return process.env.CONTACT_FROM_EMAIL?.trim() || DEFAULT_FROM;
-}
-
-function escapeHtml(s: string) {
-  return s
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-}
-
-function buildBodies(data: ContactSchema) {
-  const lines = [
-    `Name: ${data.name}`,
-    `Company: ${data.company}`,
-    `Email: ${data.email}`,
-    `Source: ${data.source}`,
-    `Budget: ${data.budget}`,
-    `Timeframe: ${data.timeframe}`,
-    '',
-    'Message:',
-    data.message,
-  ];
-  const text = lines.join('\n');
-  const html = `<pre style="font-family:ui-sans-serif,system-ui,sans-serif;white-space:pre-wrap">${escapeHtml(text)}</pre>`;
-  return { text, html };
 }
 
 /**
@@ -66,13 +42,13 @@ export async function sendContactEmail(
     return { ok: false, message: 'Unable to send message. Please try again.' };
   }
 
-  const { text, html } = buildBodies(data);
+  const { text, html, subject } = buildContactEmailBodies(data);
   const resend = new Resend(apiKey);
   const { error } = await resend.emails.send({
     from: resolveFrom(),
     to: [to],
     replyTo: data.email,
-    subject: `New brief — ${data.name} / ${data.company}`,
+    subject,
     text,
     html,
   });

@@ -169,7 +169,7 @@ export function ContactCloser() {
               className="flex flex-col gap-5"
               noValidate
             >
-              <div className="grid items-end gap-5 sm:grid-cols-2">
+              <div className="grid grid-cols-1 items-start gap-5 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] sm:gap-x-5">
                 <LabeledField
                   id="name"
                   name="name"
@@ -190,7 +190,7 @@ export function ContactCloser() {
                 />
               </div>
 
-              <div className="grid items-end gap-5 sm:grid-cols-2">
+              <div className="grid grid-cols-1 items-start gap-5 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] sm:gap-x-5">
                 <LabeledField
                   id="email"
                   name="email"
@@ -213,7 +213,7 @@ export function ContactCloser() {
                 />
               </div>
 
-              <div className="grid items-end gap-5 sm:grid-cols-2">
+              <div className="grid grid-cols-1 items-start gap-5 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] sm:gap-x-5">
                 <FormSelect
                   id="budget"
                   name="budget"
@@ -362,15 +362,20 @@ function LabeledField({
         placeholder={placeholder}
         defaultValue={defaultValue}
         required={required}
-        className={cn(contactControlSingle, error && "border-error")}
+        className={cn(contactControlSingle, "w-full min-w-0", error && "border-error")}
         aria-invalid={Boolean(error)}
         aria-describedby={error ? `${id}-error` : undefined}
       />
-      {error ? (
-        <p id={`${id}-error`} className="mt-1.5 text-xs text-error" role="alert">
-          {error}
-        </p>
-      ) : null}
+      <p
+        id={error ? `${id}-error` : undefined}
+        className={cn(
+          "mt-1.5 min-h-4 text-xs leading-4",
+          error ? "text-error" : "invisible",
+        )}
+        role={error ? "alert" : undefined}
+      >
+        {error || "\u00a0"}
+      </p>
     </div>
   );
 }

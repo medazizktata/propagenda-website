@@ -20,7 +20,7 @@ export function ContactForm() {
         className="w-full max-w-full space-y-4"
         noValidate
       >
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid grid-cols-1 items-start gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
           <FormField
             id="name"
             name="name"
@@ -60,7 +60,7 @@ export function ContactForm() {
           error={errors.source}
           required
         />
-        <div className="grid items-end gap-4 md:grid-cols-2">
+        <div className="grid grid-cols-1 items-start gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
           <FormSelect
             id="budget"
             name="budget"

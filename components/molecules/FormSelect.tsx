@@ -53,9 +53,8 @@ export function FormSelect({
           aria-describedby={error ? `${id}-error` : undefined}
           className={cn(
             contactControlSingle,
-            'flex items-center justify-between gap-3 text-left',
-            'w-full min-w-0 pr-5 pl-5',
-            'rounded-2xl data-[size=default]:h-14 data-[size=default]:rounded-2xl',
+            'flex !w-full min-w-0 max-w-full items-center justify-between gap-3 text-left',
+            'rounded-2xl pr-5 pl-5 data-[size=default]:h-14 data-[size=default]:rounded-2xl',
             'data-placeholder:text-white/45',
             '[&_svg]:text-white/50',
             error && 'border-error',
@@ -73,11 +72,16 @@ export function FormSelect({
           </SelectGroup>
         </SelectContent>
       </Select>
-      {error ? (
-        <p id={`${id}-error`} className="mt-1.5 text-xs text-error" role="alert">
-          {error}
-        </p>
-      ) : null}
+      <p
+        id={error ? `${id}-error` : undefined}
+        className={cn(
+          'mt-1.5 min-h-4 text-xs leading-4',
+          error ? 'text-error' : 'invisible',
+        )}
+        role={error ? 'alert' : undefined}
+      >
+        {error || '\u00a0'}
+      </p>
     </div>
   );
 }

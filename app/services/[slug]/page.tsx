@@ -5,8 +5,6 @@ import { getServiceSlugs } from '@/lib/content/getAllSlugs';
 import { buildMetadata } from '@/lib/seo/metadata';
 import type { ServiceSlug } from '@/types/content';
 
-export const dynamicParams = false;
-
 export function generateStaticParams() {
   return getServiceSlugs().map((slug) => ({ slug }));
 }

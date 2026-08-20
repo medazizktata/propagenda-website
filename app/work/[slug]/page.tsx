@@ -5,8 +5,6 @@ import { getWorkSlugs } from '@/lib/content/getAllSlugs';
 import { buildMetadata } from '@/lib/seo/metadata';
 import type { WorkSlug } from '@/types/content';
 
-export const dynamicParams = false;
-
 export function generateStaticParams() {
   return getWorkSlugs().map((slug) => ({ slug }));
 }

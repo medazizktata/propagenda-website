@@ -14,7 +14,6 @@ export interface FooterConfig {
   secondaryTagline?: string;
   phone: string;
   email: string;
-  address: string;
   copyright: string;
   legalLinks: NavItem[];
 }

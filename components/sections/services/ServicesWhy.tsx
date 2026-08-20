@@ -29,8 +29,8 @@ const VALUES = [
     ),
   },
   {
-    title: 'Built in Dubai, made to travel',
-    desc: 'Local market insight paired with work that holds its own on a global stage.',
+    title: 'Built to travel',
+    desc: 'Market insight paired with work that holds its own on any stage.',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
         <circle cx="12" cy="12" r="10" />

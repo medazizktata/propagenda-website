@@ -23,7 +23,7 @@ export const brandingVisualIdentity = service(
   'branding-visual-identity',
   'Branding',
   'BRANDING',
-  'Strategy-first branding, logo, identity systems, stationery tiers, and brand guidelines for Dubai businesses.',
+  'Strategy-first branding, logo, identity systems, stationery tiers, and brand guidelines.',
   {
     overview:
       'From logo design to visual identity development and uplifting, our team of branding experts is dedicated to helping you establish a credible and trustworthy brand that drives long-term success for your business.',
@@ -69,7 +69,7 @@ export const publicRelations = service(
   'public-relations',
   'Public Relations',
   'PUBLIC RELATIONS',
-  'Influencer partnerships, media relations, and credibility-building PR for brands in the UAE.',
+  'Influencer partnerships, media relations, and credibility-building PR for brands.',
   {
     overview:
       "Our team of experts will meticulously select and collaborate with influential individuals in various fields, including A-list celebrities, bloggers, gamers, and actors to expand your brand's reach, engagement, and credibility.",

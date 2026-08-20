@@ -51,7 +51,6 @@ export const footer: FooterConfig = {
   secondaryTagline: 'Together for the Better Future',
   phone: '+971 52 753 3253',
   email: 'info@thepropagenda.com',
-  address: 'Al Quoz Industrial Area 2, Dubai, UAE',
   copyright: 'Propagenda. All Rights Reserved.',
   legalLinks: [
     { label: 'Privacy', href: '/privacy' },

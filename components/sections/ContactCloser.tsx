@@ -147,7 +147,7 @@ export function ContactCloser() {
             </div>
 
             <p className="text-backstage mt-8 text-white/35">
-              Al Quoz · Dubai · <DubaiTime /> GST · replies within a day
+              <StudioTime /> GST · replies within a day
             </p>
           </div>
 
@@ -309,9 +309,9 @@ export function ContactCloser() {
   );
 }
 
-/** Live Dubai clock (GST, UTC+4) — updates each minute; renders empty until mounted
-    so server and client markup never disagree. */
-function DubaiTime() {
+/** Live studio clock (GST, UTC+4) — updates each minute; empty until mounted so
+    server and client markup never disagree. */
+function StudioTime() {
   const [time, setTime] = useState('');
   useEffect(() => {
     const tick = () =>

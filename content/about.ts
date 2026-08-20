@@ -134,7 +134,7 @@ export const aboutContent = {
   intro: {
     label: "About us",
     statement:
-      "A Dubai marketing studio. We craft brands, campaigns, and digital experiences that get noticed.",
+      "A marketing studio. We craft brands, campaigns, and digital experiences that get noticed.",
   },
 
   principles: [

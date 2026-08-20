@@ -59,9 +59,6 @@ export function Footer() {
                 </a>
               ) : null}
             </div>
-            <p className="max-w-[24ch] font-mono text-sm leading-relaxed text-white/60">
-              {footer.address}
-            </p>
           </div>
 
           <nav className="lg:col-span-5" aria-label="Footer">

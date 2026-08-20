@@ -8,7 +8,6 @@ export const privacy: LegalRecord = {
     {
       paragraphs: [
         'Propagenda Marketing Services ("Propagenda", "we", "us") respects your privacy. This policy explains how we collect, use, and protect personal information when you visit our website or contact us.',
-        'Last updated: January 2025.',
       ],
     },
     {
@@ -53,7 +52,6 @@ export const privacy: LegalRecord = {
       heading: 'Contact',
       paragraphs: [
         'Propagenda Marketing Services',
-        'Al Quoz Industrial Area 2, Dubai, UAE',
         'Email: info@thepropagenda.com',
         'Phone: +971 52 753 3253',
       ],
@@ -61,13 +59,13 @@ export const privacy: LegalRecord = {
     {
       heading: 'Governing Law',
       paragraphs: [
-        'This privacy policy is governed by the laws of the United Arab Emirates. Any disputes shall be subject to the exclusive jurisdiction of the courts of Dubai, UAE.',
+        'This privacy policy is governed by applicable commercial law. For questions about this policy, contact us at the email above.',
       ],
     },
   ],
   seo: {
     title: 'Privacy Policy | Propagenda',
-    description: 'Privacy policy for Propagenda Marketing Services, UAE-facing standard template.',
+    description: 'Privacy policy for Propagenda Marketing Services.',
   },
 };
 
@@ -117,7 +115,6 @@ export const terms: LegalRecord = {
       heading: 'Contact',
       paragraphs: [
         'Propagenda Marketing Services',
-        'Al Quoz Industrial Area 2, Dubai, UAE',
         'Email: info@thepropagenda.com',
         'Phone: +971 52 753 3253',
       ],
@@ -138,8 +135,6 @@ export const imprint: LegalRecord = {
     {
       paragraphs: [
         'Propagenda Marketing Services',
-        'Al Quoz Industrial Area 2',
-        'Dubai, UAE',
         '+971 52 753 3253',
         'info@thepropagenda.com',
         '@propagenda_marketing',
@@ -148,7 +143,7 @@ export const imprint: LegalRecord = {
   ],
   seo: {
     title: 'Imprint | Propagenda',
-    description: 'Legal imprint, company name, address, and contact details.',
+    description: 'Legal imprint, company name, and contact details.',
   },
 };
 

@@ -33,7 +33,6 @@ export function ContactInfoBlock({ showWhatsApp = false }: ContactInfoBlockProps
           />
         ) : null}
       </div>
-      <ContactInfoRow label="Address" value={footer.address} />
     </div>
   );
 }

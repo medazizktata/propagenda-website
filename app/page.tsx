@@ -7,7 +7,7 @@ export const metadata = buildMetadata(
   {
     title: 'Where creativity meets strategy | Propagenda',
     description:
-      "Dubai's 360° marketing agency, branding, digital, events, print & install. View our work and book a free consultation.",
+      '360° marketing agency — branding, digital, events, print & install. View our work and book a free consultation.',
   },
   '/',
 );

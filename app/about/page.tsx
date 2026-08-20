@@ -5,7 +5,7 @@ export const metadata = buildMetadata(
   {
     title: 'About | Propagenda',
     description:
-      'Professional Planned Agenda. Holistic marketing strategies for businesses of all sizes in Dubai and the UAE.',
+      'Professional Planned Agenda. Holistic marketing strategies for businesses of all sizes.',
   },
   '/about',
 );

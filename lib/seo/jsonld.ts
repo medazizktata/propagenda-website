@@ -12,13 +12,6 @@ export function organizationJsonLd() {
     logo: `${siteUrl}/images/brand/logo.png`,
     email: footer.email,
     telephone: footer.phone.replace(/\s/g, ''),
-    address: {
-      '@type': 'PostalAddress',
-      streetAddress: footer.address,
-      addressLocality: 'Dubai',
-      addressRegion: 'UAE',
-      addressCountry: 'AE',
-    },
     sameAs: socialLinks.map((link) => link.href),
   };
 }
@@ -28,21 +21,10 @@ export function localBusinessJsonLd() {
 
   return {
     '@context': 'https://schema.org',
-    '@type': 'LocalBusiness',
+    '@type': 'ProfessionalService',
     name: 'Propagenda Marketing Services',
     url: `${siteUrl}/contact`,
     email: footer.email,
     telephone: footer.phone.replace(/\s/g, ''),
-    address: {
-      '@type': 'PostalAddress',
-      streetAddress: footer.address,
-      addressLocality: 'Dubai',
-      addressRegion: 'UAE',
-      addressCountry: 'AE',
-    },
-    areaServed: {
-      '@type': 'Country',
-      name: 'United Arab Emirates',
-    },
   };
 }

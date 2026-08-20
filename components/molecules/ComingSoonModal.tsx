@@ -76,7 +76,7 @@ export function ComingSoonModal() {
     };
   }, [mounted, close]);
 
-  if (!enabled || !mounted) return null;
+  if (!mounted) return null;
 
   return createPortal(
     <div

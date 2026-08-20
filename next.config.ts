@@ -2,6 +2,8 @@ import type { NextConfig } from 'next';
 import { legacyRedirects } from './lib/constants/redirects';
 
 const nextConfig: NextConfig = {
+  // Required by @opennextjs/cloudflare (Workers bundle traces from .next/standalone).
+  output: 'standalone',
   // Optional out-of-tree build dir so `next build` can run beside a live dev server
   // (both default to .next and corrupt each other). CI/audits: NEXT_DIST_DIR=.next-prod
   distDir: process.env.NEXT_DIST_DIR || '.next',

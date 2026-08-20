@@ -41,7 +41,10 @@ Copy `.env.example` to `.env.local` and set `NEXT_PUBLIC_SITE_URL` for productio
 | Variable | Purpose |
 |----------|---------|
 | `NEXT_PUBLIC_SITE_URL` | Canonical site origin. |
-| `NEXT_PUBLIC_CONTACT_EMAIL` | Public inbox (footer, mailto, legal). Default `propagendamarketing@gmail.com` until `info@` is live. |
+| `NEXT_PUBLIC_CONTACT_EMAIL` | Public inbox (footer, mailto, legal) + prod form To fallback. |
+| `CONTACT_TO_EMAIL` | Form recipient override (throwaway in dev). Falls back to `NEXT_PUBLIC_CONTACT_EMAIL`. |
+| `CONTACT_FROM_EMAIL` | Resend From. Default `Propagenda <onboarding@resend.dev>`. |
+| `RESEND_API_KEY` | Sends contact briefs via Resend. Empty in local → validate-only success. |
 | `NEXT_PUBLIC_FF_SOFT_LAUNCH` | Lock unfinished routes behind coming-soon. Default on. |
 | `NEXT_PUBLIC_FF_PAGE_ABOUT` | Unlock `/about` while soft launch is on. |
 | `NEXT_PUBLIC_FF_PAGE_SERVICES` | Unlock `/services` + slugs. |

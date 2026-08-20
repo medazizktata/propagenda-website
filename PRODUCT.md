@@ -51,7 +51,7 @@ Brand line: "Where creativity meets strategy." Tagline: "Looking for the better 
 - Real assets are the differentiator: actual client reels, extracted client logos
   (`public/images/clients/`), portfolio posters (WebP), the physical signage photo. Never
   placeholder/fake brand logos.
-- Contact form posts to `CONTACT_FORM_ENDPOINT` (empty in dev → validation-only round trip).
+- Contact form validates with Zod, then sends via Resend (`RESEND_API_KEY`). Without a key in local, validation-only success.
 - Legacy WordPress redirect map must keep working (`lib/constants/redirects.ts`).
 - Reduced-motion support is a hard requirement across all animation (established discipline).
 - Performance floor: no multi-MB images (WebP q80 pipeline), loader once per session,

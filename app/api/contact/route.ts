@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { contactSchema } from '@/lib/forms/contactSchema';
+import { sendContactEmail } from '@/lib/forms/sendContactEmail';
 
 export async function POST(request: Request) {
   const body = await request.json();
@@ -12,26 +13,12 @@ export async function POST(request: Request) {
     );
   }
 
-  const endpoint = process.env.CONTACT_FORM_ENDPOINT;
-
-  if (endpoint) {
-    const response = await fetch(endpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(process.env.CONTACT_FORM_API_KEY
-          ? { Authorization: `Bearer ${process.env.CONTACT_FORM_API_KEY}` }
-          : {}),
-      },
-      body: JSON.stringify(parsed.data),
-    });
-
-    if (!response.ok) {
-      return NextResponse.json(
-        { success: false, message: 'Unable to send message. Please try again.' },
-        { status: 502 },
-      );
-    }
+  const sent = await sendContactEmail(parsed.data);
+  if (!sent.ok) {
+    return NextResponse.json(
+      { success: false, message: sent.message },
+      { status: 502 },
+    );
   }
 
   return NextResponse.json({

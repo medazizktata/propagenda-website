@@ -70,8 +70,11 @@ export function Header() {
   return (
     <header
       className={cn(
-        'fixed inset-x-0 top-0 z-header bg-transparent pt-3 will-change-transform',
+        'fixed inset-x-0 top-0 z-header bg-transparent pt-3',
         'transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]',
+        // will-change only while auto-hiding — otherwise it traps fixed children and
+        // the mobile menu (when nested) painted under page content.
+        !menuOpen && 'will-change-transform',
         menuOpen && 'z-navbox',
         // -10rem clears the 8.5rem veil too, so nothing peeks while hidden. Never hide with
         // the mobile menu open.

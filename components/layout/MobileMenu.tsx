@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
+import { createPortal } from 'react-dom';
 import { AnimatePresence, m, type Variants } from 'framer-motion';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -58,6 +59,11 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
   const pathname = usePathname();
   const reduced = useReducedMotion();
   const [servicesOpen, setServicesOpen] = useState(() => pathname.startsWith('/services'));
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Latest onClose, updated in an effect (never during render).
   const onCloseRef = useRef(onClose);
@@ -73,21 +79,25 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
         onClose();
         return;
       }
-      // Include live header chrome (logo / CTA / hamburger→×) in the trap.
+      // Include live header chrome (logo / CTA / hamburger→×) in the trap — menu is
+      // portaled to body, so header is a sibling, not an ancestor.
       if (e.key === 'Tab') {
-        const scope = panelRef.current?.closest('header') ?? panelRef.current;
-        if (!scope) return;
-        const focusables = Array.from(
-          scope.querySelectorAll<HTMLElement>('a[href], button:not([disabled])'),
-        ).filter((n) => n.offsetParent !== null);
+        const header = document.querySelector('header');
+        const roots = [header, panelRef.current].filter(Boolean) as HTMLElement[];
+        const focusables = roots
+          .flatMap((root) =>
+            Array.from(root.querySelectorAll<HTMLElement>('a[href], button:not([disabled])')),
+          )
+          .filter((n) => n.offsetParent !== null);
         if (!focusables.length) return;
         const first = focusables[0];
         const last = focusables[focusables.length - 1];
         const current = document.activeElement as HTMLElement | null;
-        if (e.shiftKey && (current === first || !scope.contains(current))) {
+        const inTrap = current ? focusables.includes(current) : false;
+        if (e.shiftKey && (current === first || !inTrap)) {
           e.preventDefault();
           last.focus();
-        } else if (!e.shiftKey && (current === last || !scope.contains(current))) {
+        } else if (!e.shiftKey && (current === last || !inTrap)) {
           e.preventDefault();
           first.focus();
         }
@@ -131,10 +141,13 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
   const labelClass = (active: boolean) =>
     cn(LABEL_BASE, active ? cn('text-orange', T_ACTIVE) : cn('text-white/[0.22]', T_REST, T_HOVER));
 
-  return (
+  // Portaled to body so the header's will-change/transform stack doesn't trap `fixed`
+  // (which was sizing the panel to the header strip and painting under page content).
+  // z-overlay sits under header chrome (z-navbox when open).
+  const menu = (
     <m.div
       id="mobile-menu"
-      className="fixed inset-0 z-0 lg:hidden"
+      className="fixed inset-0 z-overlay lg:hidden"
       initial={false}
       animate={open ? 'open' : 'closed'}
       variants={menuOverlay}
@@ -272,4 +285,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
       </m.nav>
     </m.div>
   );
+
+  if (!mounted) return null;
+  return createPortal(menu, document.body);
 }

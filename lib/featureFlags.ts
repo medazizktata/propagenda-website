@@ -1,15 +1,17 @@
 /**
- * Env feature flags (NEXT_PUBLIC_*). Set in `.env` / Vercel Project → Environment Variables.
+ * Env feature flags (NEXT_PUBLIC_*). Set in `.env` / Cloudflare Workers Builds env.
  *
  * Soft launch (default ON):
  *   NEXT_PUBLIC_FF_SOFT_LAUNCH=true
  * Unlock one route family while soft launch stays on:
  *   NEXT_PUBLIC_FF_PAGE_ABOUT=true
  *   NEXT_PUBLIC_FF_PAGE_SERVICES=true
- *   NEXT_PUBLIC_FF_PAGE_WORK=true
  *   NEXT_PUBLIC_FF_PAGE_CONTACT=true
  *   NEXT_PUBLIC_FF_PAGE_LEGAL=true   (privacy / terms / imprint)
- * Kill soft launch entirely (all pages public):
+ * Work is special: /work + /work/* stay locked unless explicitly unlocked
+ * (even when soft launch is off):
+ *   NEXT_PUBLIC_FF_PAGE_WORK=true
+ * Kill soft launch for non-work pages (all other pages public):
  *   NEXT_PUBLIC_FF_SOFT_LAUNCH=false
  * Clean Cuberto-style page transition instead of the ornate orange curtain:
  *   NEXT_PUBLIC_FF_COMPLEX_CURTAIN=false
@@ -100,9 +102,13 @@ export function isFeatureUnlocked(pathname: string): boolean {
   if ((ALWAYS_OPEN_EXACT as readonly string[]).includes(normalized)) return true;
   if (ALWAYS_OPEN_PREFIXES.some((p) => normalized.startsWith(p))) return true;
 
+  const key = pageFlagForPath(normalized);
+
+  // Work (+ /work/*) stays locked unless explicitly unlocked — even if soft launch is off.
+  if (key === 'work') return pageFlags.work;
+
   if (!ffSoftLaunch) return true;
 
-  const key = pageFlagForPath(normalized);
   if (key == null) return false; // unknown gated routes stay locked while soft launch is on
   return pageFlags[key];
 }

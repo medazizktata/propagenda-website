@@ -7,7 +7,6 @@ import { BrandPattern } from '@/components/ui/BrandPattern';
 import { Button } from '@/components/ui/Button';
 import { softLaunchCopy } from '@/content/softLaunch';
 import {
-  isSoftLaunchEnabled,
   openComingSoonModal,
   SOFT_LAUNCH_EVENT,
   SOFT_LAUNCH_QUERY,
@@ -30,7 +29,6 @@ export function ComingSoonModal() {
 
   const [mounted, setMounted] = useState(false);
   const [entered, setEntered] = useState(false);
-  const enabled = isSoftLaunchEnabled();
 
   const close = useCallback(() => {
     setEntered(false);
@@ -52,19 +50,16 @@ export function ComingSoonModal() {
   }, []);
 
   useEffect(() => {
-    if (!enabled) return;
-
     const onEvent = () => open();
     window.addEventListener(SOFT_LAUNCH_EVENT, onEvent);
     return () => window.removeEventListener(SOFT_LAUNCH_EVENT, onEvent);
-  }, [enabled, open]);
+  }, [open]);
 
   useEffect(() => {
-    if (!enabled) return;
     if (searchParams.get(SOFT_LAUNCH_QUERY) === '1') {
       openComingSoonModal();
     }
-  }, [enabled, searchParams]);
+  }, [searchParams]);
 
   useEffect(() => {
     if (!mounted) return;

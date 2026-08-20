@@ -13,7 +13,7 @@ export function isSoftLaunchEnabled() {
 
 /** True if pathname may load (respects soft-launch + per-page FF_* unlocks). */
 export function isRouteUnlocked(pathname: string): boolean {
-  if (!isSoftLaunchEnabled()) return true;
+  // Always go through featureFlags — work can stay locked even with soft launch off.
   return isFeatureUnlocked(pathname);
 }
 

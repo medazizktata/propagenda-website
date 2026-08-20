@@ -23,6 +23,8 @@ export type WorkSlug = (typeof WORK_SLUGS)[number];
 export interface SeoMeta {
   title: string;
   description: string;
+  /** Optional absolute path or URL for OG/Twitter image (defaults to brand share card). */
+  image?: string;
 }
 
 export interface GalleryImage {

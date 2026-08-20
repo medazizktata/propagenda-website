@@ -51,4 +51,7 @@ playwright-report/
 blob-report/
 .vercel
 .env*
+.dev.vars
 .next-prod
+.open-next
+.wrangler

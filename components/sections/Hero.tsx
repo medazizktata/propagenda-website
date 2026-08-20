@@ -7,6 +7,7 @@ import { BrandPattern } from '@/components/ui/BrandPattern';
 import { VideoLightbox } from '@/components/molecules/VideoLightbox';
 import { cn } from '@/components/ui/cn';
 import { hero } from '@/content/site';
+import { isFeatureUnlocked } from '@/lib/featureFlags';
 import { gsap } from '@/lib/motion/gsap';
 import { useReducedMotion } from '@/lib/motion/useReducedMotion';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
@@ -255,11 +256,13 @@ export function Hero({ flat = false }: { flat?: boolean }) {
                 </span>
                 {subParts[1]}
               </p>
-              <div className="hero-meta pointer-events-auto mt-5">
-                <Button href={hero.cta.href} size="lg">
-                  {hero.cta.label}
-                </Button>
-              </div>
+              {isFeatureUnlocked(hero.cta.href) ? (
+                <div className="hero-meta pointer-events-auto mt-5">
+                  <Button href={hero.cta.href} size="lg">
+                    {hero.cta.label}
+                  </Button>
+                </div>
+              ) : null}
             </div>
           </div>
         </div>

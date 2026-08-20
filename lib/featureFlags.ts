@@ -3,15 +3,13 @@
  *
  * Soft launch (default ON):
  *   NEXT_PUBLIC_FF_SOFT_LAUNCH=true
- * Unlock one route family while soft launch stays on:
+ * Unlock a section while soft launch stays on:
  *   NEXT_PUBLIC_FF_PAGE_ABOUT=true
  *   NEXT_PUBLIC_FF_PAGE_SERVICES=true
+ *   NEXT_PUBLIC_FF_PAGE_WORK=true
  *   NEXT_PUBLIC_FF_PAGE_CONTACT=true
  *   NEXT_PUBLIC_FF_PAGE_LEGAL=true   (privacy / terms / imprint)
- * Work is special: /work + /work/* stay locked unless explicitly unlocked
- * (even when soft launch is off):
- *   NEXT_PUBLIC_FF_PAGE_WORK=true
- * Kill soft launch for non-work pages (all other pages public):
+ * Kill soft launch (all sections public):
  *   NEXT_PUBLIC_FF_SOFT_LAUNCH=false
  * Clean Cuberto-style page transition instead of the ornate orange curtain:
  *   NEXT_PUBLIC_FF_COMPLEX_CURTAIN=false
@@ -31,7 +29,7 @@ function parseFlag(raw: string | undefined, fallback: boolean): boolean {
 }
 
 /**
- * Soft launch master — lock unfinished routes behind coming-soon. Default: on.
+ * Soft launch master — lock unfinished sections behind coming-soon. Default: on.
  * Equality checks (not parseFlag) so Next reliably inlines into the client bundle.
  */
 export const ffSoftLaunch =
@@ -56,7 +54,7 @@ export const ffInitLoader = parseFlag(
  */
 export const ffComplexCurtain = parseFlag(process.env.NEXT_PUBLIC_FF_COMPLEX_CURTAIN, true);
 
-/** Per-route unlocks while soft launch is active. Default: locked (false). */
+/** Per-section unlocks while soft launch is active. Default: locked (false). */
 export const pageFlags = {
   home: true, // always public
   about: parseFlag(process.env.NEXT_PUBLIC_FF_PAGE_ABOUT, false),
@@ -68,7 +66,7 @@ export const pageFlags = {
 
 export type PageFlagKey = keyof typeof pageFlags;
 
-/** Map pathname → page flag key (null = always allow / not a gated page). */
+/** Map pathname → section flag key (null = unknown / gated while soft launch is on). */
 export function pageFlagForPath(pathname: string): PageFlagKey | null {
   const path = pathname.split('?')[0]?.split('#')[0] || '/';
   const normalized = path.length > 1 && path.endsWith('/') ? path.slice(0, -1) : path;
@@ -95,6 +93,14 @@ const ALWAYS_OPEN_PREFIXES = [
 
 const ALWAYS_OPEN_EXACT = ['/api/contact'] as const;
 
+/** Section-level gate — use for UI (nav, CTAs, whole blocks). */
+export function isPageUnlocked(key: PageFlagKey): boolean {
+  if (key === 'home') return true;
+  if (!ffSoftLaunch) return true;
+  return pageFlags[key];
+}
+
+/** Path-level gate — middleware, sitemap, link hrefs. */
 export function isFeatureUnlocked(pathname: string): boolean {
   const path = pathname.split('?')[0]?.split('#')[0] || '/';
   const normalized = path.length > 1 && path.endsWith('/') ? path.slice(0, -1) : path;
@@ -103,12 +109,6 @@ export function isFeatureUnlocked(pathname: string): boolean {
   if (ALWAYS_OPEN_PREFIXES.some((p) => normalized.startsWith(p))) return true;
 
   const key = pageFlagForPath(normalized);
-
-  // Work (+ /work/*) stays locked unless explicitly unlocked — even if soft launch is off.
-  if (key === 'work') return pageFlags.work;
-
-  if (!ffSoftLaunch) return true;
-
-  if (key == null) return false; // unknown gated routes stay locked while soft launch is on
-  return pageFlags[key];
+  if (key == null) return !ffSoftLaunch;
+  return isPageUnlocked(key);
 }

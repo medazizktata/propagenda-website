@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { SectionLabel } from '@/components/ui/SectionLabel';
 import { cn } from '@/components/ui/cn';
+import { isPageUnlocked } from '@/lib/featureFlags';
 
 // SMV project pages are carried by a dense image grid. Until real per-service galleries exist,
 // show a "selected work" mosaic from the real portfolio renders — an asymmetric editorial
@@ -25,6 +26,8 @@ const SPANS = [
 ];
 
 export function ServiceWorkGrid() {
+  if (!isPageUnlocked('work')) return null;
+
   return (
     <section className="relative px-gutter-m py-12 lg:px-gutter-d lg:py-16">
       <div className="mx-auto max-w-7xl">

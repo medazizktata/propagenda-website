@@ -1,11 +1,14 @@
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/components/ui/cn';
+import { isPageUnlocked } from '@/lib/featureFlags';
 
 interface HeaderCTAProps {
   className?: string;
 }
 
 export function HeaderCTA({ className }: HeaderCTAProps) {
+  if (!isPageUnlocked('contact')) return null;
+
   return (
     <Button
       href="/contact"

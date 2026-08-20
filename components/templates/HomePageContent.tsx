@@ -6,6 +6,7 @@ import { WorkSplitSection } from '@/components/sections/WorkSplitSection';
 import { ClientLogoGrid } from '@/components/sections/ClientLogoGrid';
 import { ContactSection } from '@/components/sections/ContactSection';
 import { SeamlessActs } from '@/components/layout/SeamlessActs';
+import { isPageUnlocked } from '@/lib/featureFlags';
 
 export function HomePageContent() {
   return (
@@ -16,7 +17,7 @@ export function HomePageContent() {
         <DesignPrintInstallPopup />
       </SeamlessActs>
       <GrowthStaircase />
-      <WorkSplitSection />
+      {isPageUnlocked('work') ? <WorkSplitSection /> : null}
       <SeamlessActs>
         <ClientLogoGrid />
         <ContactSection />

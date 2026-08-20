@@ -5,7 +5,7 @@ import { createPortal } from 'react-dom';
 import { AnimatePresence, m, type Variants } from 'framer-motion';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { primaryNav, serviceNav } from '@/content/site';
+import { getPrimaryNavigation, getServiceNavigation } from '@/lib/content/navigation';
 import { menuOverlay, menuPanel } from '@/lib/motion/variants';
 import { useReducedMotion } from '@/lib/motion/useReducedMotion';
 import { BrandPattern } from '@/components/ui/BrandPattern';
@@ -169,7 +169,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
         {/* No duplicate top bar — header chrome stays put; only hamburger→× morphs. */}
         <div className="relative z-[1] flex min-h-full flex-col pt-[var(--header-height)] pb-[max(2.5rem,env(safe-area-inset-bottom))]">
           <m.ul variants={listVariants} className="mt-[8vh] flex flex-col pl-gutter-m pr-4">
-            {primaryNav.map((navItem, i) => {
+            {getPrimaryNavigation().map((navItem, i) => {
               const active = isActive(navItem.href);
               const isServices = navItem.href === '/services';
 
@@ -222,7 +222,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
                           className="overflow-hidden"
                         >
                           <ul className="mb-3 mt-4 flex flex-col gap-y-1 pl-1">
-                            {serviceNav.map((svc, si) => {
+                            {getServiceNavigation().map((svc, si) => {
                               const sActive = pathname === svc.href;
                               return (
                                 <li key={svc.href}>

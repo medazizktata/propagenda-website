@@ -3,7 +3,8 @@
 import { AppLink } from '@/components/ui/Link';
 import { SocialIconLink } from '@/components/molecules/SocialIconLink';
 import { ScrollToTopButton } from '@/components/molecules/ScrollToTopButton';
-import { footer, primaryNav, socialLinks } from '@/content/site';
+import { footer, socialLinks } from '@/content/site';
+import { getLegalNavigation, getPrimaryNavigation } from '@/lib/content/navigation';
 import { bookCall, whatsapp } from '@/content/contact';
 import { WhatsAppGlyph, CalendarGlyph } from '@/components/ui/ChannelGlyphs';
 
@@ -63,7 +64,7 @@ export function Footer() {
 
           <nav className="lg:col-span-5" aria-label="Footer">
             <ul className="flex flex-wrap items-center gap-x-5 gap-y-2.5 sm:gap-x-6">
-              {primaryNav.map((item) => (
+              {getPrimaryNavigation().map((item) => (
                 <li key={item.href}>
                   <AppLink
                     href={item.href}
@@ -78,7 +79,7 @@ export function Footer() {
           </nav>
 
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2 lg:col-span-3 lg:flex-col lg:items-end lg:gap-2.5">
-            {footer.legalLinks.map((item) => (
+            {getLegalNavigation().map((item) => (
               <AppLink
                 key={item.href}
                 href={item.href}

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { BrandPattern } from '@/components/ui/BrandPattern';
+import { isPageUnlocked } from '@/lib/featureFlags';
 
 /**
  * Branded 404 — full-viewport charcoal composition, not the default Next stub.
@@ -35,18 +36,22 @@ export default function NotFound() {
           >
             Go home
           </Link>
-          <Link
-            href="/work"
-            className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/20 px-8 py-3.5 font-sans text-sm font-bold uppercase leading-none tracking-[0.12em] text-white transition-[transform,border-color,color] duration-300 ease-out hover-fine:hover:-translate-y-0.5 hover-fine:hover:border-orange hover-fine:hover:text-orange"
-          >
-            View work
-          </Link>
-          <Link
-            href="/contact"
-            className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/20 px-8 py-3.5 font-sans text-sm font-bold uppercase leading-none tracking-[0.12em] text-white transition-[transform,border-color,color] duration-300 ease-out hover-fine:hover:-translate-y-0.5 hover-fine:hover:border-orange hover-fine:hover:text-orange"
-          >
-            Contact
-          </Link>
+          {isPageUnlocked('work') ? (
+            <Link
+              href="/work"
+              className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/20 px-8 py-3.5 font-sans text-sm font-bold uppercase leading-none tracking-[0.12em] text-white transition-[transform,border-color,color] duration-300 ease-out hover-fine:hover:-translate-y-0.5 hover-fine:hover:border-orange hover-fine:hover:text-orange"
+            >
+              View work
+            </Link>
+          ) : null}
+          {isPageUnlocked('contact') ? (
+            <Link
+              href="/contact"
+              className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/20 px-8 py-3.5 font-sans text-sm font-bold uppercase leading-none tracking-[0.12em] text-white transition-[transform,border-color,color] duration-300 ease-out hover-fine:hover:-translate-y-0.5 hover-fine:hover:border-orange hover-fine:hover:text-orange"
+            >
+              Contact
+            </Link>
+          ) : null}
         </div>
       </div>
     </section>

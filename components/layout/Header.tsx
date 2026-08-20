@@ -8,7 +8,7 @@ import { ServicesNavMenu } from '@/components/molecules/ServicesNavMenu';
 import { HeaderCTA } from '@/components/molecules/HeaderCTA';
 import { HamburgerButton } from '@/components/molecules/HamburgerButton';
 import { MobileMenu } from '@/components/layout/MobileMenu';
-import { primaryNav } from '@/content/site';
+import { getPrimaryNavigation } from '@/lib/content/navigation';
 import { useReducedMotion } from '@/lib/motion/useReducedMotion';
 import { cn } from '@/components/ui/cn';
 
@@ -92,7 +92,7 @@ export function Header() {
         <Logo variant="mark" className="lg:hidden" />
         <Logo className="hidden lg:inline-flex" />
         <nav className="hidden items-center gap-5 lg:flex" aria-label="Primary">
-          {primaryNav.map((item) =>
+          {getPrimaryNavigation().map((item) =>
             item.href === '/services' ? (
               <ServicesNavMenu key={item.href} />
             ) : (

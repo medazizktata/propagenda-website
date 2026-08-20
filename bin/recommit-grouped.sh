@@ -43,7 +43,6 @@ commit "feat: add contact form and msw dev mock"
 git add components/sections/Hero.tsx components/sections/ManifestoSection.tsx \
   components/sections/DesignPrintInstallPopup.tsx components/sections/MethodologySection.tsx \
   components/sections/WorkSplitSection.tsx components/sections/ClientLogoGrid.tsx \
-  components/sections/BlogTeaserGrid.tsx components/sections/BlogCard.tsx \
   components/sections/ContactSection.tsx components/templates/HomePageContent.tsx \
   app/page.tsx content/home.ts
 commit "feat: add homepage sections"
@@ -90,10 +89,10 @@ git add components/sections/CTABand.tsx components/StubPage.tsx \
   components/layout/Footer.tsx components/layout/Header.tsx components/layout/MobileMenu.tsx \
   components/molecules/RunningMarquee.tsx components/molecules/SocialIconLink.tsx \
   components/molecules/HamburgerButton.tsx components/molecules/HeaderCTA.tsx \
-  components/molecules/NavItem.tsx content/site.ts content/index.ts content/blog/ \
-  lib/content/navigation.ts lib/content/getBlogPost.ts lib/content/getService.ts \
-  app/blog/ public/
-commit "feat: add shared chrome blog stubs and assets"
+  components/molecules/NavItem.tsx content/site.ts content/index.ts \
+  lib/content/navigation.ts lib/content/getService.ts \
+  public/
+commit "feat: add shared chrome and assets"
 
 if [[ -n "$(git status --porcelain)" ]]; then
   git add -A

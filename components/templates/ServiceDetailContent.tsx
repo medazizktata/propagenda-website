@@ -18,6 +18,7 @@ import { ServiceWorkGrid } from '@/components/sections/services/ServiceWorkGrid'
 import { PrInfluenceRoster } from '@/components/sections/services/PrInfluenceRoster';
 import { MarketingFunnel } from '@/components/sections/services/MarketingFunnel';
 import { PhotoVideoHeroTitle } from '@/components/sections/services/PhotoVideoHeroTitle';
+import { isPageUnlocked } from '@/lib/featureFlags';
 import { PhotoVideoHeroOverview } from '@/components/sections/services/PhotoVideoHeroOverview';
 import { WebsitesShowcase } from '@/components/sections/services/WebsitesShowcase';
 import { MobileAppShowcase } from '@/components/sections/services/MobileAppShowcase';
@@ -65,15 +66,17 @@ export function ServiceDetailContent({ service }: { service: ServiceRecord }) {
 
   // Always show exactly 3 related-work cards: the service's own related work first, padded
   // from a safe pool (links to the work hub), de-duped by label.
-  const relatedThree = [
-    ...(service.relatedWork ?? []),
-    { label: 'Sanapex Interiors', href: '/work' },
-    { label: 'Quick Cars', href: '/work' },
-    { label: 'Darabzeen Al Ward', href: '/work' },
-    { label: 'BIL Events', href: '/work' },
-  ]
-    .filter((v, i, a) => a.findIndex((x) => x.label === v.label) === i)
-    .slice(0, 3);
+  const relatedThree = isPageUnlocked('work')
+    ? [
+        ...(service.relatedWork ?? []),
+        { label: 'Sanapex Interiors', href: '/work' },
+        { label: 'Quick Cars', href: '/work' },
+        { label: 'Darabzeen Al Ward', href: '/work' },
+        { label: 'BIL Events', href: '/work' },
+      ]
+        .filter((v, i, a) => a.findIndex((x) => x.label === v.label) === i)
+        .slice(0, 3)
+    : [];
 
   useEffect(() => {
     const el = rootRef.current;

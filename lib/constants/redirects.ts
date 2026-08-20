@@ -44,8 +44,7 @@ export const legacyRedirects: Redirect[] = [
   ...redirect('/tag/branding', '/'),
   ...redirect('/tag/creative', '/'),
   ...redirect('/tag/innovative', '/'),
+  // Retired blog — keep catch-all so old /blog URLs don't 404
   ...redirect('/blog', '/'),
-  ...redirect('/blog/the-power-of-visual-identity', '/'),
-  ...redirect('/blog/whats-destroying-your-brand', '/'),
-  ...redirect('/blog/how-colors-influence-consumer-behavior', '/'),
+  { source: '/blog/:path*', destination: '/', permanent: true },
 ];

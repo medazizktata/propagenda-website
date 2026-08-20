@@ -1,4 +1,5 @@
 import type { ContactFormConfig, FooterConfig, NavItem, SocialLink } from '@/types/navigation';
+import { getContactEmail } from '@/lib/seo/site';
 
 export const primaryNav: NavItem[] = [
   { label: 'Home', href: '/' },
@@ -50,7 +51,7 @@ export const footer: FooterConfig = {
   tagline: 'Looking for the Better Future',
   secondaryTagline: 'Together for the Better Future',
   phone: '+971 52 753 3253',
-  email: 'info@thepropagenda.com',
+  email: getContactEmail(),
   copyright: 'Propagenda. All Rights Reserved.',
   legalLinks: [
     { label: 'Privacy', href: '/privacy' },

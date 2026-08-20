@@ -1,6 +1,7 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { bookCall, contactRequests } from "@/content/contact";
 import { cn } from "@/components/ui/cn";
@@ -11,6 +12,9 @@ import { showToast } from "@/components/ui/toast";
 /**
  * SMV contact request grid — full-viewport snap scrollport.
  * Small screens: two panels only (scrollable). Desktop 2×2: all four, one row per snap.
+ *
+ * Panels stay on charcoal until their photo is decoded, then image + copy fade in
+ * together — never text-on-empty while a remote/slow asset streams in.
  */
 export function ContactRequestGrid() {
   const mobileOnly = [contactRequests[0], contactRequests[3]] as const;
@@ -38,9 +42,14 @@ export function ContactRequestGrid() {
     >
       {/* < md: two panels only — project + hello. */}
       <div className="flex flex-col md:hidden">
-        {mobileOnly.map((box) => (
+        {mobileOnly.map((box, i) => (
           <div key={box.cta} className="h-[100svh] shrink-0 snap-start snap-always">
-            <RequestPanel {...box} notice={noticeFor(box)} className="h-full min-h-0" />
+            <RequestPanel
+              {...box}
+              notice={noticeFor(box)}
+              priority={i === 0}
+              className="h-full min-h-0"
+            />
           </div>
         ))}
       </div>
@@ -53,7 +62,13 @@ export function ContactRequestGrid() {
             className="grid h-[100svh] shrink-0 snap-start snap-always grid-cols-2"
           >
             {pair.map((box) => (
-              <RequestPanel key={box.cta} {...box} notice={noticeFor(box)} className="h-full min-h-0" />
+              <RequestPanel
+                key={box.cta}
+                {...box}
+                notice={noticeFor(box)}
+                priority={i === 0}
+                className="h-full min-h-0"
+              />
             ))}
           </div>
         ))}
@@ -70,10 +85,23 @@ function RequestPanel({
   image,
   className,
   notice,
-}: (typeof contactRequests)[number] & { className?: string; notice?: string }) {
+  priority = false,
+}: (typeof contactRequests)[number] & {
+  className?: string;
+  notice?: string;
+  priority?: boolean;
+}) {
   const btnRef = useRef<HTMLAnchorElement>(null);
   const external = href.startsWith("mailto:") || href.startsWith("http");
   const reducedMotion = useReducedMotion();
+  const [ready, setReady] = useState(false);
+
+  // Cached images can skip onLoad in some browsers — never leave the panel blank.
+  useEffect(() => {
+    if (ready) return;
+    const t = window.setTimeout(() => setReady(true), 2500);
+    return () => window.clearTimeout(t);
+  }, [ready]);
 
   const wiggle = () => {
     // 25Hz rotation jitter — never for users who asked for reduced motion.
@@ -96,21 +124,47 @@ function RequestPanel({
   return (
     <div
       className={cn(
-        "relative flex min-h-[100svh] flex-col items-center justify-center overflow-hidden border border-white/5 px-6 py-20 text-center",
+        "relative flex min-h-[100svh] flex-col items-center justify-center overflow-hidden border border-white/5 bg-charcoal px-6 py-20 text-center",
         className,
       )}
     >
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
+      <Image
         src={image}
         alt=""
         aria-hidden
-        className="absolute inset-0 h-full w-full scale-105 object-cover"
+        fill
+        sizes="(max-width: 767px) 100vw, 50vw"
+        priority={priority}
+        quality={80}
+        onLoad={() => setReady(true)}
+        className={cn(
+          "scale-105 object-cover",
+          !reducedMotion && "transition-opacity duration-500 ease-out",
+          ready ? "opacity-100" : "opacity-0",
+        )}
       />
-      <div className="absolute inset-0 bg-black/55" />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/25 to-black/40" />
+      <div
+        className={cn(
+          "absolute inset-0 bg-black/55",
+          !reducedMotion && "transition-opacity duration-500 ease-out",
+          ready ? "opacity-100" : "opacity-0",
+        )}
+      />
+      <div
+        className={cn(
+          "absolute inset-0 bg-gradient-to-t from-black/70 via-black/25 to-black/40",
+          !reducedMotion && "transition-opacity duration-500 ease-out",
+          ready ? "opacity-100" : "opacity-0",
+        )}
+      />
 
-      <div className="relative z-content flex max-w-md flex-col items-center">
+      <div
+        className={cn(
+          "relative z-content flex max-w-md flex-col items-center",
+          !reducedMotion && "transition-opacity duration-500 ease-out",
+          ready ? "opacity-100" : "opacity-0",
+        )}
+      >
         <p
           className="font-sans font-extrabold uppercase leading-[0.82] tracking-[-0.02em] text-white"
           style={{ fontSize: "clamp(2.2rem, 5vw, 4.5rem)" }}
@@ -156,6 +210,7 @@ function RequestPanel({
           onClick={notice ? () => showToast(notice) : undefined}
           onMouseEnter={wiggle}
           onMouseLeave={stop}
+          tabIndex={ready ? undefined : -1}
           className={cn(
             "mt-8 inline-flex min-h-[3.25rem] items-center justify-center rounded-full bg-white px-10 py-3.5",
             "font-sans text-[0.8rem] font-extrabold uppercase tracking-[0.16em] text-ink",

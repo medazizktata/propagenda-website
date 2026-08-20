@@ -1,5 +1,9 @@
+import { getContactEmail } from "@/lib/seo/site";
+
 /** Kinetic bridge between grid and closer. */
 export const contactBridge = ["NO FILLER", "JUST WORK", "REAL REPLIES"];
+
+const contactEmail = getContactEmail();
 
 /**
  * Post-grid closer — research-led manifesto (Humbleteam/Obys energy).
@@ -16,7 +20,7 @@ export const contactCloser = {
       { text: "IGNORE.", accent: true },
     ],
   ],
-  mailto: "info@thepropagenda.com",
+  mailto: contactEmail,
   formTitle: "Let's start your project together",
   formEyebrow: "Brief",
   submitLabel: "Send the brief",
@@ -95,32 +99,28 @@ export const contactRequests = [
     // The panel promises a call — honor it with the scheduling link; without one
     // configured, degrade honestly to the brief form instead of a dead link.
     href: bookCall.url || "#contact-form",
-    image:
-      "https://images.unsplash.com/photo-1541746972996-4e0b0f43e02a?auto=format&fit=crop&w=1600&q=80",
+    image: "/images/contact/new-business.jpg",
   },
   {
     rows: ["PARTNERS", "AGENCIES", "STUDIOS"],
     cta: "LET'S COLLABORATE",
     button: "GET IN TOUCH",
-    href: "mailto:info@thepropagenda.com",
-    image:
-      "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1600&q=80",
+    href: `mailto:${contactEmail}`,
+    image: "/images/contact/partners.jpg",
   },
   {
     rows: ["PRESS", "MEDIA", "PODCASTS"],
     cta: "TELL OUR STORY",
     button: "MEDIA INQUIRY",
-    href: "mailto:info@thepropagenda.com?subject=Media%20inquiry",
-    image:
-      "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1600&q=80",
+    href: `mailto:${contactEmail}?subject=Media%20inquiry`,
+    image: "/images/contact/press-media.jpg",
   },
   {
     rows: ["EVERYONE", "ELSE", "HELLO"],
     cta: "DROP US A LINE",
     button: "CONTACT US",
     href: "#contact-form",
-    image:
-      "https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=1600&q=80",
+    image: "/images/contact/everyone.jpg",
   },
 ] as const;
 

@@ -1,4 +1,7 @@
 import type { LegalRecord } from '@/types/content';
+import { getContactEmail } from '@/lib/seo/site';
+
+const contactEmail = getContactEmail();
 
 export const privacy: LegalRecord = {
   slug: 'privacy',
@@ -45,14 +48,14 @@ export const privacy: LegalRecord = {
     {
       heading: 'Your Rights',
       paragraphs: [
-        'You may request access to, correction of, or deletion of your personal data by contacting us at info@thepropagenda.com.',
+        `You may request access to, correction of, or deletion of your personal data by contacting us at ${contactEmail}.`,
       ],
     },
     {
       heading: 'Contact',
       paragraphs: [
         'Propagenda Marketing Services',
-        'Email: info@thepropagenda.com',
+        `Email: ${contactEmail}`,
         'Phone: +971 52 753 3253',
       ],
     },
@@ -115,7 +118,7 @@ export const terms: LegalRecord = {
       heading: 'Contact',
       paragraphs: [
         'Propagenda Marketing Services',
-        'Email: info@thepropagenda.com',
+        `Email: ${contactEmail}`,
         'Phone: +971 52 753 3253',
       ],
     },
@@ -136,7 +139,7 @@ export const imprint: LegalRecord = {
       paragraphs: [
         'Propagenda Marketing Services',
         '+971 52 753 3253',
-        'info@thepropagenda.com',
+        contactEmail,
         '@propagenda_marketing',
       ],
     },

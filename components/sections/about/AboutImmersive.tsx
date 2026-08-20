@@ -169,7 +169,7 @@ export function AboutImmersive({ onLaunch }: { onLaunch?: () => void }) {
   return (
     <>
       <section
-        className="relative h-screen overflow-hidden bg-charcoal"
+        className="relative h-svh overflow-hidden bg-charcoal"
         aria-label="About Propagenda"
       >
         <CursorHollowPattern className="z-0" />
@@ -183,16 +183,16 @@ export function AboutImmersive({ onLaunch }: { onLaunch?: () => void }) {
                 panelRefs.current[i] = el;
               }}
               className={cn(
-                "absolute inset-0 flex flex-col items-center justify-center px-4 pt-[var(--header-height)] text-center sm:px-8",
+                "absolute inset-0 flex flex-col items-center justify-center px-gutter-m pb-14 pt-[calc(var(--header-height)+2.25rem)] text-center sm:px-10 md:px-12 lg:px-gutter-d lg:pb-10 lg:pt-[var(--header-height)]",
                 active ? "z-[1]" : "pointer-events-none z-0",
               )}
               style={{ visibility: active ? "visible" : "hidden" }}
               aria-hidden={!active}
             >
-              {/* SMV: ~65vw block, ~8.3vw type, line-height ~0.75 */}
+              {/* Mobile: full width inside gutters so type can breathe. Desktop: SMV ~65vw block. */}
               <p
-                className="w-[min(92vw,64.95vw)] font-sans font-extrabold uppercase leading-[0.75] tracking-[-0.02em]"
-                style={{ fontSize: "clamp(2.6rem, 8.1vw, 7.5rem)" }}
+                className="w-full max-w-[20.5rem] font-sans font-extrabold uppercase leading-[0.82] tracking-[-0.02em] sm:max-w-none sm:w-[min(88vw,64.95vw)] sm:leading-[0.75] lg:w-[min(92vw,64.95vw)]"
+                style={{ fontSize: "clamp(2.35rem, 7.2vw, 7.5rem)" }}
               >
                 {statement.segments.map((seg: AboutSegment, si) => (
                   <StatementWords
@@ -205,7 +205,7 @@ export function AboutImmersive({ onLaunch }: { onLaunch?: () => void }) {
                 ))}
               </p>
 
-              <div className="mt-[2.1vw] flex flex-wrap items-center justify-center gap-3 sm:gap-4">
+              <div className="mt-8 flex flex-wrap items-center justify-center gap-3 sm:mt-6 sm:gap-4 lg:mt-[2.1vw]">
                 <ChoiceButton onClick={() => onPass(statement, i)}>
                   {statement.pass}
                 </ChoiceButton>

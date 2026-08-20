@@ -27,6 +27,9 @@ import { useReducedMotion } from "@/lib/motion/useReducedMotion";
    launch the copy is fully legible. */
 const DIM_WHITE = "rgba(255,255,255,0.24)";
 const DIM_ORANGE = "rgba(245,139,39,0.30)";
+/* Mobile: deeper dim so the light-up reads as a punch, not a tint shift. */
+const DIM_WHITE_MOBILE = "rgba(255,255,255,0.12)";
+const DIM_ORANGE_MOBILE = "rgba(245,139,39,0.16)";
 const BRIGHT_WHITE = "#ffffff";
 const BRIGHT_ORANGE = "#f58b27";
 
@@ -34,17 +37,27 @@ const BRIGHT_ORANGE = "#f58b27";
 const INK = "#f58b27";
 const UNDERLINE_PAD: [number, number] = [3, 2];
 
-/* Auto-play: one continuous, constant-speed linear scroll (px per second). */
+/* Auto-play: one continuous, constant-speed linear scroll (px per second).
+   Mobile runs slower so each word has time to land. */
 const AUTO_SPEED = 230;
+const AUTO_SPEED_MOBILE = 145;
 const RAMP_DIST = 140;
 const SETTLE_DIST = 150;
 /* Word reveal timing (timeline units — only the RATIO matters under scrub). */
 const WORD_STEP = 1;
 const WORD_DUR = 1.05;
+const WORD_STEP_MOBILE = 1.2;
+const WORD_DUR_MOBILE = 1.4;
+
+const isNarrowViewport = () =>
+  typeof window !== "undefined" && window.matchMedia("(max-width: 767px)").matches;
 
 const isAccent = (el: Element) => el.classList.contains("text-orange");
 const brightFor = (el: Element) => (isAccent(el) ? BRIGHT_ORANGE : BRIGHT_WHITE);
-const dimFor = (el: Element) => (isAccent(el) ? DIM_ORANGE : DIM_WHITE);
+const dimFor = (el: Element, mobile = false) => {
+  if (isAccent(el)) return mobile ? DIM_ORANGE_MOBILE : DIM_ORANGE;
+  return mobile ? DIM_WHITE_MOBILE : DIM_WHITE;
+};
 
 function prefersReducedMotion(reduced: boolean) {
   return (
@@ -83,8 +96,21 @@ const AnnotationRevealContext = createContext<RegisterMark | null>(null);
  * Legible-by-default & reduced-motion / no-JS / pre-launch safe: none of the dim,
  * the gate wall, or the auto-scroll exist until `launched` is true under motion, so
  * everything renders bright and freely scrollable and nobody is ever trapped.
+ *
+ * `onUnlock` opens the aftermath (studio+) in the parent. Glide-out waits until
+ * `aftermathOpen` is true so layout height exists before we scroll into it.
  */
-export function AboutManifesto({ launched }: { launched: boolean }) {
+export function AboutManifesto({
+  launched,
+  aftermathOpen = true,
+  onUnlock,
+}: {
+  launched: boolean;
+  /** Parent has expanded studio+ (or never gated it). */
+  aftermathOpen?: boolean;
+  /** On-brand gate answer — parent reveals the rest of the page. */
+  onUnlock?: () => void;
+}) {
   const rootRef = useRef<HTMLElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
   const reducedMotion = useReducedMotion();
@@ -92,6 +118,7 @@ export function AboutManifesto({ launched }: { launched: boolean }) {
 
   // The gate is a one-way latch: NO resumes the auto-scroll into the old content.
   const unlockedRef = useRef(false);
+  const resumedRef = useRef(false);
   const gateYRef = useRef<number | null>(null);
   const resumeRef = useRef<(() => void) | null>(null);
   // The gate only APPEARS once the final paragraph before it has finished revealing.
@@ -103,8 +130,20 @@ export function AboutManifesto({ launched }: { launched: boolean }) {
   const handleUnlock = useCallback(() => {
     if (unlockedRef.current) return;
     unlockedRef.current = true;
-    resumeRef.current?.();
-  }, []);
+    onUnlock?.();
+  }, [onUnlock]);
+
+  // After the parent expands aftermath, refresh layout and glide into it.
+  useEffect(() => {
+    if (!aftermathOpen || !unlockedRef.current || resumedRef.current) return;
+    resumedRef.current = true;
+    const id = requestAnimationFrame(() => {
+      window.__lenis?.resize();
+      ScrollTrigger.refresh();
+      resumeRef.current?.();
+    });
+    return () => cancelAnimationFrame(id);
+  }, [aftermathOpen]);
 
   // Registry: reveal-driven marks register here so the timeline can fire them in sync.
   const marks = useRef(new Map<HTMLElement, () => void>());
@@ -149,7 +188,14 @@ export function AboutManifesto({ launched }: { launched: boolean }) {
     const ctx = gsap.context(() => {
       const words = gsap.utils.toArray<HTMLElement>("[data-word]", bodyEl); // document order
       if (!words.length) return;
-      gsap.set(words, { color: (_i, t) => dimFor(t as Element) });
+      const mobile = isNarrowViewport();
+      const wordStep = mobile ? WORD_STEP_MOBILE : WORD_STEP;
+      const wordDur = mobile ? WORD_DUR_MOBILE : WORD_DUR;
+
+      gsap.set(words, {
+        color: (_i, t) => dimFor(t as Element, mobile),
+        ...(mobile ? { y: 14, force3D: true } : { y: 0 }),
+      });
 
       // Which word (the last of an annotated run) should fire which mark.
       const wordToShow = new Map<HTMLElement, () => void>();
@@ -178,7 +224,7 @@ export function AboutManifesto({ launched }: { launched: boolean }) {
           trigger: bodyEl,
           start: () => revealStartY(),
           end: () => revealEndY(),
-          scrub: 0.3,
+          scrub: mobile ? 0.55 : 0.3,
           invalidateOnRefresh: true,
           onUpdate: (self) => {
             for (const m of markWatch) {
@@ -191,12 +237,21 @@ export function AboutManifesto({ launched }: { launched: boolean }) {
         },
       });
       words.forEach((w, i) => {
-        tl.to(w, { color: brightFor(w), duration: WORD_DUR, ease: "none" }, i * WORD_STEP);
+        tl.to(
+          w,
+          {
+            color: brightFor(w),
+            y: 0,
+            duration: wordDur,
+            ease: "none",
+          },
+          i * wordStep,
+        );
         const show = wordToShow.get(w);
-        if (show) markWatch.push({ threshold: i * WORD_STEP + WORD_DUR, show, fired: false });
+        if (show) markWatch.push({ threshold: i * wordStep + wordDur, show, fired: false });
         if (w === qaTriggerWord) {
           markWatch.push({
-            threshold: i * WORD_STEP + WORD_DUR,
+            threshold: i * wordStep + wordDur,
             show: () => setQaRevealed(true),
             fired: false,
           });
@@ -280,6 +335,7 @@ export function AboutManifesto({ launched }: { launched: boolean }) {
 
     // Reading-cadence glide: ease-in ramp -> constant cruise -> ease-out settle, with
     // continuous velocity across the phases (no lurch, no wall).
+    const speed = isNarrowViewport() ? AUTO_SPEED_MOBILE : AUTO_SPEED;
     const smoothGlide = (toY: number, onDone?: () => void) => {
       const fromY = window.scrollY;
       const total = toY - fromY;
@@ -301,12 +357,12 @@ export function AboutManifesto({ launched }: { launched: boolean }) {
       const settleFrom = toY - settle;
       const cruiseDist = settleFrom - rampTo;
       if (ramp > 1) {
-        tl.to(proxy, { y: rampTo, duration: (2 * ramp) / AUTO_SPEED, ease: "power1.in", onUpdate: () => apply(proxy) });
+        tl.to(proxy, { y: rampTo, duration: (2 * ramp) / speed, ease: "power1.in", onUpdate: () => apply(proxy) });
       }
       if (cruiseDist > 1) {
-        tl.to(proxy, { y: settleFrom, duration: cruiseDist / AUTO_SPEED, ease: "none", onUpdate: () => apply(proxy) });
+        tl.to(proxy, { y: settleFrom, duration: cruiseDist / speed, ease: "none", onUpdate: () => apply(proxy) });
       }
-      tl.to(proxy, { y: toY, duration: Math.max(0.3, (2 * settle) / AUTO_SPEED), ease: "power1.out", onUpdate: () => apply(proxy) });
+      tl.to(proxy, { y: toY, duration: Math.max(0.3, (2 * settle) / speed), ease: "power1.out", onUpdate: () => apply(proxy) });
       tween = tl;
     };
 
@@ -325,7 +381,12 @@ export function AboutManifesto({ launched }: { launched: boolean }) {
           onDone?.();
         },
       });
-      tl.to(proxy, { y: toY, duration: 1.2, ease: "power2.inOut", onUpdate: () => window.scrollTo(0, proxy.y) });
+      tl.to(proxy, {
+        y: toY,
+        duration: isNarrowViewport() ? 1.55 : 1.2,
+        ease: "power2.inOut",
+        onUpdate: () => window.scrollTo(0, proxy.y),
+      });
       tween = tl;
     };
 
@@ -386,7 +447,11 @@ export function AboutManifesto({ launched }: { launched: boolean }) {
             word-by-word under the launched auto-scroll; bright by default otherwise. */}
         <div
           ref={bodyRef}
-          className="mx-auto flex w-full max-w-5xl flex-col gap-[12vh] px-6 pb-[20vh] pt-[calc(var(--header-height)+13vh)] sm:px-10 lg:px-gutter-d"
+          className={cn(
+            "mx-auto flex w-full max-w-5xl flex-col gap-[12vh] px-6 pt-[calc(var(--header-height)+13vh)] sm:px-10 lg:px-gutter-d",
+            /* Extra floor while aftermath is collapsed so the gate isn't flush to the page end. */
+            aftermathOpen ? "pb-[20vh]" : "pb-[42vh]",
+          )}
         >
           {body.map((block, i) => (
             <Block
@@ -503,7 +568,7 @@ function InkMark({
       color={INK}
       strokeWidth={3}
       padding={UNDERLINE_PAD}
-      animationDuration={600}
+      animationDuration={isNarrowViewport() ? 900 : 600}
       multiline={false}
     >
       <span ref={ref} className="inline-block whitespace-nowrap">

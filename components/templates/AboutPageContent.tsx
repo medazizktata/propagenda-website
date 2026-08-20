@@ -1,52 +1,114 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useLayoutEffect, useRef, useState } from "react";
 import { AboutImmersive } from "@/components/sections/about/AboutImmersive";
 import { AboutManifesto } from "@/components/sections/about/AboutManifesto";
 import { AboutStudio } from "@/components/sections/about/AboutStudio";
 import { AboutStats } from "@/components/sections/about/AboutStats";
 import { ServicesCTA } from "@/components/sections/services/ServicesCTA";
 import { aboutContent } from "@/content/about";
+import { cn } from "@/components/ui/cn";
+import { gsap, registerGsap, ScrollTrigger } from "@/lib/motion/gsap";
+import { useReducedMotion } from "@/lib/motion/useReducedMotion";
 
 /**
  * /about — the OLD and NEW looks interleaved into one narrative, launched by a click:
  *
- *  1. AboutImmersive — the SMV click-to-advance statement journey (the first thing on
- *     the page). Its LAST milestone IS the manifesto's opening line, "WE MAKE BRANDS
- *     IMPOSSIBLE TO IGNORE."; its button fires `onLaunch`.
- *  2. Seam A (button-launch): that click sets `launched`, which arms AboutManifesto —
- *     it glides the reader off the milestone, runs its typing reveal + "Play it safe?"
- *     gate, and on NO glides to its "…refuse to be forgotten." closer, then STOPS.
- *  3. Seam B (manifesto → studio tie): the manifesto's self-play halts at its own
- *     section end (never running into the old content); the reader continues into
- *     AboutStudio on the shared charcoal ground, whose reveals fade up on scroll.
- *  4. AboutStudio renders the editorial intro + principles, then AboutServices and
- *     AboutTestimonials.
- *  5. Exactly one closing CTA at the very end.
+ *  1. AboutImmersive — the SMV click-to-advance statement journey. Last milestone
+ *     fires `onLaunch`.
+ *  2. AboutManifesto — reading reveal + "Play it safe?" gate.
+ *  3. Aftermath (studio → stats → CTA) stays collapsed while the gate is active;
+ *     the on-brand answer (NO) expands it with a smooth fade-up, then the manifesto
+ *     glides into that content.
  *
- * `launched` is the single source of truth for Seam A. Before it flips, the manifesto
- * renders fully bright, ungated and scrollable, so reduced-motion / no-JS / skip-ahead
- * readers see everything and nobody is trapped.
+ * Before launch / reduced-motion: aftermath stays fully visible so nobody is trapped.
  */
 export function AboutPageContent() {
   const [launched, setLaunched] = useState(false);
+  const [unlocked, setUnlocked] = useState(false);
+  const reducedMotion = useReducedMotion();
+
+  const gateLocksRest = launched && !reducedMotion;
+  const restOpen = !gateLocksRest || unlocked;
+
+  const handleUnlock = useCallback(() => setUnlocked(true), []);
 
   return (
     <>
-      {/* OLD look opens — its last milestone launches the manifesto */}
       <AboutImmersive onLaunch={() => setLaunched(true)} />
 
-      {/* NEW look — armed by the click, ties its closer into the studio below */}
-      <AboutManifesto launched={launched} />
+      <AboutManifesto
+        launched={launched}
+        aftermathOpen={restOpen}
+        onUnlock={handleUnlock}
+      />
 
-      {/* OLD look continues: studio intro + principles → services → testimonials */}
-      <AboutStudio />
-
-      {/* Proof: impact stats band (count-up on enter), last content before the CTA */}
-      <AboutStats />
-
-      {/* One CTA, at the true end of the page */}
-      <ServicesCTA line1={aboutContent.cta.line1} line2={aboutContent.cta.line2} />
+      <AboutAftermath open={restOpen} animateIn={gateLocksRest && unlocked} />
     </>
+  );
+}
+
+/** Studio + stats + CTA — collapsed until the gate unlocks (motion path only). */
+function AboutAftermath({
+  open,
+  animateIn,
+}: {
+  open: boolean;
+  /** True only when revealing after the on-brand gate answer (not on first paint). */
+  animateIn: boolean;
+}) {
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const reducedMotion = useReducedMotion();
+
+  useLayoutEffect(() => {
+    const el = wrapRef.current;
+    if (!el) return;
+
+    if (!open) {
+      gsap.set(el, { autoAlpha: 0, y: 0 });
+      return;
+    }
+
+    if (!animateIn || reducedMotion) {
+      gsap.set(el, { autoAlpha: 1, y: 0, clearProps: "transform" });
+      requestAnimationFrame(() => {
+        window.__lenis?.resize();
+        ScrollTrigger.refresh();
+      });
+      return;
+    }
+
+    registerGsap();
+    gsap.fromTo(
+      el,
+      { autoAlpha: 0, y: 64 },
+      {
+        autoAlpha: 1,
+        y: 0,
+        duration: 1.2,
+        ease: "power3.out",
+        onComplete: () => {
+          gsap.set(el, { clearProps: "transform" });
+          window.__lenis?.resize();
+          ScrollTrigger.refresh();
+        },
+      },
+    );
+  }, [open, animateIn, reducedMotion]);
+
+  return (
+    <div
+      ref={wrapRef}
+      aria-hidden={!open}
+      inert={!open ? true : undefined}
+      className={cn(
+        "relative",
+        !open && "pointer-events-none h-0 overflow-hidden",
+      )}
+    >
+      <AboutStudio />
+      <AboutStats />
+      <ServicesCTA line1={aboutContent.cta.line1} line2={aboutContent.cta.line2} />
+    </div>
   );
 }

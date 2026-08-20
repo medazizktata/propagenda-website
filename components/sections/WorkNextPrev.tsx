@@ -121,7 +121,7 @@ export function WorkNextPrev({
 
   return (
     <section
-      className="relative overflow-hidden border-t border-white/10 bg-charcoal px-gutter-m lg:px-gutter-d"
+      className="relative hidden overflow-hidden border-t border-white/10 bg-charcoal px-gutter-m lg:block lg:px-gutter-d"
       onPointerLeave={() => setHovered(null)}
     >
       <div

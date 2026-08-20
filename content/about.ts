@@ -16,6 +16,8 @@
  * GSAP enhancement (see AboutManifesto.tsx).
  */
 
+import { getContactEmail } from '@/lib/seo/site';
+
 /* ------------------------------------------------------------------ */
 /* NEW look — manifesto types                                          */
 /* ------------------------------------------------------------------ */
@@ -516,6 +518,6 @@ export const aboutContent = {
     line2: "grow your brand.",
     support:
       "We're always looking for brands who care about their product, and the people who use it.",
-    email: "info@thepropagenda.com",
+    email: getContactEmail(),
   },
 };

@@ -116,7 +116,7 @@ export function ServiceNextPrev({ slug }: { slug: ServiceSlug }) {
 
   return (
     <section
-      className="relative overflow-hidden border-t border-white/10 bg-charcoal px-gutter-m lg:px-gutter-d"
+      className="relative hidden overflow-hidden border-t border-white/10 bg-charcoal px-gutter-m lg:block lg:px-gutter-d"
       onPointerLeave={() => setHovered(null)}
     >
       <div className="relative mx-auto grid max-w-[1700px] grid-cols-1 lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] lg:items-stretch">

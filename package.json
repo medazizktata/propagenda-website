@@ -11,8 +11,8 @@
     "start": "next start --port 4000",
     "lint": "eslint . --max-warnings 0",
     "test:e2e": "playwright test",
-    "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
-    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "preview": "rm -rf .open-next && opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "deploy": "rm -rf .open-next && opennextjs-cloudflare build && opennextjs-cloudflare deploy",
     "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
   },
   "dependencies": {

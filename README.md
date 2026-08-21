@@ -52,6 +52,7 @@ Copy `.env.example` to `.env.local` and set `NEXT_PUBLIC_SITE_URL` for productio
 | `NEXT_PUBLIC_FF_PAGE_CONTACT` | Unlock `/contact`. |
 | `NEXT_PUBLIC_FF_PAGE_LEGAL` | Unlock privacy / terms / imprint. |
 | `NEXT_PUBLIC_FF_INIT_LOADER` | Orange quote splash on full page load. Default on. |
+| `NEXT_PUBLIC_FF_COMPLEX_CURTAIN` | `false` = simple Cuberto wipe (default). `true` = ornate orange curtain. |
 
 ### Contact email (Resend) — prod
 

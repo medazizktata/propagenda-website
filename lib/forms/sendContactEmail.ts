@@ -53,6 +53,13 @@ export async function sendContactEmail(
     return { ok: true, skipped: true };
   }
 
+  // A RESEND_API_KEY in local .env must not turn every dev form-submit into a real
+  // email — outside production, real sends require explicit CONTACT_SEND_ENABLED=1.
+  if (!isProd && env('CONTACT_SEND_ENABLED') !== '1') {
+    console.info('[contact] dev send skipped (set CONTACT_SEND_ENABLED=1 to send for real)');
+    return { ok: true, skipped: true };
+  }
+
   if (!to) {
     console.error('[contact] CONTACT_TO_EMAIL / NEXT_PUBLIC_CONTACT_EMAIL missing');
     return { ok: false, message: FAIL_MESSAGE };

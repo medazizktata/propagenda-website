@@ -46,9 +46,10 @@ test.describe('navigation', () => {
     await expect(burger).toBeVisible();
     await burger.click();
     // The overlay must actually be interactable — this catches breakpoint
-    // mismatches where the button renders but the menu stays hidden.
+    // mismatches where the button renders but the menu stays hidden. Assert the
+    // Home link: it is the one nav item never hidden by soft-launch page flags.
     const menu = page.locator('#mobile-menu');
-    await expect(menu.getByRole('link', { name: /work/i }).first()).toBeVisible();
+    await expect(menu.getByRole('link', { name: /home/i }).first()).toBeVisible();
     await page.keyboard.press('Escape');
   });
 
@@ -98,6 +99,58 @@ test.describe('brand + accessibility invariants', () => {
     await prime(page);
     await page.goto('/about');
     await expect(page.getByText(/looking for the\s*better future/i)).toBeVisible();
+  });
+});
+
+test.describe('contact API', () => {
+  const valid = {
+    name: 'E2E Test',
+    company: 'Guardrail Co',
+    email: 'e2e@example.com',
+    source: 'Other',
+    budget: 'Not sure yet',
+    timeframe: 'Flexible',
+    message: 'E2E TEST — full pipeline check, send is dev-skipped.',
+  };
+
+  test('rejects malformed JSON with 400, not 500', async ({ request }) => {
+    test.skip(test.info().project.name !== 'desktop', 'desktop only');
+    const res = await request.post('/api/contact', {
+      headers: { 'content-type': 'application/json' },
+      data: 'not-json{',
+    });
+    expect(res.status()).toBe(400);
+  });
+
+  test('rejects tampered enums with per-field errors', async ({ request }) => {
+    test.skip(test.info().project.name !== 'desktop', 'desktop only');
+    const res = await request.post('/api/contact', {
+      data: { ...valid, budget: 'HACKED' },
+    });
+    expect(res.status()).toBe(400);
+    const body = await res.json();
+    expect(body.success).toBe(false);
+    expect(body.fieldErrors?.budget).toBeTruthy();
+  });
+
+  test('honeypot submissions get a fake success (no send)', async ({ request }) => {
+    test.skip(test.info().project.name !== 'desktop', 'desktop only');
+    const res = await request.post('/api/contact', {
+      data: { ...valid, website: 'spam-bot-filled-this' },
+    });
+    expect(res.status()).toBe(200);
+    expect((await res.json()).success).toBe(true);
+  });
+
+  test('valid brief succeeds end-to-end (send dev-skipped by CONTACT_SEND_ENABLED gate)', async ({
+    request,
+  }) => {
+    test.skip(test.info().project.name !== 'desktop', 'desktop only');
+    const res = await request.post('/api/contact', { data: valid });
+    expect(res.status()).toBe(200);
+    const body = await res.json();
+    expect(body.success).toBe(true);
+    expect(body.message).toContain('Thank you');
   });
 });
 

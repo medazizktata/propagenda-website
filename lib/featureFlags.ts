@@ -91,7 +91,9 @@ const ALWAYS_OPEN_PREFIXES = [
   '/fonts/',
 ] as const;
 
-const ALWAYS_OPEN_EXACT = ['/api/contact'] as const;
+// Exact-path escape hatches through the soft-launch gate. Empty: /api/contact is
+// already covered by the '/api/' prefix above, so an exact entry was redundant.
+const ALWAYS_OPEN_EXACT: readonly string[] = [];
 
 /** Section-level gate — use for UI (nav, CTAs, whole blocks). */
 export function isPageUnlocked(key: PageFlagKey): boolean {

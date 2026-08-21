@@ -178,6 +178,19 @@ export function ContactCloser() {
               className="flex flex-col gap-5"
               noValidate
             >
+              {/* Honeypot — humans never see or reach this; bots that fill it get a
+                  fake success server-side. Off the tab order, hidden from AT. */}
+              <div aria-hidden className="absolute -left-[9999px] h-px w-px overflow-hidden">
+                <label htmlFor="website">Leave this field empty</label>
+                <input
+                  id="website"
+                  name="website"
+                  type="text"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  defaultValue=""
+                />
+              </div>
               <div className="grid grid-cols-1 items-start gap-5 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] sm:gap-x-5">
                 <LabeledField
                   id="name"

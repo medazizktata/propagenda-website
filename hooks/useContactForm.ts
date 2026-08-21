@@ -50,17 +50,23 @@ export function useContactForm() {
       const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify(parsed.data),
+        body: JSON.stringify({
+          ...parsed.data,
+          // Honeypot travels with the payload so the server can judge it.
+          website: String(new FormData(form).get('website') ?? ''),
+        }),
       });
       const data = (await res.json().catch(() => null)) as {
         success?: boolean;
         message?: string;
+        fieldErrors?: ContactFieldErrors;
       } | null;
 
       if (!res.ok || !data?.success) {
         setState({
           success: false,
           message: data?.message || 'Unable to send message. Please try again.',
+          fieldErrors: data?.fieldErrors,
           values: parsed.data,
         });
         return;

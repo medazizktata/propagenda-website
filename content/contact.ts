@@ -24,6 +24,7 @@ export const contactCloser = {
   formTitle: "Let's start your project together",
   formEyebrow: "Brief",
   submitLabel: "Send the brief",
+  successMessage: "Thank you, we will be in touch shortly.",
   // Labels do the asking; placeholders show an example or stay out of the way —
   // never a duplicate of the label (it reads as a glitch and doubles the noise).
   fields: {

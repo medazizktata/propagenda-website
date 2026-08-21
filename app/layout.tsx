@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import type { ReactNode } from 'react';
 import { IBM_Plex_Mono, Poppins } from 'next/font/google';
 import { Providers } from './providers';
@@ -23,10 +23,22 @@ const plexMono = IBM_Plex_Mono({
   display: 'swap',
 });
 
+export const viewport: Viewport = {
+  themeColor: '#252525',
+};
+
 export const metadata: Metadata = {
   metadataBase: new URL(getSiteUrl()),
   applicationName: 'Propagenda',
-  themeColor: '#252525',
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: '48x48' },
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icon-512.png', sizes: '512x512', type: 'image/png' },
+    ],
+    apple: [{ url: '/apple-icon.png', sizes: '180x180', type: 'image/png' }],
+  },
   robots: {
     index: true,
     follow: true,

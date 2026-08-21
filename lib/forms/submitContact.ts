@@ -21,11 +21,20 @@ export async function submitContact(
     };
   }
 
-  const sent = await sendContactEmail(parsed.data);
-  if (!sent.ok) {
+  try {
+    const sent = await sendContactEmail(parsed.data);
+    if (!sent.ok) {
+      return {
+        success: false,
+        message: sent.message,
+        values: parsed.data,
+      };
+    }
+  } catch (err) {
+    console.error('[contact] submitContact threw', err);
     return {
       success: false,
-      message: sent.message,
+      message: 'Unable to send message. Please try again.',
       values: parsed.data,
     };
   }

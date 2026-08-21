@@ -1,39 +1,36 @@
 'use client';
 
-import { useActionState, useEffect, useState, type FormEvent } from 'react';
-import { submitContact } from '@/lib/forms/submitContact';
+import { useState, type FormEvent } from 'react';
 import { contactSchema, fieldErrorsFromZod } from '@/lib/forms/contactSchema';
 import { contactValuesFromFormData } from '@/lib/forms/contactValues';
-import type { ContactFieldErrors, ContactFormResult } from '@/types/forms';
+import type { ContactFieldErrors, ContactFormData, ContactFormResult } from '@/types/forms';
 
 const initialState: ContactFormResult = { success: false, message: '' };
 
 /**
- * Server action + client Zod gate (same schema). Client errors show instantly;
- * server errors remain the source of truth after the round-trip.
+ * Client Zod + POST /api/contact.
+ * Avoids Next server-action RSC refresh remounting the page (blank GSAP / image gates).
  */
 export function useContactForm() {
-  const [state, formAction, pending] = useActionState(submitContact, initialState);
+  const [state, setState] = useState<ContactFormResult>(initialState);
   const [clientErrors, setClientErrors] = useState<ContactFieldErrors>({});
-
-  useEffect(() => {
-    if (state.fieldErrors || state.success) setClientErrors({});
-  }, [state]);
+  const [pending, setPending] = useState(false);
 
   const errors: ContactFieldErrors = {
     ...(state.fieldErrors ?? {}),
     ...clientErrors,
   };
 
-  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     const form = e.currentTarget;
     const values = contactValuesFromFormData(new FormData(form));
     const parsed = contactSchema.safeParse(values);
 
     if (!parsed.success) {
-      e.preventDefault();
       const next = fieldErrorsFromZod(parsed.error);
       setClientErrors(next);
+      setState({ success: false, message: '', values, fieldErrors: next });
       const first = Object.keys(next)[0];
       if (first) {
         requestAnimationFrame(() => {
@@ -46,16 +43,52 @@ export function useContactForm() {
     }
 
     setClientErrors({});
+    setPending(true);
+    setState({ success: false, message: '', values: parsed.data });
+
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(parsed.data),
+      });
+      const data = (await res.json().catch(() => null)) as {
+        success?: boolean;
+        message?: string;
+      } | null;
+
+      if (!res.ok || !data?.success) {
+        setState({
+          success: false,
+          message: data?.message || 'Unable to send message. Please try again.',
+          values: parsed.data,
+        });
+        return;
+      }
+
+      setState({
+        success: true,
+        message: data.message || 'Thank you, we will be in touch shortly.',
+      });
+      form.reset();
+    } catch {
+      setState({
+        success: false,
+        message: 'Unable to send message. Please try again.',
+        values: parsed.data,
+      });
+    } finally {
+      setPending(false);
+    }
   };
 
   return {
     state,
-    formAction,
     pending,
     errors,
-    values: state.values ?? {},
+    values: (state.values ?? {}) as Partial<ContactFormData>,
     onSubmit,
-    /** Remount only after a server response so client validation never clears inputs. */
-    formKey: `${state.success}:${JSON.stringify(state.values ?? null)}`,
+    /** Remount selects after success so placeholders return; keep values on error. */
+    formKey: state.success ? `ok-${state.message}` : 'edit',
   };
 }

@@ -47,23 +47,33 @@ function CalendarGlyph() {
 export function ContactCloser() {
   const ref = useRef<HTMLElement>(null);
   const reducedMotion = useReducedMotion();
-  const { state, formAction, pending, errors, values, onSubmit, formKey } =
+  const { state, pending, errors, values, onSubmit, formKey } =
     useContactForm();
   const f = contactCloser.fields;
 
   useEffect(() => {
     const el = ref.current;
     if (!el || reducedMotion) return;
+
     const ctx = gsap.context(() => {
-      gsap.from("[data-closer-in]", {
-        y: 40,
-        autoAlpha: 0,
+      const targets = gsap.utils.toArray<HTMLElement>("[data-closer-in]", el);
+      if (!targets.length) return;
+
+      // Motion only — never autoAlpha. Invisible copy after submit/hash is worse than no tween.
+      gsap.from(targets, {
+        y: 28,
         ease: "power3.out",
-        duration: 0.75,
+        duration: 0.7,
         stagger: 0.07,
-        scrollTrigger: { trigger: el, start: "top 78%", once: true },
+        immediateRender: false,
+        scrollTrigger: {
+          trigger: el,
+          start: "top 85%",
+          once: true,
+        },
       });
     }, ref);
+
     return () => ctx.revert();
   }, [reducedMotion]);
 
@@ -164,7 +174,6 @@ export function ContactCloser() {
 
             <form
               key={formKey}
-              action={formAction}
               onSubmit={onSubmit}
               className="flex flex-col gap-5"
               noValidate

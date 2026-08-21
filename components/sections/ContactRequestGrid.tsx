@@ -143,28 +143,11 @@ function RequestPanel({
           ready ? "opacity-100" : "opacity-0",
         )}
       />
-      <div
-        className={cn(
-          "absolute inset-0 bg-black/55",
-          !reducedMotion && "transition-opacity duration-500 ease-out",
-          ready ? "opacity-100" : "opacity-0",
-        )}
-      />
-      <div
-        className={cn(
-          "absolute inset-0 bg-gradient-to-t from-black/70 via-black/25 to-black/40",
-          !reducedMotion && "transition-opacity duration-500 ease-out",
-          ready ? "opacity-100" : "opacity-0",
-        )}
-      />
+      {/* Scrims + copy stay visible — only the photo fades in. Never blank panels. */}
+      <div className="absolute inset-0 bg-black/55" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/25 to-black/40" />
 
-      <div
-        className={cn(
-          "relative z-content flex max-w-md flex-col items-center",
-          !reducedMotion && "transition-opacity duration-500 ease-out",
-          ready ? "opacity-100" : "opacity-0",
-        )}
-      >
+      <div className="relative z-content flex max-w-md flex-col items-center">
         <p
           className="font-sans font-extrabold uppercase leading-[0.82] tracking-[-0.02em] text-white"
           style={{ fontSize: "clamp(2.2rem, 5vw, 4.5rem)" }}
@@ -210,7 +193,6 @@ function RequestPanel({
           onClick={notice ? () => showToast(notice) : undefined}
           onMouseEnter={wiggle}
           onMouseLeave={stop}
-          tabIndex={ready ? undefined : -1}
           className={cn(
             "mt-8 inline-flex min-h-[3.25rem] items-center justify-center rounded-full bg-white px-10 py-3.5",
             "font-sans text-[0.8rem] font-extrabold uppercase tracking-[0.16em] text-ink",

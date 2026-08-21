@@ -7,3 +7,6 @@ allowBuilds:
   unrs-resolver: true
   esbuild: true
   workerd: true
+
+patchedDependencies:
+  '@opennextjs/cloudflare@1.20.2': patches/@opennextjs__cloudflare@1.20.2.patch

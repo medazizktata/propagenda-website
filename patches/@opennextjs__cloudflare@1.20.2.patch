@@ -1,0 +1,23 @@
+diff --git a/dist/cli/build/open-next/compile-env-files.js b/dist/cli/build/open-next/compile-env-files.js
+index e6d70d2508442ee62cde1c090e5fe837b425f124..d9950d4cea1dfba825a56b0563908dab8ed71c26 100644
+--- a/dist/cli/build/open-next/compile-env-files.js
++++ b/dist/cli/build/open-next/compile-env-files.js
+@@ -3,9 +3,17 @@ import path from "node:path";
+ import { extractProjectEnvVars } from "../../utils/extract-project-env-vars.js";
+ /**
+  * Compiles the values extracted from the project's env files to the output directory for use in the worker.
++ *
++ * NOTE (Propagenda): upstream uses appendFileSync which duplicates exports when
++ * `opennextjs-cloudflare build` nests `next build` → `postbuild` → another
++ * `--skipNextBuild` pass. writeFileSync keeps a single production/development/test set.
+  */
+ export function compileEnvFiles(buildOpts) {
+     const envDir = path.join(buildOpts.outputDir, "cloudflare");
+     fs.mkdirSync(envDir, { recursive: true });
+-    ["production", "development", "test"].forEach((mode) => fs.appendFileSync(path.join(envDir, `next-env.mjs`), `export const ${mode} = ${JSON.stringify(extractProjectEnvVars(mode, buildOpts))};\n`));
++    const filePath = path.join(envDir, `next-env.mjs`);
++    const body = ["production", "development", "test"]
++        .map((mode) => `export const ${mode} = ${JSON.stringify(extractProjectEnvVars(mode, buildOpts))};\n`)
++        .join("");
++    fs.writeFileSync(filePath, body);
+ }

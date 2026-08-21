@@ -8,14 +8,13 @@ import { useContactForm } from '@/hooks/useContactForm';
 
 /** Legacy standalone form — mirrors ContactCloser field set. */
 export function ContactForm() {
-  const { state, formAction, pending, errors, values, onSubmit, formKey } = useContactForm();
+  const { state, pending, errors, values, onSubmit, formKey } = useContactForm();
   const f = contactCloser.fields;
 
   return (
     <div className="max-w-form-min w-full">
       <form
         key={formKey}
-        action={formAction}
         onSubmit={onSubmit}
         className="w-full max-w-full space-y-4"
         noValidate

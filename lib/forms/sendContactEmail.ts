@@ -1,4 +1,3 @@
-import { Resend } from 'resend';
 import type { ContactSchema } from './contactSchema';
 import { buildContactEmailBodies } from './contactEmailTemplate';
 
@@ -7,56 +6,89 @@ export type SendContactResult =
   | { ok: false; message: string };
 
 const DEFAULT_FROM = 'Propagenda <noreply@thepropagenda.com>';
+const RESEND_API = 'https://api.resend.com/emails';
+const FAIL_MESSAGE = 'Unable to send message. Please try again.';
+
+function stripWrappingQuotes(value: string): string {
+  const v = value.trim();
+  if (
+    (v.startsWith('"') && v.endsWith('"')) ||
+    (v.startsWith("'") && v.endsWith("'"))
+  ) {
+    return v.slice(1, -1).trim();
+  }
+  return v;
+}
+
+function env(name: string): string {
+  const raw = process.env[name];
+  return raw ? stripWrappingQuotes(raw) : '';
+}
 
 function resolveTo(): string | null {
-  const to =
-    process.env.CONTACT_TO_EMAIL?.trim() ||
-    process.env.NEXT_PUBLIC_CONTACT_EMAIL?.trim() ||
-    '';
+  const to = env('CONTACT_TO_EMAIL') || env('NEXT_PUBLIC_CONTACT_EMAIL');
   return to || null;
 }
 
 function resolveFrom(): string {
-  return process.env.CONTACT_FROM_EMAIL?.trim() || DEFAULT_FROM;
+  return env('CONTACT_FROM_EMAIL') || DEFAULT_FROM;
 }
 
 /**
- * Deliver a validated contact brief via Resend.
+ * Deliver a validated contact brief via Resend (raw fetch — Workers-safe).
  * No API key: soft-succeed outside production (UI/e2e DX); fail closed in production.
  */
 export async function sendContactEmail(
   data: ContactSchema,
 ): Promise<SendContactResult> {
-  const apiKey = process.env.RESEND_API_KEY?.trim();
+  const apiKey = env('RESEND_API_KEY');
   const to = resolveTo();
   const isProd = process.env.NODE_ENV === 'production';
 
   if (!apiKey) {
     if (isProd) {
-      return { ok: false, message: 'Unable to send message. Please try again.' };
+      console.error('[contact] RESEND_API_KEY missing');
+      return { ok: false, message: FAIL_MESSAGE };
     }
     return { ok: true, skipped: true };
   }
 
   if (!to) {
-    return { ok: false, message: 'Unable to send message. Please try again.' };
+    console.error('[contact] CONTACT_TO_EMAIL / NEXT_PUBLIC_CONTACT_EMAIL missing');
+    return { ok: false, message: FAIL_MESSAGE };
   }
 
   const { text, html, subject } = buildContactEmailBodies(data);
-  const resend = new Resend(apiKey);
-  const { error } = await resend.emails.send({
-    from: resolveFrom(),
-    to: [to],
-    replyTo: data.email,
-    subject,
-    text,
-    html,
-  });
 
-  if (error) {
-    console.error('[contact] Resend error', error);
-    return { ok: false, message: 'Unable to send message. Please try again.' };
+  try {
+    const res = await fetch(RESEND_API, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: resolveFrom(),
+        to: [to],
+        reply_to: data.email,
+        subject,
+        text,
+        html,
+      }),
+    });
+
+    if (!res.ok) {
+      const body = await res.text().catch(() => '');
+      console.error('[contact] Resend HTTP error', res.status, body.slice(0, 500));
+      return { ok: false, message: FAIL_MESSAGE };
+    }
+
+    return { ok: true };
+  } catch (err) {
+    console.error(
+      '[contact] Resend fetch failed',
+      err instanceof Error ? err.message : err,
+    );
+    return { ok: false, message: FAIL_MESSAGE };
   }
-
-  return { ok: true };
 }

@@ -1,11 +1,16 @@
 'use client';
 
-import { useState, type FormEvent } from 'react';
+import { useRef, useState, type FormEvent } from 'react';
 import { contactSchema, fieldErrorsFromZod } from '@/lib/forms/contactSchema';
 import { contactValuesFromFormData } from '@/lib/forms/contactValues';
 import type { ContactFieldErrors, ContactFormData, ContactFormResult } from '@/types/forms';
+import type { TurnstileFieldHandle } from '@/components/molecules/TurnstileField';
 
 const initialState: ContactFormResult = { success: false, message: '' };
+
+const turnstileConfigured = Boolean(
+  process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY?.trim(),
+);
 
 /**
  * Client Zod + POST /api/contact.
@@ -15,6 +20,8 @@ export function useContactForm() {
   const [state, setState] = useState<ContactFormResult>(initialState);
   const [clientErrors, setClientErrors] = useState<ContactFieldErrors>({});
   const [pending, setPending] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const turnstileRef = useRef<TurnstileFieldHandle>(null);
 
   const errors: ContactFieldErrors = {
     ...(state.fieldErrors ?? {}),
@@ -42,6 +49,15 @@ export function useContactForm() {
       return;
     }
 
+    if (turnstileConfigured && !turnstileToken) {
+      setState({
+        success: false,
+        message: 'Please complete the verification challenge.',
+        values: parsed.data,
+      });
+      return;
+    }
+
     setClientErrors({});
     setPending(true);
     setState({ success: false, message: '', values: parsed.data });
@@ -52,8 +68,8 @@ export function useContactForm() {
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({
           ...parsed.data,
-          // Honeypot travels with the payload so the server can judge it.
           website: String(new FormData(form).get('website') ?? ''),
+          turnstileToken: turnstileToken ?? '',
         }),
       });
       const data = (await res.json().catch(() => null)) as {
@@ -85,6 +101,8 @@ export function useContactForm() {
       });
     } finally {
       setPending(false);
+      turnstileRef.current?.reset();
+      setTurnstileToken(null);
     }
   };
 
@@ -94,6 +112,9 @@ export function useContactForm() {
     errors,
     values: (state.values ?? {}) as Partial<ContactFormData>,
     onSubmit,
+    turnstileRef,
+    setTurnstileToken,
+    turnstileConfigured,
     /** Remount selects after success so placeholders return; keep values on error. */
     formKey: state.success ? `ok-${state.message}` : 'edit',
   };

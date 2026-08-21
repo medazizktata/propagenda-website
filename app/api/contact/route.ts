@@ -1,16 +1,15 @@
 import { NextResponse } from 'next/server';
 import { contactSchema, fieldErrorsFromZod } from '@/lib/forms/contactSchema';
 import { sendContactEmail } from '@/lib/forms/sendContactEmail';
+import { verifyTurnstileToken } from '@/lib/forms/verifyTurnstile';
 import { contactCloser } from '@/content/contact';
 
 /**
- * Contact-form transport (the form posts here via fetch — a server action caused an
- * RSC refresh that remounted the page). Hardening:
- * - malformed JSON → 400 (never a 500 with a misleading "unable to send")
- * - same friendly per-field error shape as the schema (no raw Zod internals as the
- *   only signal; `message` stays the first human message)
- * - honeypot: a filled "website" field gets a convincing fake success — no send
- * - sendContactEmail throw → 502 generic
+ * Contact-form transport (fetch — server action RSC remount blanked the page).
+ * - malformed JSON → 400
+ * - honeypot → fake success
+ * - Turnstile siteverify when TURNSTILE_SECRET_KEY is set
+ * - send throw → 502
  */
 export async function POST(request: Request) {
   let body: unknown;
@@ -23,12 +22,28 @@ export async function POST(request: Request) {
     );
   }
 
-  const website =
-    typeof body === 'object' && body !== null && 'website' in body
-      ? String((body as Record<string, unknown>).website ?? '')
-      : '';
-  if (website.trim() !== '') {
-    return NextResponse.json({ success: true, message: contactCloser.successMessage });
+  const record =
+    typeof body === 'object' && body !== null
+      ? (body as Record<string, unknown>)
+      : {};
+
+  if (String(record.website ?? '').trim() !== '') {
+    return NextResponse.json({
+      success: true,
+      message: contactCloser.successMessage,
+    });
+  }
+
+  const turnstile = await verifyTurnstileToken(
+    record.turnstileToken,
+    request.headers.get('cf-connecting-ip') ??
+      request.headers.get('x-forwarded-for'),
+  );
+  if (!turnstile.ok) {
+    return NextResponse.json(
+      { success: false, message: turnstile.message },
+      { status: 403 },
+    );
   }
 
   const parsed = contactSchema.safeParse(body);
@@ -60,5 +75,8 @@ export async function POST(request: Request) {
     );
   }
 
-  return NextResponse.json({ success: true, message: contactCloser.successMessage });
+  return NextResponse.json({
+    success: true,
+    message: contactCloser.successMessage,
+  });
 }

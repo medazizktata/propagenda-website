@@ -10,6 +10,7 @@ import {
   contactLabel,
 } from "@/components/molecules/contactControl";
 import { useContactForm } from "@/hooks/useContactForm";
+import { TurnstileField } from "@/components/molecules/TurnstileField";
 import { gsap } from "@/lib/motion/gsap";
 import { useReducedMotion } from "@/lib/motion/useReducedMotion";
 
@@ -47,7 +48,7 @@ function CalendarGlyph() {
 export function ContactCloser() {
   const ref = useRef<HTMLElement>(null);
   const reducedMotion = useReducedMotion();
-  const { state, pending, errors, values, onSubmit, formKey } =
+  const { state, pending, errors, values, onSubmit, formKey, turnstileRef, setTurnstileToken } =
     useContactForm();
   const f = contactCloser.fields;
 
@@ -283,6 +284,8 @@ export function ContactCloser() {
                   </p>
                 ) : null}
               </div>
+
+              <TurnstileField ref={turnstileRef} onToken={setTurnstileToken} />
 
               <button
                 type="submit"

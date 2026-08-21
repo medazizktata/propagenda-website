@@ -19,5 +19,10 @@
   },
   "observability": {
     "enabled": true
+  },
+  // Non-secret contact delivery. RESEND_API_KEY is a Worker secret (not committed).
+  "vars": {
+    "CONTACT_FROM_EMAIL": "Propagenda <noreply@thepropagenda.com>",
+    "NEXT_PUBLIC_CONTACT_EMAIL": "propagendamarketing@gmail.com"
   }
 }

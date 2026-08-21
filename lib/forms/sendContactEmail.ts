@@ -6,7 +6,7 @@ export type SendContactResult =
   | { ok: true; skipped?: boolean }
   | { ok: false; message: string };
 
-const DEFAULT_FROM = 'Propagenda <onboarding@resend.dev>';
+const DEFAULT_FROM = 'Propagenda <noreply@thepropagenda.com>';
 
 function resolveTo(): string | null {
   const to =

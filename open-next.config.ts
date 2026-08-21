@@ -1,5 +1,13 @@
 import { defineCloudflareConfig } from '@opennextjs/cloudflare';
 
-// No R2 incremental cache yet — static + ISR still work; add an R2 binding later
-// (NEXT_INC_CACHE_R2_BUCKET) if you want durable Next.js cache on Workers.
-export default defineCloudflareConfig({});
+/**
+ * CF Builds runs `pnpm build` then `wrangler deploy`.
+ * OpenNext must own `build`, but it invokes the package `build` script by default —
+ * set buildCommand to plain `next build` to avoid recursion.
+ */
+const config = defineCloudflareConfig({});
+
+export default {
+  ...config,
+  buildCommand: 'next build',
+};

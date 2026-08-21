@@ -8,10 +8,6 @@ import type { TurnstileFieldHandle } from '@/components/molecules/TurnstileField
 
 const initialState: ContactFormResult = { success: false, message: '' };
 
-const turnstileConfigured = Boolean(
-  process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY?.trim(),
-);
-
 /**
  * Client Zod + POST /api/contact.
  * Avoids Next server-action RSC refresh remounting the page (blank GSAP / image gates).
@@ -49,7 +45,7 @@ export function useContactForm() {
       return;
     }
 
-    if (turnstileConfigured && !turnstileToken) {
+    if (!turnstileToken) {
       setState({
         success: false,
         message: 'Please complete the verification challenge.',
@@ -114,7 +110,6 @@ export function useContactForm() {
     onSubmit,
     turnstileRef,
     setTurnstileToken,
-    turnstileConfigured,
     /** Remount selects after success so placeholders return; keep values on error. */
     formKey: state.success ? `ok-${state.message}` : 'edit',
   };

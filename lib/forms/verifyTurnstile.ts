@@ -1,10 +1,15 @@
 /**
  * Cloudflare Turnstile siteverify — fail closed.
- * Secret: TURNSTILE_SECRET_KEY (Worker secret). Site key is public NEXT_PUBLIC_*.
+ * Secret: TURNSTILE_SECRET_KEY (Worker secret only — never commit).
+ * Site key: NEXT_PUBLIC_TURNSTILE_SITE_KEY (public; set in wrangler vars / CF Builds env).
  */
 
 const SITEVERIFY = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
 const ACTION = 'contact';
+
+/** Public widget site key from env (inlined into client at build time). */
+export const TURNSTILE_SITE_KEY =
+  process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY?.trim() ?? '';
 
 function allowedHostnames(): Set<string> {
   const fromEnv = (process.env.TURNSTILE_HOSTNAMES ?? '')
@@ -12,7 +17,6 @@ function allowedHostnames(): Set<string> {
     .map((h) => h.trim())
     .filter(Boolean);
   if (fromEnv.length) return new Set(fromEnv);
-  // Prod defaults — never include localhost here (dev uses always-pass test keys or unset).
   return new Set(['thepropagenda.com', 'www.thepropagenda.com']);
 }
 
@@ -26,12 +30,8 @@ export async function verifyTurnstileToken(
 ): Promise<TurnstileCheck> {
   const secret = process.env.TURNSTILE_SECRET_KEY?.trim();
   if (!secret) {
-    // Misconfig: fail closed in production; skip in local when no widget wired.
-    if (process.env.NODE_ENV === 'production') {
-      console.error('[contact] TURNSTILE_SECRET_KEY missing');
-      return { ok: false, message: 'Unable to verify submission. Please try again.' };
-    }
-    return { ok: true };
+    console.error('[contact] TURNSTILE_SECRET_KEY missing');
+    return { ok: false, message: 'Unable to verify submission. Please try again.' };
   }
 
   if (typeof token !== 'string' || token.length === 0 || token.length > 2048) {

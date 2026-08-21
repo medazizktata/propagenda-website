@@ -9,7 +9,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import { TURNSTILE_ACTION } from '@/lib/forms/verifyTurnstile';
+import { TURNSTILE_ACTION, TURNSTILE_SITE_KEY } from '@/lib/forms/verifyTurnstile';
 
 type TurnstileApi = {
   render: (
@@ -33,7 +33,7 @@ declare global {
   }
 }
 
-const sitekey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY?.trim() ?? '';
+const sitekey = TURNSTILE_SITE_KEY;
 
 export type TurnstileFieldHandle = {
   reset: () => void;
@@ -41,7 +41,7 @@ export type TurnstileFieldHandle = {
 
 /**
  * Managed Turnstile for the contact brief.
- * No site key → renders nothing (local without Turnstile still posts if secret unset).
+ * Requires NEXT_PUBLIC_TURNSTILE_SITE_KEY at build time.
  */
 export const TurnstileField = forwardRef<
   TurnstileFieldHandle,

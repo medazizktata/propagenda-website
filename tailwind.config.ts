@@ -17,11 +17,11 @@ const config: Config = {
           200: 'rgba(245, 139, 39, 0.25)',
         },
         navy: '#0f151f',
-        charcoal: '#252525',
+        charcoal: '#121212',
         /** Near-black for text on orange surfaces (7.55:1 vs white's failing 2.44:1). */
         ink: '#141414',
         surface: {
-          DEFAULT: '#252525',
+          DEFAULT: '#121212',
           deep: '#000000',
           elevated: '#0f151f',
           light: '#ffffff',

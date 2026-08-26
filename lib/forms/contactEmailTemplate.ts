@@ -1,7 +1,7 @@
 import type { ContactSchema } from './contactSchema';
 
 const ORANGE = '#f58b27';
-const CHARCOAL = '#252525';
+const CHARCOAL = '#121212';
 const INK = '#111111';
 const MUTED = '#6b6b6b';
 const RULE = '#ebebeb';

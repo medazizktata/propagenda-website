@@ -1639,7 +1639,7 @@ function ModuleShell({
 const KIT_SWATCHES: [string, string][] = [
   ['#F58B27', 'bg-orange'],
   ['#0F151F', 'bg-navy'],
-  ['#252525', 'bg-charcoal'],
+  ['#121212', 'bg-charcoal'],
   ['#FFFFFF', 'bg-white'],
 ];
 

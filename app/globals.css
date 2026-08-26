@@ -30,7 +30,7 @@
   --color-orange: #f58b27;
   --color-orange-hover: #e07d1f;
   --color-navy: #0f151f;
-  --color-charcoal: #252525;
+  --color-charcoal: #121212;
   --color-black: #000000;
   --color-white: #ffffff;
   /* Near-black for text on orange (7.55:1 — white on orange fails at 2.44:1). */
@@ -97,12 +97,7 @@ body {
 }
 
 main {
-  /* Subtle film grain baked into the page background (behind all content, never over
-     the 3D/text/cards). `main` is in-flow, so the grain scrolls with the sections. */
   background-color: var(--color-surface);
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 240 240' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
-  background-size: 240px 240px;
-  background-repeat: repeat;
   min-height: calc(var(--vh, 1vh) * 100);
 }
 
@@ -489,7 +484,7 @@ html.lenis body {
 }
 
 .dark {
-  --background: #252525;
+  --background: #121212;
   --foreground: #ffffff;
   --card: #2f2f2f;
   --card-foreground: #ffffff;

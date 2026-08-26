@@ -69,30 +69,30 @@ function WorkCardImage({ initial }: { initial: string }) {
 // (step 11). Statement stays orange-on-dark and legible; only the motion is scrolled.
 
 // Organized resting layout — the deck resolves into a PRECISE, symmetric grid (two even
-// columns of three that frame the statement, with the live showreel squared-up in the
-// centre), aligned and zero-rotation rather than scattered — it reads as a deliberate,
-// put-together team. Offsets are a fraction of the viewport (x → vw, y → vh) so it stays
-// proportional at any size; `grad` is a neutral charcoal→black tint (never navy).
-type ScatterCard = { x: number; y: number; rot: number; w: number; grad: string; video?: boolean; img?: string };
+// columns of three that frame the statement, with a larger centre card), aligned and
+// zero-rotation rather than scattered — it reads as a deliberate, put-together team.
+// Offsets are a fraction of the viewport (x → vw, y → vh) so it stays proportional at any
+// size; `grad` is a neutral charcoal→black tint (never navy).
+type ScatterCard = { x: number; y: number; rot: number; w: number; grad: string; img: string; center?: boolean };
 const CARDS: ScatterCard[] = [
   { x: -33, y: -25, rot: 0, w: 15, grad: 'from-charcoal to-black', img: '/images/portfolio/work-sanapex.webp' },
   { x: -33, y: 0, rot: 0, w: 15, grad: 'from-black to-charcoal', img: '/images/portfolio/work-quickcars.webp' },
   { x: -33, y: 25, rot: 0, w: 15, grad: 'from-charcoal to-black', img: '/images/portfolio/work-events.webp' },
   { x: 33, y: -25, rot: 0, w: 15, grad: 'from-black to-charcoal', img: '/images/portfolio/work-food.webp' },
-  { x: 0, y: 0, rot: 0, w: 17, video: true, grad: 'from-charcoal to-black' },
-  { x: 33, y: 0, rot: 0, w: 15, grad: 'from-charcoal to-black', img: '/images/portfolio/work-ghaftree.webp' },
-  { x: 33, y: 25, rot: 0, w: 15, grad: 'from-black to-charcoal', img: '/images/portfolio/work-restaurant.webp' },
+  { x: 0, y: 0, rot: 0, w: 17, center: true, grad: 'from-charcoal to-black', img: '/images/portfolio/work-ghaftree.webp' },
+  { x: 33, y: 0, rot: 0, w: 15, grad: 'from-charcoal to-black', img: '/images/portfolio/work-restaurant.webp' },
+  { x: 33, y: 25, rot: 0, w: 15, grad: 'from-black to-charcoal', img: '/images/portfolio/work-sanapex.webp' },
 ];
 
 // The opening frame (SMV step 9): the cards begin STACKED like a deck near the centre —
-// overlapping, each kicked a touch off-square, the live card squared-up on top — before
+// overlapping, each kicked a touch off-square, the centre card squared-up on top — before
 // they scatter out. Tiny x/y jitter (fraction of vw/vh) + small rotations read as a pile.
 const STACK = [
   { x: -1.5, y: -1, rot: -8 },
   { x: 1.2, y: -2, rot: 6 },
   { x: -0.6, y: 1.4, rot: -3 },
   { x: 2, y: 0.6, rot: 11 },
-  { x: 0, y: 0, rot: 0 }, // the live showreel card — squared-up, sits on top of the pile
+  { x: 0, y: 0, rot: 0 }, // centre card — squared-up, sits on top of the pile
   { x: -2, y: -0.6, rot: 4 },
   { x: 1.6, y: 2, rot: -6 },
 ];
@@ -290,10 +290,7 @@ export function DesignPrintInstallPopup({ flat = false }: { flat?: boolean }) {
             : 'sticky top-0 flex h-screen items-center justify-center overflow-hidden bg-charcoal'
         }
       >
-        {/* Scattered media cards (parallax layer, behind the statement so it stays legible).
-            `isolate` keeps each card's z-index (video card on top of the deck) LOCAL to this
-            group, so the layer as a whole stays a plain sibling in DOM order — that lets the
-            statement paint above it without a z-index, so PRINT's mix-blend can reach the card. */}
+        {/* Scattered media cards (parallax layer, behind the statement so it stays legible). */}
         <div ref={cardsRef} className="pointer-events-none absolute inset-0 isolate will-change-transform">
           {CARDS.map((card, i) => (
             <div
@@ -301,10 +298,10 @@ export function DesignPrintInstallPopup({ flat = false }: { flat?: boolean }) {
               className="dpi-card absolute left-1/2 top-1/2 overflow-hidden rounded-lg shadow-lg ring-1 ring-white/10 will-change-transform"
               style={{
                 // Floor hard on small viewports (15vw ≈ 56px on a phone); cap at the
-                // designed vw so desktop stays the same.
-                width: `clamp(${card.video ? '12rem' : '10.5rem'}, ${card.w * 2.4}vw, ${card.w}vw)`,
+                // designed vw so desktop stays the same. Centre card is slightly larger.
+                width: `clamp(${card.center ? '12rem' : '10.5rem'}, ${card.w * 2.4}vw, ${card.w}vw)`,
                 aspectRatio: '3 / 4',
-                zIndex: card.video ? 2 : 1,
+                zIndex: card.center ? 2 : 1,
                 // Flat (preview): CSS stands in for the GSAP transform — centre the card, then
                 // offset into its resting-grid slot in viewport units so it reflows on resize.
                 ...(flat
@@ -313,20 +310,7 @@ export function DesignPrintInstallPopup({ flat = false }: { flat?: boolean }) {
               }}
             >
               <div className={`absolute inset-0 bg-gradient-to-br ${card.grad}`} />
-              {card.video ? (
-                <video
-                  className="absolute inset-0 h-full w-full object-cover"
-                  src="/videos/propagenda-marketing.mp4"
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  aria-hidden
-                />
-              ) : (
-                /* Real client work (temporary fill) — click a card to crossfade to another. */
-                <WorkCardImage initial={card.img ?? WORK_IMAGES[0]} />
-              )}
+              <WorkCardImage initial={card.img} />
               {/* Type is this act's protagonist — the deck reads as supporting cast, so every
                   card carries a quiet scrim that keeps the statement legible over it. */}
               <div aria-hidden className="pointer-events-none absolute inset-0 bg-charcoal/40" />

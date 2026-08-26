@@ -9,8 +9,7 @@ interface LogoProps {
   className?: string;
 }
 
-// Real Propagenda mark (orange rounded square + white "m" monogram) — the brand
-// SVG the client provided (reference/Logo/SVG/Asset 6.svg → public/images/brand).
+/** App-icon mark (orange squircle + white monogram) — compact header / favicon. */
 function Mark({ className }: { className?: string }) {
   return (
     // eslint-disable-next-line @next/next/no-img-element
@@ -23,14 +22,22 @@ function Mark({ className }: { className?: string }) {
   );
 }
 
-function Wordmark() {
+/** Official lockup from brand PDF (monogram + Propagenda + Marketing Services). */
+function Lockup({
+  src,
+  className,
+}: {
+  src: string;
+  className?: string;
+}) {
   return (
-    <span className="flex flex-col leading-none">
-      <span className="text-sm font-bold lowercase tracking-tight text-white">Propagenda</span>
-      <span className="mt-0.5 text-[0.55rem] font-medium uppercase tracking-[0.2em] text-white/55">
-        Marketing Services
-      </span>
-    </span>
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={src}
+      alt="Propagenda Marketing Services"
+      className={cn('h-9 w-auto select-none', className)}
+      draggable={false}
+    />
   );
 }
 
@@ -40,34 +47,19 @@ export function Logo({ variant = 'horizontal', href = '/', className }: LogoProp
     content = <Mark className="h-9 w-9" />;
   } else if (variant === 'vertical') {
     content = (
-      <span className="flex flex-col items-center gap-2 text-center">
-        <Mark className="h-12 w-12" />
-        <Wordmark />
-      </span>
+      <Lockup src="/images/brand/logo-vertical.svg" className="h-16 w-auto" />
     );
   } else {
     content = (
-      <span className="flex items-center gap-2.5">
-        <Mark className="h-8 w-8 shrink-0" />
-        <Wordmark />
-      </span>
+      <Lockup src="/images/brand/logo-horizontal.svg" className="h-9 w-auto" />
     );
   }
 
-  // WCAG 2.5.3 (label-in-name): when the wordmark is visible, its text IS the
-  // accessible name — an aria-label that doesn't mirror it exactly trips the audit.
-  // Only the image-only mark needs an explicit label ("home" context comes free via
-  // the sr-only suffix in both cases).
-  const wordmarkVisible = variant !== 'mark';
-
+  // WCAG 2.5.3: image alt already names the brand; link gets "home" via sr-only.
   return (
-    <Link
-      href={href}
-      className={cn('inline-flex items-center', className)}
-      aria-label={wordmarkVisible ? undefined : 'Propagenda, home'}
-    >
+    <Link href={href} className={cn('inline-flex items-center', className)}>
       {content}
-      {wordmarkVisible ? <span className="sr-only">, home</span> : null}
+      <span className="sr-only">, home</span>
     </Link>
   );
 }

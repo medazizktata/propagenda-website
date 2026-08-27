@@ -3,12 +3,12 @@ export function getSiteUrl() {
 }
 
 /**
- * Public studio inbox (mailto, footer, legal, JSON-LD).
- * Override with NEXT_PUBLIC_CONTACT_EMAIL — currently Gmail until info@ is fully live.
+ * Public studio inbox (mailto, footer, legal, JSON-LD) and form To fallback.
+ * Override with NEXT_PUBLIC_CONTACT_EMAIL.
  */
 export function getContactEmail() {
   return (
     process.env.NEXT_PUBLIC_CONTACT_EMAIL?.trim() ||
-    'propagendamarketing@gmail.com'
+    'contact@thepropagenda.com'
   );
 }

@@ -23,8 +23,8 @@
   // Non-secret contact delivery. RESEND_API_KEY is a Worker secret (not committed).
   "vars": {
     "CONTACT_FROM_EMAIL": "Propagenda <noreply@thepropagenda.com>",
-    "CONTACT_TO_EMAIL": "propagendamarketing@gmail.com",
-    "NEXT_PUBLIC_CONTACT_EMAIL": "propagendamarketing@gmail.com",
+    "CONTACT_TO_EMAIL": "contact@thepropagenda.com",
+    "NEXT_PUBLIC_CONTACT_EMAIL": "contact@thepropagenda.com",
     "NEXT_PUBLIC_FF_COMPLEX_CURTAIN": "false",
     "NEXT_PUBLIC_TURNSTILE_SITE_KEY": "0x4AAAAAAEXndoVcXl1or5zJ",
     "TURNSTILE_HOSTNAMES": "thepropagenda.com,www.thepropagenda.com"

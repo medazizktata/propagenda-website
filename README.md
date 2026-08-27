@@ -62,8 +62,8 @@ Domain `thepropagenda.com` is verified in Resend. Production Worker needs:
 |-----|------|
 | `RESEND_API_KEY` | Worker **secret** (`wrangler secret put RESEND_API_KEY`) |
 | `CONTACT_FROM_EMAIL` | `Propagenda <noreply@thepropagenda.com>` (also in `wrangler.jsonc` vars) |
-| `NEXT_PUBLIC_CONTACT_EMAIL` | `propagendamarketing@gmail.com` |
-| `CONTACT_TO_EMAIL` | **unset** |
+| `NEXT_PUBLIC_CONTACT_EMAIL` | `contact@thepropagenda.com` |
+| `CONTACT_TO_EMAIL` | `contact@thepropagenda.com` |
 
 Local: keep a throwaway in `CONTACT_TO_EMAIL` if you want, or point at the live inbox. Restart `pnpm dev` after env changes. Deploy after secrets/vars change.
 

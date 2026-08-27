@@ -1,15 +1,18 @@
 /**
  * Cloudflare Turnstile siteverify — fail closed.
  * Secret: TURNSTILE_SECRET_KEY (Worker secret only — never commit).
- * Site key: NEXT_PUBLIC_TURNSTILE_SITE_KEY (public; set in wrangler vars / CF Builds env).
+ * Site key: NEXT_PUBLIC_TURNSTILE_SITE_KEY or TURNSTILE_SITE_KEY_PUBLIC fallback.
  */
+
+import { TURNSTILE_SITE_KEY_PUBLIC } from '@/lib/site/contact';
 
 const SITEVERIFY = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
 const ACTION = 'contact';
 
 /** Public widget site key from env (inlined into client at build time). */
 export const TURNSTILE_SITE_KEY =
-  process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY?.trim() ?? '';
+  process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY?.trim() ||
+  TURNSTILE_SITE_KEY_PUBLIC;
 
 function allowedHostnames(): Set<string> {
   const fromEnv = (process.env.TURNSTILE_HOSTNAMES ?? '')

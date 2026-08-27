@@ -18,6 +18,7 @@ type TurnstileApi = {
       sitekey: string;
       action: string;
       theme?: 'light' | 'dark' | 'auto';
+      appearance?: 'always' | 'execute' | 'interaction-only';
       callback: (token: string) => void;
       'expired-callback'?: () => void;
       'error-callback'?: () => void;
@@ -50,6 +51,7 @@ export const TurnstileField = forwardRef<
   const containerRef = useRef<HTMLDivElement>(null);
   const widgetIdRef = useRef<string | null>(null);
   const [scriptReady, setScriptReady] = useState(false);
+  const [scriptError, setScriptError] = useState(false);
 
   const mount = useCallback(() => {
     if (!sitekey || !containerRef.current || !window.turnstile) return;
@@ -59,6 +61,7 @@ export const TurnstileField = forwardRef<
       sitekey,
       action: TURNSTILE_ACTION,
       theme: 'dark',
+      appearance: 'always',
       callback: (token) => onToken(token),
       'expired-callback': () => onToken(null),
       'error-callback': () => onToken(null),
@@ -87,7 +90,13 @@ export const TurnstileField = forwardRef<
     };
   }, []);
 
-  if (!sitekey) return null;
+  if (!sitekey) {
+    return (
+      <p className="text-center text-xs text-error" role="alert">
+        Verification unavailable. Please email us directly.
+      </p>
+    );
+  }
 
   return (
     <>
@@ -95,11 +104,18 @@ export const TurnstileField = forwardRef<
         src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
         strategy="afterInteractive"
         onReady={() => setScriptReady(true)}
+        onError={() => setScriptError(true)}
       />
-      <div
-        ref={containerRef}
-        className="flex min-h-[65px] justify-center [&_iframe]:max-w-full"
-      />
+      {scriptError ? (
+        <p className="text-center text-xs text-error" role="alert">
+          Verification blocked — disable ad blocker for this site or email us directly.
+        </p>
+      ) : (
+        <div
+          ref={containerRef}
+          className="flex min-h-[65px] justify-center [&_iframe]:max-w-full"
+        />
+      )}
     </>
   );
 });

@@ -1,9 +1,7 @@
-import { getContactEmail } from "@/lib/seo/site";
+import { PUBLIC_CONTACT_EMAIL } from "@/lib/site/contact";
 
 /** Kinetic bridge between grid and closer. */
 export const contactBridge = ["NO FILLER", "JUST WORK", "REAL REPLIES"];
-
-const contactEmail = getContactEmail();
 
 /**
  * Post-grid closer — research-led manifesto (Humbleteam/Obys energy).
@@ -20,7 +18,7 @@ export const contactCloser = {
       { text: "IGNORE.", accent: true },
     ],
   ],
-  mailto: contactEmail,
+  mailto: PUBLIC_CONTACT_EMAIL,
   formTitle: "Let's start your project together",
   formEyebrow: "Brief",
   submitLabel: "Send the brief",
@@ -106,14 +104,14 @@ export const contactRequests = [
     rows: ["PARTNERS", "AGENCIES", "STUDIOS"],
     cta: "LET'S COLLABORATE",
     button: "GET IN TOUCH",
-    href: `mailto:${contactEmail}`,
+    href: `mailto:${PUBLIC_CONTACT_EMAIL}`,
     image: "/images/contact/partners.jpg",
   },
   {
     rows: ["PRESS", "MEDIA", "PODCASTS"],
     cta: "TELL OUR STORY",
     button: "MEDIA INQUIRY",
-    href: `mailto:${contactEmail}?subject=Media%20inquiry`,
+    href: `mailto:${PUBLIC_CONTACT_EMAIL}?subject=Media%20inquiry`,
     image: "/images/contact/press-media.jpg",
   },
   {

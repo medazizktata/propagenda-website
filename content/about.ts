@@ -16,7 +16,7 @@
  * GSAP enhancement (see AboutManifesto.tsx).
  */
 
-import { getContactEmail } from '@/lib/seo/site';
+import { PUBLIC_CONTACT_EMAIL } from '@/lib/site/contact';
 
 /* ------------------------------------------------------------------ */
 /* NEW look — manifesto types                                          */
@@ -518,6 +518,6 @@ export const aboutContent = {
     line2: "grow your brand.",
     support:
       "We're always looking for brands who care about their product, and the people who use it.",
-    email: getContactEmail(),
+    email: PUBLIC_CONTACT_EMAIL,
   },
 };

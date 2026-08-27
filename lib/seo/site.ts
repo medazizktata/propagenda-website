@@ -5,11 +5,9 @@ export function getSiteUrl() {
 import { PUBLIC_CONTACT_EMAIL } from '@/lib/site/contact';
 
 /**
- * Public studio inbox (mailto, footer, legal, JSON-LD) and form To fallback.
- * Env override for staging only — production uses the routing alias constant.
+ * Public studio inbox (mailto, footer, legal, JSON-LD).
+ * Always the routing alias — do not read NEXT_PUBLIC_* here (build inlines stale values).
  */
 export function getContactEmail() {
-  return (
-    process.env.NEXT_PUBLIC_CONTACT_EMAIL?.trim() || PUBLIC_CONTACT_EMAIL
-  );
+  return PUBLIC_CONTACT_EMAIL;
 }

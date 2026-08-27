@@ -1,7 +1,7 @@
 import type { LegalRecord } from '@/types/content';
-import { getContactEmail } from '@/lib/seo/site';
+import { PUBLIC_CONTACT_EMAIL } from '@/lib/site/contact';
 
-const contactEmail = getContactEmail();
+const contactEmail = PUBLIC_CONTACT_EMAIL;
 
 export const privacy: LegalRecord = {
   slug: 'privacy',

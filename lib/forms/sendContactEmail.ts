@@ -1,5 +1,6 @@
 import type { ContactSchema } from './contactSchema';
 import { buildContactEmailBodies } from './contactEmailTemplate';
+import { PUBLIC_CONTACT_EMAIL } from '@/lib/site/contact';
 
 export type SendContactResult =
   | { ok: true; skipped?: boolean }
@@ -26,7 +27,10 @@ function env(name: string): string {
 }
 
 function resolveTo(): string | null {
-  const to = env('CONTACT_TO_EMAIL') || env('NEXT_PUBLIC_CONTACT_EMAIL');
+  const to =
+    env('CONTACT_TO_EMAIL') ||
+    env('NEXT_PUBLIC_CONTACT_EMAIL') ||
+    PUBLIC_CONTACT_EMAIL;
   return to || null;
 }
 

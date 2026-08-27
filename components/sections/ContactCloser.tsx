@@ -272,7 +272,7 @@ export function ContactCloser() {
                   rows={5}
                   className={cn(
                     contactControl,
-                    "h-auto min-h-36 resize-y py-4 leading-relaxed",
+                    "h-auto min-h-36 resize-none py-4 leading-relaxed",
                     errors.message && "border-error",
                   )}
                   aria-invalid={Boolean(errors.message)}

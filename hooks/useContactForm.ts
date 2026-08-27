@@ -48,7 +48,7 @@ export function useContactForm() {
     if (!turnstileToken) {
       setState({
         success: false,
-        message: 'Please complete the verification challenge.',
+        message: 'Complete the security check above before sending.',
         values: parsed.data,
       });
       return;

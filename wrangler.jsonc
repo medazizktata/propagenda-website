@@ -18,7 +18,13 @@
     "binding": "IMAGES"
   },
   "observability": {
-    "enabled": true
+    "logs": {
+      "enabled": true,
+      "invocation_logs": true
+    },
+    "traces": {
+      "enabled": false
+    }
   },
   // Non-secret contact delivery. RESEND_API_KEY is a Worker secret (not committed).
   "vars": {

@@ -1,6 +1,6 @@
 import type { ContactSchema } from './contactSchema';
 import { buildContactEmailBodies } from './contactEmailTemplate';
-import { PUBLIC_CONTACT_EMAIL } from '@/lib/site/contact';
+import { CONTACT_DELIVERY_INBOX, PUBLIC_CONTACT_EMAIL } from '@/lib/site/contact';
 
 export type SendContactResult =
   | { ok: true; skipped?: boolean }
@@ -27,9 +27,11 @@ function env(name: string): string {
 }
 
 function resolveTo(): string | null {
+  // Public alias is contact@; Resend delivers to Gmail until domain is production-ready.
   const to =
+    env('CONTACT_DELIVER_TO') ||
     env('CONTACT_TO_EMAIL') ||
-    env('NEXT_PUBLIC_CONTACT_EMAIL') ||
+    CONTACT_DELIVERY_INBOX ||
     PUBLIC_CONTACT_EMAIL;
   return to || null;
 }
@@ -90,7 +92,12 @@ export async function sendContactEmail(
 
     if (!res.ok) {
       const body = await res.text().catch(() => '');
-      console.error('[contact] Resend HTTP error', res.status, body.slice(0, 500));
+      console.error(
+        '[contact] Resend HTTP error',
+        res.status,
+        body.slice(0, 1000),
+        { to: resolveTo(), from: resolveFrom() },
+      );
       return { ok: false, message: FAIL_MESSAGE };
     }
 

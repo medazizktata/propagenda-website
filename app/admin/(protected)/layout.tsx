@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { AdminNav } from '@/components/admin/AdminNav';
 import { requireAdminSession } from '@/lib/cms/auth';
 import { signOut } from '@/app/admin/(protected)/actions';
 
@@ -6,7 +7,7 @@ export default async function AdminProtectedLayout({ children }: { children: Rea
   const { user } = await requireAdminSession();
 
   return (
-    <>
+    <div className="flex min-h-dvh flex-col">
       <header className="flex items-center justify-between border-b border-neutral-800 px-6 py-4">
         <p className="font-mono text-xs uppercase tracking-widest text-orange-400">Propagenda CMS</p>
         <div className="flex items-center gap-4">
@@ -21,7 +22,13 @@ export default async function AdminProtectedLayout({ children }: { children: Rea
           </form>
         </div>
       </header>
-      <main className="px-6 py-8">{children}</main>
-    </>
+
+      <div className="flex flex-1">
+        <aside className="hidden w-56 shrink-0 border-r border-neutral-800 md:block">
+          <AdminNav />
+        </aside>
+        <main className="flex-1 px-6 py-8">{children}</main>
+      </div>
+    </div>
   );
 }

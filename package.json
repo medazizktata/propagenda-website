@@ -13,10 +13,16 @@
     "test:e2e": "playwright test",
     "preview": "rm -rf .open-next && opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "deploy": "rm -rf .open-next && opennextjs-cloudflare build && opennextjs-cloudflare deploy",
-    "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
+    "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
+    "seed:sql": "tsx scripts/generate-seed-sql.ts",
+    "seed:cms": "tsx scripts/seed-cms.ts",
+    "seed:admin": "tsx scripts/seed-admin-user.ts",
+    "db:reset": "pnpm seed:sql && supabase db reset"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",
+    "@supabase/ssr": "^0.12.5",
+    "@supabase/supabase-js": "^2.112.4",
     "@tailwindcss/postcss": "^4.3.2",
     "@types/node": "^26.1.1",
     "@types/react": "^19.2.17",
@@ -52,6 +58,7 @@
     "@playwright/test": "^1.62.1",
     "@types/photoswipe": "^4.1.6",
     "@types/three": "^0.185.1",
+    "tsx": "^4.23.13",
     "wrangler": "^4.124.0"
   },
   "msw": {

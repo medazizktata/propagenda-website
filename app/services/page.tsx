@@ -1,4 +1,5 @@
 import { buildMetadata } from '@/lib/seo/metadata';
+import { getServiceHubCards } from '@/lib/content/getServiceHubCards';
 import { ServicesPageContent } from '@/components/templates/ServicesPageContent';
 
 export const metadata = buildMetadata(
@@ -10,6 +11,8 @@ export const metadata = buildMetadata(
   '/services',
 );
 
-export default function ServicesPage() {
-  return <ServicesPageContent />;
+export default async function ServicesPage() {
+  const hubCards = await getServiceHubCards();
+
+  return <ServicesPageContent hubCards={hubCards} />;
 }

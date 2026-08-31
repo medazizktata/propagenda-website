@@ -24,6 +24,7 @@ import { WebsitesShowcase } from '@/components/sections/services/WebsitesShowcas
 import { MobileAppShowcase } from '@/components/sections/services/MobileAppShowcase';
 import { EventsJourney } from '@/components/sections/services/EventsJourney';
 import { serviceDetailConfig } from '@/components/sections/services/serviceDetailConfig';
+import type { ServiceHubCard } from '@/content/servicesHub';
 
 
 const num = (i: number) => String(i + 1).padStart(2, '0');
@@ -59,7 +60,13 @@ const DISCIPLINE_IMAGES = [
   '/images/portfolio/work-ghaftree.webp',
 ];
 
-export function ServiceDetailContent({ service }: { service: ServiceRecord }) {
+export function ServiceDetailContent({
+  service,
+  hubCards,
+}: {
+  service: ServiceRecord;
+  hubCards: ServiceHubCard[];
+}) {
   const rootRef = useRef<HTMLDivElement>(null);
   const reducedMotion = useReducedMotion();
   const cfg = serviceDetailConfig[service.slug];
@@ -203,7 +210,7 @@ export function ServiceDetailContent({ service }: { service: ServiceRecord }) {
       <ServiceRelatedWork items={relatedThree} />
 
       {/* ── NEXT / PREV (SMV project-detail signature) ───────────────────── */}
-      <ServiceNextPrev slug={service.slug} />
+      <ServiceNextPrev slug={service.slug} hubCards={hubCards} />
 
       {/* ── CTA ──────────────────────────────────────────────────────────── */}
       <ServicesCTA

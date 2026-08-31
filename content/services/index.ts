@@ -1,3 +1,4 @@
+/** Seed source for pnpm seed:cms — runtime reads from Supabase. */
 import type { ServiceRecord } from '@/types/content';
 
 function service(

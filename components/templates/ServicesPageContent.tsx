@@ -2,17 +2,14 @@ import { ServicesStatement } from '@/components/sections/services/ServicesStatem
 import { ServicesIndex } from '@/components/sections/services/ServicesIndex';
 import { ServicesWhy } from '@/components/sections/services/ServicesWhy';
 import { ServicesCTA } from '@/components/sections/services/ServicesCTA';
+import type { ServiceHubCard } from '@/content/servicesHub';
 
-export function ServicesPageContent() {
+export function ServicesPageContent({ hubCards }: { hubCards: ServiceHubCard[] }) {
   return (
     <>
-      {/* ACT 1 — Statement */}
       <ServicesStatement />
-      {/* ACT 2 — The Index */}
-      <ServicesIndex />
-      {/* ACT 3 — Why the studio + client proof */}
+      <ServicesIndex hubCards={hubCards} />
       <ServicesWhy />
-      {/* ACT 4 — Close: charcoal PageCTA with pulse glow. */}
       <ServicesCTA />
     </>
   );

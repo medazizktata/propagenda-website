@@ -5,8 +5,9 @@ import { getWorkSlugs } from '@/lib/content/getAllSlugs';
 import { buildMetadata } from '@/lib/seo/metadata';
 import type { WorkSlug } from '@/types/content';
 
-export function generateStaticParams() {
-  return getWorkSlugs().map((slug) => ({ slug }));
+export async function generateStaticParams() {
+  const slugs = await getWorkSlugs();
+  return slugs.map((slug) => ({ slug }));
 }
 
 interface WorkDetailPageProps {
@@ -15,15 +16,22 @@ interface WorkDetailPageProps {
 
 export async function generateMetadata({ params }: WorkDetailPageProps) {
   const { slug } = await params;
-  const study = getCaseStudy(slug);
+  const study = await getCaseStudy(slug);
   if (!study) return {};
   return buildMetadata(study.seo, `/work/${slug}`);
 }
 
 export default async function WorkDetailPage({ params }: WorkDetailPageProps) {
   const { slug } = await params;
-  const study = getCaseStudy(slug);
+  const study = await getCaseStudy(slug);
   if (!study) notFound();
 
-  return <CaseStudyDetailContent study={study} />;
+  const [prevStudy, nextStudy] = await Promise.all([
+    study.prev ? getCaseStudy(study.prev) : Promise.resolve(undefined),
+    study.next ? getCaseStudy(study.next) : Promise.resolve(undefined),
+  ]);
+
+  return (
+    <CaseStudyDetailContent study={study} prevStudy={prevStudy} nextStudy={nextStudy} />
+  );
 }

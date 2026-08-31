@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { serviceHubCards, type ServiceHubCard } from '@/content/servicesHub';
+import type { ServiceHubCard } from '@/content/servicesHub';
 import type { ServiceSlug } from '@/types/content';
 import { cn } from '@/components/ui/cn';
 import { useReducedMotion } from '@/lib/motion/useReducedMotion';
@@ -104,15 +104,21 @@ function NavPanel({
   );
 }
 
-export function ServiceNextPrev({ slug }: { slug: ServiceSlug }) {
+export function ServiceNextPrev({
+  slug,
+  hubCards,
+}: {
+  slug: ServiceSlug;
+  hubCards: ServiceHubCard[];
+}) {
   const reducedMotion = useReducedMotion();
   const [hovered, setHovered] = useState<Side | null>(null);
 
-  const idx = serviceHubCards.findIndex((c) => c.slug === slug);
+  const idx = hubCards.findIndex((c) => c.slug === slug);
   if (idx === -1) return null;
-  const count = serviceHubCards.length;
-  const prev = serviceHubCards[(idx - 1 + count) % count];
-  const next = serviceHubCards[(idx + 1) % count];
+  const count = hubCards.length;
+  const prev = hubCards[(idx - 1 + count) % count];
+  const next = hubCards[(idx + 1) % count];
 
   return (
     <section

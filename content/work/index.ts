@@ -1,3 +1,4 @@
+/** Seed source for pnpm seed:cms — runtime reads from Supabase. */
 import type { CaseStudyRecord } from '@/types/content';
 
 function caseStudy(

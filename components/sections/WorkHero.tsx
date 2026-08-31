@@ -5,7 +5,7 @@ import { gsap } from '@/lib/motion/gsap';
 import { useReducedMotion } from '@/lib/motion/useReducedMotion';
 import { cn } from '@/components/ui/cn';
 import { ScrollCue } from '@/components/molecules/ScrollCue';
-import { allCaseStudies } from '@/content/work';
+import type { CaseStudyRecord } from '@/types/content';
 
 /**
  * Work hub hero — an immersive, image-forward opener that replaces the generic PageHero.
@@ -23,11 +23,12 @@ import { allCaseStudies } from '@/content/work';
 
 // Every real project image used across the case studies, de-duplicated in appearance order.
 // Data-driven so the wall always reflects the actual work (heroImages + gallery frames).
-const projectImages = Array.from(
-  new Set(
-    allCaseStudies.flatMap((study) => [study.heroImage, ...study.gallery.map((g) => g.src)]),
-  ),
-).filter((src): src is string => Boolean(src));
+const projectImages = (caseStudies: CaseStudyRecord[]) =>
+  Array.from(
+    new Set(
+      caseStudies.flatMap((study) => [study.heroImage, ...study.gallery.map((g) => g.src)]),
+    ),
+  ).filter((src): src is string => Boolean(src));
 
 // Four drifting strips — alternating direction + speed for a parallax wall. The last two
 // reveal on wider screens so the wall stays full without crowding small viewports.
@@ -39,14 +40,15 @@ const COLUMNS = [
 ] as const;
 
 // Rotate the sequence per strip so no two columns march in lockstep.
-function stripImages(offset: number): string[] {
-  if (projectImages.length === 0) return [];
-  const start = offset % projectImages.length;
-  const seq = [...projectImages.slice(start), ...projectImages.slice(0, start)];
+function stripImages(caseStudies: CaseStudyRecord[], offset: number): string[] {
+  const images = projectImages(caseStudies);
+  if (images.length === 0) return [];
+  const start = offset % images.length;
+  const seq = [...images.slice(start), ...images.slice(0, start)];
   return offset % 2 === 1 ? [...seq].reverse() : seq;
 }
 
-export function WorkHero() {
+export function WorkHero({ caseStudies }: { caseStudies: CaseStudyRecord[] }) {
   const sectionRef = useRef<HTMLElement>(null);
   const parallaxRef = useRef<HTMLDivElement>(null);
   const reducedMotion = useReducedMotion();
@@ -141,7 +143,7 @@ export function WorkHero() {
                 data-dir={column.dir}
                 data-dur={column.dur}
               >
-                {[...stripImages(colIndex * 2), ...stripImages(colIndex * 2)].map((src, i) => (
+                {[...stripImages(caseStudies, colIndex * 2), ...stripImages(caseStudies, colIndex * 2)].map((src, i) => (
                   <div key={i} className="relative aspect-[4/5] w-full">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img

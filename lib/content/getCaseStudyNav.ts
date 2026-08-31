@@ -1,9 +1,11 @@
 import { getCaseStudy } from '@/lib/content/getCaseStudy';
 import type { CaseStudyRecord } from '@/types/content';
 
-export function getCaseStudyNav(study: CaseStudyRecord) {
-  const prevStudy = study.prev ? getCaseStudy(study.prev) : undefined;
-  const nextStudy = study.next ? getCaseStudy(study.next) : undefined;
+export async function getCaseStudyNav(study: CaseStudyRecord) {
+  const [prevStudy, nextStudy] = await Promise.all([
+    study.prev ? getCaseStudy(study.prev) : Promise.resolve(undefined),
+    study.next ? getCaseStudy(study.next) : Promise.resolve(undefined),
+  ]);
 
   return {
     prev: prevStudy

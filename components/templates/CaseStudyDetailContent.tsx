@@ -9,7 +9,6 @@ import type {
   CaseStudyResult,
   GalleryImage,
 } from '@/types/content';
-import { getCaseStudy } from '@/lib/content/getCaseStudy';
 import { gsap, registerGsap } from '@/lib/motion/gsap';
 import { useReducedMotion } from '@/lib/motion/useReducedMotion';
 import { cn } from '@/components/ui/cn';
@@ -22,6 +21,8 @@ import { usePhotoSwipe } from '@/hooks/usePhotoSwipe';
 
 interface CaseStudyDetailContentProps {
   study: CaseStudyRecord;
+  prevStudy?: CaseStudyRecord;
+  nextStudy?: CaseStudyRecord;
 }
 
 function SectionHeading({
@@ -44,7 +45,11 @@ function SectionHeading({
   );
 }
 
-export function CaseStudyDetailContent({ study }: CaseStudyDetailContentProps) {
+export function CaseStudyDetailContent({
+  study,
+  prevStudy,
+  nextStudy,
+}: CaseStudyDetailContentProps) {
   const rootRef = useRef<HTMLDivElement>(null);
   const reducedMotion = useReducedMotion();
 
@@ -75,8 +80,8 @@ export function CaseStudyDetailContent({ study }: CaseStudyDetailContentProps) {
     { key: 'result', name: 'The result', body: study.outcome },
   ].filter((s): s is { key: string; name: string; body: string } => Boolean(s.body));
 
-  const prev = study.prev ? getCaseStudy(study.prev) : undefined;
-  const next = study.next ? getCaseStudy(study.next) : undefined;
+  const prev = prevStudy;
+  const next = nextStudy;
 
   const accentVars = {
     '--sd-accent': study.accent?.color ?? '#f58b27',

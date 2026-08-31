@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { serviceHubCards } from '@/content/servicesHub';
+import type { ServiceHubCard } from '@/content/servicesHub';
 import { gsap, ScrollTrigger } from '@/lib/motion/gsap';
 import { useReducedMotion } from '@/lib/motion/useReducedMotion';
 import { cn } from '@/components/ui/cn';
@@ -16,7 +16,7 @@ import { ServiceRow } from './ServiceRow';
  * (fast fade layered over a slow 5s zoom, SMV projectoverview), siblings dim, arrow + caption
  * appear. Rows assemble across the pin (keyed to the lock so they're never pre-composed).
  */
-export function ServicesIndex() {
+export function ServicesIndex({ hubCards }: { hubCards: ServiceHubCard[] }) {
   const sectionRef = useRef<HTMLElement>(null);
   const [active, setActive] = useState<number | null>(null);
   const reducedMotion = useReducedMotion();
@@ -76,7 +76,7 @@ export function ServicesIndex() {
     };
   }, [reducedMotion]);
 
-  const activeCard = active != null ? serviceHubCards[active] : null;
+  const activeCard = active != null ? hubCards[active] : null;
 
   return (
     <section ref={sectionRef} className="relative h-[170vh] bg-charcoal md:h-[185vh]">
@@ -92,7 +92,7 @@ export function ServicesIndex() {
             className="pointer-events-none absolute inset-y-0 overflow-hidden"
             style={{ left: 'var(--rail)', right: 'var(--rail)' }}
           >
-            {serviceHubCards.map((card, i) =>
+            {hubCards.map((card, i) =>
               card.preview ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
@@ -152,7 +152,7 @@ export function ServicesIndex() {
             </SectionLabel>
 
             <ul className="flex flex-col">
-              {serviceHubCards.map((card, i) => (
+              {hubCards.map((card, i) => (
                 <li key={card.slug} className="services-row-wrap">
                   <ServiceRow
                     card={card}

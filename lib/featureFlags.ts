@@ -84,6 +84,7 @@ export function pageFlagForPath(pathname: string): PageFlagKey | null {
 
 /** Infra / static prefixes never gated. */
 const ALWAYS_OPEN_PREFIXES = [
+  '/admin',
   '/api/',
   '/_next/',
   '/images/',

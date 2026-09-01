@@ -47,6 +47,8 @@ export type TableColumn<T> = {
   sortAccessor?: (row: T) => string | number | Date | null | undefined;
   className?: string;
   defaultHidden?: boolean;
+  /** Pin column outside chooser — `start` (e.g. select) or `end` (e.g. actions). */
+  pinned?: 'start' | 'end';
   render: (row: T) => ReactNode;
   exportCell?: (row: T) => string;
 };
@@ -58,4 +60,15 @@ export type BulkAction<T> = {
   confirm?: string;
   isDisabled?: (rows: T[]) => boolean;
   run: (rows: T[]) => void | Promise<void>;
+};
+
+export type TableAction<T> = {
+  id: string;
+  label: string;
+  icon: ReactNode;
+  destructive?: boolean;
+  confirm?: string;
+  href?: (row: T) => string;
+  isDisabled?: (row: T) => boolean;
+  run?: (row: T) => void | Promise<void>;
 };

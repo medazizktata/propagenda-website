@@ -356,9 +356,55 @@ main {
 
 /* CMS uses the same charcoal surface as the public site — no custom cursor follower. */
 .admin-cms {
-  --sidebar: var(--color-charcoal);
+  --sidebar: var(--color-black);
   --background: var(--color-charcoal);
-  background-color: var(--color-surface);
+  --card: var(--color-black);
+  --popover: var(--color-black);
+  --secondary: rgba(255, 255, 255, 0.06);
+  --muted: rgba(255, 255, 255, 0.06);
+  --muted-foreground: rgba(255, 255, 255, 0.65);
+  --input: rgba(255, 255, 255, 0.12);
+  background-color: var(--color-charcoal);
+}
+
+body:has(.admin-cms) #main-content {
+  height: 100dvh;
+  max-height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.admin-cms [data-slot='sidebar-wrapper'] {
+  background-color: var(--color-charcoal);
+}
+
+.admin-cms [data-slot='sidebar'] {
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.admin-cms .admin-field {
+  border-color: rgba(255, 255, 255, 0.12);
+  background-color: rgba(255, 255, 255, 0.04);
+  color: var(--color-white);
+}
+
+.admin-cms .admin-field::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.admin-cms .admin-field:focus-visible {
+  border-color: var(--color-orange);
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+.admin-cms textarea.admin-field {
+  max-height: min(40svh, 20rem);
+  overflow-y: auto;
+  resize: vertical;
+}
+
+.admin-cms .admin-editor {
+  --muted-foreground: rgba(255, 255, 255, 0.8);
 }
 
 .admin-cms .cursor-dot {

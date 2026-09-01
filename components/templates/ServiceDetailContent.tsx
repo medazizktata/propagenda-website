@@ -23,7 +23,7 @@ import { PhotoVideoHeroOverview } from '@/components/sections/services/PhotoVide
 import { WebsitesShowcase } from '@/components/sections/services/WebsitesShowcase';
 import { MobileAppShowcase } from '@/components/sections/services/MobileAppShowcase';
 import { EventsJourney } from '@/components/sections/services/EventsJourney';
-import { serviceDetailConfig } from '@/components/sections/services/serviceDetailConfig';
+import { serviceDetailConfig, getServiceDetailConfig } from '@/components/sections/services/serviceDetailConfig';
 import type { ServiceHubCard } from '@/content/servicesHub';
 
 
@@ -63,13 +63,17 @@ const DISCIPLINE_IMAGES = [
 export function ServiceDetailContent({
   service,
   hubCards,
+  preview = false,
 }: {
   service: ServiceRecord;
   hubCards: ServiceHubCard[];
+  /** CMS live preview — skip scroll animations for instant updates. */
+  preview?: boolean;
 }) {
   const rootRef = useRef<HTMLDivElement>(null);
   const reducedMotion = useReducedMotion();
-  const cfg = serviceDetailConfig[service.slug];
+  const motionSafe = reducedMotion || preview;
+  const cfg = getServiceDetailConfig(service.slug);
 
   // Always show exactly 3 related-work cards: the service's own related work first, padded
   // from a safe pool (links to the work hub), de-duped by label.
@@ -90,7 +94,7 @@ export function ServiceDetailContent({
     if (!el) return;
     const ctx = gsap.context(() => {
       const items = gsap.utils.toArray<HTMLElement>('.sd-reveal');
-      if (reducedMotion) {
+      if (motionSafe) {
         gsap.set(items, { autoAlpha: 1, y: 0 });
         return;
       }
@@ -110,7 +114,7 @@ export function ServiceDetailContent({
       });
     }, rootRef);
     return () => ctx.revert();
-  }, [reducedMotion]);
+  }, [motionSafe]);
 
   return (
     <div ref={rootRef} className="bg-charcoal">
@@ -367,7 +371,7 @@ function ScopeBento({ items }: { items: string[] }) {
 
 function ServiceScope({ service }: { service: ServiceRecord }) {
   if (service.scopeItems.length === 0) return null;
-  const variant = SCOPE_VARIANT[service.slug];
+  const variant = SCOPE_VARIANT[service.slug as ServiceSlug] ?? 'editorial';
   return (
     <section className="relative overflow-hidden px-gutter-m py-12 lg:px-gutter-d lg:py-16">
       <div aria-hidden className="pattern-section-fade absolute inset-0">
@@ -1596,7 +1600,7 @@ function ServiceFAQ({ faqs }: { faqs: { q: string; a: string }[] }) {
 }
 
 function SignatureModule({ service }: { service: ServiceRecord }) {
-  const cfg = serviceDetailConfig[service.slug];
+  const cfg = getServiceDetailConfig(service.slug);
 
   if (service.slug === 'public-relations') return <PrInfluenceRoster />;
   if (service.slug === 'online-offline-marketing') return <MarketingFunnel />;

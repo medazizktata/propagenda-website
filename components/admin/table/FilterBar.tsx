@@ -108,7 +108,7 @@ export function FilterBar<T>({
       </div>
 
       {open && rules.length > 0 && (
-        <div className="space-y-2 rounded-xl border border-border bg-muted/20 p-3">
+        <div className="space-y-2 border-t border-white/12 pt-3">
           {rules.map((rule, index) => {
             const col = filterable.find((c) => c.key === rule.field) ?? filterable[0];
             const kind = col?.filter?.kind ?? 'text';

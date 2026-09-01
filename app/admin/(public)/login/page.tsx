@@ -1,14 +1,8 @@
 import Link from 'next/link';
 import { Logo } from '@/components/ui/Logo';
 import { AdminLoginForm } from '@/components/admin/AdminLoginForm';
+import { AdminFlatPanel } from '@/components/admin/AdminSection';
 import { Badge } from '@/components/ui/badge';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
 
 const ERROR_MESSAGES: Record<string, string> = {
   forbidden: 'This account is not authorized for CMS access.',
@@ -33,27 +27,26 @@ export default async function AdminLoginPage({ searchParams }: AdminLoginPagePro
         </Badge>
       </div>
 
-      <Card className="w-full border-border/80 bg-card/95 shadow-xl">
-        <CardHeader className="text-center">
-          <CardTitle className="text-xl">Sign in</CardTitle>
-          <CardDescription>Admin access only.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {errorMessage && (
-            <p
-              className="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive"
-              role="alert"
-            >
-              {errorMessage}
-            </p>
-          )}
-          <AdminLoginForm />
-        </CardContent>
-      </Card>
+      <AdminFlatPanel className="w-full space-y-4">
+        <div className="text-center">
+          <h1 className="text-xl font-semibold text-white">Sign in</h1>
+          <p className="mt-1 text-sm text-white/65">Admin access only.</p>
+        </div>
+
+        {errorMessage && (
+          <p
+            className="border-b border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive"
+            role="alert"
+          >
+            {errorMessage}
+          </p>
+        )}
+        <AdminLoginForm />
+      </AdminFlatPanel>
 
       <Link
         href="/"
-        className="text-sm text-muted-foreground transition-colors hover:text-primary"
+        className="text-sm text-white/65 transition-colors hover:text-orange"
       >
         ← Back to website
       </Link>

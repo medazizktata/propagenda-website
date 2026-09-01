@@ -32,6 +32,13 @@ function defaultVisibleKeys<T>(columns: TableColumn<T>[]): string[] {
   return columns.filter((c) => !c.defaultHidden).map((c) => c.key);
 }
 
+function resolveVisibleColumns<T>(columns: TableColumn<T>[], visibleKeys: string[]) {
+  const start = columns.filter((c) => c.pinned === 'start');
+  const end = columns.filter((c) => c.pinned === 'end');
+  const middle = columns.filter((c) => !c.pinned && visibleKeys.includes(c.key));
+  return [...start, ...middle, ...end];
+}
+
 export function DataTable<T extends { id: string }>({
   storageKey,
   rows,
@@ -61,7 +68,7 @@ export function DataTable<T extends { id: string }>({
   }, [columns, columnsReady, setVisibleKeys, visibleKeys]);
 
   const visibleColumns = useMemo(
-    () => columns.filter((c) => visibleKeys.includes(c.key)),
+    () => resolveVisibleColumns(columns, visibleKeys),
     [columns, visibleKeys],
   );
 
@@ -107,23 +114,23 @@ export function DataTable<T extends { id: string }>({
   const ready = filtersReady && sortReady && columnsReady;
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="min-w-0 flex-1">
+    <div className="space-y-3">
+      <div className="flex flex-wrap items-start justify-between gap-3 border-b border-white/12 pb-3">
+        <div className="flex min-w-0 flex-1 flex-wrap items-center gap-3">
           <FilterBar columns={columns} rules={filterRules} onChange={setFilterRules} />
+          {bulkActions.length > 0 ? (
+            <BulkActionBar
+              embedded
+              selectedRows={selectedRows}
+              actions={bulkActions}
+              onClear={() => setSelectedIds(new Set())}
+            />
+          ) : null}
         </div>
         <ColumnChooser columns={columns} visibleKeys={visibleKeys} onChange={setVisibleKeys} />
       </div>
 
-      {bulkActions.length > 0 && (
-        <BulkActionBar
-          selectedRows={selectedRows}
-          actions={bulkActions}
-          onClear={() => setSelectedIds(new Set())}
-        />
-      )}
-
-      <div className="rounded-xl border border-border bg-card/40">
+      <div className="border-y border-white/12">
         <Table>
           <TableHeader>
             <TableRow className="hover:bg-transparent">

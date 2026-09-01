@@ -52,7 +52,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <SkipLink />
         <Providers>
           <SiteShell>
-            <main id="main-content">{children}</main>
+            <div id="main-content" role="main" className="min-h-dvh">
+              {children}
+            </div>
           </SiteShell>
         </Providers>
       </body>

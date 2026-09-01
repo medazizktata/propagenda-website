@@ -20,7 +20,7 @@ export function ColumnChooser<T>({
   visibleKeys: string[];
   onChange: (keys: string[]) => void;
 }) {
-  const toggleable = columns.filter((c) => c.key !== 'select');
+  const toggleable = columns.filter((c) => !c.pinned && c.key !== 'select');
 
   function toggle(key: string, checked: boolean) {
     if (!checked) {

@@ -294,3 +294,13 @@ export const serviceDetailConfig: Record<ServiceSlug, ServiceDetailConfig> = {
     ],
   },
 };
+
+/** Fallback when previewing a slug that has no authored presentation config yet. */
+export const defaultServiceDetailConfig: ServiceDetailConfig = {
+  ctaLine1: 'Ready to start',
+  ctaLine2: 'your project.',
+};
+
+export function getServiceDetailConfig(slug: string): ServiceDetailConfig {
+  return serviceDetailConfig[slug as ServiceSlug] ?? defaultServiceDetailConfig;
+}

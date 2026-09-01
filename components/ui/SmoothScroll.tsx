@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import Lenis from 'lenis';
+import { useIsAdminRoute } from '@/hooks/useIsAdminRoute';
 import { gsap, ScrollTrigger } from '@/lib/motion/gsap';
 
 declare global {
@@ -17,10 +18,13 @@ declare global {
  * (pins, scrubs, reveals) reads the smoothed position and stays in step. Disabled under
  * reduced-motion; native touch scrolling is preserved (only the wheel is smoothed).
  * Nested scroll containers (e.g. the contact snap grid) are untouched — Lenis only
- * smooths the page scroll.
+ * smooths the page scroll. Disabled on /admin and /auth routes.
  */
 export function SmoothScroll() {
+  const isAdminRoute = useIsAdminRoute();
+
   useEffect(() => {
+    if (isAdminRoute) return;
     if (window.location.search.includes('preview=1')) return; // embedded preview: native scroll
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
@@ -60,7 +64,7 @@ export function SmoothScroll() {
       lenis.destroy();
       delete window.__lenis;
     };
-  }, []);
+  }, [isAdminRoute]);
 
   return null;
 }

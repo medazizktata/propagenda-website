@@ -2,7 +2,7 @@
 
 import { useRef, useEffect, useState, useCallback, type CSSProperties } from 'react';
 import dynamic from 'next/dynamic';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/marketing-button';
 import { BrandPattern } from '@/components/ui/BrandPattern';
 import { VideoLightbox } from '@/components/molecules/VideoLightbox';
 import { cn } from '@/components/ui/cn';

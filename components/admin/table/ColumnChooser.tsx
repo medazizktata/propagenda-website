@@ -1,6 +1,14 @@
 'use client';
 
 import { Columns3 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import type { TableColumn } from '@/lib/admin/table/types';
 
 export function ColumnChooser<T>({
@@ -14,8 +22,8 @@ export function ColumnChooser<T>({
 }) {
   const toggleable = columns.filter((c) => c.key !== 'select');
 
-  function toggle(key: string) {
-    if (visibleKeys.includes(key)) {
+  function toggle(key: string, checked: boolean) {
+    if (!checked) {
       onChange(visibleKeys.filter((k) => k !== key));
       return;
     }
@@ -23,38 +31,23 @@ export function ColumnChooser<T>({
   }
 
   return (
-    <div className="relative">
-      <details className="group">
-        <summary className="list-none [&::-webkit-details-marker]:hidden">
-          <span className="inline-flex cursor-pointer items-center gap-1.5 rounded-pill bg-black px-4 py-2 text-xs font-bold uppercase text-white">
-            <Columns3 className="size-3.5" aria-hidden />
-            Columns
-          </span>
-        </summary>
-        <div className="absolute right-0 z-20 mt-2 w-52 rounded-lg border border-neutral-800 bg-neutral-950 p-2 shadow-xl">
-          <p className="px-2 py-1 text-xs font-medium uppercase tracking-wide text-neutral-500">
-            Visible columns
-          </p>
-          <ul className="max-h-64 space-y-0.5 overflow-y-auto">
-            {toggleable.map((col) => {
-              const checked = visibleKeys.includes(col.key);
-              return (
-                <li key={col.key}>
-                  <label className="flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-sm hover:bg-neutral-900">
-                    <input
-                      type="checkbox"
-                      checked={checked}
-                      onChange={() => toggle(col.key)}
-                      className="rounded border-neutral-600 bg-neutral-900"
-                    />
-                    <span>{typeof col.label === 'string' ? col.label : col.key}</span>
-                  </label>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-      </details>
-    </div>
+    <DropdownMenu>
+      <DropdownMenuTrigger render={<Button variant="outline" size="sm" />}>
+        <Columns3 className="size-3.5" />
+        Columns
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-52">
+        <DropdownMenuLabel>Visible columns</DropdownMenuLabel>
+        {toggleable.map((col) => (
+          <DropdownMenuCheckboxItem
+            key={col.key}
+            checked={visibleKeys.includes(col.key)}
+            onCheckedChange={(checked) => toggle(col.key, checked === true)}
+          >
+            {typeof col.label === 'string' ? col.label : col.key}
+          </DropdownMenuCheckboxItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

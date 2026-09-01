@@ -1,14 +1,20 @@
 'use client';
 
+import { usePathname } from 'next/navigation';
 import { AppLink } from '@/components/ui/Link';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/marketing-button';
 import { SocialIconLink } from '@/components/molecules/SocialIconLink';
 import { ScrollToTopButton } from '@/components/molecules/ScrollToTopButton';
 import { footer, socialLinks } from '@/content/site';
 import { getLegalNavigation, getPrimaryNavigation } from '@/lib/content/navigation';
 
 export function Footer() {
+  const pathname = usePathname();
+  const isAdminRoute =
+    pathname?.startsWith('/admin') === true || pathname?.startsWith('/auth') === true;
   const year = new Date().getFullYear();
+
+  if (isAdminRoute) return null;
 
   return (
     <footer className="bg-black text-white">

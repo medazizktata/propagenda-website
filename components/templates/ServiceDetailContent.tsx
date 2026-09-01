@@ -10,7 +10,7 @@ import { BrandPattern } from '@/components/ui/BrandPattern';
 import { LogoDrawMark } from '@/components/molecules/LogoDrawMark';
 import { ScrollCue } from '@/components/molecules/ScrollCue';
 import { SectionLabel } from '@/components/ui/SectionLabel';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/marketing-button';
 import { ServicesCTA } from '@/components/sections/services/ServicesCTA';
 import { FAQAccordion } from '@/components/sections/FAQAccordion';
 import { ServiceNextPrev } from '@/components/sections/services/ServiceNextPrev';

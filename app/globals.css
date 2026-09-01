@@ -354,6 +354,17 @@ main {
   height: 44px;
 }
 
+/* CMS uses the same charcoal surface as the public site — no custom cursor follower. */
+.admin-cms {
+  --sidebar: var(--color-charcoal);
+  --background: var(--color-charcoal);
+  background-color: var(--color-surface);
+}
+
+.admin-cms .cursor-dot {
+  display: none !important;
+}
+
 /* ── Lenis smooth scroll (see components/ui/SmoothScroll.tsx) ─────────────────── */
 html.lenis,
 html.lenis body {

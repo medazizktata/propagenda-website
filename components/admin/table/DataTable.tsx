@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
 import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react';
 import { useLocalStorageState } from '@/hooks/useLocalStorageState';
 import { applyFilterRules, applySort } from '@/lib/admin/table/apply-filters';
@@ -8,7 +9,16 @@ import type { BulkAction, FilterRule, SortState, TableColumn } from '@/lib/admin
 import { BulkActionBar } from '@/components/admin/table/BulkActionBar';
 import { ColumnChooser } from '@/components/admin/table/ColumnChooser';
 import { FilterBar } from '@/components/admin/table/FilterBar';
-import { cn } from '@/components/ui/cn';
+import { Button } from '@/components/ui/button';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { cn } from '@/lib/utils';
 
 type DataTableProps<T extends { id: string }> = {
   storageKey: string;
@@ -113,29 +123,31 @@ export function DataTable<T extends { id: string }>({
         />
       )}
 
-      <div className="overflow-x-auto rounded-lg border border-neutral-800">
-        <table className="min-w-full text-left text-sm">
-          <thead className="border-b border-neutral-800 bg-neutral-900/80 text-xs uppercase tracking-wide text-neutral-500">
-            <tr>
+      <div className="rounded-xl border border-border bg-card/40">
+        <Table>
+          <TableHeader>
+            <TableRow className="hover:bg-transparent">
               {visibleColumns.map((col) => {
                 const isSelect = col.key === 'select';
                 const isSorted = sort?.key === col.key;
 
                 return (
-                  <th key={col.key} className={cn('px-4 py-3 font-medium', col.className)}>
+                  <TableHead key={col.key} className={col.className}>
                     {isSelect ? (
                       <input
                         type="checkbox"
                         checked={allVisibleSelected}
                         onChange={toggleAll}
                         aria-label="Select all rows"
-                        className="rounded border-neutral-600 bg-neutral-900"
+                        className="size-4 rounded border-input accent-primary"
                       />
                     ) : col.sortable ? (
-                      <button
+                      <Button
                         type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="-ml-2 h-8 px-2 font-medium text-muted-foreground hover:text-foreground"
                         onClick={() => toggleSort(col.key)}
-                        className="inline-flex items-center gap-1 hover:text-neutral-200"
                       >
                         {col.label}
                         {isSorted ? (
@@ -147,60 +159,60 @@ export function DataTable<T extends { id: string }>({
                         ) : (
                           <ArrowUpDown className="size-3.5 opacity-40" />
                         )}
-                      </button>
+                      </Button>
                     ) : (
                       col.label
                     )}
-                  </th>
+                  </TableHead>
                 );
               })}
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-neutral-800">
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {!ready ? (
-              <tr>
-                <td
+              <TableRow>
+                <TableCell
                   colSpan={visibleColumns.length}
-                  className="px-4 py-8 text-center text-neutral-500"
+                  className="h-24 text-center text-muted-foreground"
                 >
                   Loading table preferences…
-                </td>
-              </tr>
+                </TableCell>
+              </TableRow>
             ) : processedRows.length === 0 ? (
-              <tr>
-                <td
+              <TableRow>
+                <TableCell
                   colSpan={visibleColumns.length}
-                  className="px-4 py-8 text-center text-neutral-500"
+                  className="h-24 text-center text-muted-foreground"
                 >
                   {emptyMessage}
-                </td>
-              </tr>
+                </TableCell>
+              </TableRow>
             ) : (
               processedRows.map((row) => (
-                <tr key={row.id} className="hover:bg-neutral-900/50">
+                <TableRow key={row.id} data-state={selectedIds.has(row.id) ? 'selected' : undefined}>
                   {visibleColumns.map((col) => (
-                    <td key={col.key} className={cn('px-4 py-3 text-neutral-200', col.className)}>
+                    <TableCell key={col.key} className={cn(col.className)}>
                       {col.key === 'select' ? (
                         <input
                           type="checkbox"
                           checked={selectedIds.has(row.id)}
                           onChange={() => toggleRow(row.id)}
                           aria-label="Select row"
-                          className="rounded border-neutral-600 bg-neutral-900"
+                          className="size-4 rounded border-input accent-primary"
                         />
                       ) : (
                         col.render(row)
                       )}
-                    </td>
+                    </TableCell>
                   ))}
-                </tr>
+                </TableRow>
               ))
             )}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
       </div>
 
-      <p className="text-xs text-neutral-500">
+      <p className="text-xs text-muted-foreground">
         {ready ? `${processedRows.length} of ${rows.length} rows` : ''}
       </p>
     </div>

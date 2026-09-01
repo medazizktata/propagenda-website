@@ -4,7 +4,7 @@ import { useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { DisplayHeading } from '@/components/ui/DisplayHeading';
 import { SectionLabel } from '@/components/ui/SectionLabel';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/marketing-button';
 import { ContactInfoBlock } from '@/components/sections/ContactInfoBlock';
 import { gsap } from '@/lib/motion/gsap';
 import { useReducedMotion } from '@/lib/motion/useReducedMotion';

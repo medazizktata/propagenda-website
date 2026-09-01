@@ -1,16 +1,16 @@
-import { Button } from '@/components/ui/Button';
+import Link from 'next/link';
+import { buttonVariants } from '@/components/ui/button';
 import { ServicesTable } from '@/components/admin/ServicesTable';
 import { listAdminServices } from '@/lib/cms/repositories/admin/services';
 import { isSupabaseConfigured } from '@/lib/supabase/env';
+import { cn } from '@/lib/utils';
 
 export default async function AdminServicesPage() {
   if (!isSupabaseConfigured()) {
     return (
       <div className="space-y-4">
         <h1 className="text-2xl font-semibold tracking-tight">Services</h1>
-        <p className="text-sm text-neutral-400">
-          Set Supabase env vars, then run <code className="text-orange-300">pnpm db:reset</code>.
-        </p>
+        <p className="text-sm text-muted-foreground">Content is temporarily unavailable.</p>
       </div>
     );
   }
@@ -22,13 +22,16 @@ export default async function AdminServicesPage() {
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Services</h1>
-          <p className="mt-1 text-sm text-neutral-400">
+          <p className="mt-1 text-sm text-muted-foreground">
             {services.length} total · filter, sort, and bulk actions persist in localStorage
           </p>
         </div>
-        <Button href="/admin/services/new" size="sm" variant="primary">
+        <Link
+          href="/admin/services/new"
+          className={cn(buttonVariants({ size: 'sm' }))}
+        >
           New service
-        </Button>
+        </Link>
       </div>
 
       <ServicesTable rows={services} />

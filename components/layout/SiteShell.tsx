@@ -2,6 +2,7 @@
 
 import type { ReactNode } from 'react';
 import { Suspense, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import { InitLoader } from '@/components/layout/InitLoader';
 import { PageTransitionLoader } from '@/components/layout/PageTransitionLoader';
 import { Header } from '@/components/layout/Header';
@@ -12,6 +13,10 @@ import { registerGsap, ScrollTrigger } from '@/lib/motion/gsap';
 import { setViewportHeight } from '@/lib/utils/vh';
 
 export function SiteShell({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
+  const isAdminRoute =
+    pathname?.startsWith('/admin') === true || pathname?.startsWith('/auth') === true;
+
   useEffect(() => {
     registerGsap();
     setViewportHeight();
@@ -38,6 +43,10 @@ export function SiteShell({ children }: { children: ReactNode }) {
       timers.forEach((t) => window.clearTimeout(t));
     };
   }, []);
+
+  if (isAdminRoute) {
+    return <>{children}</>;
+  }
 
   return (
     <>

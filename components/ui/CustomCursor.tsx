@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { gsap } from '@/lib/motion/gsap';
+import { useIsAdminRoute } from '@/hooks/useIsAdminRoute';
 
 /**
  * Site-wide custom cursor follower (MicDrop-style): a single solid orange dot with
@@ -9,15 +10,15 @@ import { gsap } from '@/lib/motion/gsap';
  * dark, inverts to blue on light). It trails the pointer with a slight lag and
  * grows over interactive elements.
  *
- * This only AUGMENTS the pointer — the native cursor stays visible and rides on top
- * of the dot. Fine-pointer + non-reduced-motion only (touch / reduced-motion users
- * simply don't get the follower).
+ * Disabled on /admin and /auth routes.
  */
 export function CustomCursor() {
   const dotRef = useRef<HTMLDivElement>(null);
+  const isAdminRoute = useIsAdminRoute();
 
   useEffect(() => {
-    if (window.location.search.includes('preview=1')) return; // embedded preview: no cursor
+    if (isAdminRoute) return;
+    if (window.location.search.includes('preview=1')) return;
     const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)');
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
     if (!finePointer.matches || reduced.matches) return;
@@ -58,7 +59,9 @@ export function CustomCursor() {
       window.removeEventListener('pointerover', over);
       document.removeEventListener('mouseleave', hide);
     };
-  }, []);
+  }, [isAdminRoute]);
+
+  if (isAdminRoute) return null;
 
   return <div ref={dotRef} aria-hidden className="cursor-dot" />;
 }

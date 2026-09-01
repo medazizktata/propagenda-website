@@ -1,6 +1,6 @@
 'use client';
 
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/marketing-button';
 import { FormField } from '@/components/molecules/FormField';
 import { FormSelect } from '@/components/molecules/FormSelect';
 import { contactCloser } from '@/content/contact';

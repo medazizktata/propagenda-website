@@ -2,8 +2,9 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/Button';
-import { Input, Label } from '@/components/ui/FormFields';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 
 export function AdminLoginForm() {
@@ -33,15 +34,15 @@ export function AdminLoginForm() {
       router.replace('/admin');
       router.refresh();
     } catch {
-      setError('Could not sign in. Check Supabase env vars.');
+      setError('Could not sign in. Try again.');
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-5">
-      <div>
+    <form onSubmit={onSubmit} className="space-y-4">
+      <div className="space-y-2">
         <Label htmlFor="email">Email</Label>
         <Input
           id="email"
@@ -55,7 +56,7 @@ export function AdminLoginForm() {
         />
       </div>
 
-      <div>
+      <div className="space-y-2">
         <Label htmlFor="password">Password</Label>
         <Input
           id="password"
@@ -69,13 +70,13 @@ export function AdminLoginForm() {
       </div>
 
       {error && (
-        <p className="text-sm text-red-400" role="alert">
+        <p className="text-sm text-destructive" role="alert">
           {error}
         </p>
       )}
 
-      <Button type="submit" className="w-full" loading={loading}>
-        Sign in
+      <Button type="submit" className="w-full" disabled={loading}>
+        {loading ? 'Signing in…' : 'Sign in'}
       </Button>
     </form>
   );

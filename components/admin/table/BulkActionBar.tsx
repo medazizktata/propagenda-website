@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 import type { BulkAction } from '@/lib/admin/table/types';
 
 export function BulkActionBar<T>({
@@ -35,8 +35,8 @@ export function BulkActionBar<T>({
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-3 rounded-lg border border-orange-500/30 bg-orange-500/10 px-4 py-3">
-      <span className="text-sm text-orange-200">
+    <div className="flex flex-wrap items-center gap-3 rounded-xl border border-primary/25 bg-accent/40 px-4 py-3">
+      <span className="text-sm font-medium text-accent-foreground">
         {selectedRows.length} selected
       </span>
       <div className="flex flex-wrap items-center gap-2">
@@ -49,17 +49,19 @@ export function BulkActionBar<T>({
               key={action.id}
               type="button"
               size="sm"
-              variant={action.destructive ? 'invert' : 'secondary'}
-              className={action.destructive ? 'border border-red-500/50' : undefined}
+              variant={action.destructive ? 'destructive' : 'secondary'}
               disabled={disabled || running !== null}
-              loading={running === action.id}
               onClick={() => runAction(action)}
             >
-              {confirming && action.confirm ? action.confirm : action.label}
+              {running === action.id
+                ? 'Working…'
+                : confirming && action.confirm
+                  ? action.confirm
+                  : action.label}
             </Button>
           );
         })}
-        <Button type="button" size="sm" variant="text" onClick={onClear}>
+        <Button type="button" size="sm" variant="ghost" onClick={onClear}>
           Clear
         </Button>
       </div>

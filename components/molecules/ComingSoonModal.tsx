@@ -4,7 +4,7 @@ import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { BrandPattern } from '@/components/ui/BrandPattern';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/marketing-button';
 import { softLaunchCopy } from '@/content/softLaunch';
 import {
   openComingSoonModal,

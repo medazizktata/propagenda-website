@@ -2,8 +2,15 @@
 
 import { useMemo, useState } from 'react';
 import { Filter, Plus, Trash2 } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/FormFields';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import type { FilterFieldKind, FilterOperator, FilterRule, TableColumn } from '@/lib/admin/table/types';
 
 const OPERATOR_LABELS: Record<FilterOperator, string> = {
@@ -79,12 +86,12 @@ export function FilterBar<T>({
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center gap-2">
-        <Button type="button" variant="secondary" size="sm" onClick={addRule}>
-          <Plus className="size-3.5" aria-hidden />
+        <Button type="button" variant="outline" size="sm" onClick={addRule}>
+          <Plus className="size-3.5" />
           Add filter
         </Button>
         {rules.length > 0 && (
-          <Button type="button" variant="text" size="sm" onClick={() => onChange([])}>
+          <Button type="button" variant="ghost" size="sm" onClick={() => onChange([])}>
             Clear all
           </Button>
         )}
@@ -92,16 +99,16 @@ export function FilterBar<T>({
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
-            className="ml-auto flex items-center gap-1.5 text-xs text-neutral-400 hover:text-neutral-200"
+            className="ml-auto inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground"
           >
-            <Filter className="size-3.5" aria-hidden />
+            <Filter className="size-3.5" />
             {open ? 'Hide' : 'Show'} rules ({rules.length})
           </button>
         )}
       </div>
 
       {open && rules.length > 0 && (
-        <div className="space-y-2 rounded-lg border border-neutral-800 bg-neutral-900/50 p-3">
+        <div className="space-y-2 rounded-xl border border-border bg-muted/20 p-3">
           {rules.map((rule, index) => {
             const col = filterable.find((c) => c.key === rule.field) ?? filterable[0];
             const kind = col?.filter?.kind ?? 'text';
@@ -111,53 +118,63 @@ export function FilterBar<T>({
             return (
               <div key={rule.id} className="flex flex-wrap items-center gap-2">
                 {index > 0 && (
-                  <select
+                  <Select
                     value={rule.conjunction ?? 'and'}
-                    onChange={(e) =>
-                      updateRule(rule.id, {
-                        conjunction: e.target.value as 'and' | 'or',
-                      })
+                    onValueChange={(value) =>
+                      updateRule(rule.id, { conjunction: value as 'and' | 'or' })
                     }
-                    className="rounded border border-neutral-700 bg-neutral-950 px-2 py-1.5 text-xs text-neutral-300"
                   >
-                    <option value="and">AND</option>
-                    <option value="or">OR</option>
-                  </select>
+                    <SelectTrigger className="h-8 w-[88px]">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="and">AND</SelectItem>
+                      <SelectItem value="or">OR</SelectItem>
+                    </SelectContent>
+                  </Select>
                 )}
 
-                <select
+                <Select
                   value={rule.field}
-                  onChange={(e) => {
-                    const nextCol = filterable.find((c) => c.key === e.target.value);
+                  onValueChange={(value) => {
+                    const nextCol = filterable.find((c) => c.key === value);
                     const nextKind = nextCol?.filter?.kind ?? 'text';
                     updateRule(rule.id, {
-                      field: e.target.value,
+                      field: value ?? '',
                       operator: defaultOperator(nextKind),
                       value: nextKind === 'enum' ? [] : '',
                     });
                   }}
-                  className="rounded border border-neutral-700 bg-neutral-950 px-2 py-1.5 text-sm text-neutral-200"
                 >
-                  {filterable.map((c) => (
-                    <option key={c.key} value={c.key}>
-                      {typeof c.label === 'string' ? c.label : c.key}
-                    </option>
-                  ))}
-                </select>
+                  <SelectTrigger className="h-8 min-w-[120px]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {filterable.map((c) => (
+                      <SelectItem key={c.key} value={c.key}>
+                        {typeof c.label === 'string' ? c.label : c.key}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
 
-                <select
+                <Select
                   value={rule.operator}
-                  onChange={(e) =>
-                    updateRule(rule.id, { operator: e.target.value as FilterOperator })
+                  onValueChange={(value) =>
+                    updateRule(rule.id, { operator: value as FilterOperator })
                   }
-                  className="rounded border border-neutral-700 bg-neutral-950 px-2 py-1.5 text-sm text-neutral-200"
                 >
-                  {operators.map((op) => (
-                    <option key={op} value={op}>
-                      {OPERATOR_LABELS[op]}
-                    </option>
-                  ))}
-                </select>
+                  <SelectTrigger className="h-8 min-w-[140px]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {operators.map((op) => (
+                      <SelectItem key={op} value={op}>
+                        {OPERATOR_LABELS[op]}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
 
                 {needsValue && kind === 'enum' && (
                   <select
@@ -168,7 +185,7 @@ export function FilterBar<T>({
                         value: Array.from(e.target.selectedOptions).map((o) => o.value),
                       })
                     }
-                    className="min-w-[140px] rounded border border-neutral-700 bg-neutral-950 px-2 py-1.5 text-sm text-neutral-200"
+                    className="min-h-8 min-w-[140px] rounded-lg border border-input bg-transparent px-2 py-1.5 text-sm"
                   >
                     {col?.filter?.options?.map((opt) => (
                       <option key={opt.value} value={opt.value}>
@@ -183,19 +200,20 @@ export function FilterBar<T>({
                     type={kind === 'number' ? 'number' : kind === 'date' ? 'date' : 'text'}
                     value={String(rule.value ?? '')}
                     onChange={(e) => updateRule(rule.id, { value: e.target.value })}
-                    className="h-9 min-w-[140px] flex-1"
+                    className="h-8 min-w-[140px] flex-1"
                     placeholder="Value"
                   />
                 )}
 
-                <button
+                <Button
                   type="button"
+                  variant="ghost"
+                  size="icon-sm"
                   onClick={() => removeRule(rule.id)}
-                  className="rounded p-1.5 text-neutral-500 hover:bg-neutral-800 hover:text-red-400"
                   aria-label="Remove filter"
                 >
                   <Trash2 className="size-4" />
-                </button>
+                </Button>
               </div>
             );
           })}

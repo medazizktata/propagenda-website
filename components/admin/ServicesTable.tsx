@@ -8,6 +8,8 @@ import { exportRowsToCsv } from '@/lib/admin/table/export-csv';
 import type { BulkAction, TableColumn } from '@/lib/admin/table/types';
 import type { ServiceListRow } from '@/types/cms';
 import { deleteServices } from '@/app/admin/(protected)/services/actions';
+import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 
 function formatDate(value: string) {
   return new Intl.DateTimeFormat('en', {
@@ -30,7 +32,7 @@ export function ServicesTable({ rows }: { rows: ServiceListRow[] }) {
         render: (row) => (
           <Link
             href={`/admin/services/${row.slug}`}
-            className="font-medium text-orange-300 hover:text-orange-200 hover:underline"
+            className="font-medium text-primary hover:text-primary/80 hover:underline"
           >
             {row.title}
           </Link>
@@ -42,7 +44,9 @@ export function ServicesTable({ rows }: { rows: ServiceListRow[] }) {
         label: 'Slug',
         sortable: true,
         filter: { kind: 'text' },
-        render: (row) => <span className="font-mono text-xs text-neutral-400">{row.slug}</span>,
+        render: (row) => (
+          <span className="font-mono text-xs text-muted-foreground">{row.slug}</span>
+        ),
       },
       {
         key: 'status',
@@ -56,15 +60,12 @@ export function ServicesTable({ rows }: { rows: ServiceListRow[] }) {
           ],
         },
         render: (row) => (
-          <span
-            className={
-              row.status === 'published'
-                ? 'rounded bg-emerald-500/15 px-2 py-0.5 text-xs text-emerald-300'
-                : 'rounded bg-neutral-800 px-2 py-0.5 text-xs text-neutral-400'
-            }
+          <Badge
+            variant={row.status === 'published' ? 'default' : 'secondary'}
+            className={cn(row.status === 'published' && 'bg-primary/15 text-primary')}
           >
             {row.status}
-          </span>
+          </Badge>
         ),
       },
       {
@@ -81,7 +82,7 @@ export function ServicesTable({ rows }: { rows: ServiceListRow[] }) {
         filter: { kind: 'date' },
         sortAccessor: (row) => new Date(row.updated_at),
         render: (row) => (
-          <time dateTime={row.updated_at} className="text-neutral-400">
+          <time dateTime={row.updated_at} className="text-muted-foreground">
             {formatDate(row.updated_at)}
           </time>
         ),
@@ -136,7 +137,7 @@ export function ServicesTable({ rows }: { rows: ServiceListRow[] }) {
       rows={rows}
       columns={columns}
       bulkActions={bulkActions}
-      emptyMessage="No services yet. Run pnpm db:reset or create one."
+      emptyMessage="No services match your filters."
     />
   );
 }

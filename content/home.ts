@@ -32,6 +32,14 @@ export const methodologySteps = [
 
 // Growth staircase (home) — an ascending journey from a credible start to category
 // leadership. An ordered sequence, so the step numbers earn their place.
+export const servicesBanner = {
+  label: 'Services',
+  headingLead: 'The whole brand,',
+  headingAccent: 'one studio.',
+  body: 'Seven capabilities — from logo to launch.',
+  cta: { label: 'Explore capabilities', href: '/services' },
+};
+
 export const growthStaircase = {
   label: 'Growth mindset',
   headingLead: 'Built to',

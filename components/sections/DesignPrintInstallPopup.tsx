@@ -69,30 +69,28 @@ function WorkCardImage({ initial }: { initial: string }) {
 // (step 11). Statement stays orange-on-dark and legible; only the motion is scrolled.
 
 // Organized resting layout — the deck resolves into a PRECISE, symmetric grid (two even
-// columns of three that frame the statement, with a larger centre card), aligned and
-// zero-rotation rather than scattered — it reads as a deliberate, put-together team.
+// columns of three that frame the statement), aligned and zero-rotation rather than
+// scattered — it reads as a deliberate, put-together team.
 // Offsets are a fraction of the viewport (x → vw, y → vh) so it stays proportional at any
 // size; `grad` is a neutral charcoal→black tint (never navy).
-type ScatterCard = { x: number; y: number; rot: number; w: number; grad: string; img: string; center?: boolean };
+type ScatterCard = { x: number; y: number; rot: number; w: number; grad: string; img: string };
 const CARDS: ScatterCard[] = [
   { x: -33, y: -25, rot: 0, w: 15, grad: 'from-charcoal to-black', img: '/images/portfolio/work-sanapex.webp' },
   { x: -33, y: 0, rot: 0, w: 15, grad: 'from-black to-charcoal', img: '/images/portfolio/work-quickcars.webp' },
   { x: -33, y: 25, rot: 0, w: 15, grad: 'from-charcoal to-black', img: '/images/portfolio/work-events.webp' },
   { x: 33, y: -25, rot: 0, w: 15, grad: 'from-black to-charcoal', img: '/images/portfolio/work-food.webp' },
-  { x: 0, y: 0, rot: 0, w: 17, center: true, grad: 'from-charcoal to-black', img: '/images/portfolio/work-ghaftree.webp' },
   { x: 33, y: 0, rot: 0, w: 15, grad: 'from-charcoal to-black', img: '/images/portfolio/work-restaurant.webp' },
   { x: 33, y: 25, rot: 0, w: 15, grad: 'from-black to-charcoal', img: '/images/portfolio/work-sanapex.webp' },
 ];
 
 // The opening frame (SMV step 9): the cards begin STACKED like a deck near the centre —
-// overlapping, each kicked a touch off-square, the centre card squared-up on top — before
-// they scatter out. Tiny x/y jitter (fraction of vw/vh) + small rotations read as a pile.
+// overlapping, each kicked a touch off-square — before they scatter out. Tiny x/y jitter
+// (fraction of vw/vh) + small rotations read as a pile.
 const STACK = [
   { x: -1.5, y: -1, rot: -8 },
   { x: 1.2, y: -2, rot: 6 },
   { x: -0.6, y: 1.4, rot: -3 },
   { x: 2, y: 0.6, rot: 11 },
-  { x: 0, y: 0, rot: 0 }, // centre card — squared-up, sits on top of the pile
   { x: -2, y: -0.6, rot: 4 },
   { x: 1.6, y: 2, rot: -6 },
 ];
@@ -297,11 +295,8 @@ export function DesignPrintInstallPopup({ flat = false }: { flat?: boolean }) {
               key={i}
               className="dpi-card absolute left-1/2 top-1/2 overflow-hidden rounded-lg shadow-lg ring-1 ring-white/10 will-change-transform"
               style={{
-                // Floor hard on small viewports (15vw ≈ 56px on a phone); cap at the
-                // designed vw so desktop stays the same. Centre card is slightly larger.
-                width: `clamp(${card.center ? '12rem' : '10.5rem'}, ${card.w * 2.4}vw, ${card.w}vw)`,
+                width: `clamp(10.5rem, ${card.w * 2.4}vw, ${card.w}vw)`,
                 aspectRatio: '3 / 4',
-                zIndex: card.center ? 2 : 1,
                 // Flat (preview): CSS stands in for the GSAP transform — centre the card, then
                 // offset into its resting-grid slot in viewport units so it reflows on resize.
                 ...(flat
@@ -324,12 +319,12 @@ export function DesignPrintInstallPopup({ flat = false }: { flat?: boolean }) {
           {words.map((word, i) => (
             <span
               key={word}
-              className="dpi-word pointer-events-auto block w-full text-center text-white transition-colors duration-300 will-change-transform hover-fine:hover:text-orange"
+              className="dpi-word block w-full text-center text-white will-change-transform"
               style={{ fontSize: 'clamp(3rem, 12vw, 12rem)' }}
             >
               {word}
               {/* The verdict lands on the last word — orange full stop, the brand's period. */}
-              {i === words.length - 1 && <span className="text-orange">.</span>}
+              {i === words.length - 1 && <span className="text-white">.</span>}
             </span>
           ))}
         </h2>
@@ -337,7 +332,7 @@ export function DesignPrintInstallPopup({ flat = false }: { flat?: boolean }) {
         {/* Subline — lifted off the viewport edge so it stays readable above the dock/chrome. */}
         <div className="dpi-sub pointer-events-none absolute inset-x-0 bottom-10 z-content flex items-center justify-center gap-4 px-6 will-change-[opacity] sm:bottom-12">
           <span aria-hidden className="hidden h-px w-8 shrink-0 bg-gradient-to-r from-transparent to-orange sm:block sm:w-14" />
-          <span className="text-center text-xs font-semibold uppercase tracking-[0.4em] text-white/80 sm:text-sm">
+          <span className="text-center text-xs font-semibold uppercase tracking-[0.4em] text-white sm:text-sm">
             {designPrintInstall.subline}
           </span>
           <span aria-hidden className="hidden h-px w-8 shrink-0 bg-gradient-to-l from-transparent to-orange sm:block sm:w-14" />

@@ -4,8 +4,12 @@ import { useRef, useEffect } from 'react';
 import { DisplayHeading } from '@/components/ui/DisplayHeading';
 import { SectionLabel } from '@/components/ui/SectionLabel';
 import { growthStaircase } from '@/content/home';
+import { cn } from '@/components/ui/cn';
 import { gsap } from '@/lib/motion/gsap';
 import { useReducedMotion } from '@/lib/motion/useReducedMotion';
+
+// Each step sits higher than the one before it — treads climb left → right. Flat stack on mobile.
+const RISE = ['md:mt-[9rem]', 'md:mt-[6rem]', 'md:mt-[3rem]', 'md:mt-0'];
 
 export function GrowthStaircase() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -19,16 +23,18 @@ export function GrowthStaircase() {
         y: 36,
         duration: 0.6,
         ease: 'power3.out',
+        delay: 0.12,
         scrollTrigger: {
           trigger: sectionRef.current,
-          start: 'top 70%',
+          start: 'top 62%',
           toggleActions: 'play none none reverse',
         },
       });
       const tl = gsap.timeline({
+        delay: 0.18,
         scrollTrigger: {
           trigger: '.gs-stairs',
-          start: 'top 74%',
+          start: 'top 55%',
           toggleActions: 'play none none reverse',
         },
       });
@@ -37,11 +43,11 @@ export function GrowthStaircase() {
         transformOrigin: 'left center',
         duration: 0.5,
         ease: 'power3.out',
-        stagger: 0.16,
+        stagger: 0.18,
       }).from(
         '.gs-step-body',
-        { autoAlpha: 0, y: 28, duration: 0.55, ease: 'power3.out', stagger: 0.12 },
-        0.1,
+        { autoAlpha: 0, y: 64, duration: 0.6, ease: 'power3.out', stagger: 0.18 },
+        0.14,
       );
     }, sectionRef);
     return () => ctx.revert();
@@ -62,9 +68,9 @@ export function GrowthStaircase() {
           <p className="max-w-lg text-lg leading-relaxed text-white/60">{intro}</p>
         </div>
 
-        <ol className="gs-stairs mt-16 grid grid-cols-1 gap-12 md:mt-24 md:grid-cols-4 md:items-start md:gap-8">
-          {steps.map((s) => (
-            <li key={s.step} className="group relative">
+        <ol className="gs-stairs mt-16 grid grid-cols-1 gap-12 md:mt-24 md:grid-cols-4 md:items-start md:gap-6">
+          {steps.map((s, i) => (
+            <li key={s.step} className={cn('group relative', RISE[i % RISE.length])}>
               <div className="gs-tread mb-6 h-1.5 w-full origin-left rounded-full bg-orange will-change-transform" />
               <div className="gs-step-body will-change-transform">
                 <p

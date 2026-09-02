@@ -27,13 +27,18 @@ const HERO_VIDEO_SRC = '/videos/propagenda-marketing.mp4';
  */
 const HERO_VIDEO_SCRUB_SRC = '/videos/propagenda-marketing-scrub.mp4';
 const HERO_VIDEO_POSTER = '/images/hero-video-poster.jpg';
-/** Fallback reel length (s) — replaced by `video.duration` once metadata loads. */
-const HERO_VIDEO_SCRUB_END_FALLBACK = 27.44;
 /** Opening frames are black; scrub range starts here so scroll reveals visible content. */
 const HERO_VIDEO_SCRUB_START = 0.5;
-/** Clip expand finishes early; remaining pin scroll scrubs through the full reel. */
+/**
+ * Scroll-to-play ends on the kinetic text-wheel beat ("to play ▶ …").
+ * The 3-up gallery that follows (~15s+) stays lightbox-only.
+ */
+const HERO_VIDEO_SCRUB_END = 14.5;
+/** Full reel length — pin % scales scrub span against this reference. */
+const HERO_VIDEO_FULL_DURATION = 27.44;
+/** Clip expand finishes early; remaining pin scroll scrubs through the text-wheel beat. */
 const CLIP_EXPAND_RATIO = 0.28;
-/** Pinned scroll (% of viewport) for the fallback reel length — scaled when metadata loads. */
+/** Pinned scroll (% of viewport) for the full-reel reference — scaled to scrub span. */
 const HERO_PIN_BASE_PERCENT = 480;
 /** Half a frame at 25fps — below this a reseek would land on the frame already shown. */
 const SEEK_EPSILON = 1 / 50;
@@ -43,11 +48,16 @@ const SEEK_EPSILON = 1 / 50;
  * advances. Retry the latest target after this timeout.
  */
 const SEEK_STUCK_MS = 280;
+/** If the scrub reel never becomes ready, collapse the pin and open the scroll gate. */
+const VIDEO_LOAD_TIMEOUT_MS = 8000;
 
-function pinPercentForDuration(duration: number) {
-  const span = Math.max(0.05, duration - HERO_VIDEO_SCRUB_START);
-  const fallbackSpan = HERO_VIDEO_SCRUB_END_FALLBACK - HERO_VIDEO_SCRUB_START;
-  return Math.round(HERO_PIN_BASE_PERCENT * (span / fallbackSpan));
+function scrubSpan() {
+  return Math.max(0.05, HERO_VIDEO_SCRUB_END - HERO_VIDEO_SCRUB_START);
+}
+
+function pinPercentForScrub() {
+  const fullSpan = HERO_VIDEO_FULL_DURATION - HERO_VIDEO_SCRUB_START;
+  return Math.round(HERO_PIN_BASE_PERCENT * (scrubSpan() / fullSpan));
 }
 
 function heroSectionHeightVh(pinPercent: number) {
@@ -59,10 +69,8 @@ function scrollProgressToScrub(progress: number) {
   return Math.min(1, Math.max(0, progress));
 }
 
-function scrubToVideoTime(scrub: number, duration = HERO_VIDEO_SCRUB_END_FALLBACK) {
-  const end = Math.max(HERO_VIDEO_SCRUB_START + 0.05, duration);
-  const span = end - HERO_VIDEO_SCRUB_START;
-  return HERO_VIDEO_SCRUB_START + scrub * span;
+function scrubToVideoTime(scrub: number) {
+  return HERO_VIDEO_SCRUB_START + scrub * scrubSpan();
 }
 
 type ClipInset = { t: number; r: number; b: number; l: number; rad: number };
@@ -105,13 +113,12 @@ export function Hero({ flat = false }: { flat?: boolean }) {
   const videoElRef = useRef<HTMLVideoElement>(null);
   const scrubProgressRef = useRef(0);
   const desiredTimeRef = useRef(HERO_VIDEO_SCRUB_START);
-  const videoDurationRef = useRef(HERO_VIDEO_SCRUB_END_FALLBACK);
   const heroScrollEndRef = useRef(0);
   const heroGateOpenRef = useRef(false);
-  const [heroPinPercent, setHeroPinPercent] = useState(() =>
-    pinPercentForDuration(HERO_VIDEO_SCRUB_END_FALLBACK),
-  );
+  const [heroPinPercent] = useState(() => pinPercentForScrub());
   const [videoReady, setVideoReady] = useState(false);
+  /** Fetch/decode failure — skip pin+scrub so the page scrolls into the next section. */
+  const [videoFailed, setVideoFailed] = useState(false);
   const reducedMotion = useReducedMotion();
   const isMd = useMediaQuery('(min-width: 768px)');
   const isDesktop = useMediaQuery('(min-width: 1024px)');
@@ -124,6 +131,7 @@ export function Hero({ flat = false }: { flat?: boolean }) {
    */
   const [scrubSrc, setScrubSrc] = useState<string | null>(null);
   const { ready: initReady } = useInitLoader();
+  const noScrub = flat || reducedMotion || videoFailed;
 
   useEffect(() => {
     let cancelled = false;
@@ -138,7 +146,7 @@ export function Hero({ flat = false }: { flat?: boolean }) {
         objectUrl = URL.createObjectURL(blob);
         setScrubSrc(objectUrl);
       } catch {
-        if (!cancelled) setScrubSrc(HERO_VIDEO_SCRUB_SRC);
+        if (!cancelled) setVideoFailed(true);
       }
     })();
 
@@ -147,6 +155,19 @@ export function Hero({ flat = false }: { flat?: boolean }) {
       if (objectUrl) URL.revokeObjectURL(objectUrl);
     };
   }, []);
+
+  // Client-side bailout: no playable frame in time → don't leave a multi-viewport pin.
+  useEffect(() => {
+    if (noScrub || videoReady || videoFailed) return;
+    const t = window.setTimeout(() => setVideoFailed(true), VIDEO_LOAD_TIMEOUT_MS);
+    return () => window.clearTimeout(t);
+  }, [noScrub, videoReady, videoFailed]);
+
+  useEffect(() => {
+    if (!videoFailed) return;
+    heroGateOpenRef.current = true;
+    ScrollTrigger.refresh();
+  }, [videoFailed]);
 
   const clipRest = isXl
     ? CLIP_REST_XL
@@ -160,36 +181,31 @@ export function Hero({ flat = false }: { flat?: boolean }) {
 
   useEffect(() => {
     const el = videoElRef.current;
-    if (!el || !scrubSrc) return;
+    if (!el || !scrubSrc || videoFailed) return;
     if (videoOpen) {
       el.pause();
-    } else if (reducedMotion || flat) {
+    } else if (noScrub) {
       void el.play().catch(() => {});
     } else {
       el.pause();
       // Closing the lightbox: hand the frame back to wherever the scroll now sits.
-      desiredTimeRef.current = scrubToVideoTime(scrubProgressRef.current, videoDurationRef.current);
+      desiredTimeRef.current = scrubToVideoTime(scrubProgressRef.current);
       if (el.readyState >= HTMLMediaElement.HAVE_METADATA) {
         el.currentTime = desiredTimeRef.current;
       }
     }
-  }, [videoOpen, reducedMotion, flat, scrubSrc]);
+  }, [videoOpen, noScrub, scrubSrc, videoFailed]);
 
   useEffect(() => {
-    // `flat` (embedded /preview): no pin / scroll-scrub — render the hero as a static
-    // single viewport so the minified home scrolls normally inside the device iframe.
-    if (reducedMotion || flat || !initReady || !scrubSrc || !pinRef.current) return;
+    // `flat` (embedded /preview) / reduced-motion / failed reel: no pin / scroll-scrub.
+    if (noScrub || !initReady || !scrubSrc || !pinRef.current) return;
 
     // ScrollTrigger only records where the reel *should* be. Assigning currentTime
     // straight from onUpdate (up to 60Hz) queues seeks faster than the decoder retires
     // them, so the picture thrashes and reads as frozen. The rAF pump below owns the
     // actual seek and keeps exactly one in flight.
     const setDesiredTime = (scrub: number) => {
-      const el = videoElRef.current;
-      if (el && Number.isFinite(el.duration) && el.duration > 0) {
-        videoDurationRef.current = el.duration;
-      }
-      desiredTimeRef.current = scrubToVideoTime(scrub, videoDurationRef.current);
+      desiredTimeRef.current = scrubToVideoTime(scrub);
     };
 
     let seekStartedAt = 0;
@@ -223,10 +239,6 @@ export function Hero({ flat = false }: { flat?: boolean }) {
 
     const video = videoElRef.current;
     const onMeta = () => {
-      if (video && Number.isFinite(video.duration) && video.duration > 0) {
-        videoDurationRef.current = video.duration;
-        setHeroPinPercent(pinPercentForDuration(video.duration));
-      }
       setDesiredTime(scrubProgressRef.current);
     };
     const onSeeked = () => {
@@ -355,10 +367,10 @@ export function Hero({ flat = false }: { flat?: boolean }) {
       video?.removeEventListener('seeked', onSeeked);
       ctx.revert();
     };
-  }, [reducedMotion, isDesktop, clipRest, flat, initReady, heroPinPercent, scrubSrc]);
+  }, [noScrub, isDesktop, clipRest, initReady, heroPinPercent, scrubSrc]);
 
   useEffect(() => {
-    if (reducedMotion || flat || !initReady) return;
+    if (noScrub || !initReady) return;
 
     const lenis = window.__lenis;
     if (!lenis) return;
@@ -375,7 +387,7 @@ export function Hero({ flat = false }: { flat?: boolean }) {
     return () => {
       lenis.off('scroll', clampHeroScroll);
     };
-  }, [reducedMotion, flat, initReady, heroPinPercent]);
+  }, [noScrub, initReady, heroPinPercent]);
 
   const words = hero.h1.split(' ');
   const subParts = hero.subtitle.split('360°');
@@ -384,18 +396,14 @@ export function Hero({ flat = false }: { flat?: boolean }) {
     <section
       ref={containerRef}
       data-seamless-act
-      className={cn('relative', (flat || reducedMotion) && 'min-h-screen')}
-      style={
-        flat || reducedMotion
-          ? undefined
-          : { height: `${heroSectionHeightVh(heroPinPercent)}vh` }
-      }
+      className={cn('relative', noScrub && 'min-h-screen')}
+      style={noScrub ? undefined : { height: `${heroSectionHeightVh(heroPinPercent)}vh` }}
     >
       <div
         ref={pinRef}
         className={cn(
           'relative overflow-hidden bg-charcoal',
-          flat || reducedMotion ? 'min-h-screen' : 'h-screen',
+          noScrub ? 'min-h-screen' : 'h-screen',
         )}
       >
         {/* Flat ground — the reel and the sentence are the only protagonists here. In `flat`
@@ -425,15 +433,15 @@ export function Hero({ flat = false }: { flat?: boolean }) {
               />
             </div>
             <div ref={videoInnerRef} className="absolute inset-0 z-[1] will-change-transform">
-              {scrubSrc ? (
+              {scrubSrc && !videoFailed ? (
                 <video
                   ref={videoElRef}
                   className="absolute inset-0 h-full w-full object-cover"
                   src={scrubSrc}
                   poster={HERO_VIDEO_POSTER}
-                  autoPlay={reducedMotion || flat}
+                  autoPlay={noScrub}
                   muted
-                  loop={reducedMotion || flat}
+                  loop={noScrub}
                   playsInline
                   preload="auto"
                   aria-hidden
@@ -455,7 +463,7 @@ export function Hero({ flat = false }: { flat?: boolean }) {
                       reveal();
                     }
                   }}
-                  onError={() => setVideoReady(true)}
+                  onError={() => setVideoFailed(true)}
                 />
               ) : null}
             </div>
@@ -532,37 +540,41 @@ export function Hero({ flat = false }: { flat?: boolean }) {
               that fades in only once the reel is full-bleed; it sits outside the clipped
               panel so the clip-path can't crop it, and uses autoAlpha so it is never an
               invisible click target. */}
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[4] flex justify-start px-gutter-m pb-7 lg:px-gutter-d">
-            <button
-              type="button"
-              onClick={() => setVideoOpen(true)}
-              className={cn(
-                'hero-fullscreen-btn transition-hover pointer-events-auto flex items-center gap-2',
-                'rounded-full border border-white/20 bg-black/30 px-3.5 py-2 backdrop-blur-sm',
-                'text-[10px] font-bold uppercase tracking-[0.16em] text-white/70',
-                'hover-fine:hover:border-white/45 hover-fine:hover:text-white',
-                'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/40',
-                // Scrubbed path only: GSAP fades this in once the reel goes full-bleed, and
-                // its inline autoAlpha overrides these classes.
-                !flat && !reducedMotion && 'invisible opacity-0',
-              )}
-              aria-label="Play showreel fullscreen"
-            >
-              <svg
-                aria-hidden
-                viewBox="0 0 24 24"
-                className="h-3.5 w-3.5 fill-none stroke-current stroke-[2.2]"
-                strokeLinecap="round"
-                strokeLinejoin="round"
+          {!videoFailed ? (
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[4] flex justify-start px-gutter-m pb-7 lg:px-gutter-d">
+              <button
+                type="button"
+                onClick={() => setVideoOpen(true)}
+                className={cn(
+                  'hero-fullscreen-btn transition-hover pointer-events-auto flex items-center gap-2',
+                  'rounded-full border border-white/20 bg-black/30 px-3.5 py-2 backdrop-blur-sm',
+                  'text-[10px] font-bold uppercase tracking-[0.16em] text-white/70',
+                  'hover-fine:hover:border-white/45 hover-fine:hover:text-white',
+                  'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/40',
+                  // Scrubbed path only: GSAP fades this in once the reel goes full-bleed, and
+                  // its inline autoAlpha overrides these classes.
+                  !noScrub && 'invisible opacity-0',
+                )}
+                aria-label="Play showreel fullscreen"
               >
-                <path d="M9 3H3v6M15 3h6v6M9 21H3v-6M15 21h6v-6" />
-              </svg>
-              Fullscreen
-            </button>
-          </div>
+                <svg
+                  aria-hidden
+                  viewBox="0 0 24 24"
+                  className="h-3.5 w-3.5 fill-none stroke-current stroke-[2.2]"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M9 3H3v6M15 3h6v6M9 21H3v-6M15 21h6v-6" />
+                </svg>
+                Fullscreen
+              </button>
+            </div>
+          ) : null}
 
-          {!flat && !reducedMotion ? (
+          {!flat && !reducedMotion && !videoFailed ? (
             <ScrollCue label="Scroll to explore showreel" className="hero-dissolve hero-scroll-cue opacity-75" />
+          ) : !flat && videoFailed ? (
+            <ScrollCue label="Scroll" className="hero-scroll-cue opacity-75" />
           ) : null}
         </div>
       </div>

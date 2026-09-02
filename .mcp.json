@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "envato": {
+      "type": "http",
+      "url": "https://mcp.envato.com/mcp"
+    }
+  }
+}

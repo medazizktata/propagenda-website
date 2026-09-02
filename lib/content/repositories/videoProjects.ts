@@ -1,12 +1,16 @@
-import { assertDatabaseContentReady, getDefaultLocale } from '@/lib/cms/config';
+import { usesDatabaseContent, getDefaultLocale } from '@/lib/cms/config';
 import { mapVideoRow } from '@/lib/cms/mappers';
 import { createSupabaseStaticClient } from '@/lib/supabase/static';
+import { showreel, videoProjects } from '@/content/videoWork';
 import type { VideoProjectRow } from '@/types/cms';
 import type { VideoProject } from '@/types/content';
 import type { VideoWorkBundle } from '@/types/cms';
 
+/** Public video work — Supabase when configured, else `content/videoWork` seed. */
 export async function getVideoWork(): Promise<VideoWorkBundle> {
-  assertDatabaseContentReady();
+  if (!usesDatabaseContent()) {
+    return { showreel, projects: videoProjects };
+  }
 
   const supabase = createSupabaseStaticClient();
   const { data, error } = await supabase

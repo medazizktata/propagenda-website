@@ -1,4 +1,4 @@
-/** Seed source for pnpm seed:cms — runtime reads from Supabase. */
+/** Seed for pnpm seed:cms; also SSG fallback when Supabase env is missing. */
 import type { ServiceSlug } from '@/types/content';
 
 export const servicesHubHeading = 'EXPLORE OUR SERVICES';

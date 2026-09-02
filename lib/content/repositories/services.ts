@@ -1,12 +1,19 @@
-import { assertDatabaseContentReady, getDefaultLocale } from '@/lib/cms/config';
+import { usesDatabaseContent, getDefaultLocale } from '@/lib/cms/config';
 import { mapServiceHubCard, mapServiceRow } from '@/lib/cms/mappers';
 import { createSupabaseStaticClient } from '@/lib/supabase/static';
-import type { ServiceHubCard } from '@/content/servicesHub';
+import { allServices, servicesBySlug } from '@/content/services';
+import { serviceHubCards, type ServiceHubCard } from '@/content/servicesHub';
 import type { ServiceRow } from '@/types/cms';
 import type { ServiceRecord } from '@/types/content';
 
+/**
+ * Public service reads: Supabase when configured, else seed modules under
+ * `content/services*` so CF Builds / local SSG works without secrets.
+ */
 export async function getService(slug: string): Promise<ServiceRecord | undefined> {
-  assertDatabaseContentReady();
+  if (!usesDatabaseContent()) {
+    return servicesBySlug[slug as keyof typeof servicesBySlug];
+  }
 
   const supabase = createSupabaseStaticClient();
   const { data, error } = await supabase
@@ -24,7 +31,7 @@ export async function getService(slug: string): Promise<ServiceRecord | undefine
 }
 
 export async function getAllServices(): Promise<ServiceRecord[]> {
-  assertDatabaseContentReady();
+  if (!usesDatabaseContent()) return allServices;
 
   const supabase = createSupabaseStaticClient();
   const { data, error } = await supabase
@@ -40,7 +47,7 @@ export async function getAllServices(): Promise<ServiceRecord[]> {
 }
 
 export async function getServiceSlugs(): Promise<string[]> {
-  assertDatabaseContentReady();
+  if (!usesDatabaseContent()) return allServices.map((s) => s.slug);
 
   const supabase = createSupabaseStaticClient();
   const { data, error } = await supabase
@@ -56,7 +63,7 @@ export async function getServiceSlugs(): Promise<string[]> {
 }
 
 export async function getServiceHubCards(): Promise<ServiceHubCard[]> {
-  assertDatabaseContentReady();
+  if (!usesDatabaseContent()) return serviceHubCards;
 
   const supabase = createSupabaseStaticClient();
   const { data, error } = await supabase

@@ -1,11 +1,15 @@
-import { assertDatabaseContentReady, getDefaultLocale } from '@/lib/cms/config';
+import { usesDatabaseContent, getDefaultLocale } from '@/lib/cms/config';
 import { mapCaseStudyRow } from '@/lib/cms/mappers';
 import { createSupabaseStaticClient } from '@/lib/supabase/static';
+import { allCaseStudies, caseStudiesBySlug } from '@/content/work';
 import type { CaseStudyRow } from '@/types/cms';
 import type { CaseStudyRecord } from '@/types/content';
 
+/** Public case-study reads — Supabase when configured, else `content/work` seed. */
 export async function getCaseStudy(slug: string): Promise<CaseStudyRecord | undefined> {
-  assertDatabaseContentReady();
+  if (!usesDatabaseContent()) {
+    return caseStudiesBySlug[slug as keyof typeof caseStudiesBySlug];
+  }
 
   const supabase = createSupabaseStaticClient();
   const { data, error } = await supabase
@@ -23,7 +27,7 @@ export async function getCaseStudy(slug: string): Promise<CaseStudyRecord | unde
 }
 
 export async function getAllCaseStudies(): Promise<CaseStudyRecord[]> {
-  assertDatabaseContentReady();
+  if (!usesDatabaseContent()) return allCaseStudies;
 
   const supabase = createSupabaseStaticClient();
   const { data, error } = await supabase
@@ -39,7 +43,7 @@ export async function getAllCaseStudies(): Promise<CaseStudyRecord[]> {
 }
 
 export async function getWorkSlugs(): Promise<string[]> {
-  assertDatabaseContentReady();
+  if (!usesDatabaseContent()) return allCaseStudies.map((c) => c.slug);
 
   const supabase = createSupabaseStaticClient();
   const { data, error } = await supabase

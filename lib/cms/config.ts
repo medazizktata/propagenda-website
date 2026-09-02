@@ -1,6 +1,10 @@
 import { isSupabaseConfigured } from '@/lib/supabase/env';
 
-/** Published CMS content is read from Supabase when configured. */
+/**
+ * Published CMS content is read from Supabase when URL + anon key are set.
+ * Without them (e.g. CF Builds missing env), public loaders fall back to
+ * `content/*` seed modules so SSG still succeeds.
+ */
 export function usesDatabaseContent(): boolean {
   return isSupabaseConfigured();
 }
@@ -14,6 +18,7 @@ export function getDefaultLocale(): string {
   return 'en';
 }
 
+/** Admin / seed scripts that must talk to Supabase — not used by public SSG. */
 export function assertDatabaseContentReady(): void {
   if (!usesDatabaseContent()) {
     throw new Error(

@@ -6,6 +6,7 @@ import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react';
 import { useLocalStorageState } from '@/hooks/useLocalStorageState';
 import { applyFilterRules, applySort } from '@/lib/admin/table/apply-filters';
 import type { BulkAction, FilterRule, SortState, TableColumn } from '@/lib/admin/table/types';
+import type { QuickFilterPreset } from '@/lib/admin/table/filter-utils';
 import { BulkActionBar } from '@/components/admin/table/BulkActionBar';
 import { ColumnChooser } from '@/components/admin/table/ColumnChooser';
 import { FilterBar } from '@/components/admin/table/FilterBar';
@@ -25,6 +26,7 @@ type DataTableProps<T extends { id: string }> = {
   rows: T[];
   columns: TableColumn<T>[];
   bulkActions?: BulkAction<T>[];
+  quickFilters?: QuickFilterPreset[];
   emptyMessage?: string;
 };
 
@@ -44,6 +46,7 @@ export function DataTable<T extends { id: string }>({
   rows,
   columns,
   bulkActions = [],
+  quickFilters = [],
   emptyMessage = 'No rows match your filters.',
 }: DataTableProps<T>) {
   const [filterRules, setFilterRules, filtersReady] = useLocalStorageState<FilterRule[]>(
@@ -115,22 +118,27 @@ export function DataTable<T extends { id: string }>({
 
   return (
     <div className="space-y-3">
-      <div className="flex flex-wrap items-start justify-between gap-3 border-b border-white/12 pb-3">
-        <div className="flex min-w-0 flex-1 flex-wrap items-center gap-3">
-          <FilterBar columns={columns} rules={filterRules} onChange={setFilterRules} />
-          {bulkActions.length > 0 ? (
-            <BulkActionBar
-              embedded
-              selectedRows={selectedRows}
-              actions={bulkActions}
-              onClear={() => setSelectedIds(new Set())}
+      <div className="border border-white/12">
+        <div className="flex flex-wrap items-start justify-between gap-3 border-b border-white/12 p-3">
+          <div className="flex min-w-0 flex-1 flex-wrap items-center gap-3">
+            <FilterBar
+              columns={columns}
+              rules={filterRules}
+              onChange={setFilterRules}
+              quickFilters={quickFilters}
             />
-          ) : null}
+            {bulkActions.length > 0 ? (
+              <BulkActionBar
+                embedded
+                selectedRows={selectedRows}
+                actions={bulkActions}
+                onClear={() => setSelectedIds(new Set())}
+              />
+            ) : null}
+          </div>
+          <ColumnChooser columns={columns} visibleKeys={visibleKeys} onChange={setVisibleKeys} />
         </div>
-        <ColumnChooser columns={columns} visibleKeys={visibleKeys} onChange={setVisibleKeys} />
-      </div>
 
-      <div className="border-y border-white/12">
         <Table>
           <TableHeader>
             <TableRow className="hover:bg-transparent">

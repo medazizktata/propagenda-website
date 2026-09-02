@@ -62,7 +62,7 @@ export function AdminShell({
         <AdminChromeProvider>
           <SidebarProvider className="admin-shell flex h-full min-h-0 w-full overflow-hidden bg-charcoal">
           <Sidebar collapsible="icon" variant="sidebar" className="border-white/12 bg-black">
-            <SidebarHeader className="border-b border-white/12 px-3 py-3">
+            <SidebarHeader className="flex h-(--admin-chrome-height) shrink-0 flex-row items-center gap-2 border-b border-white/12 px-3 py-0">
               <div className="flex items-center gap-2 group-data-[collapsible=icon]:justify-center">
                 <Logo
                   href="/admin"

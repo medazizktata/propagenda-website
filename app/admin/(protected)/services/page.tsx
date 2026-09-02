@@ -19,7 +19,7 @@ export default async function AdminServicesPage() {
   const services = await listAdminServices();
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-4">
       <AdminPageHeader
         title="Services"
         description={`${services.length} total · filter, sort, and bulk actions persist in localStorage`}

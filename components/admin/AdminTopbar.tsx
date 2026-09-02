@@ -50,7 +50,7 @@ export function AdminAppHeader() {
   const breadcrumbs = chrome?.breadcrumbs ?? defaultBreadcrumbs(pathname);
 
   return (
-    <header className="sticky top-0 z-50 flex h-14 shrink-0 items-center justify-between gap-4 border-b border-white/12 bg-black px-4 sm:px-6">
+    <header className="sticky top-0 z-50 flex h-(--admin-chrome-height) shrink-0 items-center justify-between gap-4 border-b border-white/12 bg-black px-4 sm:px-6">
       <div className="flex min-w-0 items-center gap-3 sm:gap-4">
         <SidebarTrigger className="shrink-0 text-white hover:bg-white/8 [&_svg]:size-5" />
         <Separator orientation="vertical" className="hidden h-4 bg-white/12 sm:block" />

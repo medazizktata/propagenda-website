@@ -357,6 +357,7 @@ main {
 /* CMS uses the same charcoal surface as the public site — no custom cursor follower. */
 .admin-cms {
   --sidebar: var(--color-black);
+  --admin-chrome-height: var(--header-height);
   --background: var(--color-charcoal);
   --card: var(--color-black);
   --popover: var(--color-black);

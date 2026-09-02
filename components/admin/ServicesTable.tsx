@@ -23,6 +23,33 @@ function formatDate(value: string) {
 export function ServicesTable({ rows }: { rows: ServiceListRow[] }) {
   const router = useRouter();
 
+  const publishedCount = rows.filter((row) => row.status === 'published').length;
+  const draftCount = rows.filter((row) => row.status === 'draft').length;
+
+  const quickFilters = useMemo(
+    () => [
+      {
+        id: 'all',
+        label: `All (${rows.length})`,
+        scopeFields: ['status'],
+        rules: [],
+      },
+      {
+        id: 'published',
+        label: `Published (${publishedCount})`,
+        scopeFields: ['status'],
+        rules: [{ field: 'status', operator: 'equals' as const, value: 'published' }],
+      },
+      {
+        id: 'draft',
+        label: `Draft (${draftCount})`,
+        scopeFields: ['status'],
+        rules: [{ field: 'status', operator: 'equals' as const, value: 'draft' }],
+      },
+    ],
+    [rows.length, publishedCount, draftCount],
+  );
+
   const { columns, bulkActions } = useMemo(() => {
     const copySlugs = async (selected: ServiceListRow[]) => {
       await navigator.clipboard.writeText(selected.map((row) => row.slug).join('\n'));
@@ -180,6 +207,7 @@ export function ServicesTable({ rows }: { rows: ServiceListRow[] }) {
       rows={rows}
       columns={columns}
       bulkActions={bulkActions}
+      quickFilters={quickFilters}
       emptyMessage="No services match your filters."
     />
   );

@@ -1,0 +1,18 @@
+{
+  "lighthouse": {
+    "performance": 0.85,
+    "accessibility": 0.9,
+    "bestPractices": 0.9,
+    "seo": 0.9
+  },
+  "cwv": {
+    "lcpMs": 2500,
+    "fcpMs": 2000,
+    "cls": 0.1,
+    "tbtMs": 300
+  },
+  "bundle": {
+    "maxChunkKb": 600,
+    "maxTotalStaticJsMb": 3
+  }
+}

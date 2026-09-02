@@ -19,14 +19,11 @@ const HeroLogo3D = dynamic(
   { ssr: false },
 );
 
-/** Fullscreen master (3840x2160) — lightbox only; far too heavy to seek per frame. */
+/** Lightbox / non-scrub playback — 2560×1440 (Workers asset limit ≤25 MiB). */
 const HERO_VIDEO_SRC = '/videos/propagenda-marketing.mp4';
 /**
- * Scrub proxy — same reel at 1920x1080, no B-frames, keyframe every 5 frames (0.2s).
- * Seeking the 4K master measures ~34ms per frame, which blows the 16.7ms frame budget
- * and makes the scrub visibly stall; this proxy seeks in ~4ms, so scroll stays locked
- * to the picture. Quality loss is invisible while scrubbing — the master still serves
- * the fullscreen lightbox.
+ * Scrub proxy — same reel, short GOP, seeks in ~4ms so scroll stays locked to the frame.
+ * The lightbox still uses the higher-quality master above.
  */
 const HERO_VIDEO_SCRUB_SRC = '/videos/propagenda-marketing-scrub.mp4';
 const HERO_VIDEO_POSTER = '/images/hero-video-poster.jpg';
@@ -459,8 +456,8 @@ export function Hero({ flat = false }: { flat?: boolean }) {
         onClose={closeVideo}
         video={{
           src: HERO_VIDEO_SRC,
-          width: 3840,
-          height: 2160,
+          width: 2560,
+          height: 1440,
           poster: HERO_VIDEO_POSTER,
           title: 'Propagenda showreel',
         }}

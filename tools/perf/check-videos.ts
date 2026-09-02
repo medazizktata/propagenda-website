@@ -3,7 +3,7 @@ import { join } from 'node:path';
 import { HERO_VIDEO, PATHS, VIDEO_BUDGETS } from './config';
 import { rel, walkFiles } from './lib/fs';
 import { formatBytes, ok } from './lib/format';
-import { is4K, probeVideo } from './lib/probe-video';
+import { probeVideo } from './lib/probe-video';
 import { isMain } from './lib/is-main';
 import type { CheckResult } from './lib/runner';
 
@@ -23,7 +23,9 @@ export function checkVideos(): CheckResult {
     const meta = probeVideo(file);
 
     if (size > VIDEO_BUDGETS.maxBytes) {
-      result.warnings.push(`${name} is ${formatBytes(size)} (budget ${formatBytes(VIDEO_BUDGETS.maxBytes)})`);
+      result.errors.push(
+        `${name} is ${formatBytes(size)} — exceeds Cloudflare Workers asset limit (${formatBytes(VIDEO_BUDGETS.maxBytes)})`,
+      );
     }
 
     if (!meta) {
@@ -36,9 +38,9 @@ export function checkVideos(): CheckResult {
     const basename = file.split('/').pop() ?? '';
     const isHero = basename === HERO_VIDEO;
 
-    if (isHero && !is4K(meta.width, meta.height)) {
+    if (isHero && Math.max(meta.width, meta.height) < VIDEO_BUDGETS.minHeroWidth) {
       result.warnings.push(
-        `Hero video ${basename} is ${meta.width}×${meta.height}, not 4K (target 3840×2160) — update public/videos/${HERO_VIDEO}`,
+        `Hero video ${basename} is ${meta.width}×${meta.height}, below ${VIDEO_BUDGETS.minHeroWidth}px long edge`,
       );
     } else if (!isHero && Math.max(meta.width, meta.height) < VIDEO_BUDGETS.minWidth) {
       result.warnings.push(`${basename} is below ${VIDEO_BUDGETS.minWidth}px on the long edge`);

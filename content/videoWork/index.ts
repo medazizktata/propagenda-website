@@ -8,8 +8,8 @@ export const showreel: VideoProject = {
   src: '/videos/propagenda-marketing.mp4',
   poster: '/images/video-posters/showreel-marketing.jpg',
   orientation: 'landscape',
-  width: 3840,
-  height: 2160,
+  width: 2560,
+  height: 1440,
   duration: '0:27',
   description: 'Strategy, content, design, production. Cut to move.',
 };

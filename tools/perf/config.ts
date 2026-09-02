@@ -22,9 +22,11 @@ export const LIGHTHOUSE_ROUTES = ['/', '/about', '/services', '/work', '/contact
 export const HERO_VIDEO = 'propagenda-marketing.mp4';
 
 export const VIDEO_BUDGETS = {
-  minHeroWidth: 3840,
+  /** Lightbox master target — Workers assets must stay ≤25 MiB. */
+  minHeroWidth: 1920,
   minWidth: 1280,
-  maxBytes: 80 * 1024 * 1024,
+  /** Hard ceiling aligned with Cloudflare Workers static asset limit. */
+  maxBytes: 25 * 1024 * 1024,
 } as const;
 
 export const ASSET_BUDGETS = {

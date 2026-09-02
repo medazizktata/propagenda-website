@@ -22,7 +22,7 @@ function Mark({ className }: { className?: string }) {
   );
 }
 
-/** Official lockup from brand PDF (monogram + Propagenda + Marketing Services). */
+/** Monogram + Propagenda wordmark (no tagline). */
 function Lockup({
   src,
   className,
@@ -34,7 +34,7 @@ function Lockup({
     // eslint-disable-next-line @next/next/no-img-element
     <img
       src={src}
-      alt="Propagenda Marketing Services"
+      alt="Propagenda"
       className={cn('h-9 w-auto select-none', className)}
       draggable={false}
     />
@@ -47,11 +47,11 @@ export function Logo({ variant = 'horizontal', href = '/', className }: LogoProp
     content = <Mark className="h-9 w-9" />;
   } else if (variant === 'vertical') {
     content = (
-      <Lockup src="/images/brand/logo-vertical.svg" className="h-16 w-auto" />
+      <Lockup src="/images/brand/logo-vertical-wordmark.svg" className="h-16 w-auto" />
     );
   } else {
     content = (
-      <Lockup src="/images/brand/logo-horizontal.svg" className="h-9 w-auto" />
+      <Lockup src="/images/brand/logo-horizontal-wordmark.svg" className="h-9 w-auto" />
     );
   }
 

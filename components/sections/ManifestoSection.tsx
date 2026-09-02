@@ -27,7 +27,7 @@ export function ManifestoSection({ flat = false }: { flat?: boolean }) {
       // the sticky hold. You watch the reveal happen; you're never snapped in first.
       gsap.fromTo(
         containerRef.current!.querySelectorAll('.mf-word'),
-        { opacity: 0.08 },
+        { opacity: 0.3 },
         {
           opacity: 1,
           ease: 'none',
@@ -39,7 +39,7 @@ export function ManifestoSection({ flat = false }: { flat?: boolean }) {
             // reads as content scrolling in during the hero→manifesto handoff — not as a big
             // dim/empty gap while it silently rises. Continues across the lock + sticky hold.
             start: 'top bottom',
-            end: 'bottom bottom',
+            end: 'bottom 75%',
             scrub: 0.5,
           },
         },
@@ -51,7 +51,11 @@ export function ManifestoSection({ flat = false }: { flat?: boolean }) {
   const words = manifestoQuote.split(' ');
 
   return (
-    <section ref={containerRef} data-seamless-act className={cn('relative', flat ? '' : 'h-[200vh]')}>
+    <section
+      ref={containerRef}
+      data-seamless-act
+      className={cn('relative z-10', flat ? '' : 'h-[155vh]')}
+    >
       <div
         ref={stickyRef}
         // Transparent over SeamlessActs charcoal + tiled pattern — one continuous surface.

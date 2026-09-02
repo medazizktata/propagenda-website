@@ -36,8 +36,28 @@ export function SmoothScroll() {
     });
     window.__lenis = lenis;
 
+    ScrollTrigger.scrollerProxy(document.documentElement, {
+      scrollTop(value?: number) {
+        if (typeof value === 'number') {
+          lenis.scrollTo(value, { immediate: true });
+        }
+        return lenis.scroll;
+      },
+      getBoundingClientRect() {
+        return {
+          top: 0,
+          left: 0,
+          width: window.innerWidth,
+          height: window.innerHeight,
+        };
+      },
+    });
+
     const onScroll = () => ScrollTrigger.update();
     lenis.on('scroll', onScroll);
+
+    const onRefresh = () => lenis.resize();
+    ScrollTrigger.addEventListener('refresh', onRefresh);
 
     const onTick = (time: number) => lenis.raf(time * 1000);
     gsap.ticker.add(onTick);
@@ -59,6 +79,7 @@ export function SmoothScroll() {
     return () => {
       document.removeEventListener('click', onAnchorClick);
       lenis.off('scroll', onScroll);
+      ScrollTrigger.removeEventListener('refresh', onRefresh);
       gsap.ticker.remove(onTick);
       gsap.ticker.lagSmoothing(500, 33);
       lenis.destroy();

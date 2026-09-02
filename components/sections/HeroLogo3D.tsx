@@ -5,6 +5,7 @@ import * as THREE from 'three';
 import { SVGLoader } from 'three/examples/jsm/loaders/SVGLoader.js';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { useReducedMotion } from '@/lib/motion/useReducedMotion';
+import { hero360Radians } from '@/lib/motion/hero360Sync';
 
 // Brand palette (branding PDF p.16): orange, white, black.
 const COLOR_ORANGE = new THREE.Color(0xf58b27);
@@ -26,7 +27,14 @@ const GLOW_COLOR = new THREE.Color(0xffb066); // warm flash during the transitio
  * speech-bubble "m" mark that turns on 3 axes following the mouse. Click it to
  * flip its colour orange↔white with a full spin + smooth colour lerp + glow pulse.
  */
-export function HeroLogo3D({ className }: { className?: string }) {
+export function HeroLogo3D({
+  className,
+  align = 'hero',
+}: {
+  className?: string;
+  /** `hero` offsets wide layouts for the home reel; `center` keeps the mark centred in its column. */
+  align?: 'hero' | 'center';
+}) {
   const mountRef = useRef<HTMLDivElement>(null);
   const reducedMotion = useReducedMotion();
 
@@ -66,7 +74,10 @@ export function HeroLogo3D({ className }: { className?: string }) {
     const group = new THREE.Group();
     scene.add(group);
     const positionGroup = () => {
-      // Slightly left of the previous wide-layout bias.
+      if (align === 'center') {
+        group.position.x = 0;
+        return;
+      }
       group.position.x = el.clientWidth / el.clientHeight > 1 ? 2.85 : 0;
     };
     positionGroup();
@@ -185,7 +196,8 @@ export function HeroLogo3D({ className }: { className?: string }) {
       cur.x += (target.x - cur.x) * 0.05;
       cur.y += (target.y - cur.y) * 0.05;
       spin += (spinTarget - spin) * 0.06;
-      group.rotation.y = cur.x * 0.9 + Math.sin(t * 0.25) * 0.12 + spin;
+      const autoY = reducedMotion ? 0 : -hero360Radians(performance.now());
+      group.rotation.y = cur.x * 0.9 + autoY + spin;
       group.rotation.x = cur.y * 0.7 + Math.sin(t * 0.3) * 0.06;
       group.rotation.z = cur.x * 0.12;
 
@@ -284,7 +296,7 @@ export function HeroLogo3D({ className }: { className?: string }) {
       renderer.dispose();
       if (renderer.domElement.parentNode === el) el.removeChild(renderer.domElement);
     };
-  }, [reducedMotion]);
+  }, [reducedMotion, align]);
 
   return <div ref={mountRef} className={className} aria-hidden />;
 }

@@ -1,6 +1,6 @@
 import { assertDatabaseContentReady, getDefaultLocale } from '@/lib/cms/config';
 import { mapServiceHubCard, mapServiceRow } from '@/lib/cms/mappers';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { createSupabaseStaticClient } from '@/lib/supabase/static';
 import type { ServiceHubCard } from '@/content/servicesHub';
 import type { ServiceRow } from '@/types/cms';
 import type { ServiceRecord } from '@/types/content';
@@ -8,7 +8,7 @@ import type { ServiceRecord } from '@/types/content';
 export async function getService(slug: string): Promise<ServiceRecord | undefined> {
   assertDatabaseContentReady();
 
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseStaticClient();
   const { data, error } = await supabase
     .from('services')
     .select('*')
@@ -26,7 +26,7 @@ export async function getService(slug: string): Promise<ServiceRecord | undefine
 export async function getAllServices(): Promise<ServiceRecord[]> {
   assertDatabaseContentReady();
 
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseStaticClient();
   const { data, error } = await supabase
     .from('services')
     .select('*')
@@ -42,7 +42,7 @@ export async function getAllServices(): Promise<ServiceRecord[]> {
 export async function getServiceSlugs(): Promise<string[]> {
   assertDatabaseContentReady();
 
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseStaticClient();
   const { data, error } = await supabase
     .from('services')
     .select('slug')
@@ -58,7 +58,7 @@ export async function getServiceSlugs(): Promise<string[]> {
 export async function getServiceHubCards(): Promise<ServiceHubCard[]> {
   assertDatabaseContentReady();
 
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseStaticClient();
   const { data, error } = await supabase
     .from('services')
     .select('*')

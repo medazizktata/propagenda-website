@@ -1,6 +1,6 @@
 import { assertDatabaseContentReady, getDefaultLocale } from '@/lib/cms/config';
 import { mapVideoRow } from '@/lib/cms/mappers';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { createSupabaseStaticClient } from '@/lib/supabase/static';
 import type { VideoProjectRow } from '@/types/cms';
 import type { VideoProject } from '@/types/content';
 import type { VideoWorkBundle } from '@/types/cms';
@@ -8,7 +8,7 @@ import type { VideoWorkBundle } from '@/types/cms';
 export async function getVideoWork(): Promise<VideoWorkBundle> {
   assertDatabaseContentReady();
 
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseStaticClient();
   const { data, error } = await supabase
     .from('video_projects')
     .select('*')

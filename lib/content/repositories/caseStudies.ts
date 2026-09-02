@@ -1,13 +1,13 @@
 import { assertDatabaseContentReady, getDefaultLocale } from '@/lib/cms/config';
 import { mapCaseStudyRow } from '@/lib/cms/mappers';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { createSupabaseStaticClient } from '@/lib/supabase/static';
 import type { CaseStudyRow } from '@/types/cms';
 import type { CaseStudyRecord } from '@/types/content';
 
 export async function getCaseStudy(slug: string): Promise<CaseStudyRecord | undefined> {
   assertDatabaseContentReady();
 
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseStaticClient();
   const { data, error } = await supabase
     .from('case_studies')
     .select('*')
@@ -25,7 +25,7 @@ export async function getCaseStudy(slug: string): Promise<CaseStudyRecord | unde
 export async function getAllCaseStudies(): Promise<CaseStudyRecord[]> {
   assertDatabaseContentReady();
 
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseStaticClient();
   const { data, error } = await supabase
     .from('case_studies')
     .select('*')
@@ -41,7 +41,7 @@ export async function getAllCaseStudies(): Promise<CaseStudyRecord[]> {
 export async function getWorkSlugs(): Promise<string[]> {
   assertDatabaseContentReady();
 
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseStaticClient();
   const { data, error } = await supabase
     .from('case_studies')
     .select('slug')

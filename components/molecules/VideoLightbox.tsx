@@ -44,6 +44,8 @@ export function VideoLightbox({ video, isOpen, onClose }: VideoLightboxProps) {
   const [current, setCurrent] = useState(0);
   const [duration, setDuration] = useState(0);
   const [scrubbing, setScrubbing] = useState(false);
+  /** Blob URL — Workers assets don't honor Range; local blob seeks reliably (Brave). */
+  const [blobSrc, setBlobSrc] = useState<string | null>(null);
 
   const progress = duration > 0 ? Math.min(1, current / duration) : 0;
 
@@ -80,6 +82,35 @@ export function VideoLightbox({ video, isOpen, onClose }: VideoLightboxProps) {
     const t = window.setTimeout(() => setMounted(false), EXIT_MS);
     return () => window.clearTimeout(t);
   }, [isOpen]);
+
+  // Buffer remote src as a blob so seeking works without HTTP 206 from Workers assets.
+  useEffect(() => {
+    if (!isOpen || !video?.src) {
+      setBlobSrc(null);
+      return;
+    }
+
+    let cancelled = false;
+    let objectUrl: string | null = null;
+
+    (async () => {
+      try {
+        const res = await fetch(video.src, { cache: 'force-cache' });
+        if (!res.ok) throw new Error(`video fetch ${res.status}`);
+        const blob = await res.blob();
+        if (cancelled) return;
+        objectUrl = URL.createObjectURL(blob);
+        setBlobSrc(objectUrl);
+      } catch {
+        if (!cancelled) setBlobSrc(video.src);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    };
+  }, [isOpen, video?.src]);
 
   useEffect(() => {
     if (!mounted || !isOpen) return;
@@ -202,7 +233,7 @@ export function VideoLightbox({ video, isOpen, onClose }: VideoLightboxProps) {
             <video
               ref={videoRef}
               className="mx-auto max-h-[min(62vh,560px)] w-full bg-black object-contain"
-              src={video.src}
+              src={blobSrc ?? undefined}
               poster={video.poster}
               playsInline
               autoPlay

@@ -37,6 +37,12 @@ const CLIP_EXPAND_RATIO = 0.28;
 const HERO_PIN_BASE_PERCENT = 480;
 /** Half a frame at 25fps — below this a reseek would land on the frame already shown. */
 const SEEK_EPSILON = 1 / 50;
+/**
+ * Browsers (esp. Chromium/Brave over Workers Range responses) can leave `seeking===true`
+ * indefinitely after a cancelled/superseded seek — the frame goes black while GSAP still
+ * advances. Retry the latest target after this timeout.
+ */
+const SEEK_STUCK_MS = 280;
 
 function pinPercentForDuration(duration: number) {
   const span = Math.max(0.05, duration - HERO_VIDEO_SCRUB_START);
@@ -111,7 +117,36 @@ export function Hero({ flat = false }: { flat?: boolean }) {
   const isDesktop = useMediaQuery('(min-width: 1024px)');
   const isXl = useMediaQuery('(min-width: 1440px)');
   const [videoOpen, setVideoOpen] = useState(false);
+  /**
+   * Workers Static Assets ignore HTTP Range (always 200 + full body). Brave/Chromium
+   * media stacks often fail to decode/seek that. Buffer the scrub proxy once as a blob
+   * so all seeks are local.
+   */
+  const [scrubSrc, setScrubSrc] = useState<string | null>(null);
   const { ready: initReady } = useInitLoader();
+
+  useEffect(() => {
+    let cancelled = false;
+    let objectUrl: string | null = null;
+
+    (async () => {
+      try {
+        const res = await fetch(HERO_VIDEO_SCRUB_SRC, { cache: 'force-cache' });
+        if (!res.ok) throw new Error(`scrub fetch ${res.status}`);
+        const blob = await res.blob();
+        if (cancelled) return;
+        objectUrl = URL.createObjectURL(blob);
+        setScrubSrc(objectUrl);
+      } catch {
+        if (!cancelled) setScrubSrc(HERO_VIDEO_SCRUB_SRC);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    };
+  }, []);
 
   const clipRest = isXl
     ? CLIP_REST_XL
@@ -125,7 +160,7 @@ export function Hero({ flat = false }: { flat?: boolean }) {
 
   useEffect(() => {
     const el = videoElRef.current;
-    if (!el) return;
+    if (!el || !scrubSrc) return;
     if (videoOpen) {
       el.pause();
     } else if (reducedMotion || flat) {
@@ -138,12 +173,12 @@ export function Hero({ flat = false }: { flat?: boolean }) {
         el.currentTime = desiredTimeRef.current;
       }
     }
-  }, [videoOpen, reducedMotion, flat]);
+  }, [videoOpen, reducedMotion, flat, scrubSrc]);
 
   useEffect(() => {
     // `flat` (embedded /preview): no pin / scroll-scrub — render the hero as a static
     // single viewport so the minified home scrolls normally inside the device iframe.
-    if (reducedMotion || flat || !initReady || !pinRef.current) return;
+    if (reducedMotion || flat || !initReady || !scrubSrc || !pinRef.current) return;
 
     // ScrollTrigger only records where the reel *should* be. Assigning currentTime
     // straight from onUpdate (up to 60Hz) queues seeks faster than the decoder retires
@@ -157,12 +192,33 @@ export function Hero({ flat = false }: { flat?: boolean }) {
       desiredTimeRef.current = scrubToVideoTime(scrub, videoDurationRef.current);
     };
 
+    let seekStartedAt = 0;
     let rafId = requestAnimationFrame(function pumpSeek() {
       rafId = requestAnimationFrame(pumpSeek);
       const el = videoElRef.current;
-      if (!el || el.seeking || el.readyState < HTMLMediaElement.HAVE_METADATA) return;
+      if (!el || el.readyState < HTMLMediaElement.HAVE_METADATA) return;
       const target = desiredTimeRef.current;
-      if (Math.abs(el.currentTime - target) > SEEK_EPSILON) el.currentTime = target;
+      const delta = Math.abs(el.currentTime - target);
+
+      if (el.seeking) {
+        if (!seekStartedAt) seekStartedAt = performance.now();
+        // Stuck seek → black frame. Force the latest scrub target.
+        if (performance.now() - seekStartedAt >= SEEK_STUCK_MS) {
+          seekStartedAt = performance.now();
+          try {
+            el.currentTime = target;
+          } catch {
+            /* ignore InvalidStateError while the element rebuffers */
+          }
+        }
+        return;
+      }
+
+      seekStartedAt = 0;
+      if (delta > SEEK_EPSILON) {
+        seekStartedAt = performance.now();
+        el.currentTime = target;
+      }
     });
 
     const video = videoElRef.current;
@@ -173,7 +229,18 @@ export function Hero({ flat = false }: { flat?: boolean }) {
       }
       setDesiredTime(scrubProgressRef.current);
     };
+    const onSeeked = () => {
+      seekStartedAt = 0;
+      const el = videoElRef.current;
+      if (!el || el.readyState < HTMLMediaElement.HAVE_METADATA) return;
+      const target = desiredTimeRef.current;
+      if (Math.abs(el.currentTime - target) > SEEK_EPSILON) {
+        seekStartedAt = performance.now();
+        el.currentTime = target;
+      }
+    };
     video?.addEventListener('loadedmetadata', onMeta);
+    video?.addEventListener('seeked', onSeeked);
     if (video && video.readyState >= HTMLMediaElement.HAVE_METADATA) onMeta();
 
     const ctx = gsap.context(() => {
@@ -189,7 +256,10 @@ export function Hero({ flat = false }: { flat?: boolean }) {
 
       gsap.set('.hero-word', { opacity: 1 });
 
-      gsap.set('.hero-dissolve', { opacity: 1, y: 0, filter: 'blur(0px)' });
+      // Copy dissolves with blur; the WebGL mark is opacity-only — CSS filter on a
+      // canvas forces expensive re-raster every scrub frame (stutters on scroll-back).
+      gsap.set('.hero-dissolve:not(.hero-3d)', { opacity: 1, y: 0, filter: 'blur(0px)' });
+      gsap.set('.hero-3d', { opacity: 1, y: 0 });
       gsap.set('.hero-scrim', { opacity: 1 });
       // autoAlpha, not opacity: the control must not be a hidden click target at rest.
       gsap.set('.hero-fullscreen-btn', { autoAlpha: 0 });
@@ -240,12 +310,23 @@ export function Hero({ flat = false }: { flat?: boolean }) {
           0,
         )
         .fromTo(
-          '.hero-dissolve',
+          '.hero-dissolve:not(.hero-3d)',
           { opacity: 1, y: 0, filter: 'blur(0px)' },
           {
             opacity: 0,
             y: -28,
             filter: 'blur(10px)',
+            ease: 'power2.inOut',
+            duration: DISSOLVE_DURATION,
+            immediateRender: false,
+          },
+          0,
+        )
+        .fromTo(
+          '.hero-3d',
+          { opacity: 1 },
+          {
+            opacity: 0,
             ease: 'power2.inOut',
             duration: DISSOLVE_DURATION,
             immediateRender: false,
@@ -271,9 +352,10 @@ export function Hero({ flat = false }: { flat?: boolean }) {
     return () => {
       cancelAnimationFrame(rafId);
       video?.removeEventListener('loadedmetadata', onMeta);
+      video?.removeEventListener('seeked', onSeeked);
       ctx.revert();
     };
-  }, [reducedMotion, isDesktop, clipRest, flat, initReady, heroPinPercent]);
+  }, [reducedMotion, isDesktop, clipRest, flat, initReady, heroPinPercent, scrubSrc]);
 
   useEffect(() => {
     if (reducedMotion || flat || !initReady) return;
@@ -328,24 +410,54 @@ export function Hero({ flat = false }: { flat?: boolean }) {
             <div
               aria-hidden
               className={cn(
-                'absolute inset-0 bg-charcoal transition-opacity duration-700',
-                videoReady ? 'opacity-0' : 'opacity-100',
+                'absolute inset-0 z-[2] bg-charcoal transition-opacity duration-700',
+                videoReady ? 'pointer-events-none opacity-0' : 'opacity-100',
               )}
-            />
-            <div ref={videoInnerRef} className="absolute inset-0 z-[1] will-change-transform">
-              <video
-                ref={videoElRef}
+            >
+              {/* Visible while the blob buffers — <video poster> alone often clears to black
+                  in Brave once the element starts loading. */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={HERO_VIDEO_POSTER}
+                alt=""
                 className="absolute inset-0 h-full w-full object-cover"
-                src={HERO_VIDEO_SCRUB_SRC}
-                poster={HERO_VIDEO_POSTER}
-                autoPlay={reducedMotion || flat}
-                muted
-                loop={reducedMotion || flat}
-                playsInline
-                preload="auto"
-                aria-hidden
-                onLoadedData={() => setVideoReady(true)}
+                draggable={false}
               />
+            </div>
+            <div ref={videoInnerRef} className="absolute inset-0 z-[1] will-change-transform">
+              {scrubSrc ? (
+                <video
+                  ref={videoElRef}
+                  className="absolute inset-0 h-full w-full object-cover"
+                  src={scrubSrc}
+                  poster={HERO_VIDEO_POSTER}
+                  autoPlay={reducedMotion || flat}
+                  muted
+                  loop={reducedMotion || flat}
+                  playsInline
+                  preload="auto"
+                  aria-hidden
+                  onLoadedData={(e) => {
+                    const el = e.currentTarget;
+                    const reveal = () => setVideoReady(true);
+                    if (Math.abs(el.currentTime - HERO_VIDEO_SCRUB_START) <= SEEK_EPSILON) {
+                      reveal();
+                      return;
+                    }
+                    const onSeeked = () => {
+                      el.removeEventListener('seeked', onSeeked);
+                      reveal();
+                    };
+                    el.addEventListener('seeked', onSeeked);
+                    try {
+                      el.currentTime = HERO_VIDEO_SCRUB_START;
+                    } catch {
+                      reveal();
+                    }
+                  }}
+                  onError={() => setVideoReady(true)}
+                />
+              ) : null}
             </div>
             {/* Scrim — heavy on the left for headline legibility; open on the reel. It
                 exists only for the headline, so it clears with it rather than dimming the
@@ -368,18 +480,21 @@ export function Hero({ flat = false }: { flat?: boolean }) {
           </div>
 
           {isDesktop && !flat ? (
-            <div className="hero-dissolve hero-3d pointer-events-none absolute inset-0 z-[2] -translate-y-[5vh] translate-x-[7vw] scale-[0.82] will-change-[opacity,transform,filter]">
-              <HeroLogo3D className="absolute inset-0" />
+            <div className="pointer-events-none absolute inset-0 z-[2] -translate-y-[8vh] translate-x-[7vw] scale-[0.82]">
+              <div className="hero-3d absolute inset-0 will-change-[opacity]">
+                <HeroLogo3D className="absolute inset-0" />
+              </div>
             </div>
           ) : null}
 
           {/* Headline + subtitle — dissolves with the 3D mark on scroll. */}
           <div
             className={cn(
-              'hero-dissolve pointer-events-none relative z-[3] flex flex-col px-gutter-m pb-16 pt-28 will-change-[opacity,transform,filter] lg:px-gutter-d',
-              flat ? 'min-h-screen justify-center' : 'h-full justify-center lg:-translate-y-[5vh]',
+              'pointer-events-none relative z-[3] flex flex-col px-gutter-m pb-16 pt-28 lg:px-gutter-d',
+              flat ? 'min-h-screen justify-center' : 'h-full justify-center -translate-y-[8vh]',
             )}
           >
+            <div className="hero-dissolve flex flex-col will-change-[opacity,transform,filter]">
             <h1 className="hero-headline mt-6 max-w-[11ch] self-start font-sans text-[clamp(2.15rem,10.5vw,7.5rem)] font-bold uppercase leading-[0.92] tracking-display text-white [text-shadow:0_2px_20px_rgba(0,0,0,0.75),0_0_48px_rgba(37,37,37,0.85)] sm:mt-8 sm:max-w-[13ch] lg:mt-16 lg:max-w-[15ch] lg:leading-[0.95]">
               {words.map((word, i) => (
                 <span
@@ -407,6 +522,7 @@ export function Hero({ flat = false }: { flat?: boolean }) {
                   </Button>
                 </div>
               ) : null}
+            </div>
             </div>
           </div>
 

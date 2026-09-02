@@ -22,6 +22,40 @@ const MAT_PARAMS = [
 ];
 const GLOW_COLOR = new THREE.Color(0xffb066); // warm flash during the transition
 
+/** Module cache — extrude once; remounts / route returns clone instead of re-parsing SVG. */
+let logoGeometriesPromise: Promise<THREE.BufferGeometry[]> | null = null;
+
+function loadLogoGeometries(): Promise<THREE.BufferGeometry[]> {
+  if (!logoGeometriesPromise) {
+    logoGeometriesPromise = new Promise((resolve, reject) => {
+      const loader = new SVGLoader();
+      loader.load(
+        '/images/brand/logo-monogram.svg',
+        (data) => {
+          const geos: THREE.BufferGeometry[] = [];
+          data.paths.forEach((path) => {
+            path.toShapes().forEach((shape) => {
+              const geo = new THREE.ExtrudeGeometry(shape, {
+                depth: 22,
+                bevelEnabled: true,
+                bevelThickness: 2.6,
+                bevelSize: 2,
+                bevelSegments: 4,
+                curveSegments: 28,
+              });
+              geos.push(geo);
+            });
+          });
+          resolve(geos);
+        },
+        undefined,
+        reject,
+      );
+    });
+  }
+  return logoGeometriesPromise;
+}
+
 /**
  * The real Propagenda monogram (Asset 1.svg) extruded into 3D — a single orange
  * speech-bubble "m" mark that turns on 3 axes following the mouse. Click it to
@@ -42,11 +76,16 @@ export function HeroLogo3D({
     const el = mountRef.current;
     if (!el) return;
 
+    let cancelled = false;
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(34, el.clientWidth / el.clientHeight, 0.1, 100);
     camera.position.set(0, 0, 9.5);
 
-    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    const renderer = new THREE.WebGLRenderer({
+      alpha: true,
+      antialias: true,
+      powerPreference: 'high-performance',
+    });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setSize(el.clientWidth, el.clientHeight);
     el.appendChild(renderer.domElement);
@@ -85,8 +124,9 @@ export function HeroLogo3D({
     const disposables: { dispose: () => void }[] = [];
     let logoMaterial: THREE.MeshStandardMaterial | null = null;
 
-    const loader = new SVGLoader();
-    loader.load('/images/brand/logo-monogram.svg', (data) => {
+    void loadLogoGeometries().then((geos) => {
+      if (cancelled) return;
+
       const orange = new THREE.MeshStandardMaterial({
         color: COLOR_ORANGE.clone(),
         metalness: 0.5,
@@ -98,19 +138,10 @@ export function HeroLogo3D({
       disposables.push(orange);
 
       const logo = new THREE.Group();
-      data.paths.forEach((path) => {
-        path.toShapes().forEach((shape) => {
-          const geo = new THREE.ExtrudeGeometry(shape, {
-            depth: 22,
-            bevelEnabled: true,
-            bevelThickness: 2.6,
-            bevelSize: 2,
-            bevelSegments: 4,
-            curveSegments: 28,
-          });
-          disposables.push(geo);
-          logo.add(new THREE.Mesh(geo, orange));
-        });
+      geos.forEach((source) => {
+        const geo = source.clone();
+        disposables.push(geo);
+        logo.add(new THREE.Mesh(geo, orange));
       });
 
       const box = new THREE.Box3().setFromObject(logo);
@@ -123,6 +154,7 @@ export function HeroLogo3D({
       // Signal the loading screen that the heavy 3D asset is ready.
       (window as unknown as { __hero3dReady?: boolean }).__hero3dReady = true;
       window.dispatchEvent(new Event('hero3d:ready'));
+      renderer.render(scene, camera);
     });
 
     // --- Mouse-driven rotation ---
@@ -231,15 +263,16 @@ export function HeroLogo3D({
       }, 100);
       disposables.push({ dispose: () => window.clearInterval(once) });
     } else {
-      // Only render while the canvas is on screen — AND not while a programmatic
-      // scroll-to-top is in flight (IntersectionObserver would otherwise restart
-      // the RAF loop mid-scroll and hitch the animation).
+      // Only render while near the viewport. Keep a margin so scroll-back doesn't
+      // cold-start the RAF mid-frame (IntersectionObserver restart hitch).
       let running = false;
       let intersecting = false;
       let suspended = false;
       const startLoop = () => {
         if (running || suspended || !intersecting) return;
         running = true;
+        // Sync warm frame before the rAF chain — avoids one black/stale composite.
+        renderer.render(scene, camera);
         render();
       };
       const stopLoop = () => {
@@ -260,7 +293,7 @@ export function HeroLogo3D({
           if (intersecting) startLoop();
           else stopLoop();
         },
-        { threshold: 0 },
+        { rootMargin: '40% 0px', threshold: 0 },
       );
       io.observe(el);
       window.addEventListener('hero3d:suspend', onSuspend);
@@ -285,6 +318,7 @@ export function HeroLogo3D({
     window.addEventListener('resize', onResize);
 
     return () => {
+      cancelled = true;
       cancelAnimationFrame(raf);
       window.removeEventListener('mousemove', onMove);
       window.removeEventListener('resize', onResize);

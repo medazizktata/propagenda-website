@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - '@claude'
 created_date: '2026-09-08 11:12'
-updated_date: '2026-09-08 11:47'
+updated_date: '2026-09-08 11:57'
 labels: []
 dependencies: []
 parent_task_id: TASK-3
@@ -46,4 +46,6 @@ It already has a `flat` prop that disables pin and scrub entirely, which is a us
 
 <!-- SECTION:NOTES:BEGIN -->
 Simplified by a dissection finding: the reference hero does not scroll at all - it is an autoplaying idle loop that consumes no scroll distance. So the new hero will not pin, and this section can keep its own pin and scrub essentially as-is, with content simply above it. The Lenis scroll clamp is still the thing to remove or rescope.
+
+Done and verified in Chrome at 1440x900 (commit 8454242): BillboardHero is section one, showreel is section two and keeps its pin and scrub, scroll advances monotonically with no snap-back, video scrubbing confirmed at currentTime 6.26 on scrollY 1500. Lenis scroll gate and its two supporting refs removed; a comment on the Hero component records why.
 <!-- SECTION:NOTES:END -->

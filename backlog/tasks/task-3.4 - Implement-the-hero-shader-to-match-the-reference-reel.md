@@ -1,10 +1,11 @@
 ---
 id: TASK-3.4
 title: 'Build the billboard scene: models, materials, lighting and idle-loop motion'
-status: To Do
-assignee: []
+status: In Progress
+assignee:
+  - '@claude'
 created_date: '2026-09-08 11:12'
-updated_date: '2026-09-08 11:35'
+updated_date: '2026-09-08 11:57'
 labels: []
 dependencies:
   - TASK-3.2
@@ -38,3 +39,11 @@ Asset weight is the real constraint: Cloudflare Workers caps each asset at 25 Mi
 - [ ] #5 Scene holds a stable frame rate at full viewport on a mid-tier laptop GPU
 - [ ] #6 pnpm perf:assets passes and no asset approaches the 25 MiB Workers cap
 <!-- AC:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+Partly delivered ahead of schedule while validating the canvas host (commit cbcefab). Landed: warm amber/charcoal sky with PMREM environment, per-object delta-integrated tumble and drift at the measured rates, 11 A4-portrait poster panels plus 4 truss structures, edge-rail frames preserving the mirrored back faces, and a poster slideshow - each panel cross-fades between 12 real portfolio images on its own dwell/fade clock via a patched map_fragment (one shader program, per-panel uniforms). Assets: 253 KB for the poster set, zero bytes of geometry.
+
+Still open: the structures are procedural stand-ins. The poster panels barely need more than a frame, but the truss gantries are crude next to the reference's real lattice. Decision pending on whether to source a detailed truss model.
+<!-- SECTION:NOTES:END -->

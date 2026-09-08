@@ -4,7 +4,7 @@ import { ScrollCue } from '@/components/molecules/ScrollCue';
 import { cn } from '@/components/ui/cn';
 import { hero } from '@/content/site';
 import { BillboardHeroCanvas } from './billboard-hero/BillboardHeroCanvas';
-import { createPlaceholderScene } from './billboard-hero/placeholderScene';
+import { createBillboardScene } from './billboard-hero/billboardScene';
 
 /** The brand's "one word in orange" device (globals.css `.accent-word`). */
 const ACCENT_WORD = 'CREATIVITY';
@@ -29,7 +29,7 @@ export function BillboardHero() {
 
   return (
     <section data-seamless-act className="relative h-screen overflow-hidden bg-charcoal">
-      <BillboardHeroCanvas createScene={createPlaceholderScene} poster={POSTER} />
+      <BillboardHeroCanvas createScene={createBillboardScene} poster={POSTER} />
 
       {/* Vignette + floor scrim so the lockup holds against the bright lower-right of the sky. */}
       <div

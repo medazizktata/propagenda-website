@@ -28,7 +28,8 @@ const DRIFT = [0.015, 0.045] as const;
 const POSTER_COUNT = 12;
 const PANEL_OBJECTS = 11;
 const TRUSS_OBJECTS = 4;
-const RECYCLE_RADIUS = 15;
+const RECYCLE_X = 11;
+const RECYCLE_Y = 7;
 const SKY_Z = -60;
 
 /** Seconds a poster holds before cross-fading, and how long the fade itself takes. */
@@ -47,35 +48,160 @@ function makeRandom(seed: number) {
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 const smoothstep = (t: number) => t * t * (3 - 2 * t);
 
-/** Warm amber-to-charcoal sky. Also feeds the environment map, which is where the sky-coloured
- *  shadow side and the speculars travelling along the steel come from. */
+/**
+ * Value noise on a lattice, bilinearly interpolated. Cheap, smooth, and enough for cloud
+ * structure — Perlin's gradient noise would be marginally nicer and is not worth the code here.
+ */
+function makeValueNoise(gw: number, gh: number, seed: number) {
+  const rand = makeRandom(seed);
+  const grid = new Float32Array(gw * gh);
+  for (let i = 0; i < grid.length; i += 1) grid[i] = rand();
+
+  return (x: number, y: number) => {
+    // Wrap so octaves tile instead of clamping at the edges.
+    const fx = ((x % gw) + gw) % gw;
+    const fy = ((y % gh) + gh) % gh;
+    const x0 = Math.floor(fx);
+    const y0 = Math.floor(fy);
+    const x1 = (x0 + 1) % gw;
+    const y1 = (y0 + 1) % gh;
+    const tx = fx - x0;
+    const ty = fy - y0;
+    const sx = tx * tx * (3 - 2 * tx);
+    const sy = ty * ty * (3 - 2 * ty);
+    const a = grid[y0 * gw + x0];
+    const b = grid[y0 * gw + x1];
+    const c = grid[y1 * gw + x0];
+    const d = grid[y1 * gw + x1];
+    return lerp(lerp(a, b, sx), lerp(c, d, sx), sy);
+  };
+}
+
+/**
+ * Warm amber-to-charcoal sky with soft cirrus.
+ *
+ * The cirrus is fBm value noise sampled along a rotated, horizontally stretched axis, which is
+ * what produces long organic streaks running lower-left to upper-right. An earlier pass drew
+ * them as filled rectangles with gradients; at this scale those read as hard banding rather
+ * than atmosphere.
+ *
+ * Generated at a quarter resolution and scaled up: the interpolation is doing the smoothing
+ * anyway, and it keeps the one-time cost to a few tens of thousands of samples.
+ */
 function createSkyTexture(): THREE.CanvasTexture {
-  const canvas = document.createElement('canvas');
-  canvas.width = 1024;
-  canvas.height = 576;
-  const ctx = canvas.getContext('2d')!;
+  const W = 1024;
+  const H = 576;
+  const SW = 256;
+  const SH = 144;
 
-  const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-  grad.addColorStop(0, '#08080a');
-  grad.addColorStop(0.4, '#1d1512');
-  grad.addColorStop(0.72, '#6d411b');
-  grad.addColorStop(1, '#e79f56');
-  ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  const small = document.createElement('canvas');
+  small.width = SW;
+  small.height = SH;
+  const sctx = small.getContext('2d')!;
+  const img = sctx.createImageData(SW, SH);
 
-  const rand = makeRandom(20260908);
-  ctx.globalCompositeOperation = 'lighter';
-  for (let i = 0; i < 30; i += 1) {
-    const y = lerp(canvas.height * 0.4, canvas.height * 1.05, rand());
-    const alpha = lerp(0.012, 0.05, rand());
-    const band = ctx.createLinearGradient(0, y, canvas.width, y - canvas.height * 0.28);
-    band.addColorStop(0, 'rgba(255,206,156,0)');
-    band.addColorStop(0.5, `rgba(255,206,156,${alpha})`);
-    band.addColorStop(1, 'rgba(255,206,156,0)');
-    ctx.fillStyle = band;
-    ctx.fillRect(0, y, canvas.width, lerp(8, 30, rand()));
+  const noise = makeValueNoise(32, 32, 0x5eed17);
+  // Cirrus runs lower-left to upper-right, and is far wider than it is tall.
+  const ANGLE = -0.31;
+  const cosA = Math.cos(ANGLE);
+  const sinA = Math.sin(ANGLE);
+  const STRETCH = 0.19;
+
+  const fbm = (u: number, v: number) => {
+    let sum = 0;
+    let amp = 0.5;
+    let freq = 1;
+    for (let o = 0; o < 5; o += 1) {
+      sum += noise(u * freq, v * freq) * amp;
+      amp *= 0.5;
+      freq *= 2.07;
+    }
+    return sum;
+  };
+
+  for (let y = 0; y < SH; y += 1) {
+    for (let x = 0; x < SW; x += 1) {
+      const u = x / SW;
+      const v = y / SH;
+
+      // Base: deep charcoal over most of the frame, opening to burnt amber only in the
+      // lower-right. Held dark deliberately — the lockup is white and sits centre-left, and an
+      // evenly bright sky costs it contrast. The exponent is what keeps the dark half wide.
+      const t = Math.min(1, Math.max(0, u * 0.44 + v * 0.68 - 0.14));
+      const e = Math.pow(t * t * (3 - 2 * t), 1.5);
+      // Channel curves stay close together on purpose. Falling off green and blue much faster
+      // than red drags the hue to maroon; these keep it on the brand's amber.
+      let r = lerp(8, 152, e);
+      let g = lerp(8, 76, Math.pow(e, 1.15));
+      let b = lerp(12, 36, Math.pow(e, 1.45));
+
+      // Cirrus, confined to the lit corner so the charcoal stays clean.
+      const nu = (u * cosA - v * sinA) * 3.1;
+      const nv = (u * sinA + v * cosA) * (3.1 / STRETCH);
+      // The cirrus carries the light, not the flat ramp. A gradient bright enough to feel like
+      // sky washes the whole frame; structured highlights read as atmosphere at a much lower
+      // average luminance, which is what keeps the white lockup legible.
+      const cloud = Math.pow(Math.max(0, fbm(nu, nv) * 1.6 - 0.40), 1.35);
+      const lit = Math.min(1, Math.max(0, u * 0.4 + v * 0.78 - 0.16));
+      const c = cloud * lit * 240;
+      r = Math.min(255, r + c);
+      g = Math.min(255, g + c * 0.66);
+      b = Math.min(255, b + c * 0.40);
+
+      const i = (y * SW + x) * 4;
+      img.data[i] = r;
+      img.data[i + 1] = g;
+      img.data[i + 2] = b;
+      img.data[i + 3] = 255;
+    }
   }
-  ctx.globalCompositeOperation = 'source-over';
+  sctx.putImageData(img, 0, 0);
+
+  const canvas = document.createElement('canvas');
+  canvas.width = W;
+  canvas.height = H;
+  const ctx = canvas.getContext('2d')!;
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
+  ctx.drawImage(small, 0, 0, W, H);
+
+  // Vignette — present in the reference, and it keeps the corners off the lockup.
+  const vig = ctx.createRadialGradient(W * 0.5, H * 0.46, H * 0.15, W * 0.5, H * 0.5, H * 1.05);
+  vig.addColorStop(0, 'rgba(0,0,0,0)');
+  vig.addColorStop(1, 'rgba(3,3,5,0.62)');
+  ctx.fillStyle = vig;
+  ctx.fillRect(0, 0, W, H);
+
+  // Fine grain. An 8-bit gradient this smooth bands visibly without it.
+  //
+  // Built as a small tile and stamped with a repeating pattern rather than walked per pixel in
+  // JS: a full-size getImageData/putImageData pass over ~590k pixels was a measurable long task,
+  // and the blend here is native.
+  const GRAIN = 128;
+  const grainTile = document.createElement('canvas');
+  grainTile.width = GRAIN;
+  grainTile.height = GRAIN;
+  const gctx = grainTile.getContext('2d')!;
+  const grainData = gctx.createImageData(GRAIN, GRAIN);
+  const grand = makeRandom(0xbeef);
+  for (let i = 0; i < grainData.data.length; i += 4) {
+    const n = 118 + Math.round((grand() - 0.5) * 34);
+    grainData.data[i] = n;
+    grainData.data[i + 1] = n;
+    grainData.data[i + 2] = n;
+    grainData.data[i + 3] = 255;
+  }
+  gctx.putImageData(grainData, 0, 0);
+
+  const pattern = ctx.createPattern(grainTile, 'repeat');
+  if (pattern) {
+    ctx.save();
+    ctx.globalCompositeOperation = 'overlay';
+    ctx.globalAlpha = 0.5;
+    ctx.fillStyle = pattern;
+    ctx.fillRect(0, 0, W, H);
+    ctx.restore();
+  }
 
   const texture = new THREE.CanvasTexture(canvas);
   texture.colorSpace = THREE.SRGBColorSpace;
@@ -254,10 +380,33 @@ export function createBillboardScene(ctx: HeroSceneContext): HeroScene {
     return group;
   }
 
+  const TOTAL_OBJECTS = PANEL_OBJECTS + TRUSS_OBJECTS;
+  // Stratified, not uniform-random. With only ~15 draws, `rand()` across the full width clumps
+  // — which is exactly what produced a left-heavy field. One object per column with jitter
+  // guarantees even coverage by construction, so balance no longer depends on the seed.
+  const columns = Array.from({ length: TOTAL_OBJECTS }, (_, i) => i);
+  for (let i = columns.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(rand() * (i + 1));
+    [columns[i], columns[j]] = [columns[j], columns[i]];
+  }
+  let placed = 0;
+
   const place = (group: THREE.Group) => {
-    // Pushed well back so each structure reads at roughly 6–10 % of viewport width, as measured
-    // in the reference. Close objects crowd the lockup and break the "distant constellation" read.
-    group.position.set(lerp(-9, 9, rand()), lerp(-5.5, 5.5, rand()), lerp(-16, -3, rand()));
+    const column = columns[placed];
+    placed += 1;
+
+    const spanX = 20;
+    const cellW = spanX / TOTAL_OBJECTS;
+    const x = -spanX / 2 + cellW * (column + lerp(0.15, 0.85, rand()));
+    // Alternate high/low per column so the field does not settle into a horizontal band.
+    const yBias = column % 2 === 0 ? lerp(0.4, 5.8, rand()) : lerp(-5.8, -0.4, rand());
+
+    // The lockup owns the centre. Objects there are pushed deep rather than removed, so they
+    // still pass behind the type the way they do in the reference.
+    const central = Math.abs(x) < 3.2;
+    const z = central ? lerp(-18, -11, rand()) : lerp(-16, -3.5, rand());
+
+    group.position.set(x, yBias, z);
     group.quaternion.setFromEuler(
       new THREE.Euler(rand() * Math.PI * 2, rand() * Math.PI * 2, rand() * Math.PI * 2),
     );
@@ -299,9 +448,12 @@ export function createBillboardScene(ctx: HeroSceneContext): HeroScene {
         f.group.position.addScaledVector(f.velocity, dt);
         f.group.position.y += Math.sin(elapsed * 0.22 + f.phase) * 0.0016;
 
-        if (f.group.position.lengthSq() > RECYCLE_RADIUS * RECYCLE_RADIUS) {
-          f.group.position.multiplyScalar(-0.94);
-        }
+        // Wrap on each axis independently. Mirroring through the origin (the previous
+        // approach) preserves any imbalance in the starting field and slowly amplifies it.
+        if (f.group.position.x > RECYCLE_X) f.group.position.x = -RECYCLE_X;
+        else if (f.group.position.x < -RECYCLE_X) f.group.position.x = RECYCLE_X;
+        if (f.group.position.y > RECYCLE_Y) f.group.position.y = -RECYCLE_Y;
+        else if (f.group.position.y < -RECYCLE_Y) f.group.position.y = RECYCLE_Y;
       }
 
       // Each panel runs its own slideshow clock, so the field never changes in unison.
@@ -328,7 +480,11 @@ export function createBillboardScene(ctx: HeroSceneContext): HeroScene {
         if (s.hold <= 0) s.fading = true;
       }
 
-      skyTexture.offset.x = (elapsed * 0.0012) % 1;
+      // Drift the sky mesh, not the texture UVs. CanvasTexture defaults to ClampToEdgeWrapping,
+      // so animating `offset` stretched the edge pixels right across the plane — that was the
+      // horizontal smear over the whole background, not a stylistic choice.
+      sky.position.x = Math.sin(elapsed * 0.012) * 1.6;
+      sky.position.y = Math.cos(elapsed * 0.009) * 0.9;
     },
     resize(w, h) {
       camera.aspect = w / h;

@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - '@claude'
 created_date: '2026-09-08 11:12'
-updated_date: '2026-09-08 11:42'
+updated_date: '2026-09-08 11:47'
 labels: []
 dependencies: []
 parent_task_id: TASK-3
@@ -47,3 +47,9 @@ Reframed after the tech decision changed from vgpu/WebGPU to three.js. The WebGP
 7. Reduced motion: render exactly one frame and never start the loop.
 8. Ship a placeholder scene so the host is demonstrable; the real scene lands in TASK-3.4.
 <!-- SECTION:PLAN:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+Implemented and committed (4654b4d): types.ts (HeroScene/HeroSceneFactory contract), BillboardHeroCanvas.tsx (renderer lifecycle, poster-first LCP, IntersectionObserver + visibilitychange + hero3d:suspend/resume pausing, webglcontextlost/restored with rebuild-by-generation, full teardown, reduced-motion single frame), placeholderScene.ts, and public/images/billboard-hero-poster.jpg (21.9 KB). Typecheck passes; zero lint problems in these files (the repo's lint was already failing on 12 unrelated pre-existing files). Acceptance criteria not yet checked - they need browser verification, which requires TASK-3.3 to mount the hero on the page first.
+<!-- SECTION:NOTES:END -->

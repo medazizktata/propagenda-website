@@ -105,6 +105,14 @@ const CLIP_PATH_STYLE = {
 /** Foreground (headline, 3D mark, subtitle, scroll cue) — dissolves from first scroll. */
 const DISSOLVE_DURATION = 0.1;
 
+/**
+ * Scroll-scrubbed showreel. This is the home page's SECOND section, below BillboardHero.
+ *
+ * It used to be the opener, and used to hold Lenis at the pin end until the scrub finished so a
+ * visitor could not skip the reel. That gate was defensible for a page opener and is hostile in
+ * the middle of a page - it reads as the page fighting the user - so it was removed when the
+ * section moved down. Do not reinstate it here.
+ */
 export function Hero({ flat = false }: { flat?: boolean }) {
   const containerRef = useRef<HTMLElement>(null);
   const pinRef = useRef<HTMLDivElement>(null);
@@ -113,8 +121,6 @@ export function Hero({ flat = false }: { flat?: boolean }) {
   const videoElRef = useRef<HTMLVideoElement>(null);
   const scrubProgressRef = useRef(0);
   const desiredTimeRef = useRef(HERO_VIDEO_SCRUB_START);
-  const heroScrollEndRef = useRef(0);
-  const heroGateOpenRef = useRef(false);
   const [heroPinPercent] = useState(() => pinPercentForScrub());
   const [videoReady, setVideoReady] = useState(false);
   /** Fetch/decode failure — skip pin+scrub so the page scrolls into the next section. */
@@ -165,7 +171,6 @@ export function Hero({ flat = false }: { flat?: boolean }) {
 
   useEffect(() => {
     if (!videoFailed) return;
-    heroGateOpenRef.current = true;
     ScrollTrigger.refresh();
   }, [videoFailed]);
 
@@ -289,8 +294,6 @@ export function Hero({ flat = false }: { flat?: boolean }) {
           onUpdate: (self) => {
             const scrubT = scrollProgressToScrub(self.progress);
             scrubProgressRef.current = scrubT;
-            heroScrollEndRef.current = self.end;
-            heroGateOpenRef.current = self.progress >= 0.999;
             setDesiredTime(scrubT);
           },
         },
@@ -368,26 +371,6 @@ export function Hero({ flat = false }: { flat?: boolean }) {
       ctx.revert();
     };
   }, [noScrub, isDesktop, clipRest, initReady, heroPinPercent, scrubSrc]);
-
-  useEffect(() => {
-    if (noScrub || !initReady) return;
-
-    const lenis = window.__lenis;
-    if (!lenis) return;
-
-    const clampHeroScroll = () => {
-      if (heroGateOpenRef.current) return;
-      const max = heroScrollEndRef.current;
-      if (max > 0 && lenis.scroll > max + 1) {
-        lenis.scrollTo(max, { immediate: true });
-      }
-    };
-
-    lenis.on('scroll', clampHeroScroll);
-    return () => {
-      lenis.off('scroll', clampHeroScroll);
-    };
-  }, [noScrub, initReady, heroPinPercent]);
 
   const words = hero.h1.split(' ');
   const subParts = hero.subtitle.split('360°');

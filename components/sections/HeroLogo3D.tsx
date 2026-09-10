@@ -2,8 +2,8 @@
 
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
-import { SVGLoader } from 'three/examples/jsm/loaders/SVGLoader.js';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
+import { loadLogoGeometries } from '@/components/sections/logoGeometry';
 import { useReducedMotion } from '@/lib/motion/useReducedMotion';
 import { hero360Radians } from '@/lib/motion/hero360Sync';
 
@@ -21,40 +21,6 @@ const MAT_PARAMS = [
   { metalness: 0.75, roughness: 0.1, env: 1.0 }, // black — glossy, env-driven form
 ];
 const GLOW_COLOR = new THREE.Color(0xffb066); // warm flash during the transition
-
-/** Module cache — extrude once; remounts / route returns clone instead of re-parsing SVG. */
-let logoGeometriesPromise: Promise<THREE.BufferGeometry[]> | null = null;
-
-function loadLogoGeometries(): Promise<THREE.BufferGeometry[]> {
-  if (!logoGeometriesPromise) {
-    logoGeometriesPromise = new Promise((resolve, reject) => {
-      const loader = new SVGLoader();
-      loader.load(
-        '/images/brand/logo-monogram.svg',
-        (data) => {
-          const geos: THREE.BufferGeometry[] = [];
-          data.paths.forEach((path) => {
-            path.toShapes().forEach((shape) => {
-              const geo = new THREE.ExtrudeGeometry(shape, {
-                depth: 22,
-                bevelEnabled: true,
-                bevelThickness: 2.6,
-                bevelSize: 2,
-                bevelSegments: 4,
-                curveSegments: 28,
-              });
-              geos.push(geo);
-            });
-          });
-          resolve(geos);
-        },
-        undefined,
-        reject,
-      );
-    });
-  }
-  return logoGeometriesPromise;
-}
 
 /**
  * The real Propagenda monogram (Asset 1.svg) extruded into 3D — a single orange

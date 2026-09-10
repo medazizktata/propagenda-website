@@ -1,5 +1,10 @@
 import * as THREE from 'three';
-import { createPanelMaterial, type PanelMaterial } from './panelMaterial';
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
+import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
+import { loadLogoShapes } from '../logoGeometry';
+import { STRUCTURE_MIX, type Slideshow, type StructureCtx } from './oohStructures';
 import type { HeroScene, HeroSceneContext } from './types';
 
 /**
@@ -25,9 +30,74 @@ const SPIN_Z = [0.004, 0.015] as const;
 /** ~0.5–1.5 % of viewport width per second. */
 const DRIFT = [0.015, 0.045] as const;
 
+/**
+ * Aerial perspective. Keyed to the sky's mid tone rather than to black: fog is standing in for
+ * the air between the camera and the object, so it has to be the colour of what is behind it.
+ * The range is set against the field's actual depth — objects live at z −18…−3.5 with the camera
+ * at +6, so ~9 to ~24 units out. Near sits past the closest of them so nothing in the foreground
+ * is touched, and far sits beyond the deepest so even those keep some presence.
+ */
+/**
+ * Bloom. An emissive material in three glows but lights nothing — it is not a light source, so
+ * a backlit panel would otherwise sit in its housing with no spill at all, which is precisely
+ * what reads as "bright texture" rather than "emitting light". Bloom bleeds the panel into the
+ * air and the structure around it, and it is the cheap half of the pair: the shadow map handles
+ * the occlusion side.
+ *
+ * The threshold is the important number. It sits above anything the key light alone produces,
+ * so only the backlit faces bloom — lift it and the whole frame hazes over, which is the
+ * failure mode that makes bloom look amateur.
+ */
+const BLOOM_STRENGTH = 0.34;
+const BLOOM_RADIUS = 0.72;
+// Above what the key light alone produces on a white poster. At 0.86 a bright panel drifting to
+// the frame edge blew out and took its own artwork with it, which is the opposite of a subtle
+// glow that keeps its detail.
+const BLOOM_THRESHOLD = 1.02;
+
+const FOG_COLOR = 0x2a1d14;
+const FOG_NEAR = 14;
+const FOG_FAR = 44;
+
+/**
+ * The monogram, cast on the sky as a cloud shadow.
+ *
+ * `place()` pushes any structure near the centre back to z −18…−11 so the type owns the middle,
+ * which leaves a large well behind the lockup. The mark fills that well — but as shadow, not as
+ * an object: it sits at −46, between the sky at −60 and the field's deepest structure at −18, so
+ * it parallaxes with the backdrop rather than with the field.
+ */
+const LOGO_Z = -46;
+/**
+ * World units tall — roughly 78% of the frame height at that depth, which is about as large as
+ * it goes: the drift below swings it another 1.3 units vertically, and past this the mark starts
+ * running off the bottom edge rather than sitting on the sky.
+ */
+const LOGO_HEIGHT = 28;
+/** The monogram's SVG viewBox is 126.868 x 132.068. */
+const LOGO_ASPECT = 126.868 / 132.068;
+/**
+ * Density at its darkest, before the cloud mask thins it. High, because a shadow can only be
+ * seen where there is light for it to take away — and this one lies over the sky's mid tones,
+ * not its highlight.
+ */
+const LOGO_OPACITY = 0.85;
+/**
+ * Blur radius as a fraction of the mask's width. Feathered enough to read as cast shadow, but
+ * no further: the counters that spell the 'm' are narrow, and past roughly this much blur they
+ * close up and the mark collapses into an anonymous rounded blob.
+ */
+const LOGO_FEATHER = 0.032;
+/**
+ * Nudged off the lockup's centre, down and to the right, toward the lit quarter of the sky.
+ * Dead centre put it over the darkest part of the frame, where darkening changes nothing.
+ */
+const LOGO_OFFSET_X = 2.6;
+const LOGO_OFFSET_Y = -2.2;
+/** Mask resolution. The shape is soft by construction, so this never needs to be large. */
+const LOGO_MASK_W = 512;
+
 const POSTER_COUNT = 12;
-const PANEL_OBJECTS = 11;
-const TRUSS_OBJECTS = 4;
 const RECYCLE_X = 11;
 const RECYCLE_Y = 7;
 const SKY_Z = -60;
@@ -127,13 +197,13 @@ function createSkyTexture(): THREE.CanvasTexture {
       // Base: deep charcoal over most of the frame, opening to burnt amber only in the
       // lower-right. Held dark deliberately — the lockup is white and sits centre-left, and an
       // evenly bright sky costs it contrast. The exponent is what keeps the dark half wide.
-      const t = Math.min(1, Math.max(0, u * 0.44 + v * 0.68 - 0.14));
-      const e = Math.pow(t * t * (3 - 2 * t), 1.5);
+      const t = Math.min(1, Math.max(0, u * 0.44 + v * 0.68 - 0.22));
+      const e = Math.pow(t * t * (3 - 2 * t), 1.7);
       // Channel curves stay close together on purpose. Falling off green and blue much faster
       // than red drags the hue to maroon; these keep it on the brand's amber.
-      let r = lerp(8, 152, e);
-      let g = lerp(8, 76, Math.pow(e, 1.15));
-      let b = lerp(12, 36, Math.pow(e, 1.45));
+      let r = lerp(14, 186, e);
+      let g = lerp(14, 88, Math.pow(e, 1.2));
+      let b = lerp(19, 38, Math.pow(e, 1.5));
 
       // Cirrus, confined to the lit corner so the charcoal stays clean.
       const nu = (u * cosA - v * sinA) * 3.1;
@@ -142,11 +212,11 @@ function createSkyTexture(): THREE.CanvasTexture {
       // sky washes the whole frame; structured highlights read as atmosphere at a much lower
       // average luminance, which is what keeps the white lockup legible.
       const cloud = Math.pow(Math.max(0, fbm(nu, nv) * 1.6 - 0.40), 1.35);
-      const lit = Math.min(1, Math.max(0, u * 0.4 + v * 0.78 - 0.16));
-      const c = cloud * lit * 240;
+      const lit = Math.min(1, Math.max(0, u * 0.4 + v * 0.76 - 0.24));
+      const c = cloud * lit * 245;
       r = Math.min(255, r + c);
-      g = Math.min(255, g + c * 0.66);
-      b = Math.min(255, b + c * 0.40);
+      g = Math.min(255, g + c * 0.58);
+      b = Math.min(255, b + c * 0.3);
 
       const i = (y * SW + x) * 4;
       img.data[i] = r;
@@ -168,7 +238,7 @@ function createSkyTexture(): THREE.CanvasTexture {
   // Vignette — present in the reference, and it keeps the corners off the lockup.
   const vig = ctx.createRadialGradient(W * 0.5, H * 0.46, H * 0.15, W * 0.5, H * 0.5, H * 1.05);
   vig.addColorStop(0, 'rgba(0,0,0,0)');
-  vig.addColorStop(1, 'rgba(3,3,5,0.62)');
+  vig.addColorStop(1, 'rgba(4,4,7,0.5)');
   ctx.fillStyle = vig;
   ctx.fillRect(0, 0, W, H);
 
@@ -208,38 +278,179 @@ function createSkyTexture(): THREE.CanvasTexture {
   return texture;
 }
 
-type Slideshow = {
-  material: PanelMaterial;
-  /** Index into the poster set currently shown in slot A. */
-  current: number;
-  next: number;
-  /** Seconds remaining before the next fade starts. */
-  hold: number;
-  /** 0 while holding, then climbs to 1 across FADE_SECONDS. */
-  fade: number;
-  fading: boolean;
-  dwell: number;
-};
+/**
+ * The monogram as a soft, cloud-broken shadow mask, returned as an alpha map.
+ *
+ * Three steps, and the order is the whole trick:
+ *
+ * 1. Fill the mark at a generous inset. The blur pulls coverage inward, so a shape drawn
+ *    edge-to-edge would lose its outermost feather off the canvas boundary.
+ * 2. Blur it. Canvas `filter` does this in one pass; blurring a quarter-million pixels by hand
+ *    in JS would be a visible hitch on the main thread.
+ * 3. Multiply the blurred alpha by fBm noise. This is what makes it read as cloud rather than as
+ *    a drop shadow — without it the edge falls off at a constant rate the whole way round, which
+ *    the eye reads as a blurred object, not as shadow cast through moving air.
+ *
+ * Returns null when a 2D context is unavailable, in which case the hero goes without a backdrop
+ * mark rather than failing.
+ */
+function createLogoShadowTexture(shapes: THREE.Shape[]): THREE.CanvasTexture | null {
+  const W = LOGO_MASK_W;
+  const H = Math.round(W / LOGO_ASPECT);
+  const canvas = document.createElement('canvas');
+  canvas.width = W;
+  canvas.height = H;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return null;
+
+  ctx.fillStyle = '#000';
+  ctx.fillRect(0, 0, W, H);
+
+  // SVG coordinates are Y-down and so is canvas, so these shapes need no flip here — unlike the
+  // same shapes used as geometry, which do.
+  const bounds = new THREE.Box2();
+  const outlines = shapes.map((shape) => {
+    const points = shape.extractPoints(24);
+    points.shape.forEach((pt) => bounds.expandByPoint(pt));
+    return points;
+  });
+  const span = bounds.getSize(new THREE.Vector2());
+  if (span.x <= 0 || span.y <= 0) return null;
+
+  const inset = W * LOGO_FEATHER * 2.2;
+  const scale = Math.min((W - inset * 2) / span.x, (H - inset * 2) / span.y);
+  const offX = (W - span.x * scale) / 2 - bounds.min.x * scale;
+  const offY = (H - span.y * scale) / 2 - bounds.min.y * scale;
+
+  ctx.fillStyle = '#fff';
+  ctx.beginPath();
+  const trace = (points: THREE.Vector2[]) => {
+    points.forEach((pt, i) => {
+      const x = pt.x * scale + offX;
+      const y = pt.y * scale + offY;
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    });
+    ctx.closePath();
+  };
+  outlines.forEach(({ shape, holes }) => {
+    trace(shape);
+    holes.forEach(trace);
+  });
+  // evenodd so the counters that spell the 'm' punch through instead of filling solid.
+  ctx.fill('evenodd');
+
+  // Blur into a second canvas: `filter` applies to what is drawn, not to what is already there.
+  const soft = document.createElement('canvas');
+  soft.width = W;
+  soft.height = H;
+  const sctx = soft.getContext('2d');
+  if (!sctx) return null;
+  sctx.fillStyle = '#000';
+  sctx.fillRect(0, 0, W, H);
+  sctx.filter = `blur(${Math.round(W * LOGO_FEATHER)}px)`;
+  sctx.drawImage(canvas, 0, 0);
+  sctx.filter = 'none';
+
+  const img = sctx.getImageData(0, 0, W, H);
+  const noise = makeValueNoise(24, 24, 0xc10dd);
+  const fbm = (u: number, v: number) => {
+    let sum = 0;
+    let amp = 0.5;
+    let freq = 1;
+    for (let o = 0; o < 4; o += 1) {
+      sum += noise(u * freq, v * freq) * amp;
+      amp *= 0.5;
+      freq *= 2.13;
+    }
+    return sum;
+  };
+  for (let y = 0; y < H; y += 1) {
+    for (let x = 0; x < W; x += 1) {
+      const i = (y * W + x) * 4;
+      const a = img.data[i] / 255;
+      if (a <= 0) continue;
+      // Stretched horizontally to match the cirrus, which runs wide and shallow.
+      const n = fbm((x / W) * 3.4, (y / H) * 1.5);
+      // Biased toward full density, so the noise thins the shadow unevenly without punching
+      // holes clean through the middle of the mark.
+      const density = Math.min(1, a * (0.58 + n * 1.05));
+      const v = Math.round(density * 255);
+      img.data[i] = v;
+      img.data[i + 1] = v;
+      img.data[i + 2] = v;
+      img.data[i + 3] = 255;
+    }
+  }
+  sctx.putImageData(img, 0, 0);
+
+  const texture = new THREE.CanvasTexture(soft);
+  texture.colorSpace = THREE.NoColorSpace;
+  return texture;
+}
 
 type Floater = {
   group: THREE.Group;
   spin: THREE.Vector3;
   velocity: THREE.Vector3;
+  /** Decaying kick applied on click — layered on top of the steady spin. */
+  impulse: THREE.Vector3;
   phase: number;
+  slideshow?: Slideshow;
 };
+
+/** How fast a click impulse dies back into the idle tumble. */
+const IMPULSE_DECAY = 3.2;
+const CLICK_SPIN = 2.4;
+const CLICK_DRIFT = 0.9;
+/** World units — below this, a pointer-up counts as a tap rather than a throw. */
+const TAP_SLOP = 0.12;
+/** Steady drift speed after a throw, clamped so objects don't leave the field instantly. */
+const THROW_SPEED = [DRIFT[0], 0.14] as const;
+
+/**
+ * Drag follow. The held object is not welded to the cursor: it is pulled toward a target point
+ * by a spring and damped, so it trails, leans and settles. A damping ratio below 1 leaves a
+ * little overshoot, which is what reads as weight rather than as lag.
+ *
+ * Integrating this in `update` rather than in the pointer handler is the other half of it.
+ * pointermove fires at the pointer's rate, not the display's, so moving the object there applies
+ * several unevenly sized steps per rendered frame — micro-stutter that no amount of smoothing
+ * downstream can hide, because the frame only ever sees the last one.
+ */
+const DRAG_STIFFNESS = 44;
+const DRAG_DAMPING = 0.78;
+/** Angular lean fed from drag speed, so a slung object swirls instead of sliding flat. */
+const DRAG_SWIRL = 0.55;
+/** Below this release speed the object is being set down, not thrown. */
+const THROW_MIN_SPEED = 0.06;
 
 export function createBillboardScene(ctx: HeroSceneContext): HeroScene {
   // `reducedMotion` is handled by the host: it draws exactly one frame and never starts the
-  // loop, so the scene only has to look complete at elapsed = 0.
-  const { renderer, width, height } = ctx;
+  // loop, so the scene only has to look complete at elapsed = 0. The one thing the scene has to
+  // handle itself is drag, which has no loop to integrate its spring in — see `pointerDrag`.
+  const { renderer, width, height, reducedMotion, requestDraw } = ctx;
 
+  // Real occlusion rather than a post-processed approximation: one extra depth pass over ~16
+  // low-poly structures is cheaper here than an SSAO pass over every pixel of a full-viewport
+  // hero, and it gives contact shadows where the frames meet the faces.
+  renderer.shadowMap.enabled = true;
+  // PCFSoftShadowMap is deprecated as of r18x and silently falls back to this anyway.
+  renderer.shadowMap.type = THREE.PCFShadowMap;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.05;
+  renderer.toneMappingExposure = 1.22;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
 
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(CHARCOAL);
-  const camera = new THREE.PerspectiveCamera(38, width / height, 0.1, 160);
+  scene.fog = new THREE.Fog(FOG_COLOR, FOG_NEAR, FOG_FAR);
+  // Near/far are fitted to the scene, not left at generous defaults, and that is a correctness
+  // fix rather than a tuning one. Depth buffer precision falls off with the far/near ratio, and
+  // at 160/0.1 = 1600:1 there was not enough resolution left at 20 units out to separate a
+  // poster face from the backing box a few centimetres behind it — so they z-fought, which is
+  // what read as panels flickering. Nothing sits closer than ~9 units (objects live at z −18…−3.5
+  // with the camera at +6) or further than the sky at 66, so 2/90 is 45:1 with room to spare.
+  const camera = new THREE.PerspectiveCamera(38, width / height, 2, 90);
   camera.position.set(0, 0, 6);
 
   const geometries: THREE.BufferGeometry[] = [];
@@ -250,7 +461,7 @@ export function createBillboardScene(ctx: HeroSceneContext): HeroScene {
   textures.push(skyTexture);
 
   const skyGeo = new THREE.PlaneGeometry(1, 1);
-  const skyMat = new THREE.MeshBasicMaterial({ map: skyTexture, depthWrite: false });
+  const skyMat = new THREE.MeshBasicMaterial({ map: skyTexture, depthWrite: false, fog: false });
   geometries.push(skyGeo);
   materials.push(skyMat);
   const sky = new THREE.Mesh(skyGeo, skyMat);
@@ -262,19 +473,62 @@ export function createBillboardScene(ctx: HeroSceneContext): HeroScene {
   const envTexture = pmrem.fromEquirectangular(skyTexture).texture;
   scene.environment = envTexture;
 
-  const key = new THREE.DirectionalLight(0xffd9a8, 2.6);
-  key.position.set(6, 5, 4);
-  scene.add(key);
-  scene.add(new THREE.HemisphereLight(0xe79f56, 0x0d0d0f, 0.55));
+  // Warmth comes from `scene.environment` — the amber sky — plus a warm key on top of it. An
+  // earlier pass desaturated both to stop the field reading as one orange mass; the fix for that
+  // turned out to be the cool counter-fill and the separation it creates, not the desaturation,
+  // so the warmth is back and the fill stays.
+  scene.environmentIntensity = 0.85;
 
-  const steel = new THREE.MeshStandardMaterial({ color: STEEL, metalness: 0.85, roughness: 0.42 });
-  const blank = new THREE.MeshStandardMaterial({
-    color: ORANGE,
-    metalness: 0,
-    roughness: 0.8,
-    side: THREE.DoubleSide,
+  const key = new THREE.DirectionalLight(0xffd2a0, 2.9);
+  // Same direction as before — (6,5,4) scaled by 3. Only the distance changes, which moves the
+  // shadow camera far enough back to enclose a field that runs to z = -18.
+  key.position.set(18, 15, 12);
+  key.castShadow = true;
+  key.shadow.mapSize.set(2048, 2048);
+  key.shadow.radius = 3;
+  // Fitted to the field rather than left at the ±5 default, which would have shadowed only the
+  // objects nearest the centre. Any larger and the texel density drops below what reads as a
+  // contact shadow on a one-unit panel.
+  key.shadow.camera.left = -13;
+  key.shadow.camera.right = 13;
+  key.shadow.camera.top = 9;
+  key.shadow.camera.bottom = -9;
+  key.shadow.camera.near = 0.5;
+  key.shadow.camera.far = 55;
+  // normalBias over bias: these are thin boxes and flat planes, where a depth bias large enough
+  // to kill the acne also detaches the shadow from its object.
+  key.shadow.bias = -0.0004;
+  key.shadow.normalBias = 0.035;
+  scene.add(key);
+  // The counter-fill is doing more than filling. Steel only reads as metal when its dark side
+  // differs in hue from its lit side; with amber on both it flattens into painted board.
+  const fill = new THREE.DirectionalLight(0x9dbcff, 0.24);
+  fill.position.set(-5, -2, 3);
+  scene.add(fill);
+  // Sky above, ground below, in the backdrop's own colours — this is the ambient term, and
+  // keeping it tinted rather than neutral is what stops the objects reading as studio-lit.
+  scene.add(new THREE.HemisphereLight(0xf09340, 0x18140f, 0.5));
+  const bounce = new THREE.DirectionalLight(ORANGE, 0.85);
+  bounce.position.set(-8, -9, 5);
+  scene.add(bounce);
+
+  const steel = new THREE.MeshStandardMaterial({ color: STEEL, metalness: 0.68, roughness: 0.5 });
+  const charcoalMat = new THREE.MeshStandardMaterial({
+    color: 0x212124,
+    metalness: 0.3,
+    roughness: 0.68,
   });
-  materials.push(steel, blank);
+  // The accent plates are the only pure brand orange in the field, so they carry a little
+  // emissive of their own — enough to hold their colour on the shadow side, where a purely lit
+  // orange goes brown and stops reading as the brand at all.
+  const accent = new THREE.MeshStandardMaterial({
+    color: ORANGE,
+    metalness: 0.2,
+    roughness: 0.55,
+    emissive: new THREE.Color(ORANGE),
+    emissiveIntensity: 0.28,
+  });
+  materials.push(steel, charcoalMat, accent);
 
   // --- Poster textures -------------------------------------------------------------------
   // Loaded async; panels render lit-but-white until their first texture arrives, which is
@@ -282,7 +536,12 @@ export function createBillboardScene(ctx: HeroSceneContext): HeroScene {
   const loader = new THREE.TextureLoader();
   const posters: THREE.Texture[] = [];
   for (let i = 0; i < POSTER_COUNT; i += 1) {
-    const tex = loader.load(`/images/hero-panels/panel-${String(i + 1).padStart(2, '0')}.webp`);
+    // The redraw matters only under reduced motion, where the host has already drawn its single
+    // frame by the time these arrive — without it the panels would stay blank in that one frame.
+    const tex = loader.load(
+      `/images/hero-panels/panel-${String(i + 1).padStart(2, '0')}.webp`,
+      requestDraw,
+    );
     tex.colorSpace = THREE.SRGBColorSpace;
     tex.anisotropy = Math.min(4, renderer.capabilities.getMaxAnisotropy());
     posters.push(tex);
@@ -294,93 +553,19 @@ export function createBillboardScene(ctx: HeroSceneContext): HeroScene {
   const floaters: Floater[] = [];
   const slideshows: Slideshow[] = [];
 
-  /** Portrait poster on a short arm — the family that carries the work. Panel is 1:1.41 (A4),
-   *  matching the source imagery so nothing is cropped or stretched. */
-  function buildPosterPanel(index: number): THREE.Group {
-    const group = new THREE.Group();
-    const w = lerp(0.85, 1.35, rand());
-    const h = w * 1.414;
+  const structureCtx: StructureCtx = {
+    rand,
+    steel,
+    charcoal: charcoalMat,
+    accent,
+    geometries,
+    materials,
+    posters,
+    dwell: DWELL,
+    slideshows,
+  };
 
-    const material = createPanelMaterial();
-    materials.push(material);
-
-    const a = index % posters.length;
-    const b = (a + 1 + Math.floor(rand() * (posters.length - 1))) % posters.length;
-    material.map = posters[a];
-    material.userData.crossfade.uMapB.value = posters[b];
-
-    const faceGeo = new THREE.PlaneGeometry(w, h);
-    geometries.push(faceGeo);
-    group.add(new THREE.Mesh(faceGeo, material));
-
-    // An edge frame, not a backing panel. A solid box behind the poster would occlude it from
-    // the rear, which would throw away the mirrored back face — the single most diagnostic
-    // detail of the reference and a large part of why the field reads as truly 3D.
-    const railT = 0.05;
-    const rails: Array<[number, number, number, number]> = [
-      [w + railT, railT, 0, (h + railT) / 2],
-      [w + railT, railT, 0, -(h + railT) / 2],
-      [railT, h + railT, (w + railT) / 2, 0],
-      [railT, h + railT, -(w + railT) / 2, 0],
-    ];
-    for (const [rw, rh, rx, ry] of rails) {
-      const railGeo = new THREE.BoxGeometry(rw, rh, railT);
-      geometries.push(railGeo);
-      const rail = new THREE.Mesh(railGeo, steel);
-      rail.position.set(rx, ry, 0);
-      group.add(rail);
-    }
-
-    const armGeo = new THREE.CylinderGeometry(0.032, 0.04, h * 1.15, 8);
-    geometries.push(armGeo);
-    const arm = new THREE.Mesh(armGeo, steel);
-    arm.position.y = -h * 0.92;
-    group.add(arm);
-
-    slideshows.push({
-      material,
-      current: a,
-      next: b,
-      hold: lerp(DWELL[0], DWELL[1], rand()),
-      fade: 0,
-      fading: false,
-      dwell: lerp(DWELL[0], DWELL[1], rand()),
-    });
-
-    return group;
-  }
-
-  /** Open steel lattice carrying a blank panel. Its interior is what stops the field reading as
-   *  flat stickers when a structure rotates through edge-on. */
-  function buildTruss(): THREE.Group {
-    const group = new THREE.Group();
-    const w = lerp(1.1, 1.7, rand());
-    const h = w / 1.9;
-
-    const faceGeo = new THREE.PlaneGeometry(w, h);
-    geometries.push(faceGeo);
-    group.add(new THREE.Mesh(faceGeo, blank));
-
-    for (let i = 0; i < 3; i += 1) {
-      const t = (i / 3) * Math.PI * 2;
-      const legGeo = new THREE.CylinderGeometry(0.022, 0.022, h * 2.1, 6);
-      geometries.push(legGeo);
-      const leg = new THREE.Mesh(legGeo, steel);
-      leg.position.set(Math.cos(t) * w * 0.24, -h * 1.1, Math.sin(t) * w * 0.24 - 0.1);
-      group.add(leg);
-    }
-    for (let i = -1; i <= 1; i += 2) {
-      const braceGeo = new THREE.CylinderGeometry(0.014, 0.014, w * 0.62, 5);
-      geometries.push(braceGeo);
-      const brace = new THREE.Mesh(braceGeo, steel);
-      brace.position.set(0, -h * (1.1 + i * 0.35), -0.1);
-      brace.rotation.z = Math.PI / 2;
-      group.add(brace);
-    }
-    return group;
-  }
-
-  const TOTAL_OBJECTS = PANEL_OBJECTS + TRUSS_OBJECTS;
+  const TOTAL_OBJECTS = STRUCTURE_MIX.length;
   // Stratified, not uniform-random. With only ~15 draws, `rand()` across the full width clumps
   // — which is exactly what produced a left-heavy field. One object per column with jitter
   // guarantees even coverage by construction, so balance no longer depends on the seed.
@@ -410,7 +595,7 @@ export function createBillboardScene(ctx: HeroSceneContext): HeroScene {
     group.quaternion.setFromEuler(
       new THREE.Euler(rand() * Math.PI * 2, rand() * Math.PI * 2, rand() * Math.PI * 2),
     );
-    floaters.push({
+    const floater: Floater = {
       group,
       spin: new THREE.Vector3(
         lerp(SPIN_X[0], SPIN_X[1], rand()) * sign(),
@@ -422,13 +607,68 @@ export function createBillboardScene(ctx: HeroSceneContext): HeroScene {
         lerp(DRIFT[0], DRIFT[1], rand()) * sign(),
         0,
       ),
+      impulse: new THREE.Vector3(),
       phase: rand() * Math.PI * 2,
+      slideshow: group.userData.slideshow as Slideshow | undefined,
+    };
+    group.traverse((o) => {
+      if ((o as THREE.Mesh).isMesh) {
+        o.castShadow = true;
+        o.receiveShadow = true;
+      }
     });
+    group.userData.floater = floater;
+    floaters.push(floater);
     scene.add(group);
   };
 
-  for (let i = 0; i < PANEL_OBJECTS; i += 1) place(buildPosterPanel(i));
-  for (let i = 0; i < TRUSS_OBJECTS; i += 1) place(buildTruss());
+  STRUCTURE_MIX.forEach((build, i) => place(build(structureCtx, i)));
+
+  // --- Monogram cloud shadow ----------------------------------------------------------------
+  // Not an object in the scene: a shadow cast on the sky. That rules out geometry — an extruded
+  // mark has a hard silhouette edge no material can soften, and a hard edge is exactly what
+  // stops a shape reading as shadow. So the mark becomes a mask instead: filled, blurred, then
+  // eaten into by the same kind of fBm noise the cirrus is built from, so its density breaks up
+  // the way cloud cover does and no two parts of the edge fade at the same rate.
+  //
+  // It sits at −46, between the sky at −60 and the field's deepest structure at −18, so it
+  // parallaxes with the backdrop rather than with the objects. Fog is off for the same reason it
+  // is off for the sky: at that distance fog would flatten it to a uniform card.
+  let disposed = false;
+  const logoGeo = new THREE.PlaneGeometry(1, 1);
+  const logoMaterial = new THREE.MeshBasicMaterial({
+    color: 0x08070b,
+    transparent: true,
+    opacity: LOGO_OPACITY,
+    depthWrite: false,
+    fog: false,
+  });
+  geometries.push(logoGeo);
+  materials.push(logoMaterial);
+  const logoPlane = new THREE.Mesh(logoGeo, logoMaterial);
+  logoPlane.position.set(LOGO_OFFSET_X, LOGO_OFFSET_Y, LOGO_Z);
+  // Nothing to show until the mask arrives; an unmasked plane would be a black rectangle.
+  logoPlane.visible = false;
+  scene.add(logoPlane);
+
+  void loadLogoShapes()
+    .then((shapes) => {
+      if (disposed) return;
+      const mask = createLogoShadowTexture(shapes);
+      if (!mask) return;
+      textures.push(mask);
+      logoMaterial.alphaMap = mask;
+      logoMaterial.needsUpdate = true;
+      logoPlane.scale.set(LOGO_HEIGHT * LOGO_ASPECT, LOGO_HEIGHT, 1);
+      logoPlane.visible = true;
+      // Under reduced motion the host has already drawn its one and only frame.
+      requestDraw();
+    })
+    .catch(() => {
+      // A missing or unparseable monogram costs the hero its backdrop, nothing more. The field
+      // and the lockup are the hero; this is decoration and must never take them down.
+    });
+
 
   const fitSky = () => {
     const distance = camera.position.z - SKY_Z;
@@ -437,14 +677,174 @@ export function createBillboardScene(ctx: HeroSceneContext): HeroScene {
   };
   fitSky();
 
+  // Bloom operates on linear HDR values, which is why it sits before OutputPass: tone mapping
+  // is applied only when three renders to the screen, so RenderPass hands over untone-mapped
+  // colour and OutputPass maps it exactly once at the end.
+  const composer = new EffectComposer(renderer);
+  composer.addPass(new RenderPass(scene, camera));
+  const bloomPass = new UnrealBloomPass(
+    new THREE.Vector2(width, height),
+    BLOOM_STRENGTH,
+    BLOOM_RADIUS,
+    BLOOM_THRESHOLD,
+  );
+  composer.addPass(bloomPass);
+  composer.addPass(new OutputPass());
+  composer.setSize(width, height);
+
+  const raycaster = new THREE.Raycaster();
+  const ndc = new THREE.Vector2();
+  const hitTargets = floaters.map((f) => f.group);
+  const dragPlane = new THREE.Plane();
+  const dragPoint = new THREE.Vector3();
+  const springForce = new THREE.Vector3();
+
+  const drag = {
+    floater: null as Floater | null,
+    /** Where the held object is being pulled to. Written by the pointer, read by `update`. */
+    target: new THREE.Vector3(),
+    /** Pointer-to-centre offset at grab time, so the object does not snap under the cursor. */
+    grab: new THREE.Vector3(),
+    /** The spring's own velocity, which doubles as the throw velocity on release. That removes
+     *  the second, much noisier estimate the throw used to be built from — per-event pointer
+     *  deltas divided by per-event timestamps, smoothed by a frame-rate-dependent EMA. */
+    vel: new THREE.Vector3(),
+    /** The drift the object had before it was picked up, restored if it is set down gently. */
+    resume: new THREE.Vector3(),
+    moved: 0,
+  };
+
+  const pickFloater = (ndcX: number, ndcY: number): Floater | null => {
+    ndc.set(ndcX, ndcY);
+    raycaster.setFromCamera(ndc, camera);
+    const hits = raycaster.intersectObjects(hitTargets, true);
+    if (!hits.length) return null;
+    let node: THREE.Object3D | null = hits[0].object;
+    while (node) {
+      const floater = node.userData.floater as Floater | undefined;
+      if (floater) return floater;
+      node = node.parent;
+    }
+    return null;
+  };
+
+  const setDragPlane = (f: Floater) => {
+    // Camera looks down −Z; a constant-Z plane through the object is enough for screen-space drag.
+    dragPlane.set(new THREE.Vector3(0, 0, 1), -f.group.position.z);
+  };
+
+  const projectToDragPlane = (ndcX: number, ndcY: number, out: THREE.Vector3) => {
+    ndc.set(ndcX, ndcY);
+    raycaster.setFromCamera(ndc, camera);
+    return raycaster.ray.intersectPlane(dragPlane, out) !== null;
+  };
+
+  const kickFloater = (f: Floater) => {
+    f.impulse.x += (Math.random() - 0.5) * CLICK_SPIN;
+    f.impulse.y += (Math.random() - 0.5) * CLICK_SPIN * 1.35;
+    f.impulse.z += (Math.random() - 0.5) * CLICK_SPIN * 0.55;
+    f.velocity.x += (Math.random() - 0.5) * CLICK_DRIFT;
+    f.velocity.y += (Math.random() - 0.5) * CLICK_DRIFT;
+    // Force the next cross-fade immediately so a click always changes the face.
+    if (f.slideshow && !f.slideshow.fading) {
+      f.slideshow.hold = 0;
+      f.slideshow.fading = true;
+      f.slideshow.fade = 0;
+    }
+  };
+
+  const commitThrow = (f: Floater) => {
+    const speed = drag.vel.length();
+    if (speed < THROW_MIN_SPEED) {
+      // Set down rather than thrown: hand the object back the drift it arrived with, so it
+      // rejoins the field instead of hanging dead in the air.
+      f.velocity.copy(drag.resume);
+      return;
+    }
+    const clamped = THREE.MathUtils.clamp(speed * 0.2, THROW_SPEED[0], THROW_SPEED[1]);
+    f.velocity.copy(drag.vel).setLength(clamped);
+    // Nudge tumble so the throw reads as a shove, not a teleport.
+    f.spin.y = THREE.MathUtils.clamp(f.spin.y + drag.vel.x * 0.03, -0.18, 0.18);
+    f.spin.x = THREE.MathUtils.clamp(f.spin.x - drag.vel.y * 0.025, -0.1, 0.1);
+    if (f.slideshow && !f.slideshow.fading) {
+      f.slideshow.hold = 0;
+      f.slideshow.fading = true;
+      f.slideshow.fade = 0;
+    }
+  };
+
   return {
     scene,
     camera,
+    pointerMove(ndcX, ndcY) {
+      if (drag.floater) return true;
+      return pickFloater(ndcX, ndcY) !== null;
+    },
+    pointerDown(ndcX, ndcY) {
+      const hit = pickFloater(ndcX, ndcY);
+      if (!hit) return false;
+      setDragPlane(hit);
+      if (!projectToDragPlane(ndcX, ndcY, dragPoint)) return false;
+      drag.floater = hit;
+      drag.moved = 0;
+      drag.vel.set(0, 0, 0);
+      // Grab the object where it was clicked, not by its centre.
+      drag.grab.subVectors(hit.group.position, dragPoint);
+      drag.target.copy(hit.group.position);
+      // Freeze steady drift while held so the pointer owns the motion, but remember it in case
+      // this turns out to be a set-down rather than a throw.
+      drag.resume.copy(hit.velocity);
+      hit.velocity.set(0, 0, 0);
+      return true;
+    },
+    pointerDrag(ndcX, ndcY) {
+      const f = drag.floater;
+      if (!f) return;
+      setDragPlane(f);
+      if (!projectToDragPlane(ndcX, ndcY, dragPoint)) return;
+      // Only move the target here. The object itself is integrated once per frame in `update`,
+      // which is what keeps the follow smooth however often the pointer reports.
+      dragPoint.add(drag.grab);
+      drag.moved += drag.target.distanceTo(dragPoint);
+      drag.target.copy(dragPoint);
+      // With no loop running there is no spring to integrate, so track the pointer exactly.
+      if (reducedMotion) f.group.position.copy(dragPoint);
+    },
+    pointerUp() {
+      const f = drag.floater;
+      if (!f) return;
+      if (drag.moved < TAP_SLOP) kickFloater(f);
+      else commitThrow(f);
+      drag.floater = null;
+    },
     update(dt, elapsed) {
+      const damp = Math.exp(-IMPULSE_DECAY * dt);
+      const held = drag.floater;
+      const dragDamp = 2 * Math.sqrt(DRAG_STIFFNESS) * DRAG_DAMPING;
       for (const f of floaters) {
-        f.group.rotation.x += f.spin.x * dt;
-        f.group.rotation.y += f.spin.y * dt;
-        f.group.rotation.z += f.spin.z * dt;
+        f.group.rotation.x += (f.spin.x + f.impulse.x) * dt;
+        f.group.rotation.y += (f.spin.y + f.impulse.y) * dt;
+        f.group.rotation.z += (f.spin.z + f.impulse.z) * dt;
+        f.impulse.multiplyScalar(damp);
+
+        if (f === held) {
+          // Spring toward the pointer's target rather than snapping onto it: one step per
+          // rendered frame, however fast the pointer reports.
+          springForce
+            .subVectors(drag.target, f.group.position)
+            .multiplyScalar(DRAG_STIFFNESS)
+            .addScaledVector(drag.vel, -dragDamp);
+          drag.vel.addScaledVector(springForce, dt);
+          f.group.position.addScaledVector(drag.vel, dt);
+          // Lean into the sling. Fed continuously against the impulse decay, so it holds a
+          // steady swirl while the object is moving and unwinds once it stops.
+          f.impulse.y += THREE.MathUtils.clamp(drag.vel.x, -6, 6) * DRAG_SWIRL * dt;
+          f.impulse.x -= THREE.MathUtils.clamp(drag.vel.y, -6, 6) * DRAG_SWIRL * dt;
+          // Deliberately no idle drift and no recycling while held — wrapping the object to the
+          // far edge mid-drag reads as it being yanked out of your hand.
+          continue;
+        }
+
         f.group.position.addScaledVector(f.velocity, dt);
         f.group.position.y += Math.sin(elapsed * 0.22 + f.phase) * 0.0016;
 
@@ -464,6 +864,7 @@ export function createBillboardScene(ctx: HeroSceneContext): HeroScene {
             // Land the fade by promoting B into A, then queue a new B. Advancing by a
             // co-prime-ish stride keeps neighbouring panels from converging on one poster.
             s.material.map = posters[s.next];
+            s.material.emissiveMap = posters[s.next];
             s.current = s.next;
             s.next = (s.next + 5) % posters.length;
             s.material.userData.crossfade.uMapB.value = posters[s.next];
@@ -485,18 +886,33 @@ export function createBillboardScene(ctx: HeroSceneContext): HeroScene {
       // horizontal smear over the whole background, not a stylistic choice.
       sky.position.x = Math.sin(elapsed * 0.012) * 1.6;
       sky.position.y = Math.cos(elapsed * 0.009) * 0.9;
+
+      // Drifts with the sky and slightly faster, so it separates from the backdrop without ever
+      // reading as one of the objects in the field.
+      logoPlane.position.x = LOGO_OFFSET_X + Math.sin(elapsed * 0.017) * 2.4;
+      logoPlane.position.y = LOGO_OFFSET_Y + Math.cos(elapsed * 0.013) * 1.3;
+    },
+    render(r) {
+      // The host would otherwise call renderer.render() directly and skip bloom entirely.
+      void r;
+      composer.render();
     },
     resize(w, h) {
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
+      composer.setSize(w, h);
       fitSky();
     },
     dispose() {
+      // Stops the monogram's pending load from building meshes into a scene that is going away.
+      disposed = true;
       geometries.forEach((g) => g.dispose());
       materials.forEach((m) => m.dispose());
       textures.forEach((t) => t.dispose());
       envTexture.dispose();
       pmrem.dispose();
+      bloomPass.dispose();
+      composer.dispose();
     },
   };
 }

@@ -93,6 +93,12 @@ export const hero = {
   cta: { label: 'See the work', href: '/work' },
 };
 
+/** Opening billboard hero lockup — brand first, then a single follow-up line (reel pattern). */
+export const billboardHero = {
+  name: 'Propagenda',
+  role: 'Marketing agency',
+};
+
 export const site = {
   name: 'Propagenda',
   url: process.env.NEXT_PUBLIC_SITE_URL ?? 'https://thepropagenda.com',
@@ -102,4 +108,5 @@ export const site = {
   footer,
   contactForm,
   hero,
+  billboardHero,
 };

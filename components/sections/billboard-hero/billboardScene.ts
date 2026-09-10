@@ -4,7 +4,13 @@ import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 import { loadLogoShapes } from '../logoGeometry';
-import { STRUCTURE_MIX, type Slideshow, type StructureCtx } from './oohStructures';
+import {
+  buildMegaWall,
+  buildUnipole,
+  STRUCTURE_MIX,
+  type Slideshow,
+  type StructureCtx,
+} from './oohStructures';
 import type { HeroScene, HeroSceneContext } from './types';
 
 /**
@@ -96,6 +102,37 @@ const LOGO_OFFSET_X = 2.6;
 const LOGO_OFFSET_Y = -2.2;
 /** Mask resolution. The shape is soft by construction, so this never needs to be large. */
 const LOGO_MASK_W = 512;
+
+/**
+ * The large formats — mega walls and unipoles — carry a light of their own, so a backlit face
+ * throws warmth onto the steel around it and onto whatever drifts past. Emissive alone cannot do
+ * this: in three an emissive surface glows but illuminates nothing.
+ *
+ * Point rather than spot, and shadowless. A shadow-casting light costs an extra depth pass over
+ * the whole field each frame, and four of them would cost more than the whole scene currently
+ * does — while adding almost nothing, since these sit face-on to what they light.
+ */
+const PANEL_LIGHT_COLOR = 0xffb571;
+const PANEL_LIGHT_INTENSITY = 1.5;
+/** Falls off to nothing well inside a structure's own neighbourhood. */
+const PANEL_LIGHT_RANGE = 3.4;
+
+/**
+ * The lockup's cast shadow, thrown back onto the sky.
+ *
+ * Depth sits between the field and the sky so the shadow reads as landing on the backdrop, and
+ * the offset carries it down and left — away from the key at upper right, so it falls where that
+ * light would actually put it.
+ */
+const TEXT_SHADOW_Z = -34;
+const TEXT_SHADOW_OPACITY = 0.5;
+const TEXT_SHADOW_OFFSET = { x: -1.1, y: -1.4 };
+/**
+ * Blur radius as a fraction of the mask's width. Much smaller than the monogram's, and it has to
+ * be: that mark is one broad shape, whereas letter strokes are narrow, and a blur wide enough to
+ * soften the outline of the word dissolves the letters inside it into a single blob.
+ */
+const TEXT_SHADOW_FEATHER = 0.006;
 
 const POSTER_COUNT = 12;
 const RECYCLE_X = 11;
@@ -389,6 +426,64 @@ function createLogoShadowTexture(shapes: THREE.Shape[]): THREE.CanvasTexture | n
   return texture;
 }
 
+/**
+ * Rasterise the lockup into a soft mask, measured from the live element.
+ *
+ * Reading the element rather than hard-coding the string and font is what keeps this correct:
+ * the type is a clamp() size that changes with the viewport, the family comes from a CSS
+ * variable, and the tracking is set in em. Any of those drifting would leave a hand-positioned
+ * shadow subtly misaligned with the text it belongs to.
+ *
+ * Returns the mask plus the element's screen rect, which the caller needs to place and scale it.
+ */
+function createTextShadowMask(
+  el: HTMLElement,
+): { texture: THREE.CanvasTexture; rect: DOMRect } | null {
+  const rect = el.getBoundingClientRect();
+  if (rect.width <= 0 || rect.height <= 0) return null;
+
+  const style = getComputedStyle(el);
+  const text = (el.textContent ?? '').trim();
+  if (!text) return null;
+
+  // Pad for the blur to spread into, exactly as the monogram mask does.
+  const pad = Math.ceil(rect.width * TEXT_SHADOW_FEATHER * 3);
+  const W = Math.ceil(rect.width) + pad * 2;
+  const H = Math.ceil(rect.height) + pad * 2;
+
+  const canvas = document.createElement('canvas');
+  canvas.width = W;
+  canvas.height = H;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return null;
+
+  ctx.fillStyle = '#000';
+  ctx.fillRect(0, 0, W, H);
+  ctx.font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+  ctx.textBaseline = 'middle';
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#fff';
+  // letterSpacing is honoured by Chromium and Safari and ignored elsewhere; where it is ignored
+  // the mask is marginally narrow, which is invisible at this blur.
+  ctx.letterSpacing = style.letterSpacing;
+  ctx.fillText(text, W / 2, H / 2);
+
+  const soft = document.createElement('canvas');
+  soft.width = W;
+  soft.height = H;
+  const sctx = soft.getContext('2d');
+  if (!sctx) return null;
+  sctx.fillStyle = '#000';
+  sctx.fillRect(0, 0, W, H);
+  sctx.filter = `blur(${Math.max(2, Math.round(W * TEXT_SHADOW_FEATHER))}px)`;
+  sctx.drawImage(canvas, 0, 0);
+  sctx.filter = 'none';
+
+  const texture = new THREE.CanvasTexture(soft);
+  texture.colorSpace = THREE.NoColorSpace;
+  return { texture, rect };
+}
+
 type Floater = {
   group: THREE.Group;
   spin: THREE.Vector3;
@@ -622,7 +717,26 @@ export function createBillboardScene(ctx: HeroSceneContext): HeroScene {
     scene.add(group);
   };
 
-  STRUCTURE_MIX.forEach((build, i) => place(build(structureCtx, i)));
+  const GRAND_FAMILIES = new Set<(typeof STRUCTURE_MIX)[number]>([buildMegaWall, buildUnipole]);
+  const panelLights: THREE.PointLight[] = [];
+
+  STRUCTURE_MIX.forEach((build, i) => {
+    const group = build(structureCtx, i);
+    if (GRAND_FAMILIES.has(build)) {
+      const light = new THREE.PointLight(
+        PANEL_LIGHT_COLOR,
+        PANEL_LIGHT_INTENSITY,
+        PANEL_LIGHT_RANGE,
+        2,
+      );
+      // Sits just off the face, on the side the poster looks out of, so the light leaves the
+      // structure rather than being trapped inside its own backing box.
+      light.position.set(0, 0, 0.55);
+      group.add(light);
+      panelLights.push(light);
+    }
+    place(group);
+  });
 
   // --- Monogram cloud shadow ----------------------------------------------------------------
   // Not an object in the scene: a shadow cast on the sky. That rules out geometry — an extruded
@@ -669,6 +783,85 @@ export function createBillboardScene(ctx: HeroSceneContext): HeroScene {
       // and the lockup are the hero; this is decoration and must never take them down.
     });
 
+
+  // --- Lockup shadow --------------------------------------------------------------------
+  const textShadowGeo = new THREE.PlaneGeometry(1, 1);
+  const textShadowMat = new THREE.MeshBasicMaterial({
+    color: 0x05040a,
+    transparent: true,
+    opacity: TEXT_SHADOW_OPACITY,
+    depthWrite: false,
+    // Sits in front of the sky, which opts out of fog for the same reason: at this distance fog
+    // would wash it into a flat patch.
+    fog: false,
+  });
+  geometries.push(textShadowGeo);
+  materials.push(textShadowMat);
+  const textShadow = new THREE.Mesh(textShadowGeo, textShadowMat);
+  textShadow.position.z = TEXT_SHADOW_Z;
+  textShadow.visible = false;
+  scene.add(textShadow);
+  let textShadowTexture: THREE.CanvasTexture | null = null;
+
+  /** Half the visible frame at `z`, in world units. */
+  const visibleHalfAt = (z: number) => {
+    const distance = camera.position.z - z;
+    const h = Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2) * distance;
+    return { x: h * camera.aspect, y: h };
+  };
+
+  /**
+   * Match the shadow to where the lockup actually is on screen.
+   *
+   * The plane lives at a fixed depth, so its world size and position come from projecting the
+   * element's screen rect out to that depth. Doing it this way rather than with hand-tuned world
+   * coordinates means the shadow follows the type through every breakpoint and clamp() step for
+   * free — and it has to, because a cast shadow that drifts off its caster reads as a bug
+   * instantly.
+   */
+  const placeTextShadow = (rect: DOMRect) => {
+    const canvasRect = renderer.domElement.getBoundingClientRect();
+    if (!canvasRect.width || !canvasRect.height) return;
+    const half = visibleHalfAt(TEXT_SHADOW_Z);
+    const worldPerPxX = (half.x * 2) / canvasRect.width;
+    const worldPerPxY = (half.y * 2) / canvasRect.height;
+
+    // The mask carries blur padding on every side, so the plane is wider than the text itself.
+    const padX = rect.width * TEXT_SHADOW_FEATHER * 3;
+    textShadow.scale.set(
+      (rect.width + padX * 2) * worldPerPxX,
+      (rect.height + padX * 2) * worldPerPxY,
+      1,
+    );
+
+    const centreX = rect.left + rect.width / 2 - canvasRect.left;
+    const centreY = rect.top + rect.height / 2 - canvasRect.top;
+    textShadow.position.set(
+      (centreX / canvasRect.width - 0.5) * half.x * 2 + TEXT_SHADOW_OFFSET.x,
+      -(centreY / canvasRect.height - 0.5) * half.y * 2 + TEXT_SHADOW_OFFSET.y,
+      TEXT_SHADOW_Z,
+    );
+  };
+
+  const buildTextShadow = () => {
+    if (disposed) return;
+    const el = document.querySelector<HTMLElement>('[data-hero-lockup]');
+    if (!el) return;
+    const built = createTextShadowMask(el);
+    if (!built) return;
+    textShadowTexture?.dispose();
+    textShadowTexture = built.texture;
+    textShadowMat.alphaMap = built.texture;
+    textShadowMat.needsUpdate = true;
+    placeTextShadow(built.rect);
+    textShadow.visible = true;
+    requestDraw();
+  };
+
+  // Wait for the webfont: measuring and rasterising before it lands gives a shadow shaped like
+  // the fallback face, which is a different width entirely.
+  if (document.fonts?.status === 'loaded') buildTextShadow();
+  else void document.fonts?.ready.then(buildTextShadow).catch(() => {});
 
   const fitSky = () => {
     const distance = camera.position.z - SKY_Z;
@@ -902,6 +1095,9 @@ export function createBillboardScene(ctx: HeroSceneContext): HeroScene {
       camera.updateProjectionMatrix();
       composer.setSize(w, h);
       fitSky();
+      // The lockup is clamp()-sized, so a resize changes the caster's dimensions, not just the
+      // projection — the mask itself has to be rebuilt, not merely repositioned.
+      buildTextShadow();
     },
     dispose() {
       // Stops the monogram's pending load from building meshes into a scene that is going away.
@@ -911,6 +1107,7 @@ export function createBillboardScene(ctx: HeroSceneContext): HeroScene {
       textures.forEach((t) => t.dispose());
       envTexture.dispose();
       pmrem.dispose();
+      textShadowTexture?.dispose();
       bloomPass.dispose();
       composer.dispose();
     },

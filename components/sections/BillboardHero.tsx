@@ -54,7 +54,12 @@ export function BillboardHero() {
       <div className="pointer-events-none relative z-[2] flex h-full flex-col items-center justify-center px-gutter-m lg:px-gutter-d">
         <div className="flex flex-col items-center">
           <div className="flex flex-col items-start">
+            {/* Tagged so the scene can measure it. The lockup is DOM, not geometry, so it cannot
+                cast a shadow-map shadow on its own — the scene builds a proxy from this element's
+                text, font and box so the shadow tracks the real thing across breakpoints instead
+                of being positioned by hand. See `createTextShadow` in billboardScene.ts. */}
             <h1
+              data-hero-lockup
               className={cn(
                 'font-sans font-bold uppercase text-white',
                 'text-[clamp(2.8rem,12vw,7.5rem)] leading-[0.82] tracking-display',

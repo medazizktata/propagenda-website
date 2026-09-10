@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - '@claude'
 created_date: '2026-09-08 11:12'
-updated_date: '2026-09-10 23:03'
+updated_date: '2026-09-10 23:42'
 labels: []
 dependencies:
   - TASK-3.2
@@ -148,4 +148,33 @@ Field cut from 16 structures to 11 on request. Stratified placement is parameter
 Bloom threshold raised 0.86 -> 1.02. At 0.86 a bright panel drifting to the frame edge blew out and took its own artwork with it, which is the opposite of a subtle glow that keeps its detail.
 
 Measured after: 220 frames, median 9.4ms / p95 10.8ms / worst 11.8ms.
+
+Flicker, round two — the real cause.
+
+The previous pass fixed camera near/far and the rear-face clearances, but only checked the rear. The front was worse: the lightbox poster sat at exactly z 0.06, which is precisely its tray's front surface. Two coplanar surfaces z-fight at any depth precision — no near/far ratio fixes a genuine tie — which is why the artefact survived. The totem was 0.01 clear and the unipole and mega wall 0.02, all inside what the buffer can resolve at 20 units.
+
+Every face now clears both surfaces of its own box by POSTER_CLEARANCE (0.06), and attachPoster carries the invariant in its doc comment so a new family does not reintroduce it by placing a face by eye.
+
+Committed as 2de7969. A follow-up experiment (08e2fa9) is deliberately kept as a separate commit so it can be reverted whole: point lights on the mega walls and unipoles so the large formats genuinely illuminate their surroundings, and a cast shadow of the lockup on the sky. The lockup cannot cast a shadow-map shadow — it is DOM, not geometry — so the scene rasterises a proxy from the live element (text, computed font, weight, tracking) and projects its screen rect to the shadow's depth. Measuring the element is load-bearing: the type is clamp()-sized, so a resize changes the caster itself and the mask is rebuilt rather than repositioned.
+
+Frame timing across both: median 9.0ms, p95 10.0ms, against 9.4/10.8 before, so the lights and the shadow cost nothing measurable.
+
+Separately: at viewports around 900px the lockup overflows its container — 12vw puts it at ~108px, wider than the line can hold — so PROPAGENDA. runs off the right edge and the role line is clipped. Pre-existing, untouched by this work, and worth a task of its own.
+
+Text shadow made dynamic, driven by the near layer.
+
+The two canvases are separate WebGL contexts and cannot share a light — a light is GPU state belonging to one renderer. But the base scene does not need the near layer's light, only its position, because what it does with it is arithmetic rather than rendering: a caster at one depth, a receiver at another, and the ratio of their distances to the light gives both the offset direction and the magnification. heroEmitter.ts carries that position across. It is only valid because both scenes use the same camera — 38 deg at the same aspect, at z +6 — and that assumption is written down at the module.
+
+Heavily damped, and it has to be. A face at z −4 casting onto the sky at −34 magnifies the shadow 7.5x, which is physically correct and visually unusable; throw and growth are damped separately so the shadow tracks the light's direction honestly while staying roughly the size of the word that cast it. The follow is eased rather than instant, since a shadow that snaps frame to frame reads as a glitch, not as light.
+
+Verified numerically rather than by eye, because the text shadow overlaps the monogram cloud shadow and the two cannot be told apart visually. A temporary non-visual hook published the computed values while a near object was dragged between extremes:
+  light x −5.91  ->  throw x +1.633  (shadow pushed right)
+  light x +3.62  ->  throw x −0.970  (shadow pushed left)
+Sign flips and magnitude scales with distance from the lockup. growth held at 1.0707 across both, correctly — dragging moves the light in a constant-z plane, so the magnification should not change. Hook removed before commit and its absence confirmed at runtime.
+
+An earlier attempt at this verification recoloured the shadow and hid the monogram to isolate it visually. That is a mistake worth not repeating: the dev server hot-reloaded it into the user's own browser mid-session. Diagnostics on a live shared dev server should publish data, not change what is drawn.
+
+Field cut again on request, 11 structures to 7, one per family. That leaves one mega wall and one unipole, so two panel lights rather than four.
+
+Frame timing after: median 8.6ms / p95 9.9ms.
 <!-- SECTION:NOTES:END -->

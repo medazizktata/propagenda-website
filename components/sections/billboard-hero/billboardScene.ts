@@ -4,6 +4,7 @@ import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 import { loadLogoShapes } from '../logoGeometry';
+import { getHeroEmitter } from './heroEmitter';
 import {
   buildMegaWall,
   buildUnipole,
@@ -126,7 +127,28 @@ const PANEL_LIGHT_RANGE = 3.4;
  */
 const TEXT_SHADOW_Z = -34;
 const TEXT_SHADOW_OPACITY = 0.5;
+/** Where the shadow sits when nothing in the near layer is lighting the type. */
 const TEXT_SHADOW_OFFSET = { x: -1.1, y: -1.4 };
+/**
+ * Depth the lockup is treated as occupying when a near-layer face throws its shadow.
+ *
+ * The near layer's structures live at z −5.5…−2.5, so this puts them genuinely in front of the
+ * type — which is the arrangement the compositing already implies, and the one the projection
+ * below needs in order to throw the shadow backwards onto the sky rather than towards the camera.
+ */
+const TEXT_PLANE_Z = -8;
+/**
+ * How much of the true projection to keep.
+ *
+ * A point light this close to its caster magnifies enormously — a face at z −4 casting onto the
+ * sky at −34 scales the shadow by 7.5x, which is physically right and visually unusable. These
+ * damp the throw and the growth separately, so the shadow tracks the light's direction honestly
+ * while staying roughly the size of the word that cast it.
+ */
+const TEXT_SHADOW_THROW_DAMP = 0.055;
+const TEXT_SHADOW_GROWTH_DAMP = 0.014;
+/** How fast the shadow follows the light. Instant tracking reads as a glitch, not as light. */
+const TEXT_SHADOW_FOLLOW = 3.2;
 /**
  * Blur radius as a fraction of the mask's width. Much smaller than the monogram's, and it has to
  * be: that mark is one broad shape, whereas letter strokes are narrow, and a blur wide enough to
@@ -819,6 +841,18 @@ export function createBillboardScene(ctx: HeroSceneContext): HeroScene {
    * free — and it has to, because a cast shadow that drifts off its caster reads as a bug
    * instantly.
    */
+  /** Base placement, before any near-layer light is taken into account. */
+  const textShadowBase = {
+    /** Where the shadow sits on the receiver with no emitter, in world units. */
+    centre: new THREE.Vector2(),
+    size: new THREE.Vector2(),
+    /** Where the type itself sits, at TEXT_PLANE_Z — the caster the projection works from. */
+    caster: new THREE.Vector2(),
+    ready: false,
+  };
+  /** Smoothed, so the shadow eases as the light moves rather than snapping frame to frame. */
+  const textShadowThrow = new THREE.Vector2();
+
   const placeTextShadow = (rect: DOMRect) => {
     const canvasRect = renderer.domElement.getBoundingClientRect();
     if (!canvasRect.width || !canvasRect.height) return;
@@ -828,17 +862,58 @@ export function createBillboardScene(ctx: HeroSceneContext): HeroScene {
 
     // The mask carries blur padding on every side, so the plane is wider than the text itself.
     const padX = rect.width * TEXT_SHADOW_FEATHER * 3;
-    textShadow.scale.set(
+    textShadowBase.size.set(
       (rect.width + padX * 2) * worldPerPxX,
       (rect.height + padX * 2) * worldPerPxY,
-      1,
     );
 
-    const centreX = rect.left + rect.width / 2 - canvasRect.left;
-    const centreY = rect.top + rect.height / 2 - canvasRect.top;
+    const fx = (rect.left + rect.width / 2 - canvasRect.left) / canvasRect.width - 0.5;
+    const fy = -((rect.top + rect.height / 2 - canvasRect.top) / canvasRect.height - 0.5);
+    textShadowBase.centre.set(fx * half.x * 2, fy * half.y * 2);
+
+    // Same screen position, resolved at the caster's depth rather than the receiver's.
+    const casterHalf = visibleHalfAt(TEXT_PLANE_Z);
+    textShadowBase.caster.set(fx * casterHalf.x * 2, fy * casterHalf.y * 2);
+    textShadowBase.ready = true;
+  };
+
+  /**
+   * Throw the lockup's shadow from whichever near-layer face is currently lit.
+   *
+   * This is the projection a shadow map would do, worked out directly: a caster at TEXT_PLANE_Z,
+   * a receiver at TEXT_SHADOW_Z, and a light in front of both. The ratio of those two distances
+   * to the light gives the magnification, and the offset falls out of it — the shadow slides away
+   * from the light and grows as the light closes in, which is what makes dragging a near object
+   * around read as moving a lamp rather than dragging a decal.
+   *
+   * Damped, because the honest numbers are unusable at this range — see the constants.
+   */
+  const updateTextShadow = (dt: number) => {
+    if (!textShadowBase.ready) return;
+    const emitter = getHeroEmitter();
+
+    let targetX = TEXT_SHADOW_OFFSET.x;
+    let targetY = TEXT_SHADOW_OFFSET.y;
+    let growth = 1;
+
+    // Only a light genuinely in front of the caster can throw its shadow backwards.
+    if (emitter && emitter.z > TEXT_PLANE_Z) {
+      const magnification = (TEXT_SHADOW_Z - emitter.z) / (TEXT_PLANE_Z - emitter.z);
+      const excess = magnification - 1;
+      targetX = (textShadowBase.caster.x - emitter.x) * excess * TEXT_SHADOW_THROW_DAMP;
+      targetY = (textShadowBase.caster.y - emitter.y) * excess * TEXT_SHADOW_THROW_DAMP;
+      growth = 1 + excess * TEXT_SHADOW_GROWTH_DAMP * emitter.strength;
+    }
+
+    // Frame-rate independent ease. dt is 0 on the reduced-motion frame, which lands it directly.
+    const t = dt > 0 ? 1 - Math.exp(-TEXT_SHADOW_FOLLOW * dt) : 1;
+    textShadowThrow.x += (targetX - textShadowThrow.x) * t;
+    textShadowThrow.y += (targetY - textShadowThrow.y) * t;
+
+    textShadow.scale.set(textShadowBase.size.x * growth, textShadowBase.size.y * growth, 1);
     textShadow.position.set(
-      (centreX / canvasRect.width - 0.5) * half.x * 2 + TEXT_SHADOW_OFFSET.x,
-      -(centreY / canvasRect.height - 0.5) * half.y * 2 + TEXT_SHADOW_OFFSET.y,
+      textShadowBase.centre.x + textShadowThrow.x,
+      textShadowBase.centre.y + textShadowThrow.y,
       TEXT_SHADOW_Z,
     );
   };
@@ -854,6 +929,7 @@ export function createBillboardScene(ctx: HeroSceneContext): HeroScene {
     textShadowMat.alphaMap = built.texture;
     textShadowMat.needsUpdate = true;
     placeTextShadow(built.rect);
+    updateTextShadow(0);
     textShadow.visible = true;
     requestDraw();
   };
@@ -1084,6 +1160,8 @@ export function createBillboardScene(ctx: HeroSceneContext): HeroScene {
       // reading as one of the objects in the field.
       logoPlane.position.x = LOGO_OFFSET_X + Math.sin(elapsed * 0.017) * 2.4;
       logoPlane.position.y = LOGO_OFFSET_Y + Math.cos(elapsed * 0.013) * 1.3;
+
+      updateTextShadow(dt);
     },
     render(r) {
       // The host would otherwise call renderer.render() directly and skip bloom entirely.

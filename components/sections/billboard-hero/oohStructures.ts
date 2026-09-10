@@ -341,9 +341,5 @@ export const STRUCTURE_MIX: StructureBuilder[] = [
   buildMegaWall,
   buildBusShelter,
   buildLightbox,
-  buildTrussGantry,
   buildWayfindingTotem,
-  buildMegaWall,
-  buildPortraitPoster,
-  buildUnipole,
 ];

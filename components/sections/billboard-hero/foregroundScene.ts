@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { setHeroEmitter } from './heroEmitter';
 import { buildLightbox, buildPortraitPoster, type StructureCtx } from './oohStructures';
 import type { HeroScene, HeroSceneContext } from './types';
 
@@ -282,6 +283,21 @@ export function createForegroundScene(ctx: HeroSceneContext): HeroScene {
     },
     update(dt, elapsed) {
       const held = drag.object;
+      // Publish the nearest lit face for the base scene to cast the lockup's shadow from. The
+      // nearest is the one that dominates: it is closest to the camera, so it is the one in
+      // front of the type from the viewer's point of view.
+      let nearest: NearObject | null = null;
+      for (const o of objects) {
+        if (!nearest || o.group.position.z > nearest.group.position.z) nearest = o;
+      }
+      if (nearest) {
+        setHeroEmitter({
+          x: nearest.group.position.x,
+          y: nearest.group.position.y,
+          z: nearest.group.position.z,
+          strength: 1,
+        });
+      }
       for (const o of objects) {
         o.group.rotation.x += o.spin.x * dt;
         o.group.rotation.y += o.spin.y * dt;
@@ -342,6 +358,9 @@ export function createForegroundScene(ctx: HeroSceneContext): HeroScene {
       refitBounds();
     },
     dispose() {
+      // Leaving a stale position published would have the base scene throwing a shadow from a
+      // light that is no longer on screen.
+      setHeroEmitter(null);
       geometries.forEach((g) => g.dispose());
       materials.forEach((m) => m.dispose());
       textures.forEach((t) => t.dispose());

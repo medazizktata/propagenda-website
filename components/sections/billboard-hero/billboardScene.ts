@@ -165,8 +165,34 @@ const TEXT_SHADOW_FOLLOW = 3.2;
 const TEXT_SHADOW_FEATHER = 0.006;
 
 const POSTER_COUNT = 12;
-const RECYCLE_X = 11;
 const RECYCLE_Y = 7;
+/**
+ * Depth the field's horizontal extent is measured at — roughly the middle of the z range the
+ * structures occupy, so the span suits the field as a whole rather than its nearest or furthest
+ * member.
+ */
+const FIELD_REFERENCE_Z = -10;
+/**
+ * How far past the frame edge the field reaches, as a multiple of the visible half-width.
+ *
+ * Above 1 so structures enter and leave rather than popping at the boundary, but not far above:
+ * everything beyond the edge is being simulated and never seen, and on a portrait phone a fixed
+ * world-space span puts almost the entire field out there. That was the bug this replaces — a
+ * hard-coded 20-unit span is about right for a landscape frame and roughly four times too wide
+ * for a 390px portrait one, so all but two or three structures sat permanently off-screen.
+ */
+const FIELD_OVERSCAN = 1.35;
+/**
+ * Structures per world unit of field width.
+ *
+ * A count rather than a breakpoint, because the field's width is now derived from the frame:
+ * holding density constant gives every aspect ratio the same visual spacing, and a phone fewer
+ * structures than a tablet without either being a special case. Calibrated so a 1440-wide
+ * landscape frame lands back on the eleven the field was composed with.
+ */
+const STRUCTURE_DENSITY = 0.47;
+/** Below this the field stops reading as a field. */
+const MIN_STRUCTURES = 3;
 const SKY_Z = -60;
 
 /** Seconds a poster holds before cross-fading, and how long the fade itself takes. */
@@ -690,7 +716,28 @@ export function createBillboardScene(ctx: HeroSceneContext): HeroScene {
     slideshows,
   };
 
-  const TOTAL_OBJECTS = STRUCTURE_MIX.length;
+  /**
+   * Half the field's width, derived from what the camera can actually see at the field's own
+   * depth. Recomputed on resize, because aspect is what it depends on.
+   */
+  let fieldHalfWidth = 1;
+  const measureField = () => {
+    const distance = camera.position.z - FIELD_REFERENCE_Z;
+    const halfHeight = Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2) * distance;
+    fieldHalfWidth = halfHeight * camera.aspect * FIELD_OVERSCAN;
+  };
+  measureField();
+
+  // Now that the span matches what the camera can see, nearly every structure placed is on
+  // screen — so this count is close to what the viewer actually sees, not a pool to draw from.
+  const structureCount = THREE.MathUtils.clamp(
+    Math.round(fieldHalfWidth * 2 * STRUCTURE_DENSITY),
+    MIN_STRUCTURES,
+    STRUCTURE_MIX.length,
+  );
+  const structures = STRUCTURE_MIX.slice(0, structureCount);
+
+  const TOTAL_OBJECTS = structures.length;
   // Stratified, not uniform-random. With only ~15 draws, `rand()` across the full width clumps
   // — which is exactly what produced a left-heavy field. One object per column with jitter
   // guarantees even coverage by construction, so balance no longer depends on the seed.
@@ -705,15 +752,14 @@ export function createBillboardScene(ctx: HeroSceneContext): HeroScene {
     const column = columns[placed];
     placed += 1;
 
-    const spanX = 20;
-    const cellW = spanX / TOTAL_OBJECTS;
-    const x = -spanX / 2 + cellW * (column + lerp(0.15, 0.85, rand()));
+    const cellW = (fieldHalfWidth * 2) / TOTAL_OBJECTS;
+    const x = -fieldHalfWidth + cellW * (column + lerp(0.15, 0.85, rand()));
     // Alternate high/low per column so the field does not settle into a horizontal band.
     const yBias = column % 2 === 0 ? lerp(0.4, 5.8, rand()) : lerp(-5.8, -0.4, rand());
 
     // The lockup owns the centre. Objects there are pushed deep rather than removed, so they
     // still pass behind the type the way they do in the reference.
-    const central = Math.abs(x) < 3.2;
+    const central = Math.abs(x) < fieldHalfWidth * 0.32;
     const z = central ? lerp(-18, -11, rand()) : lerp(-16, -3.5, rand());
 
     group.position.set(x, yBias, z);
@@ -750,7 +796,7 @@ export function createBillboardScene(ctx: HeroSceneContext): HeroScene {
   const GRAND_FAMILIES = new Set<(typeof STRUCTURE_MIX)[number]>([buildMegaWall, buildUnipole]);
   const panelLights: THREE.PointLight[] = [];
 
-  STRUCTURE_MIX.forEach((build, i) => {
+  structures.forEach((build, i) => {
     const group = build(structureCtx, i);
     if (GRAND_FAMILIES.has(build)) {
       const light = new THREE.PointLight(
@@ -1127,8 +1173,8 @@ export function createBillboardScene(ctx: HeroSceneContext): HeroScene {
 
         // Wrap on each axis independently. Mirroring through the origin (the previous
         // approach) preserves any imbalance in the starting field and slowly amplifies it.
-        if (f.group.position.x > RECYCLE_X) f.group.position.x = -RECYCLE_X;
-        else if (f.group.position.x < -RECYCLE_X) f.group.position.x = RECYCLE_X;
+        if (f.group.position.x > fieldHalfWidth) f.group.position.x = -fieldHalfWidth;
+        else if (f.group.position.x < -fieldHalfWidth) f.group.position.x = fieldHalfWidth;
         if (f.group.position.y > RECYCLE_Y) f.group.position.y = -RECYCLE_Y;
         else if (f.group.position.y < -RECYCLE_Y) f.group.position.y = RECYCLE_Y;
       }
@@ -1179,6 +1225,14 @@ export function createBillboardScene(ctx: HeroSceneContext): HeroScene {
     resize(w, h) {
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
+      const previousHalfWidth = fieldHalfWidth;
+      measureField();
+      // Carry the field with the frame. Without this a rotation leaves every structure outside
+      // the new frustum, waiting to drift back in at ~2% of viewport width per second.
+      if (previousHalfWidth > 0 && fieldHalfWidth !== previousHalfWidth) {
+        const scale = fieldHalfWidth / previousHalfWidth;
+        for (const f of floaters) f.group.position.x *= scale;
+      }
       composer.setSize(w, h);
       fitSky();
       // The lockup is clamp()-sized, so a resize changes the caster's dimensions, not just the

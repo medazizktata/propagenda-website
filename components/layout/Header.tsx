@@ -123,9 +123,16 @@ export function Header() {
         style={{ opacity: veilOpacity }}
       />
       {/* Chrome sits above the full-screen menu — only the hamburger morphs to ×. */}
-      <div className="relative z-20 mx-auto flex h-11 max-w-[1920px] items-center justify-between px-gutter-m lg:px-gutter-d">
-        <Logo variant="mark" className="lg:hidden" />
-        <Logo className="hidden lg:inline-flex" />
+      {/* Tighter chrome gutter below sm. gutter-m is a fixed 2.5rem, so on a 360px phone it
+          spends 80 of 360 on padding — which, now that the header carries the full lockup
+          rather than the compact mark, left the logo touching the call to action with the
+          group shrinking to fit. */}
+      <div className="relative z-20 mx-auto flex h-11 max-w-[1920px] items-center justify-between px-8 sm:px-gutter-m lg:px-gutter-d">
+        {/* One lockup at every width. The compact app-icon mark used to stand in below lg,
+            which made the brand read differently on a phone than on a desktop; the horizontal
+            lockup is the reference and it fits — 3.54:1 at h-9 is ~127px, which clears the
+            call to action and the hamburger down to 360. */}
+        <Logo />
         <nav className="hidden items-center gap-5 lg:flex" aria-label="Primary">
           {getPrimaryNavigation().map((item) =>
             item.href === '/services' ? (

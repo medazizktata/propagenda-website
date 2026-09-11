@@ -50,8 +50,14 @@ export function Logo({ variant = 'horizontal', href = '/', className }: LogoProp
       <Lockup src="/images/brand/logo-vertical-wordmark.svg" className="h-16 w-auto" />
     );
   } else {
+    // A step smaller on the narrowest screens. The lockup is 3.54:1, so at h-9 it is ~127px
+    // wide — which at 360 leaves exactly nothing between it and the header's call to action.
+    // h-8 buys back 14px there without changing which lockup is shown.
     content = (
-      <Lockup src="/images/brand/logo-horizontal-wordmark.svg" className="h-9 w-auto" />
+      <Lockup
+        src="/images/brand/logo-horizontal-wordmark.svg"
+        className="h-8 w-auto sm:h-9"
+      />
     );
   }
 

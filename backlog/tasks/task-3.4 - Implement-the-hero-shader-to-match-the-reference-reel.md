@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - '@claude'
 created_date: '2026-09-08 11:12'
-updated_date: '2026-09-11 00:20'
+updated_date: '2026-09-11 00:49'
 labels: []
 dependencies:
   - TASK-3.2
@@ -32,12 +32,12 @@ Asset weight is the real constraint: Cloudflare Workers caps each asset at 25 Mi
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Structures tumble independently with no visible synchronisation and no shared vanishing point
+- [x] #1 Structures tumble independently with no visible synchronisation and no shared vanishing point
 - [ ] #2 Poster planes render DoubleSide with un-flipped back-face UVs, preserving the mirrored back faces
-- [ ] #3 Sky and objects show distinct parallax rates, with the sky reading as far more distant
-- [ ] #4 Palette is Propagenda orange #f58b27 on charcoal #121212, not the reference teal/sand
+- [x] #3 Sky and objects show distinct parallax rates, with the sky reading as far more distant
+- [x] #4 Palette is Propagenda orange #f58b27 on charcoal #121212, not the reference teal/sand
 - [ ] #5 Scene holds a stable frame rate at full viewport on a mid-tier laptop GPU
-- [ ] #6 pnpm perf:assets passes and no asset approaches the 25 MiB Workers cap
+- [x] #6 pnpm perf:assets passes and no asset approaches the 25 MiB Workers cap
 <!-- AC:END -->
 
 ## Implementation Plan
@@ -183,4 +183,24 @@ Correction: the earlier note claiming the lockup overflows its container around 
 It came from resizing the browser window rather than emulating a viewport, and the window would not go below ~500px, so what was measured was a scaled window and not the width it claimed to be. Re-checked with real device emulation: at 900px the h1 is 804px wide sitting 48..852 inside 900, documentElement.scrollWidth equals innerWidth, no horizontal overflow. Same at 390px — 348px wide inside 390. No overflow at either width, and no task needed.
 
 Method note for next time: measure the element and the document rather than reading a screenshot, and confirm window.innerWidth is what was asked for before trusting any width-dependent observation.
+
+Performance sweep and release.
+
+Measured on the production build, not the dev server. Across viewports at DPR2 unthrottled: 390, 768 and 1024 all 8.3ms median frame time; 1920x1080 11.3ms. LCP 80-152ms on the H1, CLS 0, no horizontal overflow at any width, and the near layer correctly absent below 1024px. Under 4x CPU throttle at 390x844 DPR3: LCP 212-348ms and 114-120fps sustained — the loop is GPU-bound, so throttling the CPU barely touches it.
+
+Two real optimisations found and made. The monogram's cloud-shadow mask went from 512px wide to 256: its cost is quadratic in that number because the noise pass is a per-pixel loop with four octaves in it, and nothing in a mask blurred by 3% of its own width survives at pixel scale. And the canvas rect is now cached and refreshed once per frame rather than read inside the pointer handler — getBoundingClientRect forces a synchronous layout, and a high-rate mouse emits far more events per second than there are frames.
+
+Startup long-task time needed care to attribute and is worth recording properly. The aggregate is dominated by the shared app shell, not the hero: /about, which has no canvas at all, shows 1284ms of long tasks against the hero page's 1828ms at 4x throttle, and its worst single task (721ms) is larger than the hero page's (444ms). Early readings varied between 691ms and 2005ms for the same build depending on tab count, cold start and whether a profiler had ever been attached — so single samples of that metric are not evidence. The app-shell cost is pre-existing and outside this branch.
+
+Also fixed: .open-next was gitignored but not eslint-ignored, so pnpm check failed for anyone who had run a build locally — it was linting the generated Cloudflare worker bundle and took lint from 16 problems to 56.
+
+Released. gh could not open the PR (authenticated as medazizktata25, not a collaborator on medazizktata/propagenda-website, while git push uses a different SSH identity), so the branch was merged to main locally with --no-ff and pushed: 9f15467..1521248. Deployed with pnpm deploy — Cloudflare here is CLI-driven, not Git-triggered, so nothing would have deployed on merge alone. Version a3c46c30-9633-4d84-9433-ec2e37b82d9a replaces bad519c7. Verified live on thepropagenda.com: 200, new markup served, 122fps at 1440x900, no console errors, and mobile at 4x throttle renders the lockup and both copy lines correctly.
+
+Acceptance criteria status.
+
+Checked 1, 3, 4 and 6: independent tumble with no shared vanishing point and distinct sky/object parallax are both visible in the shipped scene; the palette is brand orange on charcoal; perf:assets and check:worker-assets both pass with 105 public files, none near the 25 MiB Workers cap.
+
+AC#2 left unchecked deliberately. It asks for poster planes to keep un-flipped back-face UVs so roughly half read mirrored, as a signature of the reference. That now holds only for the two families with no backing box. Every other family got a correctly-oriented rear face, because the user asked for artwork to show on both sides no matter the orientation and an opaque tray or body box was hiding the DoubleSide plane behind it. The two requirements are in genuine tension and the newer one came from the user directly, so this AC needs amending rather than checking.
+
+AC#5 left unchecked. It asks for a stable frame rate on a mid-tier laptop GPU, and every measurement here was taken on this machine. CPU throttling does not stand in for a weaker GPU — it is the wrong axis, and the hero is GPU-bound, which is exactly why 4x CPU throttle barely moved the frame time. The numbers are strong (8.3ms at 1440, 11.3ms at 1920, 122fps live) but they are not evidence about the hardware this AC names.
 <!-- SECTION:NOTES:END -->

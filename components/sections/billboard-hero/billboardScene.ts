@@ -101,8 +101,16 @@ const LOGO_FEATHER = 0.032;
  */
 const LOGO_OFFSET_X = 2.6;
 const LOGO_OFFSET_Y = -2.2;
-/** Mask resolution. The shape is soft by construction, so this never needs to be large. */
-const LOGO_MASK_W = 512;
+/**
+ * Mask resolution.
+ *
+ * Small on purpose. The mask is blurred by ~3% of its own width and then thinned by noise, so
+ * nothing in it survives at pixel scale — and the noise pass is a per-pixel loop with four
+ * octaves of value noise in it, which makes this number quadratic in main-thread cost. At 512
+ * that is a quarter of a million pixels of setup work on a phone, for a shape whose finest
+ * detail is tens of pixels across.
+ */
+const LOGO_MASK_W = 256;
 
 /**
  * The large formats — mega walls and unipoles — carry a light of their own, so a backlit face

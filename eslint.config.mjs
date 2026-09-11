@@ -6,6 +6,9 @@ const config = [
     ignores: [
       'node_modules/**',
       '.next/**',
+      // Cloudflare build output. Gitignored but not ignored here, so `pnpm check` failed for
+      // anyone who had run a build locally — it was linting the generated worker bundle.
+      '.open-next/**',
       'reference/**',
       'scripts/.venv-ig/**',
       'scripts/node_modules/**',

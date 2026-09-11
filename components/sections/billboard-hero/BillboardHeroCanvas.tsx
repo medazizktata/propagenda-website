@@ -179,6 +179,7 @@ export function BillboardHeroCanvas({
 
     const tick = () => {
       if (!running) return;
+      refreshCanvasRect();
       applyHover();
       const now = performance.now();
       const dt = Math.min((now - last) / 1000, MAX_DELTA);
@@ -196,6 +197,7 @@ export function BillboardHeroCanvas({
      * the frame composes without anything animating, and the scene tracks the drag directly.
      */
     const drawOnce = () => {
+      refreshCanvasRect();
       const now = performance.now();
       const dt = Math.min((now - last) / 1000, MAX_DELTA);
       last = now;
@@ -238,13 +240,25 @@ export function BillboardHeroCanvas({
       startLoop();
     }
 
+    /**
+     * Canvas rect, cached and refreshed once per frame rather than read per pointer event.
+     *
+     * `getBoundingClientRect` forces a synchronous layout. Reading it inside the pointer handler
+     * meant one forced reflow per event, and a high-rate mouse emits far more events per second
+     * than there are frames — so the page was doing hundreds of layout passes a second to
+     * produce coordinates that only change meaningfully once per frame anyway.
+     */
+    let canvasRect = renderer.domElement.getBoundingClientRect();
+    const refreshCanvasRect = () => {
+      canvasRect = renderer.domElement.getBoundingClientRect();
+    };
+
     const toNdc = (event: PointerEvent) => {
-      const rect = renderer.domElement.getBoundingClientRect();
-      const w = rect.width || 1;
-      const h = rect.height || 1;
+      const w = canvasRect.width || 1;
+      const h = canvasRect.height || 1;
       return {
-        x: ((event.clientX - rect.left) / w) * 2 - 1,
-        y: -((event.clientY - rect.top) / h) * 2 + 1,
+        x: ((event.clientX - canvasRect.left) / w) * 2 - 1,
+        y: -((event.clientY - canvasRect.top) / h) * 2 + 1,
       };
     };
 
@@ -271,6 +285,8 @@ export function BillboardHeroCanvas({
     };
     const onPointerDown = (event: PointerEvent) => {
       if (event.button !== 0) return;
+      // The loop may be stopped, and a press is rare enough to afford one fresh read.
+      refreshCanvasRect();
       const { x, y } = toNdc(event);
       const overlay = getOverlayPointerTarget();
       if (overlay?.pointerDown?.(x, y)) dragTarget = overlay;

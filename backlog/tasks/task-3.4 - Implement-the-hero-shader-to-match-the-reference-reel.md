@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - '@claude'
 created_date: '2026-09-08 11:12'
-updated_date: '2026-09-11 00:49'
+updated_date: '2026-09-11 09:27'
 labels: []
 dependencies:
   - TASK-3.2
@@ -203,4 +203,16 @@ Checked 1, 3, 4 and 6: independent tumble with no shared vanishing point and dis
 AC#2 left unchecked deliberately. It asks for poster planes to keep un-flipped back-face UVs so roughly half read mirrored, as a signature of the reference. That now holds only for the two families with no backing box. Every other family got a correctly-oriented rear face, because the user asked for artwork to show on both sides no matter the orientation and an opaque tray or body box was hiding the DoubleSide plane behind it. The two requirements are in genuine tension and the newer one came from the user directly, so this AC needs amending rather than checking.
 
 AC#5 left unchecked. It asks for a stable frame rate on a mid-tier laptop GPU, and every measurement here was taken on this machine. CPU throttling does not stand in for a weaker GPU — it is the wrong axis, and the hero is GPU-bound, which is exactly why 4x CPU throttle barely moved the frame time. The numbers are strong (8.3ms at 1440, 11.3ms at 1920, 122fps live) but they are not evidence about the hardware this AC names.
+
+Mobile field sizing.
+
+The user reported the structures were mostly hidden on a phone, and the diagnosis was placement, not count. The field used a hard-coded 20-unit span with an 11-unit recycle bound — about right for a landscape frame and roughly four times too wide for a 390px portrait one, where the camera only sees about +/-2.5 units across at the field's reference depth. All but two or three structures sat outside the frustum, being simulated every frame and never seen.
+
+The span is now measured from the visible width at that depth, with a 1.35x overscan so structures enter and leave rather than popping at the boundary. A resize rescales existing x positions by the same ratio, since otherwise a rotation strands the whole field outside the new frustum and it drifts back at ~2% of viewport width per second.
+
+The structure count derives from that width at constant density rather than from a breakpoint, which means no phone-versus-tablet special case and identical visual spacing at every aspect: 3 at 390x844, 5 at 768x1024, 9 at 1024x768, 11 from 1280 up — 11 being what the field was composed with, so landscape is unchanged. The centre-clearing band that pushes structures deep behind the lockup is likewise a fraction of the field now rather than a fixed 3.2 units, or a narrow frame would push nearly everything deep.
+
+Role line hidden below sm: on a phone it wrapped onto its own line under the positioning one, which stacked two quiet lines under the name and read as a list rather than a lockup.
+
+Merged to main (20d9c36..b08dc30) and deployed. Version 4d041b83-aa4f-4206-989d-4ea95953d09f replaces a3c46c30. Verified live on thepropagenda.com at both 390x844 and 1440x900: 2-3 structures on the phone with the role line gone, 11 and both copy lines on desktop, no console errors at either.
 <!-- SECTION:NOTES:END -->

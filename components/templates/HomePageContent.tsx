@@ -1,3 +1,4 @@
+import { BillboardHero } from '@/components/sections/BillboardHero';
 import { Hero } from '@/components/sections/Hero';
 import { ManifestoSection } from '@/components/sections/ManifestoSection';
 import { DesignPrintInstallPopup } from '@/components/sections/DesignPrintInstallPopup';
@@ -11,6 +12,7 @@ export function HomePageContent() {
   return (
     <>
       <SeamlessActs>
+        <BillboardHero />
         <Hero />
         <ManifestoSection />
         <DesignPrintInstallPopup />

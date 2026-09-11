@@ -89,8 +89,20 @@ export const contactForm: ContactFormConfig = {
 
 export const hero = {
   h1: 'WHERE CREATIVITY MEETS STRATEGY',
-  subtitle: 'Your 360° Marketing Solutions Partner',
   cta: { label: 'See the work', href: '/work' },
+};
+
+/**
+ * Opening billboard hero lockup: brand name, then two short lines sharing one row beneath it.
+ *
+ * `partner` moved up from the showreel section's subtitle. The positioning line belongs with the
+ * name rather than a section below it, and the showreel keeps its headline and call to action.
+ * The `360°` in it is split out and rendered as its own spinning mark — see `Hero360Mark`.
+ */
+export const billboardHero = {
+  name: 'Propagenda',
+  role: 'Marketing agency',
+  partner: 'Your 360° Marketing Solutions Partner',
 };
 
 export const site = {
@@ -102,4 +114,5 @@ export const site = {
   footer,
   contactForm,
   hero,
+  billboardHero,
 };

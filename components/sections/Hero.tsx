@@ -1,10 +1,8 @@
 'use client';
 
 import { useRef, useEffect, useState, useCallback, type CSSProperties } from 'react';
-import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/marketing-button';
 import { ScrollCue } from '@/components/molecules/ScrollCue';
-import { Hero360Mark } from '@/components/molecules/Hero360Mark';
 import { VideoLightbox } from '@/components/molecules/VideoLightbox';
 import { cn } from '@/components/ui/cn';
 import { hero } from '@/content/site';
@@ -13,11 +11,6 @@ import { gsap, ScrollTrigger } from '@/lib/motion/gsap';
 import { useReducedMotion } from '@/lib/motion/useReducedMotion';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { useInitLoader } from '@/hooks/useInitLoader';
-
-const HeroLogo3D = dynamic(
-  () => import('@/components/sections/HeroLogo3D').then((m) => m.HeroLogo3D),
-  { ssr: false },
-);
 
 /** Lightbox / non-scrub playback — 2560×1440 (Workers asset limit ≤25 MiB). */
 const HERO_VIDEO_SRC = '/videos/propagenda-marketing.mp4';
@@ -105,6 +98,14 @@ const CLIP_PATH_STYLE = {
 /** Foreground (headline, 3D mark, subtitle, scroll cue) — dissolves from first scroll. */
 const DISSOLVE_DURATION = 0.1;
 
+/**
+ * Scroll-scrubbed showreel. This is the home page's SECOND section, below BillboardHero.
+ *
+ * It used to be the opener, and used to hold Lenis at the pin end until the scrub finished so a
+ * visitor could not skip the reel. That gate was defensible for a page opener and is hostile in
+ * the middle of a page - it reads as the page fighting the user - so it was removed when the
+ * section moved down. Do not reinstate it here.
+ */
 export function Hero({ flat = false }: { flat?: boolean }) {
   const containerRef = useRef<HTMLElement>(null);
   const pinRef = useRef<HTMLDivElement>(null);
@@ -113,8 +114,6 @@ export function Hero({ flat = false }: { flat?: boolean }) {
   const videoElRef = useRef<HTMLVideoElement>(null);
   const scrubProgressRef = useRef(0);
   const desiredTimeRef = useRef(HERO_VIDEO_SCRUB_START);
-  const heroScrollEndRef = useRef(0);
-  const heroGateOpenRef = useRef(false);
   const [heroPinPercent] = useState(() => pinPercentForScrub());
   const [videoReady, setVideoReady] = useState(false);
   /** Fetch/decode failure — skip pin+scrub so the page scrolls into the next section. */
@@ -165,7 +164,6 @@ export function Hero({ flat = false }: { flat?: boolean }) {
 
   useEffect(() => {
     if (!videoFailed) return;
-    heroGateOpenRef.current = true;
     ScrollTrigger.refresh();
   }, [videoFailed]);
 
@@ -257,21 +255,25 @@ export function Hero({ flat = false }: { flat?: boolean }) {
 
     const ctx = gsap.context(() => {
       gsap.from('.hero-headline', { opacity: 0, y: 30, duration: 0.7, ease: 'power3.out' });
-      gsap.from('.hero-meta', {
-        opacity: 0,
-        y: 24,
-        duration: 0.6,
-        delay: 0.4,
-        stagger: 0.12,
-        ease: 'power2.out',
-      });
+      // Guarded because `.hero-meta` is now conditional: the positioning line that always
+      // carried it moved to the billboard lockup, leaving only the call to action, which is
+      // behind a feature flag. GSAP warns on an empty target set rather than no-opping.
+      if (document.querySelector('.hero-meta')) {
+        gsap.from('.hero-meta', {
+          opacity: 0,
+          y: 24,
+          duration: 0.6,
+          delay: 0.4,
+          stagger: 0.12,
+          ease: 'power2.out',
+        });
+      }
 
       gsap.set('.hero-word', { opacity: 1 });
 
       // Copy dissolves with blur; the WebGL mark is opacity-only — CSS filter on a
       // canvas forces expensive re-raster every scrub frame (stutters on scroll-back).
-      gsap.set('.hero-dissolve:not(.hero-3d)', { opacity: 1, y: 0, filter: 'blur(0px)' });
-      gsap.set('.hero-3d', { opacity: 1, y: 0 });
+      gsap.set('.hero-dissolve', { opacity: 1, y: 0, filter: 'blur(0px)' });
       gsap.set('.hero-scrim', { opacity: 1 });
       // autoAlpha, not opacity: the control must not be a hidden click target at rest.
       gsap.set('.hero-fullscreen-btn', { autoAlpha: 0 });
@@ -289,8 +291,6 @@ export function Hero({ flat = false }: { flat?: boolean }) {
           onUpdate: (self) => {
             const scrubT = scrollProgressToScrub(self.progress);
             scrubProgressRef.current = scrubT;
-            heroScrollEndRef.current = self.end;
-            heroGateOpenRef.current = self.progress >= 0.999;
             setDesiredTime(scrubT);
           },
         },
@@ -322,7 +322,7 @@ export function Hero({ flat = false }: { flat?: boolean }) {
           0,
         )
         .fromTo(
-          '.hero-dissolve:not(.hero-3d)',
+          '.hero-dissolve',
           { opacity: 1, y: 0, filter: 'blur(0px)' },
           {
             opacity: 0,
@@ -334,17 +334,7 @@ export function Hero({ flat = false }: { flat?: boolean }) {
           },
           0,
         )
-        .fromTo(
-          '.hero-3d',
-          { opacity: 1 },
-          {
-            opacity: 0,
-            ease: 'power2.inOut',
-            duration: DISSOLVE_DURATION,
-            immediateRender: false,
-          },
-          0,
-        )
+
         .fromTo(
           '.hero-scrim',
           { opacity: 1 },
@@ -369,28 +359,7 @@ export function Hero({ flat = false }: { flat?: boolean }) {
     };
   }, [noScrub, isDesktop, clipRest, initReady, heroPinPercent, scrubSrc]);
 
-  useEffect(() => {
-    if (noScrub || !initReady) return;
-
-    const lenis = window.__lenis;
-    if (!lenis) return;
-
-    const clampHeroScroll = () => {
-      if (heroGateOpenRef.current) return;
-      const max = heroScrollEndRef.current;
-      if (max > 0 && lenis.scroll > max + 1) {
-        lenis.scrollTo(max, { immediate: true });
-      }
-    };
-
-    lenis.on('scroll', clampHeroScroll);
-    return () => {
-      lenis.off('scroll', clampHeroScroll);
-    };
-  }, [noScrub, initReady, heroPinPercent]);
-
   const words = hero.h1.split(' ');
-  const subParts = hero.subtitle.split('360°');
 
   return (
     <section
@@ -487,14 +456,6 @@ export function Hero({ flat = false }: { flat?: boolean }) {
             </div>
           </div>
 
-          {isDesktop && !flat ? (
-            <div className="pointer-events-none absolute inset-0 z-[2] -translate-y-[8vh] translate-x-[7vw] scale-[0.82]">
-              <div className="hero-3d absolute inset-0 will-change-[opacity]">
-                <HeroLogo3D className="absolute inset-0" />
-              </div>
-            </div>
-          ) : null}
-
           {/* Headline + subtitle — dissolves with the 3D mark on scroll. */}
           <div
             className={cn(
@@ -517,14 +478,12 @@ export function Hero({ flat = false }: { flat?: boolean }) {
               ))}
             </h1>
 
+            {/* The positioning line used to sit here; it now shares a row with the role under
+                the billboard lockup above, where it belongs to the name rather than to a
+                section below it. */}
             <div className="mt-5 flex max-w-[22ch] flex-col items-start text-left sm:max-w-none">
-              <p className="hero-meta text-xs font-bold uppercase leading-snug tracking-[0.14em] text-white sm:whitespace-nowrap sm:text-sm sm:tracking-[0.16em]">
-                {subParts[0]}
-                <Hero360Mark />
-                {subParts[1]}
-              </p>
               {isFeatureUnlocked(hero.cta.href) ? (
-                <div className="hero-meta pointer-events-auto mt-5">
+                <div className="hero-meta pointer-events-auto">
                   <Button href={hero.cta.href} size="lg">
                     {hero.cta.label}
                   </Button>

@@ -12,6 +12,7 @@ import {
   type Slideshow,
   type StructureCtx,
 } from './oohStructures';
+import { createHero360Beat } from '@/lib/motion/hero360Sync';
 import type { HeroScene, HeroSceneContext } from './types';
 
 /**
@@ -20,7 +21,12 @@ import type { HeroScene, HeroSceneContext } from './types';
  *
  * Motion is taken from the measurements in `docs/rework/reel-hero-dissection.md` §2.5: every
  * object carries its own constant angular velocity and linear drift, integrated on delta with
- * no easing and no shared vanishing point. Anything tweened reads wrong here.
+ * no easing and no shared vanishing point.
+ *
+ * That dissection also said anything tweened reads wrong here, and the idle tumble still obeys
+ * it. The one deliberate exception is the 360° beat below: on request, the whole field turns
+ * together in time with the spinning "360°" in the lockup. It is layered on top of the tumble
+ * rather than replacing it, so between beats the field still reads as unsynchronised.
  *
  * Palette is translated to brand — orange #f58b27 on charcoal #121212 — rather than copied from
  * the reference, which is coral red and cream on teal. See TASK-3.
@@ -1015,6 +1021,12 @@ export function createBillboardScene(ctx: HeroSceneContext): HeroScene {
   composer.addPass(new OutputPass());
   composer.setSize(width, height);
 
+  /**
+   * Shared 360° beat, on the same clock as the spinning mark in the lockup and the monogram in
+   * `HeroLogo3D`, smoothed so the field does not inherit the mark's snap. See the follower.
+   */
+  const beatFor = createHero360Beat();
+
   const raycaster = new THREE.Raycaster();
   const ndc = new THREE.Vector2();
   const hitTargets = floaters.map((f) => f.group);
@@ -1143,10 +1155,12 @@ export function createBillboardScene(ctx: HeroSceneContext): HeroScene {
     update(dt, elapsed) {
       const damp = Math.exp(-IMPULSE_DECAY * dt);
       const held = drag.floater;
+
+      const beat = reducedMotion ? 0 : beatFor(dt);
       const dragDamp = 2 * Math.sqrt(DRAG_STIFFNESS) * DRAG_DAMPING;
       for (const f of floaters) {
         f.group.rotation.x += (f.spin.x + f.impulse.x) * dt;
-        f.group.rotation.y += (f.spin.y + f.impulse.y) * dt;
+        f.group.rotation.y += (f.spin.y + f.impulse.y) * dt + beat;
         f.group.rotation.z += (f.spin.z + f.impulse.z) * dt;
         f.impulse.multiplyScalar(damp);
 

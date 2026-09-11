@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - '@claude'
 created_date: '2026-09-08 11:12'
-updated_date: '2026-09-11 09:27'
+updated_date: '2026-09-11 09:47'
 labels: []
 dependencies:
   - TASK-3.2
@@ -215,4 +215,18 @@ The structure count derives from that width at constant density rather than from
 Role line hidden below sm: on a phone it wrapped onto its own line under the positioning one, which stacked two quiet lines under the name and read as a list rather than a lockup.
 
 Merged to main (20d9c36..b08dc30) and deployed. Version 4d041b83-aa4f-4206-989d-4ea95953d09f replaces a3c46c30. Verified live on thepropagenda.com at both 390x844 and 1440x900: 2-3 structures on the phone with the role line gone, 11 and both copy lines on desktop, no console errors at either.
+
+360° beat: field rotation synced to the lockup's mark, then smoothed.
+
+All 3D objects now turn on the shared clock in hero360Sync — the one the spinning '360°' glyph uses and that HeroLogo3D already drove its monogram from. Both hero layers subscribe, so the near structures and the field behind them move as one.
+
+Applied as a per-frame delta rather than an absolute angle: each object's Y rotation is an accumulating integral of its own idle spin, so assigning an absolute value would discard that and snap every object to the same facing. The cycle resets 2π -> 0 rather than running on, and since those are the same facing the seam is folded forward — otherwise it registers as a backward whole turn once every seven seconds.
+
+Smoothing was needed and is now a shared primitive (createHero360Beat) rather than duplicated in both scenes. The mark's own curve is a steep ease-in-out putting a whole turn inside ~28% of the cycle, peaking at 530 deg/s at 60fps — fine on a small glyph, a snap on a field of objects. The follower banks each increment and releases it exponentially, preserving the rotation exactly (still one turn per cycle, still phase-locked) while spreading it over a longer tail.
+
+The constant was chosen from measurement, not taste. Simulated across two settled cycles at 60fps: 5.0 -> 425 deg/s moving 38% of frames; 2.6 -> 343 at 53%; 1.6 -> 274 at 71%; 0.8 -> 181 at 100%. Below about 1.1 the bank never empties before the next cycle, so the surge becomes a continuous turn that merely speeds up in time with the mark. That is the point — a start and a stop are what read as a snap — so 0.8 is the default.
+
+Note this is a deliberate departure from the dissection's rule that anything tweened reads wrong here. The per-object idle tumble still obeys it; the beat is layered on top, and the scene header records the exception so the comment does not contradict the code.
+
+Verified 1440x900: 8.5ms median, 117fps, no console errors. Merged (23257d2..8a5559a) and deployed as version 94f6eb5d-a39d-4fed-ae86-6a15c8ea6514; confirmed live on thepropagenda.com with no console errors.
 <!-- SECTION:NOTES:END -->

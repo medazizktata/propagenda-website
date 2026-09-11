@@ -112,9 +112,12 @@ export function BillboardHero() {
                 {partnerParts[1]}
               </p>
 
+              {/* Desktop only. On a phone this sits on its own line under the positioning one,
+                  which stacks two quiet lines under the name and reads as a list rather than as
+                  a lockup — and the positioning line is the one carrying the message. */}
               <p
                 className={cn(
-                  'font-bold uppercase text-white/85 sm:text-right',
+                  'hidden font-bold uppercase text-white/85 sm:block sm:text-right',
                   'text-[11px] tracking-[0.2em] sm:text-[13px]',
                   '[text-shadow:0_1px_10px_rgba(0,0,0,0.85)]',
                 )}

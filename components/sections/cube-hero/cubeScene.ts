@@ -6,7 +6,7 @@ import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 
 import { createBackdrop } from './backdrop';
-import { applyFaceSlots, createChamferedBox } from './chamferedBox';
+import { createRoundedBox, type RoundedBoxOptions } from './roundedBox';
 import { CHORUS, type ChorusSpec } from './chorus';
 import { CHORUS_PRESET, PROTAGONIST_PRESET, createCubeMaterial } from './cubeMaterial';
 import { createFaceAtlas } from './faceAtlas';
@@ -35,6 +35,33 @@ const CUBE_SIZE = 2;
 const REST_YAW = -Math.PI / 6;
 const TILT_X = THREE.MathUtils.degToRad(11);
 const QUARTER = Math.PI / 2;
+
+/**
+ * Two levels of cube, sharing one builder and one shader.
+ *
+ * The split is a level of detail, not a difference of kind. The subject is ~330 CSS px across and
+ * its edge roll is about twenty device pixels wide, which is where a rolling highlight is actually
+ * legible and worth ten facets. A chorus cube is ~150 px with a roll barely three pixels wide; the
+ * same segment count there would put several triangles inside a single pixel, and sub-pixel
+ * triangles are the one way extra geometry does cost real money — every one of them rasterises as
+ * a 2x2 quad, so the fragment shader runs again for coverage nobody can see.
+ *
+ * Both still get the crown, which costs four quads a face and is the only thing keeping a 150px
+ * cube's specular from flashing on and off as a single flat plane.
+ */
+const PROTAGONIST_GEOMETRY: RoundedBoxOptions = {
+  radius: 0.03,
+  edgeSegments: 5,
+  faceSegments: 8,
+  crown: 0.013,
+};
+
+const CHORUS_GEOMETRY: RoundedBoxOptions = {
+  radius: 0.03,
+  edgeSegments: 3,
+  faceSegments: 4,
+  crown: 0.013,
+};
 
 const BEAT_SECONDS = 3.4;
 /**
@@ -234,64 +261,81 @@ export function createCubeScene(options: CubeSceneOptions): CubeSceneHandle {
   slots[FACE_PY] = BLANK_SLOT;
   slots[FACE_NY] = BLANK_SLOT;
 
-  const protagonistGeometry = createChamferedBox(slots);
-  const protagonist = new THREE.Mesh(protagonistGeometry, protagonistMaterial);
+  protagonistMaterial.setFaceSlots(slots);
+
+  const protagonistGeometry = createRoundedBox(PROTAGONIST_GEOMETRY);
+  const protagonist = new THREE.Mesh(protagonistGeometry, protagonistMaterial.material);
   protagonist.scale.setScalar(CUBE_SIZE);
   group.add(protagonist);
 
+  // ── The chorus, as one draw ─────────────────────────────────────────────────────────────
+  // Eight meshes with eight geometries and eight materials became one InstancedMesh with one of
+  // each. What used to make them un-shareable was the atlas: every cube shows a different set of
+  // services, which meant a different uv buffer per cube. The tile lookup now happens in the
+  // vertex shader from a per-instance offset (see cubeMaterial), so the buffer is identical for
+  // all of them — which is what makes it affordable for a background cube to be 1,200 triangles
+  // instead of 44 rather than 8 x 1,200 sitting in VRAM.
   interface ChorusItem {
-    mesh: THREE.Mesh;
-    home: THREE.Vector3;
-    portrait: ChorusSpec['portrait'];
-    portraitVisible: boolean;
-    scale: number;
+    spec: ChorusSpec;
+    /** Rest position, before drift. Rewritten per layout; portrait places these by frustum. */
     origin: THREE.Vector3;
-    tilt: readonly [number, number, number];
-    rate: number;
-    drift: number;
-    driftRate: number;
-    phase: number;
-    minWidth: number;
+    /** Portrait overrides the spec's scale, so this is not always spec.scale. */
+    cubeScale: number;
+    /** Per-cube roughness seed and the tint it produces, both fixed at mount. */
+    variation: number;
+    faceDark: THREE.Color;
   }
 
-  const chorusGeometries: THREE.BufferGeometry[] = [];
-  const chorusMaterials: THREE.Material[] = [];
+  const chorusGeometry = createRoundedBox(CHORUS_GEOMETRY);
+  const chorusMaterial = createCubeMaterial(atlas.texture, atlasTexel, CHORUS_PRESET, {
+    instanced: true,
+  });
+  // Face i starts on tile i; the per-instance offset rotates the whole set, which reproduces the
+  // old `(slotOffset + i) % 8` exactly.
+  chorusMaterial.setFaceSlots([0, 1, 2, 3, 4, 5]);
+
   const chorus: ChorusItem[] = CHORUS.map((spec, index) => {
-    const cubeSlots = Array.from({ length: 6 }, (_, i) => (spec.slotOffset + i) % (BLANK_SLOT + 1));
-    const geometry = createChamferedBox(cubeSlots);
-    chorusGeometries.push(geometry);
-    // A material each, so roughness and tint can drift a little per cube. They all share one
-    // compiled program (see customProgramCacheKey), so the cost is a uniform block, not a shader.
-    const material = createCubeMaterial(
-      atlas.texture,
-      atlasTexel,
-      CHORUS_PRESET,
-      (index * 0.37) % 1,
-    );
-    chorusMaterials.push(material);
-    const mesh = new THREE.Mesh(geometry, material);
-    mesh.position.set(spec.pos[0], spec.pos[1], spec.pos[2]);
-    mesh.scale.setScalar(spec.scale * CUBE_SIZE);
-    mesh.rotation.set(spec.tilt[0], spec.tilt[1], spec.tilt[2]);
-    group.add(mesh);
-    const home = new THREE.Vector3(...spec.pos);
+    const variation = (index * 0.37) % 1;
+    const faceDark = new THREE.Color(CHORUS_PRESET.faceDark);
+    // A couple of per-cube degrees of tint drift. Identical material on every cube is the tell
+    // that says "instanced" — which it now literally is, so this matters more than it did.
+    faceDark.offsetHSL(0, (variation - 0.5) * 0.05, (variation - 0.5) * 0.035);
     return {
-      mesh,
-      home,
-      portrait: spec.portrait,
-      // Portrait keeps only the three cubes that were given a portrait placement. A tall frame has
-      // room for a handful of large shapes, not a field of small ones.
-      portraitVisible: spec.portrait !== undefined,
-      scale: spec.scale,
-      origin: home.clone(),
-      tilt: spec.tilt,
-      rate: spec.rate,
-      drift: spec.drift,
-      driftRate: spec.driftRate,
-      phase: spec.phase,
-      minWidth: spec.minWidth,
+      spec,
+      origin: new THREE.Vector3(...spec.pos),
+      cubeScale: spec.scale,
+      variation,
+      faceDark,
     };
   });
+
+  const chorusMesh = new THREE.InstancedMesh(
+    chorusGeometry,
+    chorusMaterial.material,
+    chorus.length,
+  );
+  chorusMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+  // Every instance is placed inside the frame by applyLayout and every matrix changes each frame,
+  // so a bounding-sphere rebuild per frame would buy a cull that can never fire.
+  chorusMesh.frustumCulled = false;
+  group.add(chorusMesh);
+
+  const chorusSlotOffset = new THREE.InstancedBufferAttribute(new Float32Array(chorus.length), 1);
+  const chorusVariation = new THREE.InstancedBufferAttribute(new Float32Array(chorus.length), 1);
+  const chorusFaceDark = new THREE.InstancedBufferAttribute(new Float32Array(chorus.length * 3), 3);
+  chorusGeometry.setAttribute('aSlotOffset', chorusSlotOffset);
+  chorusGeometry.setAttribute('aVariation', chorusVariation);
+  chorusGeometry.setAttribute('aFaceDark', chorusFaceDark);
+
+  /**
+   * The cubes currently in frame, packed to the front of the instance buffer.
+   *
+   * Packing rather than leaning on a sort order: which cubes show depends on both the viewport
+   * width and the frame's shape, and an InstancedMesh can only draw a prefix. Repacking happens
+   * on layout — a resize, not a frame — so it costs nothing per frame and cannot be broken by a
+   * later edit to the chorus list.
+   */
+  const onStage: ChorusItem[] = [];
 
   // ── Post ────────────────────────────────────────────────────────────────────────────────
   // Four MSAA samples on the composer's target. This has to live here rather than on the renderer
@@ -381,40 +425,51 @@ export function createCubeScene(options: CubeSceneOptions): CubeSceneHandle {
     backdrop.setFocus(0.5 + nx / 2, 0.5 + ny / 2 - 0.04);
     backdrop.setAspect(aspect);
 
+    onStage.length = 0;
     for (const item of chorus) {
+      const { spec } = item;
       // In portrait the field is exactly the three cubes that were placed for it. The others are
       // positioned in world units against a landscape frustum; letting them through on a tall
       // frame is how objects end up outside the view with nothing to signal it.
-      item.mesh.visible = layout.portrait ? item.portraitVisible : width >= item.minWidth;
-      if (!item.mesh.visible) continue;
-      const usePortrait = layout.portrait && item.portrait !== undefined;
+      const onScreen = layout.portrait ? spec.portrait !== undefined : width >= spec.minWidth;
+      if (!onScreen) continue;
+      const portrait = layout.portrait ? spec.portrait : undefined;
 
-      const cubeScale = usePortrait && item.portrait ? item.portrait.scale : item.scale;
-      item.mesh.scale.setScalar(cubeScale * CUBE_SIZE);
+      item.cubeScale = portrait ? portrait.scale : spec.scale;
 
-      if (usePortrait && item.portrait) {
+      if (portrait) {
         // Placed against what is actually visible at this cube's own depth, then clamped with
         // room left for its drift, so a portrait frame can never lose one off the edge.
-        const depth = CAMERA_DIST - layout.scale * item.portrait.z;
+        const depth = CAMERA_DIST - layout.scale * portrait.z;
         const view = visibleHalf(depth, aspect);
-        const driftX = (item.drift * 0.6 * layout.scale) / view.w;
-        const driftY = (item.drift * layout.scale) / view.h;
-        const radiusX = (CUBE_SIZE * cubeScale * layout.scale * SILHOUETTE_W) / 2 / view.w;
-        const radiusY = (CUBE_SIZE * cubeScale * layout.scale * SILHOUETTE_H) / 2 / view.h;
-        const fx = clamp(item.portrait.fx, Math.max(0, 1 - radiusX - driftX - EDGE_MARGIN));
+        const driftX = (spec.drift * 0.6 * layout.scale) / view.w;
+        const driftY = (spec.drift * layout.scale) / view.h;
+        const radiusX = (CUBE_SIZE * item.cubeScale * layout.scale * SILHOUETTE_W) / 2 / view.w;
+        const radiusY = (CUBE_SIZE * item.cubeScale * layout.scale * SILHOUETTE_H) / 2 / view.h;
+        const fx = clamp(portrait.fx, Math.max(0, 1 - radiusX - driftX - EDGE_MARGIN));
         const fy = Math.min(
-          clamp(item.portrait.fy, Math.max(0, 1 - radiusY - driftY - EDGE_MARGIN)),
+          clamp(portrait.fy, Math.max(0, 1 - radiusY - driftY - EDGE_MARGIN)),
           PORTRAIT_HEADER_KEEP_OUT - radiusY - driftY,
         );
         item.origin.set(
           (fx * view.w - group.position.x) / layout.scale,
           (fy * view.h - group.position.y) / layout.scale,
-          item.portrait.z,
+          portrait.z,
         );
       } else {
-        item.origin.copy(item.home);
+        item.origin.set(spec.pos[0], spec.pos[1], spec.pos[2]);
       }
+
+      const slot = onStage.length;
+      chorusSlotOffset.setX(slot, spec.slotOffset);
+      chorusVariation.setX(slot, item.variation);
+      chorusFaceDark.setXYZ(slot, item.faceDark.r, item.faceDark.g, item.faceDark.b);
+      onStage.push(item);
     }
+    chorusMesh.count = onStage.length;
+    chorusSlotOffset.needsUpdate = true;
+    chorusVariation.needsUpdate = true;
+    chorusFaceDark.needsUpdate = true;
   }
   applyLayout();
 
@@ -437,6 +492,14 @@ export function createCubeScene(options: CubeSceneOptions): CubeSceneHandle {
   const spinAxis = new THREE.Vector3(0, 1, 0);
   const tiltEuler = new THREE.Euler();
 
+  // Scratch for the chorus's instance matrices, allocated once. Composing eight matrices a frame
+  // is the same arithmetic three's Object3D.updateMatrix was doing for eight meshes before.
+  const chorusMatrix = new THREE.Matrix4();
+  const chorusQuat = new THREE.Quaternion();
+  const chorusEuler = new THREE.Euler();
+  const chorusPos = new THREE.Vector3();
+  const chorusScale = new THREE.Vector3();
+
   function triggerBeat(): void {
     beatIndex += 1;
     spinStart = spinTarget;
@@ -448,7 +511,10 @@ export function createCubeScene(options: CubeSceneOptions): CubeSceneHandle {
     // lets six faces carry seven services forever — the cube is a marquee, not a die.
     const backFace = FRONT_FACE_CYCLE[(beatIndex + 2) % FRONT_FACE_CYCLE.length];
     slots[backFace] = (beatIndex + 2) % CUBE_SERVICES.length;
-    applyFaceSlots(protagonistGeometry, slots);
+    // Six floats into a uniform. It used to rewrite 48 uv floats and re-upload the buffer; the
+    // face being repainted is always at the back of the cube either way, so the change is culled
+    // before anyone could see it happen.
+    protagonistMaterial.setFaceSlots(slots);
 
     announced = false;
   }
@@ -464,6 +530,24 @@ export function createCubeScene(options: CubeSceneOptions): CubeSceneHandle {
       Math.sin(elapsed * 0.55) * 0.045,
       0,
     );
+  }
+
+  function updateChorus(): void {
+    for (let i = 0; i < onStage.length; i += 1) {
+      const { spec, origin, cubeScale } = onStage[i];
+      chorusEuler.set(spec.tilt[0], spec.tilt[1] + elapsed * spec.rate, spec.tilt[2]);
+      chorusQuat.setFromEuler(chorusEuler);
+      const wave = elapsed * spec.driftRate + spec.phase;
+      chorusPos.set(
+        origin.x + Math.cos(wave * 0.73) * spec.drift * 0.6,
+        origin.y + Math.sin(wave) * spec.drift,
+        origin.z,
+      );
+      chorusScale.setScalar(cubeScale * CUBE_SIZE);
+      chorusMatrix.compose(chorusPos, chorusQuat, chorusScale);
+      chorusMesh.setMatrixAt(i, chorusMatrix);
+    }
+    chorusMesh.instanceMatrix.needsUpdate = true;
   }
 
   function update(dt: number): void {
@@ -493,17 +577,7 @@ export function createCubeScene(options: CubeSceneOptions): CubeSceneHandle {
     }
 
     updateProtagonist();
-
-    for (const item of chorus) {
-      if (!item.mesh.visible) continue;
-      item.mesh.rotation.set(item.tilt[0], item.tilt[1] + elapsed * item.rate, item.tilt[2]);
-      const wave = elapsed * item.driftRate + item.phase;
-      item.mesh.position.set(
-        item.origin.x + Math.cos(wave * 0.73) * item.drift * 0.6,
-        item.origin.y + Math.sin(wave) * item.drift,
-        item.origin.z,
-      );
-    }
+    updateChorus();
 
     pointerX = damp(pointerX, pointerTargetX, 4.5, dt);
     pointerY = damp(pointerY, pointerTargetY, 4.5, dt);
@@ -577,6 +651,7 @@ export function createCubeScene(options: CubeSceneOptions): CubeSceneHandle {
   // Compose the opening frame before anything is shown, so the hero fades up already resolved
   // rather than snapping into position.
   updateProtagonist();
+  updateChorus();
   renderFrame();
   onService(0);
   onReady();
@@ -623,9 +698,10 @@ export function createCubeScene(options: CubeSceneOptions): CubeSceneHandle {
       composer.dispose();
 
       protagonistGeometry.dispose();
-      for (const geometry of chorusGeometries) geometry.dispose();
+      chorusGeometry.dispose();
+      chorusMesh.dispose();
       protagonistMaterial.dispose();
-      for (const material of chorusMaterials) material.dispose();
+      chorusMaterial.dispose();
       backdrop.dispose();
       atlas.dispose();
       environment.dispose();

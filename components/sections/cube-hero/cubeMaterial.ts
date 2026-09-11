@@ -1,11 +1,14 @@
 import * as THREE from 'three';
 
+import { ATLAS_COLS, ATLAS_ROWS, BLANK_SLOT } from './services';
+import { NO_PRINT_FACE } from './roundedBox';
+
 /**
  * The cube surface.
  *
- * This is a MeshPhysicalMaterial with four chunks of three's own fragment shader replaced, rather
- * than a ShaderMaterial written from scratch. The trade is deliberate: everything that is hard to
- * get right — the split-sum IBL, the GGX specular, the clearcoat lobe, energy compensation — stays
+ * This is a MeshPhysicalMaterial with five chunks of three's own shader replaced, rather than a
+ * ShaderMaterial written from scratch. The trade is deliberate: everything that is hard to get
+ * right — the split-sum IBL, the GGX specular, the clearcoat lobe, energy compensation — stays
  * three's problem, and only the parts that are genuinely this hero's idea are authored here.
  *
  * What a stock material cannot do, and this one does:
@@ -27,6 +30,11 @@ import * as THREE from 'three';
  * 4. **A Fresnel rim keyed to the shadow side.** Faces turned away get a cool edge lift that the
  *    lit face does not, so the silhouette separates from a near-black backdrop without washing a
  *    blue cast across the one surface that has to stay brand-accurate.
+ *
+ * 5. **The atlas lookup in the vertex shader.** The geometry carries face-local uv and a face
+ *    index; which tile a face shows is a uniform, and for the chorus a per-instance offset on top
+ *    of it. That is what lets nine cubes showing nine different sets of services share a single
+ *    geometry — and it turns "repaint the back face" from a buffer re-upload into one float.
  */
 
 export interface CubeMaterialPreset {
@@ -127,6 +135,14 @@ export const CHORUS_PRESET: CubeMaterialPreset = {
   rim: 0.09,
 };
 
+/**
+ * Face uv is squeezed 3% inside its tile so the linear-mip filter cannot drag a neighbouring
+ * tile's ink across a face edge.
+ */
+const TILE_INSET = 0.03;
+/** Slots in the atlas, so a chorus offset can wrap through all of them including the blank. */
+const ATLAS_SLOTS = ATLAS_COLS * ATLAS_ROWS;
+
 const COMMON_PARS = /* glsl */ `
 uniform vec3 uFaceDark;
 uniform vec3 uFaceLit;
@@ -148,43 +164,128 @@ varying vec3 vTangentView;
 varying vec3 vBitangentView;
 `;
 
-/**
- * Per face, not per fragment. Measuring "how squarely is this turned toward me" from the object's
- * centre keeps it constant across a face, as it must be for a flat printed panel — measured per
- * fragment, a large near face fades toward its own corners and the orange vignettes across the
- * type. It also makes every chamfer facet average its two neighbours, which is what mitres the
- * orange frame around whichever face is lit, out of geometry rather than out of a texture.
- */
-const VERTEX_CHUNK = /* glsl */ `
-#include <begin_vertex>
-vec4 cubeCentreView = modelViewMatrix * vec4(0.0, 0.0, 0.0, 1.0);
-vFacing = dot(normalize(normalMatrix * objectNormal), normalize(-cubeCentreView.xyz));
-vTangentView = normalize(normalMatrix * aTangent);
-vBitangentView = normalize(normalMatrix * aBitangent);
+/** Per-instance drift, interpolated flat in practice — every vertex of an instance agrees. */
+const INSTANCED_VARYINGS = /* glsl */ `
+varying float vVariation;
+varying vec3 vInstanceFaceDark;
 `;
 
-const MAP_CHUNK = /* glsl */ `
+function vertexDeclarations(instanced: boolean): string {
+  return /* glsl */ `
+attribute vec3 aTangent;
+attribute vec3 aFaceNormal;
+attribute float aFaceIndex;
+uniform float uFaceSlot[6];
+varying float vFacing;
+varying vec3 vTangentView;
+varying vec3 vBitangentView;
+${
+  instanced
+    ? /* glsl */ `
+attribute float aSlotOffset;
+attribute float aVariation;
+attribute vec3 aFaceDark;
+${INSTANCED_VARYINGS}`
+    : ''
+}`;
+}
+
+/**
+ * Which atlas tile this vertex's face is showing, resolved here rather than baked into the uv
+ * buffer.
+ *
+ * Doing it in the shader is what collapses nine geometries into two: the chorus is one
+ * InstancedMesh whose cubes each carry a different slot offset, and repainting the protagonist's
+ * back face on a beat is a single uniform write instead of re-uploading 48 floats.
+ *
+ * Appended after three's own `<uv_vertex>` rather than replacing it, so every other uv varying
+ * the material might need is still set up the way three expects.
+ */
+function uvChunk(instanced: boolean): string {
+  return /* glsl */ `
+float tileSlot = ${BLANK_SLOT}.0;
+if (aFaceIndex < ${NO_PRINT_FACE}.0 - 0.5) {
+  tileSlot = uFaceSlot[int(aFaceIndex)];
+  ${instanced ? `tileSlot = mod(tileSlot + aSlotOffset, ${ATLAS_SLOTS}.0);` : ''}
+}
+vec2 tileLocal = mix(vec2(${TILE_INSET}), vec2(${1 - TILE_INSET}), uv);
+// The atlas grid is indexed from the canvas's top-left but textures upload with flipY, so the
+// canvas row fraction has to be inverted on the way into v.
+vMapUv = vec2(
+  (mod(tileSlot, ${ATLAS_COLS}.0) + tileLocal.x) / ${ATLAS_COLS}.0,
+  1.0 - (floor(tileSlot / ${ATLAS_COLS}.0) + 1.0 - tileLocal.y) / ${ATLAS_ROWS}.0
+);
+${
+  instanced
+    ? /* glsl */ `
+vVariation = aVariation;
+vInstanceFaceDark = aFaceDark;`
+    : ''
+}`;
+}
+
+/**
+ * Per face, not per fragment.
+ *
+ * Measuring "how squarely is this turned toward me" from the object's centre keeps it constant
+ * across a face, as it must be for a flat printed panel — measured per fragment, a large near face
+ * fades toward its own corners and the orange vignettes across the type. Note that it reads
+ * `aFaceNormal` and not the shading normal: the panel is now slightly crowned, and letting that
+ * 2.5 degree dome into this term would reintroduce exactly the vignette the per-face measurement
+ * exists to avoid. On the roll the two vectors are the same, which is what carries the lit face's
+ * colour smoothly over the edge and mitres the orange frame out of geometry rather than texture.
+ */
+function vertexChunk(instanced: boolean): string {
+  return /* glsl */ `
+#include <begin_vertex>
+vec3 faceNormal = aFaceNormal;
+vec3 faceTangent = aTangent;
+vec4 cubeCentre = vec4(0.0, 0.0, 0.0, 1.0);
+${
+  instanced
+    ? /* glsl */ `
+// Without this the whole chorus would take its facing from the group's origin and light as one
+// object; instanceMatrix is rotation plus uniform scale, so the mat3 needs no inverse-transpose.
+faceNormal = mat3(instanceMatrix) * faceNormal;
+faceTangent = mat3(instanceMatrix) * faceTangent;
+cubeCentre = instanceMatrix * cubeCentre;`
+    : ''
+}
+vec3 faceNormalView = normalize(normalMatrix * faceNormal);
+vec4 cubeCentreView = modelViewMatrix * cubeCentre;
+vFacing = dot(faceNormalView, normalize(-cubeCentreView.xyz));
+vTangentView = normalize(normalMatrix * faceTangent);
+// The geometry ships a right-handed basis (u x v == n), so the bitangent is a cross product
+// rather than a third vertex attribute.
+vBitangentView = cross(faceNormalView, vTangentView);`;
+}
+
+function mapChunk(instanced: boolean): string {
+  return /* glsl */ `
 float mask = texture2D(map, vMapUv).a;
 float lit = smoothstep(uFillRange.x, uFillRange.y, vFacing);
 float typeAlpha = clamp(mask * uTypeAlpha * mix(uTypeDim, 1.0, lit), 0.0, 1.0);
-vec3 panel = mix(uFaceDark, uFaceLit, lit);
+vec3 panel = mix(${instanced ? 'vInstanceFaceDark' : 'uFaceDark'}, uFaceLit, lit);
 vec3 ink = mix(uInkLight, uInkDark, smoothstep(uInkRange.x, uInkRange.y, vFacing));
-diffuseColor.rgb *= mix(panel, ink, typeAlpha);
-`;
+diffuseColor.rgb *= mix(panel, ink, typeAlpha);`;
+}
 
-const ROUGHNESS_CHUNK = /* glsl */ `
-float roughnessFactor = roughness;
+function roughnessChunk(instanced: boolean): string {
+  return /* glsl */ `
+// Identical material on every cube is the tell that says "instanced"; a couple of points of
+// roughness drift per cube is small enough to be felt rather than seen.
+float roughnessFactor = roughness${instanced ? ' + (vVariation - 0.5) * 0.14' : ''};
 // Ink is matte; the panel it sits on is satin. The cheapest honest cue that the type is a material
 // on the surface rather than a picture of type: the highlight breaks as it crosses the glyphs.
-roughnessFactor = mix(roughnessFactor, uInkRoughness, typeAlpha);
-`;
+roughnessFactor = mix(roughnessFactor, uInkRoughness, typeAlpha);`;
+}
 
 /**
  * Debossing, done in texture space rather than from screen-space derivatives. Four taps give the
- * mask's gradient; the face's own uv axes — passed up from the geometry as a tangent frame — turn
- * that gradient into a normal tilt. Texture space matters: a screen-space bump would grow stronger
- * as the cube came closer and evaporate on the small ones, whereas this softens exactly in step
- * with the mip the texture is already being read from.
+ * mask's gradient; the face's own uv axes — reconstructed in the vertex chunk from the tangent and
+ * the face normal — turn that gradient into a normal tilt. Texture space matters: a screen-space
+ * bump would grow stronger as the cube came closer and evaporate on the small ones, whereas this
+ * softens exactly in step with the mip the texture is already being read from.
  */
 const NORMAL_CHUNK = /* glsl */ `
 #include <normal_fragment_maps>
@@ -196,10 +297,12 @@ const NORMAL_CHUNK = /* glsl */ `
   normal = normalize(normal + uDeboss * (vTangentView * hu + vBitangentView * hv));
 
   // Geometric specular anti-aliasing. MSAA resolves silhouettes; it does nothing about a tight
-  // highlight sliding across a chamfer as the cube turns, which on a bright one-pixel band
-  // against a near-black ground is the artifact that actually reads as crawling. Where the
-  // normal is changing fast across a pixel, widen the lobe to cover the variance it is hiding —
-  // a Toksvig-style filter, about six instructions, in place of three full-screen AA passes.
+  // highlight sliding along an edge roll as the cube turns, which on a bright band against a
+  // near-black ground is the artifact that actually reads as crawling — and the roll now has a
+  // continuously varying normal for it to crawl along, so this matters more than it did against
+  // a single flat chamfer facet. Where the normal changes fast across a pixel, widen the lobe to
+  // cover the variance it is hiding: a Toksvig-style filter, about six instructions, in place of
+  // three full-screen AA passes.
   vec3 normalDx = dFdx(normal);
   vec3 normalDy = dFdy(normal);
   float normalVariance = max(dot(normalDx, normalDx), dot(normalDy, normalDy));
@@ -220,28 +323,59 @@ float rimFresnel = pow(1.0 - saturate(dot(normal, normalize(vViewPosition))), 4.
 totalEmissiveRadiance += uRimColor * (rimFresnel * uRim * (1.0 - 0.85 * lit));
 `;
 
+export interface CubeMaterial {
+  material: THREE.MeshPhysicalMaterial;
+  /**
+   * Point the six printed faces at atlas tiles. Six floats into a uniform: no buffer is touched,
+   * nothing is re-uploaded, and it is safe to call on a beat.
+   */
+  setFaceSlots(slots: readonly number[]): void;
+  dispose(): void;
+}
+
+export interface CubeMaterialOptions {
+  /**
+   * Built for an InstancedMesh. Adds the per-instance tile offset and the per-cube roughness and
+   * tint drift, which are attributes rather than uniforms once every cube shares one material.
+   */
+  instanced?: boolean;
+  /** 0..1 seed. Small per-cube drift in roughness and tint; ignored when instanced. */
+  variation?: number;
+}
+
 export function createCubeMaterial(
   atlas: THREE.Texture,
   atlasTexel: THREE.Vector2,
   preset: CubeMaterialPreset,
-  /** 0..1 seed. Small per-cube drift in roughness and tint, so a field of them is not clones. */
-  variation = 0.5,
-): THREE.MeshPhysicalMaterial {
+  options: CubeMaterialOptions = {},
+): CubeMaterial {
+  const instanced = options.instanced ?? false;
+  const variation = options.variation ?? 0.5;
+
   const material = new THREE.MeshPhysicalMaterial({
     color: 0xffffff,
     map: atlas,
-    roughness: preset.roughness + (variation - 0.5) * 0.14,
+    roughness: preset.roughness + (instanced ? 0 : (variation - 0.5) * 0.14),
     metalness: preset.metalness,
-    envMapIntensity: preset.envMapIntensity * (1 + (variation - 0.5) * 0.3),
+    // Per-instance envMapIntensity would mean patching three's IBL uniform into a varying for a
+    // +/-15% brightness nudge on cubes that are 150px wide and half-buried in fog. The per-cube
+    // roughness drift below already spreads their specular; this stays a single value.
+    envMapIntensity: preset.envMapIntensity * (instanced ? 1 : 1 + (variation - 0.5) * 0.3),
     clearcoat: preset.clearcoat,
     clearcoatRoughness: 0.2,
     emissive: 0x000000,
   });
 
   const faceDark = new THREE.Color(preset.faceDark);
-  // A couple of per-cube degrees of tint drift. Identical material on every cube is the tell that
-  // says "instanced"; this is small enough to be felt rather than seen.
-  faceDark.offsetHSL(0, (variation - 0.5) * 0.05, (variation - 0.5) * 0.035);
+  if (!instanced) {
+    // A couple of per-cube degrees of tint drift. Identical material on every cube is the tell
+    // that says "instanced"; this is small enough to be felt rather than seen.
+    faceDark.offsetHSL(0, (variation - 0.5) * 0.05, (variation - 0.5) * 0.035);
+  }
+
+  // Held outside onBeforeCompile so setFaceSlots can write to it before, during or after the
+  // material's first compile.
+  const faceSlot = { value: [0, 0, 0, 0, 0, 0] as number[] };
 
   material.onBeforeCompile = (shader) => {
     shader.uniforms.uFaceDark = { value: faceDark };
@@ -262,30 +396,36 @@ export function createCubeMaterial(
     shader.uniforms.uInkRoughness = { value: preset.inkRoughness };
     shader.uniforms.uDeboss = { value: preset.deboss };
     shader.uniforms.uRim = { value: preset.rim };
+    shader.uniforms.uFaceSlot = faceSlot;
 
     shader.vertexShader = shader.vertexShader
-      .replace(
-        '#include <common>',
-        '#include <common>\n' +
-          'attribute vec3 aTangent;\n' +
-          'attribute vec3 aBitangent;\n' +
-          'varying float vFacing;\n' +
-          'varying vec3 vTangentView;\n' +
-          'varying vec3 vBitangentView;',
-      )
-      .replace('#include <begin_vertex>', VERTEX_CHUNK);
+      .replace('#include <common>', `#include <common>\n${vertexDeclarations(instanced)}`)
+      .replace('#include <uv_vertex>', `#include <uv_vertex>\n${uvChunk(instanced)}`)
+      .replace('#include <begin_vertex>', vertexChunk(instanced));
 
     shader.fragmentShader = shader.fragmentShader
-      .replace('#include <common>', `#include <common>\n${COMMON_PARS}`)
-      .replace('#include <map_fragment>', MAP_CHUNK)
-      .replace('#include <roughnessmap_fragment>', ROUGHNESS_CHUNK)
+      .replace(
+        '#include <common>',
+        `#include <common>\n${COMMON_PARS}${instanced ? INSTANCED_VARYINGS : ''}`,
+      )
+      .replace('#include <map_fragment>', mapChunk(instanced))
+      .replace('#include <roughnessmap_fragment>', roughnessChunk(instanced))
       .replace('#include <normal_fragment_maps>', NORMAL_CHUNK)
       .replace('#include <emissivemap_fragment>', EMISSIVE_CHUNK);
   };
 
   // Every cube of a kind compiles to the same program. Without a stable key three would treat each
   // material's patched source as unique and compile it again per cube.
-  material.customProgramCacheKey = () => `cube-hero-${preset.clearcoat > 0 ? 'coated' : 'plain'}`;
+  const kind = `${preset.clearcoat > 0 ? 'coated' : 'plain'}-${instanced ? 'instanced' : 'single'}`;
+  material.customProgramCacheKey = () => `cube-hero-${kind}`;
 
-  return material;
+  return {
+    material,
+    setFaceSlots(slots) {
+      for (let face = 0; face < 6; face += 1) faceSlot.value[face] = slots[face];
+    },
+    dispose() {
+      material.dispose();
+    },
+  };
 }

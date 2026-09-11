@@ -13,6 +13,8 @@
  *   NEXT_PUBLIC_FF_SOFT_LAUNCH=false
  * Clean Cuberto-style page transition (default). Opt into the ornate orange curtain:
  *   NEXT_PUBLIC_FF_COMPLEX_CURTAIN=true
+ * Swap the home page's opening hero:
+ *   NEXT_PUBLIC_HERO_VARIANT=cubes     (default: billboard)
  *
  * Legacy aliases still work: NEXT_PUBLIC_SOFT_LAUNCH, NEXT_PUBLIC_INIT_LOADER.
  *
@@ -53,6 +55,20 @@ export const ffInitLoader = parseFlag(
  * (quote + logo + nine cover variants).
  */
 export const ffComplexCurtain = parseFlag(process.env.NEXT_PUBLIC_FF_COMPLEX_CURTAIN, false);
+
+/** The two home page openers. */
+export type HeroVariant = 'billboard' | 'cubes';
+
+/**
+ * Which hero opens the home page. Default: `billboard`.
+ *
+ * A literal equality rather than `parseFlag`, for the same reason the soft-launch flag above is:
+ * Next only inlines statically-read `process.env.NEXT_PUBLIC_*` into the client bundle, and
+ * comparing against a literal here lets the bundler fold this to a constant — which is what lets
+ * the unused hero's scene code be dropped rather than shipped alongside the one in use.
+ */
+export const heroVariant: HeroVariant =
+  process.env.NEXT_PUBLIC_HERO_VARIANT === 'cubes' ? 'cubes' : 'billboard';
 
 /** Per-section unlocks while soft launch is active. Default: locked (false). */
 export const pageFlags = {

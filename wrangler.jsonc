@@ -40,6 +40,8 @@
     "CONTACT_DELIVER_TO": "propagendamarketing@gmail.com",
     "NEXT_PUBLIC_CONTACT_EMAIL": "contact@thepropagenda.com",
     "NEXT_PUBLIC_FF_COMPLEX_CURTAIN": "false",
+    // Home page opener: "billboard" (default) or "cubes".
+    "NEXT_PUBLIC_HERO_VARIANT": "billboard",
     "NEXT_PUBLIC_TURNSTILE_SITE_KEY": "0x4AAAAAAEXndoVcXl1or5zJ",
     "TURNSTILE_HOSTNAMES": "thepropagenda.com,www.thepropagenda.com"
   }

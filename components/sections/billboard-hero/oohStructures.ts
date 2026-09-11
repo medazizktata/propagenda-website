@@ -342,4 +342,10 @@ export const STRUCTURE_MIX: StructureBuilder[] = [
   buildBusShelter,
   buildLightbox,
   buildWayfindingTotem,
+  // Second pass over the smaller formats. Placement is stratified one-per-column, so the count
+  // sets the density directly: seven left the lower half of the frame reading as empty.
+  buildPortraitPoster,
+  buildLightbox,
+  buildMegaWall,
+  buildBusShelter,
 ];

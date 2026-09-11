@@ -1,5 +1,7 @@
 'use client';
 
+import { useMediaQuery } from '@/hooks/useMediaQuery';
+import { Hero360Mark } from '@/components/molecules/Hero360Mark';
 import { ScrollCue } from '@/components/molecules/ScrollCue';
 import { cn } from '@/components/ui/cn';
 import { billboardHero } from '@/content/site';
@@ -24,11 +26,22 @@ const POSTER = '/images/billboard-hero-poster.jpg';
  *   this section is a plain 100vh block and does not pin. The showreel section below keeps its
  *   own pin.
  *
- * Lockup is the brand name plus a tucked role line. The reference also carried a follow-up
- * sentence centred beneath; that has been dropped deliberately — the field behind the type is
- * busy and in motion, and every extra line of quiet copy competes with it for legibility.
+ * Lockup is the brand name over a single row holding the positioning line and the role. The
+ * reference carried a follow-up sentence centred beneath instead; that was dropped deliberately,
+ * because the field behind the type is busy and in motion and every extra line of quiet copy
+ * competes with it for legibility. Keeping these two on one row costs no vertical space.
  */
 export function BillboardHero() {
+  // The mark is a live, spinning element rather than a glyph, so the line is split around it.
+  const partnerParts = billboardHero.partner.split('360°');
+  /**
+   * The near layer is desktop-only. Its bands are fractions of the visible frame, so on a phone
+   * the same structures land far closer to the lockup relative to the type's size and sit on the
+   * copy rather than clipping the edge of the name. It is a depth device that needs room, and
+   * skipping it also spares a phone a second WebGL context.
+   */
+  const hasRoomForNearLayer = useMediaQuery('(min-width: 1024px)');
+
   return (
     <section data-seamless-act className="relative h-screen overflow-hidden bg-charcoal">
       <BillboardHeroCanvas createScene={createBillboardScene} poster={POSTER} />
@@ -72,16 +85,43 @@ export function BillboardHero() {
               </span>
             </h1>
 
-            {/* Right-aligned under the name, same placement as the reference's "advertising agency". */}
-            <p
+            {/* One row under the name, pinned to the lockup's own width: the positioning line at
+                the left edge of the P, the role right-aligned under the final stop — the
+                reference's placement for "advertising agency". Stacked on narrow screens, where
+                the two together are wider than the name above them. */}
+            <div
               className={cn(
-                'mt-2 self-end text-right font-bold uppercase text-white/85 sm:mt-3',
-                'text-[11px] tracking-[0.2em] sm:text-[13px]',
-                '[text-shadow:0_1px_10px_rgba(0,0,0,0.85)]',
+                // No `items-start` on the stacked axis: it would size each line to its own
+                // max-content, so the longer one overflows the row and gets clipped instead of
+                // wrapping. Stretched, each line is bounded by the lockup's width and wraps.
+                'mt-2 flex w-full flex-col gap-1 sm:mt-3',
+                'sm:flex-row sm:items-baseline sm:justify-between sm:gap-6',
               )}
             >
-              {billboardHero.role}
-            </p>
+              <p
+                className={cn(
+                  'font-bold uppercase text-white/85',
+                  'text-[11px] tracking-[0.2em] sm:text-[13px]',
+                  '[text-shadow:0_1px_10px_rgba(0,0,0,0.85)]',
+                )}
+              >
+                {partnerParts[0]}
+                {/* Sized down to the line it now sits in — at its own default it is set for a
+                    body-copy subtitle and would tower over 11px type. */}
+                <Hero360Mark className="text-[11px] sm:text-[13px]" />
+                {partnerParts[1]}
+              </p>
+
+              <p
+                className={cn(
+                  'font-bold uppercase text-white/85 sm:text-right',
+                  'text-[11px] tracking-[0.2em] sm:text-[13px]',
+                  '[text-shadow:0_1px_10px_rgba(0,0,0,0.85)]',
+                )}
+              >
+                {billboardHero.role}
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -94,13 +134,15 @@ export function BillboardHero() {
           canvas receives everything and hit-tests this scene first through `overlayPointer.ts`,
           so both layers end up draggable through a single input path. Its pixel ratio is capped
           below the base canvas's — two objects do not warrant a full-resolution buffer. */}
-      <BillboardHeroCanvas
-        createScene={createForegroundScene}
-        transparent
-        role="overlay"
-        maxPixelRatio={1.5}
-        className="pointer-events-none z-[3]"
-      />
+      {hasRoomForNearLayer ? (
+        <BillboardHeroCanvas
+          createScene={createForegroundScene}
+          transparent
+          role="overlay"
+          maxPixelRatio={1.5}
+          className="pointer-events-none z-[3]"
+        />
+      ) : null}
 
       <ScrollCue label="Scroll to the showreel" className="z-[4]" />
     </section>

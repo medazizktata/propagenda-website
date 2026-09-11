@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - '@claude'
 created_date: '2026-09-08 11:12'
-updated_date: '2026-09-10 23:42'
+updated_date: '2026-09-11 00:20'
 labels: []
 dependencies:
   - TASK-3.2
@@ -177,4 +177,10 @@ An earlier attempt at this verification recoloured the shadow and hid the monogr
 Field cut again on request, 11 structures to 7, one per family. That leaves one mega wall and one unipole, so two panel lights rather than four.
 
 Frame timing after: median 8.6ms / p95 9.9ms.
+
+Correction: the earlier note claiming the lockup overflows its container around 900px viewports is wrong. Retract it.
+
+It came from resizing the browser window rather than emulating a viewport, and the window would not go below ~500px, so what was measured was a scaled window and not the width it claimed to be. Re-checked with real device emulation: at 900px the h1 is 804px wide sitting 48..852 inside 900, documentElement.scrollWidth equals innerWidth, no horizontal overflow. Same at 390px — 348px wide inside 390. No overflow at either width, and no task needed.
+
+Method note for next time: measure the element and the document rather than reading a screenshot, and confirm window.innerWidth is what was asked for before trusting any width-dependent observation.
 <!-- SECTION:NOTES:END -->

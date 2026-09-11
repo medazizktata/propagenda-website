@@ -1,10 +1,8 @@
 'use client';
 
 import { useRef, useEffect, useState, useCallback, type CSSProperties } from 'react';
-import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/marketing-button';
 import { ScrollCue } from '@/components/molecules/ScrollCue';
-import { Hero360Mark } from '@/components/molecules/Hero360Mark';
 import { VideoLightbox } from '@/components/molecules/VideoLightbox';
 import { cn } from '@/components/ui/cn';
 import { hero } from '@/content/site';
@@ -13,11 +11,6 @@ import { gsap, ScrollTrigger } from '@/lib/motion/gsap';
 import { useReducedMotion } from '@/lib/motion/useReducedMotion';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { useInitLoader } from '@/hooks/useInitLoader';
-
-const HeroLogo3D = dynamic(
-  () => import('@/components/sections/HeroLogo3D').then((m) => m.HeroLogo3D),
-  { ssr: false },
-);
 
 /** Lightbox / non-scrub playback — 2560×1440 (Workers asset limit ≤25 MiB). */
 const HERO_VIDEO_SRC = '/videos/propagenda-marketing.mp4';
@@ -262,21 +255,25 @@ export function Hero({ flat = false }: { flat?: boolean }) {
 
     const ctx = gsap.context(() => {
       gsap.from('.hero-headline', { opacity: 0, y: 30, duration: 0.7, ease: 'power3.out' });
-      gsap.from('.hero-meta', {
-        opacity: 0,
-        y: 24,
-        duration: 0.6,
-        delay: 0.4,
-        stagger: 0.12,
-        ease: 'power2.out',
-      });
+      // Guarded because `.hero-meta` is now conditional: the positioning line that always
+      // carried it moved to the billboard lockup, leaving only the call to action, which is
+      // behind a feature flag. GSAP warns on an empty target set rather than no-opping.
+      if (document.querySelector('.hero-meta')) {
+        gsap.from('.hero-meta', {
+          opacity: 0,
+          y: 24,
+          duration: 0.6,
+          delay: 0.4,
+          stagger: 0.12,
+          ease: 'power2.out',
+        });
+      }
 
       gsap.set('.hero-word', { opacity: 1 });
 
       // Copy dissolves with blur; the WebGL mark is opacity-only — CSS filter on a
       // canvas forces expensive re-raster every scrub frame (stutters on scroll-back).
-      gsap.set('.hero-dissolve:not(.hero-3d)', { opacity: 1, y: 0, filter: 'blur(0px)' });
-      gsap.set('.hero-3d', { opacity: 1, y: 0 });
+      gsap.set('.hero-dissolve', { opacity: 1, y: 0, filter: 'blur(0px)' });
       gsap.set('.hero-scrim', { opacity: 1 });
       // autoAlpha, not opacity: the control must not be a hidden click target at rest.
       gsap.set('.hero-fullscreen-btn', { autoAlpha: 0 });
@@ -325,7 +322,7 @@ export function Hero({ flat = false }: { flat?: boolean }) {
           0,
         )
         .fromTo(
-          '.hero-dissolve:not(.hero-3d)',
+          '.hero-dissolve',
           { opacity: 1, y: 0, filter: 'blur(0px)' },
           {
             opacity: 0,
@@ -337,17 +334,7 @@ export function Hero({ flat = false }: { flat?: boolean }) {
           },
           0,
         )
-        .fromTo(
-          '.hero-3d',
-          { opacity: 1 },
-          {
-            opacity: 0,
-            ease: 'power2.inOut',
-            duration: DISSOLVE_DURATION,
-            immediateRender: false,
-          },
-          0,
-        )
+
         .fromTo(
           '.hero-scrim',
           { opacity: 1 },
@@ -373,7 +360,6 @@ export function Hero({ flat = false }: { flat?: boolean }) {
   }, [noScrub, isDesktop, clipRest, initReady, heroPinPercent, scrubSrc]);
 
   const words = hero.h1.split(' ');
-  const subParts = hero.subtitle.split('360°');
 
   return (
     <section
@@ -470,14 +456,6 @@ export function Hero({ flat = false }: { flat?: boolean }) {
             </div>
           </div>
 
-          {isDesktop && !flat ? (
-            <div className="pointer-events-none absolute inset-0 z-[2] -translate-y-[8vh] translate-x-[7vw] scale-[0.82]">
-              <div className="hero-3d absolute inset-0 will-change-[opacity]">
-                <HeroLogo3D className="absolute inset-0" />
-              </div>
-            </div>
-          ) : null}
-
           {/* Headline + subtitle — dissolves with the 3D mark on scroll. */}
           <div
             className={cn(
@@ -500,14 +478,12 @@ export function Hero({ flat = false }: { flat?: boolean }) {
               ))}
             </h1>
 
+            {/* The positioning line used to sit here; it now shares a row with the role under
+                the billboard lockup above, where it belongs to the name rather than to a
+                section below it. */}
             <div className="mt-5 flex max-w-[22ch] flex-col items-start text-left sm:max-w-none">
-              <p className="hero-meta text-xs font-bold uppercase leading-snug tracking-[0.14em] text-white sm:whitespace-nowrap sm:text-sm sm:tracking-[0.16em]">
-                {subParts[0]}
-                <Hero360Mark />
-                {subParts[1]}
-              </p>
               {isFeatureUnlocked(hero.cta.href) ? (
-                <div className="hero-meta pointer-events-auto mt-5">
+                <div className="hero-meta pointer-events-auto">
                   <Button href={hero.cta.href} size="lg">
                     {hero.cta.label}
                   </Button>

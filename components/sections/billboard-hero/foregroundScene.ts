@@ -46,8 +46,10 @@ const POSTER_COUNT = 4;
 const LANES = [
   // Both sit on the lockup's own line, close enough in to clip the ends of the word — that
   // crossing is the whole point of the layer.
-  { x: -0.66, y: 0.04 },
-  { x: 0.72, y: -0.1 },
+  // The left band is biased high so it crosses the name rather than the line beneath it: that
+  // row now carries the positioning and role copy, which is small and cannot survive being sat on.
+  { x: -0.66, y: 0.22 },
+  { x: 0.84, y: -0.14 },
 ] as const;
 
 function makeRandom(seed: number) {

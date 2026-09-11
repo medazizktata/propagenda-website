@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { setHeroEmitter } from './heroEmitter';
 import { buildLightbox, buildPortraitPoster, type StructureCtx } from './oohStructures';
+import { createHero360Beat } from '@/lib/motion/hero360Sync';
 import type { HeroScene, HeroSceneContext } from './types';
 
 /**
@@ -81,7 +82,10 @@ type NearObject = {
 };
 
 export function createForegroundScene(ctx: HeroSceneContext): HeroScene {
-  const { renderer, width, height, requestDraw } = ctx;
+  const { renderer, width, height, requestDraw, reducedMotion } = ctx;
+
+  /** The same 360° beat the base scene turns on, so both layers move as one field. */
+  const beatFor = createHero360Beat();
 
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.22;
@@ -285,6 +289,8 @@ export function createForegroundScene(ctx: HeroSceneContext): HeroScene {
     },
     update(dt, elapsed) {
       const held = drag.object;
+
+      const beat = reducedMotion ? 0 : beatFor(dt);
       // Publish the nearest lit face for the base scene to cast the lockup's shadow from. The
       // nearest is the one that dominates: it is closest to the camera, so it is the one in
       // front of the type from the viewer's point of view.
@@ -302,7 +308,7 @@ export function createForegroundScene(ctx: HeroSceneContext): HeroScene {
       }
       for (const o of objects) {
         o.group.rotation.x += o.spin.x * dt;
-        o.group.rotation.y += o.spin.y * dt;
+        o.group.rotation.y += o.spin.y * dt + beat;
         o.group.rotation.z += o.spin.z * dt;
 
         if (o === held) {

@@ -36,7 +36,6 @@ export function CubeHero() {
   const reducedMotion = useReducedMotion();
   const sectionRef = useRef<HTMLElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const [activeIndex, setActiveIndex] = useState(0);
   const [sceneReady, setSceneReady] = useState(false);
 
   useEffect(() => {
@@ -113,7 +112,10 @@ export function CubeHero() {
           canvas,
           container: section,
           reducedMotion,
-          onService: setActiveIndex,
+          // Nothing in the DOM tracks the turning any more, so this is a sink. Kept because the
+          // scene requires it, and because re-introducing state here would mean a React render
+          // on every beat for something no longer rendered.
+          onService: () => {},
           onReady: () => setSceneReady(true),
         });
         // The effect's cleanup may have run while the dynamic import was in flight.
@@ -156,8 +158,6 @@ export function CubeHero() {
     };
   }, [reducedMotion]);
 
-  const active = CUBE_SERVICES[activeIndex] ?? CUBE_SERVICES[0];
-
   return (
     <section
       ref={sectionRef}
@@ -177,7 +177,10 @@ export function CubeHero() {
       />
 
       <div className="relative z-content mx-auto flex h-full w-full max-w-[1800px] flex-col px-6 sm:px-10 lg:px-14">
-        <div className="flex min-h-0 flex-1 flex-col justify-end pb-6 pt-[calc(var(--header-height)+1rem)] lg:justify-center lg:pb-0">
+        {/* Sits off the bottom rather than on it. Flush against the edge put the call to action
+            under the dock or the browser's own chrome in a short window, and the copy read as
+            having fallen to the floor of the frame. */}
+        <div className="flex min-h-0 flex-1 flex-col justify-end pb-[clamp(3.5rem,11vh,6rem)] pt-[calc(var(--header-height)+1rem)] lg:justify-center lg:pb-0">
           {/* The column is its own containment context, so the wordmark can be sized in cqw. */}
           <div className="w-full lg:w-1/2" style={{ containerType: 'inline-size' }}>
             <h1
@@ -217,42 +220,6 @@ export function CubeHero() {
               </span>
             </Link>
           </div>
-        </div>
-
-        {/* Bottom rail — a caption, nothing more. It used to carry a counter, a fill bar and a
-            row of seven numbers; all three were pagination furniture, and they framed a turning
-            sculpture as a slideshow with six more slides to sit through. Hidden from assistive
-            tech: the ordered list above already says everything it says. */}
-        <div
-          aria-hidden
-          className="shrink-0 border-t border-white/10 pb-[max(0.875rem,env(safe-area-inset-bottom))] pt-3.5 sm:pt-4"
-        >
-          {reducedMotion ? (
-            <div className="flex flex-wrap items-baseline gap-x-6 gap-y-1.5">
-              {CUBE_SERVICES.map((service, index) => (
-                <span
-                  key={service.name}
-                  className={cn(
-                    'text-[clamp(0.8rem,1.5vw,0.95rem)] font-medium',
-                    index === 0 ? 'text-white' : 'text-white/45',
-                  )}
-                >
-                  {service.name}
-                </span>
-              ))}
-            </div>
-          ) : (
-            <div className="overflow-hidden">
-              {/* Re-keyed on every change so the name masks up out of the rule, travelling the
-                  same way the cube's incoming face does. */}
-              <span
-                key={activeIndex}
-                className="block animate-fade-up text-[clamp(1rem,2.2vw,1.5rem)] font-semibold leading-tight text-white"
-              >
-                {active.name}
-              </span>
-            </div>
-          )}
         </div>
       </div>
     </section>

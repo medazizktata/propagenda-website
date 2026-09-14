@@ -3,6 +3,10 @@
     "envato": {
       "type": "http",
       "url": "https://mcp.envato.com/mcp"
+    },
+    "cloudflare": {
+      "type": "http",
+      "url": "https://mcp.cloudflare.com/mcp"
     }
   }
 }

@@ -1,15 +1,12 @@
 import { notFound } from 'next/navigation';
 import { ServiceDetailContent } from '@/components/templates/ServiceDetailContent';
 import { getService } from '@/lib/content/getService';
-import { getServiceSlugs } from '@/lib/content/getAllSlugs';
 import { getServiceHubCards } from '@/lib/content/getServiceHubCards';
 import { buildMetadata } from '@/lib/seo/metadata';
 import type { ServiceSlug } from '@/types/content';
 
-export async function generateStaticParams() {
-  const slugs = await getServiceSlugs();
-  return slugs.map((slug) => ({ slug }));
-}
+// See app/work/[slug]/page.tsx for why there's no generateStaticParams here.
+export const revalidate = 300;
 
 interface ServiceDetailPageProps {
   params: Promise<{ slug: ServiceSlug }>;

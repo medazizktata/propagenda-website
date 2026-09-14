@@ -1,14 +1,14 @@
 import { notFound } from 'next/navigation';
 import { CaseStudyDetailContent } from '@/components/templates/CaseStudyDetailContent';
 import { getCaseStudy } from '@/lib/content/getCaseStudy';
-import { getWorkSlugs } from '@/lib/content/getAllSlugs';
 import { buildMetadata } from '@/lib/seo/metadata';
 import type { WorkSlug } from '@/types/content';
 
-export async function generateStaticParams() {
-  const slugs = await getWorkSlugs();
-  return slugs.map((slug) => ({ slug }));
-}
+// No generateStaticParams: pages render on first real request against the real D1
+// binding (next build runs outside a Workers request and would only see
+// local/simulated D1 data), then cache per this revalidate window (ISR) instead of
+// needing a build-time enumeration step.
+export const revalidate = 300;
 
 interface WorkDetailPageProps {
   params: Promise<{ slug: WorkSlug }>;

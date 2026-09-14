@@ -75,6 +75,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260911.1",
     "@lhci/cli": "^0.15.1",
     "@next/bundle-analyzer": "^16.2.10",
     "@opennextjs/cloudflare": "^1.20.2",

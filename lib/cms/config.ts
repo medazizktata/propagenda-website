@@ -1,12 +1,16 @@
-import { isSupabaseConfigured } from '@/lib/supabase/env';
+import { hasD1 } from '@/lib/d1/client';
 
 /**
- * Published CMS content is read from Supabase when URL + anon key are set.
- * Without them (e.g. CF Builds missing env), public loaders fall back to
- * `content/*` seed modules so SSG still succeeds.
+ * Published CMS content is read from D1 when a real binding is reachable (i.e.
+ * we're inside a genuine Workers request, not a `next build` step running on
+ * build infra). Without it, public loaders fall back to `content/*` seed
+ * modules so a build without Cloudflare context still succeeds.
+ *
+ * Content used to live in Supabase; TASK-11 migrated data to D1. Supabase Auth
+ * still gates /admin until TASK-11.4 lands Cloudflare Access.
  */
 export function usesDatabaseContent(): boolean {
-  return isSupabaseConfigured();
+  return hasD1();
 }
 
 /** @deprecated Use usesDatabaseContent */
@@ -18,11 +22,11 @@ export function getDefaultLocale(): string {
   return 'en';
 }
 
-/** Admin / seed scripts that must talk to Supabase — not used by public SSG. */
+/** Admin / seed scripts that must talk to D1 — not used by public SSG. */
 export function assertDatabaseContentReady(): void {
   if (!usesDatabaseContent()) {
     throw new Error(
-      'Database content is required. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY, run migrations, then pnpm seed:cms.',
+      'Database content is required. Run this inside a Cloudflare Workers request context (a deployed Worker, or `next dev` with a bound D1 database), and ensure d1/migrations have been applied.',
     );
   }
 }

@@ -1,59 +1,48 @@
 import { usesDatabaseContent, getDefaultLocale } from '@/lib/cms/config';
 import { mapCaseStudyRow } from '@/lib/cms/mappers';
-import { createSupabaseStaticClient } from '@/lib/supabase/static';
+import { getDb } from '@/lib/d1/client';
+import { parseJsonColumns, CASE_STUDY_JSON_COLUMNS } from '@/lib/d1/parseRow';
 import { allCaseStudies, caseStudiesBySlug } from '@/content/work';
 import type { CaseStudyRow } from '@/types/cms';
 import type { CaseStudyRecord } from '@/types/content';
 
-/** Public case-study reads — Supabase when configured, else `content/work` seed. */
+/** Public case-study reads — D1 when reachable, else `content/work` seed. */
 export async function getCaseStudy(slug: string): Promise<CaseStudyRecord | undefined> {
   if (!usesDatabaseContent()) {
     return caseStudiesBySlug[slug as keyof typeof caseStudiesBySlug];
   }
 
-  const supabase = createSupabaseStaticClient();
-  const { data, error } = await supabase
-    .from('case_studies')
-    .select('*')
-    .eq('slug', slug)
-    .eq('locale', getDefaultLocale())
-    .eq('status', 'published')
-    .maybeSingle();
+  const db = getDb()!;
+  const row = await db
+    .prepare('SELECT * FROM case_studies WHERE slug = ?1 AND locale = ?2 AND status = ?3')
+    .bind(slug, getDefaultLocale(), 'published')
+    .first<Record<string, unknown>>();
 
-  if (error) throw error;
-  if (!data) return undefined;
+  if (!row) return undefined;
 
-  return mapCaseStudyRow(data as CaseStudyRow);
+  return mapCaseStudyRow(parseJsonColumns<CaseStudyRow>(row, CASE_STUDY_JSON_COLUMNS));
 }
 
 export async function getAllCaseStudies(): Promise<CaseStudyRecord[]> {
   if (!usesDatabaseContent()) return allCaseStudies;
 
-  const supabase = createSupabaseStaticClient();
-  const { data, error } = await supabase
-    .from('case_studies')
-    .select('*')
-    .eq('locale', getDefaultLocale())
-    .eq('status', 'published')
-    .order('sort_order', { ascending: true });
+  const db = getDb()!;
+  const { results } = await db
+    .prepare('SELECT * FROM case_studies WHERE locale = ?1 AND status = ?2 ORDER BY sort_order ASC')
+    .bind(getDefaultLocale(), 'published')
+    .all<Record<string, unknown>>();
 
-  if (error) throw error;
-
-  return (data as CaseStudyRow[]).map(mapCaseStudyRow);
+  return results.map((row) => mapCaseStudyRow(parseJsonColumns<CaseStudyRow>(row, CASE_STUDY_JSON_COLUMNS)));
 }
 
 export async function getWorkSlugs(): Promise<string[]> {
   if (!usesDatabaseContent()) return allCaseStudies.map((c) => c.slug);
 
-  const supabase = createSupabaseStaticClient();
-  const { data, error } = await supabase
-    .from('case_studies')
-    .select('slug')
-    .eq('locale', getDefaultLocale())
-    .eq('status', 'published')
-    .order('sort_order', { ascending: true });
+  const db = getDb()!;
+  const { results } = await db
+    .prepare('SELECT slug FROM case_studies WHERE locale = ?1 AND status = ?2 ORDER BY sort_order ASC')
+    .bind(getDefaultLocale(), 'published')
+    .all<{ slug: string }>();
 
-  if (error) throw error;
-
-  return (data ?? []).map((row) => row.slug);
+  return results.map((row) => row.slug);
 }

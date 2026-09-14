@@ -21,6 +21,23 @@ export const WORK_SLUGS = [
   'bnk-group',
   'alla-doresu',
   'bil-events',
+  'chicky-fighter',
+  'al-rowad-international',
+  'cu-optics',
+  'al-manazel-al-haditha',
+  'ayoub-and-co',
+  'shawarma-asaj',
+  'dhc-luxury-real-estate',
+  'laya-inc',
+  'vid',
+  'alateeq-cafe',
+  'jordanian-social-club',
+  'dot-and-dash',
+  'leoz',
+  'lets-ad',
+  'quick-cars',
+  'serr-el-oud',
+  'sterling-cars',
 ] as const;
 
 export type ServiceSlug = (typeof SERVICE_SLUGS)[number];

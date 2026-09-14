@@ -65,7 +65,7 @@ export function ServicesStatement() {
           </p>
         </div>
 
-        <div className="svc-stmt-line lg:justify-self-end">
+        <div className="svc-stmt-line">
           <ServicesHeroLogo />
         </div>
       </div>

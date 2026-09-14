@@ -94,23 +94,40 @@ export const moreWorkEntries: WorkHubEntry[] = [
     href: '/work/bil-events',
     accent: accents[4],
   },
+  {
+    title: 'Chicky Fighter: Packaging & Brand Identity',
+    teaser: 'Chicky Fighter is a Dubai fast-food restaurant serving burgers, fried chicken and pizza.',
+    href: '/work/chicky-fighter',
+    accent: accents[3],
+  },
+  {
+    title: 'Al Rowad International Intellectual Property: Branding & Visual Identity',
+    teaser: 'Al Rowad International Intellectual Property is a Dubai intellectual-property registration and protection firm.',
+    href: '/work/al-rowad-international',
+    accent: accents[6],
+  },
 ];
 
+// Audited against the actual files in public/images/clients/ (TASK-10): dropped Dr. Shifa
+// (the "logo" is plain rendered text, no mark), 3L Events (the image doesn't depict a 3L
+// Events mark at all — looks like a mismatched/broken asset), MM Event Management (a
+// near-white mark on a near-white card, effectively invisible), Wing Car Q&C (an
+// unreadable, heavily cropped fragment), and centralhub (a rotated, multi-corner-cropped
+// image that reads as broken, not a clean logo). Added the three real logos that existed
+// on disk but were never wired in here.
 export const logoGridBrands = [
-  { name: '3L Events', imageSrc: '/images/clients/3l-events.png' },
+  { name: 'Sanapex Interiors', imageSrc: '/images/clients/sanapex-interiors.png' },
+  { name: 'P2P Motors', imageSrc: '/images/clients/p2p-motors.webp' },
+  { name: 'Zealerz', imageSrc: '/images/clients/zealerz.png' },
   { name: 'Alla Doresu', imageSrc: '/images/clients/alla-doresu.png' },
   { name: 'Quick Car', imageSrc: '/images/clients/quick-car.png' },
   { name: 'Ghaf Tree', imageSrc: '/images/clients/ghaf-tree.png' },
   { name: 'Al Rowad International', imageSrc: '/images/clients/al-rowad-international.png' },
   { name: 'Lava Inc', imageSrc: '/images/clients/lava-inc.png' },
   { name: 'OU Optics', imageSrc: '/images/clients/ou-optics.png' },
-  { name: 'MM Event Management', imageSrc: '/images/clients/mm-event-management.png' },
   { name: 'Sarrazar', imageSrc: '/images/clients/sarrazar.png' },
   { name: 'Phantom Protection', imageSrc: '/images/clients/phantom-protection.png' },
   { name: 'Global Space Finder', imageSrc: '/images/clients/global-space-finder.png' },
   { name: 'Chez Moda', imageSrc: '/images/clients/chez-moda.png' },
-  { name: 'centralhub', imageSrc: '/images/clients/centralhub.webp' },
-  { name: 'Dr. Shifa', imageSrc: '/images/clients/dr-shifa.png' },
-  { name: 'Wing Car Q&C', imageSrc: '/images/clients/wing-car-qc.png' },
   { name: 'Sealand', imageSrc: '/images/clients/sealand.png' },
 ];

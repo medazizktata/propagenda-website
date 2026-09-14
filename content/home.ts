@@ -117,7 +117,7 @@ export const clientLogos: ClientBrand[] = [
   { name: 'Zealerz', logo: 'zealerz.png' },
   { name: 'Al Rowad International', logo: 'al-rowad-international.png' },
   { name: 'Lava Inc', logo: 'lava-inc.png' },
-  { name: 'OU Optics', logo: 'ou-optics.png' },
+  { name: 'C U Optics', logo: 'ou-optics.png' },
   { name: 'MM Event Management', url: 'https://magicmusicevents.com/', logo: 'mm-event-management.png' },
   { name: 'Sarrazar', logo: 'sarrazar.png' },
   { name: 'Phantom Protection', url: 'https://www.ppfphantom.com/', logo: 'phantom-protection.png' },
@@ -132,4 +132,9 @@ export const clientLogos: ClientBrand[] = [
   { name: 'Ghaf Tree', logo: 'ghaf-tree.png' },
   { name: 'Dr. Shifa', logo: 'dr-shifa.png' },
   { name: 'Wing Car Q&C', logo: 'wing-car-qc.png' },
+  { name: 'Sealand', logo: 'sealand.png' },
+  { name: 'The BNK Group' },
+  { name: 'Arabian Business Academy' },
+  { name: '2K Shopping' },
+  { name: 'Chicky Fighter' },
 ];

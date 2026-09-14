@@ -41,13 +41,21 @@ const VALUES = [
   },
 ];
 
+// Audited against public/images/clients/ (TASK-10): dropped Centralhub (a rotated,
+// multi-corner-cropped image that reads as broken), Ghaf Tree (a photo of physical
+// signage — doesn't sit as a flat mark on a white card), and Dr. Shifa (the "logo" is
+// plain rendered text, no mark). "OU Optics" was a mislabel — the file is the real
+// C U Optics logo (see content/work/index.ts's cu-optics case study). Added real,
+// clean logos that weren't in this marquee yet.
 const CLIENTS = [
   { name: 'Sanapex Interiors', src: '/images/clients/sanapex-interiors.png' },
   { name: 'P2P Motors', src: '/images/clients/p2p-motors.webp' },
-  { name: 'Centralhub', src: '/images/clients/centralhub.webp' },
-  { name: 'Ghaf Tree', src: '/images/clients/ghaf-tree.png' },
-  { name: 'Dr. Shifa', src: '/images/clients/dr-shifa.png' },
-  { name: 'OU Optics', src: '/images/clients/ou-optics.png' },
+  { name: 'C U Optics', src: '/images/clients/ou-optics.png' },
+  { name: 'Al Rowad International', src: '/images/clients/al-rowad-international.png' },
+  { name: 'Chez Moda', src: '/images/clients/chez-moda.png' },
+  { name: 'Sarrazar', src: '/images/clients/sarrazar.png' },
+  { name: 'Sealand', src: '/images/clients/sealand.png' },
+  { name: 'Global Space Finder', src: '/images/clients/global-space-finder.png' },
 ];
 
 export function ServicesWhy() {

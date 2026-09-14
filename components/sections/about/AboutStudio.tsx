@@ -45,17 +45,25 @@ export function AboutStudio() {
       <div className="relative px-gutter-m py-24 lg:px-gutter-d lg:py-32">
         <div className="mx-auto grid max-w-[1920px] items-center gap-16 lg:grid-cols-2 lg:gap-24">
           <div data-about-reveal className="relative">
-            {/* Single restrained monogram — brand presence, NOT wallpaper. Dialed to
-                ~4.5% opacity to respect the "no logo-pattern wallpaper above ~4%" law
-                (one designed moment, not a tiled sheet). */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/images/brand/logo-monogram.svg"
-              alt=""
+            {/* Registration-mark motif, not a logo watermark: a viewfinder frame around
+                the whole intro block with a single orange registration pip at its
+                corner, the print/production mark of a studio putting a brand into
+                alignment. Ambient glow behind it for warmth. Deliberately not the
+                monogram — see backlog TASK-10 for why the old wallpaper is gone. */}
+            <div
               aria-hidden
-              className="pointer-events-none absolute -left-[8%] top-1/2 w-[min(70%,22rem)] -translate-y-[42%] select-none opacity-[0.045] lg:-left-[12%] lg:w-[min(85%,28rem)]"
-              draggable={false}
-            />
+              className="pointer-events-none absolute -left-[6%] -top-[6%] hidden h-[112%] w-[108%] select-none md:block"
+            >
+              <div className="absolute -inset-10 rounded-full bg-orange/10 blur-[90px]" />
+              <svg viewBox="0 0 200 200" fill="none" preserveAspectRatio="none" className="relative h-full w-full">
+                <path d="M2 46V2H46" stroke="white" strokeOpacity="0.14" strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
+                <path d="M154 2H198V46" stroke="white" strokeOpacity="0.14" strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
+                <path d="M198 154V198H154" stroke="white" strokeOpacity="0.14" strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
+                <path d="M46 198H2V154" stroke="white" strokeOpacity="0.14" strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
+                <path d="M2 2h16M2 2v16" stroke="#F58B27" strokeOpacity="0.85" strokeWidth="2" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
+                <circle cx="2" cy="2" r="3" fill="#F58B27" />
+              </svg>
+            </div>
             <div className="relative z-content">
               <p className="mb-6 text-sm font-medium text-white/45">{intro.label}</p>
               <h2

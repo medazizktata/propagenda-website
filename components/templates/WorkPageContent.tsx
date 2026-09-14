@@ -5,16 +5,40 @@ import { WorkIndex } from '@/components/sections/WorkIndex';
 import { ClosingCTABand } from '@/components/sections/ClosingCTABand';
 import type { CaseStudyRecord } from '@/types/content';
 
-const CATEGORY_ORDER = [
+// Preferred display order for the categories we know about today. Any category that
+// actually appears in the data but isn't listed here is appended after these, in the
+// order it's first seen — so a case study is never silently dropped just because its
+// category predates this list.
+const PREFERRED_CATEGORY_ORDER = [
   'Automotive',
   'Property & interiors',
   'Healthcare & retail',
   'Industry & energy',
 ] as const;
 
+function toGroupId(label: string) {
+  return label.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+}
+
 export function WorkPageContent({ caseStudies }: { caseStudies: CaseStudyRecord[] }) {
-  const categoryGroups = CATEGORY_ORDER.map((label) => ({
-    id: label.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
+  const seen = new Set<string>();
+  const orderedCategories: string[] = [];
+
+  for (const label of PREFERRED_CATEGORY_ORDER) {
+    if (!seen.has(label) && caseStudies.some((study) => study.category === label)) {
+      seen.add(label);
+      orderedCategories.push(label);
+    }
+  }
+  for (const study of caseStudies) {
+    if (!seen.has(study.category)) {
+      seen.add(study.category);
+      orderedCategories.push(study.category);
+    }
+  }
+
+  const categoryGroups = orderedCategories.map((label) => ({
+    id: toGroupId(label),
     label,
     items: caseStudies.filter((study) => study.category === label),
   })).filter((group) => group.items.length > 0);

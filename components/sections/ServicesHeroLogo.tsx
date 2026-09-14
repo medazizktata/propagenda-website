@@ -9,7 +9,7 @@ const HeroLogo3D = dynamic(
 
 export function ServicesHeroLogo() {
   return (
-    <div className="relative mx-auto aspect-square w-full max-w-[min(92vw,28rem)] lg:max-w-[min(38vw,34rem)] xl:max-w-[36rem]">
+    <div className="relative mx-auto aspect-square w-full max-w-[min(92vw,28rem)] lg:mx-0 lg:ml-auto lg:max-w-[min(38vw,34rem)] xl:max-w-[36rem]">
       <div
         aria-hidden
         className="pointer-events-none absolute -inset-[12%] rounded-full bg-orange/10 blur-[128px]"

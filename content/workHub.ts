@@ -14,6 +14,8 @@ const accents = [
   'from-orange/20 to-black',
   'from-black to-black',
   'from-charcoal to-orange/20',
+  'from-orange/30 to-charcoal',
+  'from-charcoal to-orange/10',
 ];
 
 export const featuredWorkEntries: WorkHubEntry[] = [
@@ -44,6 +46,18 @@ export const featuredWorkEntries: WorkHubEntry[] = [
     href: '/work/clemson-porter-properties',
     accent: accents[3],
   },
+  {
+    title: 'Sealand: Rebranding & Visual Identity',
+    teaser: 'Sealand is a Dubai seafood restaurant that has been serving guests since 1982.',
+    href: '/work/sealand',
+    accent: accents[6],
+  },
+  {
+    title: 'The BNK Group: Branding & Visual Identity',
+    teaser: 'The BNK Group is a luxury interior design-build studio entering the UAE market.',
+    href: '/work/bnk-group',
+    accent: accents[7],
+  },
 ];
 
 export const moreWorkEntries: WorkHubEntry[] = [
@@ -60,6 +74,25 @@ export const moreWorkEntries: WorkHubEntry[] = [
       'Zealerz is a Dubai-based virtual marketplace aiming to transform the LPG supply chain.',
     href: '/work/zealerz',
     accent: accents[5],
+  },
+  {
+    title: 'Arabian Business Academy: Roll-Up Banner Campaign',
+    teaser:
+      'Arabian Business Academy is a Dubai-based trading education brand with offices in Iraq and Turkey.',
+    href: '/work/arabian-business-academy',
+    accent: accents[6],
+  },
+  {
+    title: '2K Shopping: Branding & Visual Identity',
+    teaser: '2K Shopping is a UAE-based online grocery and essentials delivery platform.',
+    href: '/work/2k-shopping',
+    accent: accents[7],
+  },
+  {
+    title: 'BIL Events: Branding & Visual Identity',
+    teaser: 'BIL Events is a Dubai media-and-events company launching a reality show and a super app.',
+    href: '/work/bil-events',
+    accent: accents[4],
   },
 ];
 
@@ -79,4 +112,5 @@ export const logoGridBrands = [
   { name: 'centralhub', imageSrc: '/images/clients/centralhub.webp' },
   { name: 'Dr. Shifa', imageSrc: '/images/clients/dr-shifa.png' },
   { name: 'Wing Car Q&C', imageSrc: '/images/clients/wing-car-qc.png' },
+  { name: 'Sealand', imageSrc: '/images/clients/sealand.png' },
 ];

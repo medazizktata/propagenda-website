@@ -81,7 +81,7 @@ export const sanapexInteriors = caseStudy(
         height: 1754,
       },
     ],
-    prev: 'clemson-porter-properties',
+    prev: 'bnk-group',
     next: 'p2p-motors',
   },
 );
@@ -210,41 +210,199 @@ export const clemsonPorterProperties = caseStudy(
   {
     overview:
       'UAE property brokerage. A quiet-luxury rebrand for clients who notice everything.',
-    client: 'Clemson Porter Properties',
+    client: 'Clemson Porter Properties Brokers',
     industry: 'Real Estate Brokerage',
-    year: '2024',
+    year: '2025',
+    heroImage: '/images/work/clemson-porter-properties/hero.webp',
     scopeItems: [
-      'Full logo redesign and brand identity system',
-      'Brand colors, typography, and tone of voice',
-      'Company profile design',
-      'Stationery and print materials',
-      'Visual direction focused on quiet luxury and trust',
-      'The new brand is subtle, confident, and timeless, built to resonate with high-net-worth individuals and global investors.',
+      'Full visual identity guidelines: brand essence, values and personality',
+      'Geometric logo system built from interlocking "C" and "P" marks, with primary, vertical, simplified and submark lockups',
+      'Bilingual (English/Arabic) typography system',
+      'A "quiet luxury" color palette and a vertical/horizontal pattern built from the logo shapes',
+      'Stationery: business cards, letterhead and envelopes',
+      'Presentation folder, spiral-bound notebook and desk name plate',
+      'Staff lapel pin, ID badge and lanyard',
+      'Feather flags, branded mugs and outdoor signage guidance',
     ],
     deliverables: [
-      'Full logo redesign and brand identity system',
-      'Brand colors, typography, and tone of voice',
-      'Company profile design',
-      'Stationery and print materials',
-      'Quiet-luxury visual direction',
-    ],
-    results: [
-      { label: 'Brand system components', value: '25+' },
-      { label: 'Qualified investor leads', value: '+50%' },
-      { label: 'Rebrand rollout', value: '5 weeks' },
+      'Full visual identity guidelines document',
+      'Logo system: primary, vertical, simplified and submark lockups',
+      'Bilingual (English/Arabic) typography system',
+      'Color palette and geometric pattern system',
+      'Stationery: business cards, letterhead, envelopes and presentation folder',
+      'Notebook, desk name plate, lapel pin, ID badge and lanyard',
+      'Feather flags, mugs and outdoor signage application',
     ],
     challenge:
-      'High-value clients. A brand that still looked dated.',
+      'A premium property brokerage with no consistent visual identity to match its client base.',
     approach:
-      'Full rebrand, restrained mark, quiet luxury, zero noise.',
+      'A geometric mark fusing "C" and "P" into a building-like form, carried through a quiet-luxury palette of black, dark olive, walnut brown and bone across every touchpoint.',
     outcome:
-      'Subtle, confident, timeless, built for private capital.',
-    quote: {
-      text: 'It finally feels like a brand our kind of client expects to see.',
-      author: 'CEO, Clemson Porter Properties',
-    },
-    gallery: [],
+      'One documented system, from business card to billboard, under the line "Clarity. Control. Confidence."',
+    gallery: [
+      {
+        src: '/images/work/clemson-porter-properties/hero.webp',
+        alt: 'Clemson Porter Properties business card mockup in dark olive with the geometric C+P mark, front and back.',
+        width: 1920,
+        height: 1080,
+      },
+      {
+        src: '/images/work/clemson-porter-properties/gallery-1.webp',
+        alt: 'Clemson Porter Properties rooftop billboard reading "Invest smart. Live fine." beside the logo lockup.',
+        width: 1920,
+        height: 1080,
+      },
+      {
+        src: '/images/work/clemson-porter-properties/gallery-2.webp',
+        alt: 'Clemson Porter Properties presentation folder and property-document sheet with the logo and "Clarity. Control. Confidence." tagline.',
+        width: 1920,
+        height: 1080,
+      },
+      {
+        src: '/images/work/clemson-porter-properties/gallery-3.webp',
+        alt: 'Clemson Porter Properties brand color story: black, dark olive, walnut brown and bone with the geometric pattern.',
+        width: 1080,
+        height: 1350,
+      },
+    ],
     prev: 'dose-pharmacy',
+    next: 'sealand',
+  },
+);
+
+export const sealand = caseStudy(
+  'sealand',
+  'Sealand: Rebranding & Visual Identity',
+  'SEALAND: REBRANDING & VISUAL IDENTITY',
+  'featured',
+  'Food & hospitality',
+  'Case study: rebranding and a full bilingual visual identity system for a Dubai seafood restaurant serving since 1982.',
+  {
+    overview:
+      'A Dubai seafood restaurant since 1982. We modernized its identity without spending down four decades of trust.',
+    client: 'Sealand',
+    industry: 'Seafood Restaurant',
+    year: '2025',
+    heroImage: '/images/work/sealand/hero.webp',
+    scopeItems: [
+      'Logo redesign and complete bilingual (English/Arabic) brand identity system',
+      'Brand colors, typography, and visual language',
+      'Packaging design: paper bags, takeaway bowls and containers',
+      'Staff uniform design: chef jackets, aprons, captain and waiter jackets, housekeeping wear',
+      'Front-of-house collateral: menus, guest checks, reserved-table signage, stationery',
+      'Social media style guide and templates',
+    ],
+    deliverables: [
+      'Full logo system: primary, horizontal, Arabic horizontal/vertical, combined and simplified marks',
+      'Bilingual (English/Arabic) brand identity system',
+      'Color palette, typography and icon set',
+      'Packaging: paper bags and takeaway bowls',
+      'Staff uniforms: chef jackets, aprons, captain/waiter jackets and housekeeping wear',
+      'Stationery and print collateral: business cards, letterhead, envelopes, presentation folder',
+      'Menu and guest-check design, reserved-table signage',
+      'Social media style guide',
+    ],
+    challenge:
+      'Four decades of trust in Dubai. A visual identity that needed to feel current without losing what made it familiar.',
+    approach:
+      "A bilingual system built on a navy-and-tangerine palette and a recurring sea-and-land wave motif, carried through packaging, uniforms and every guest-facing touchpoint.",
+    outcome:
+      'One consistent system now carries the Sealand name from the kitchen to the paper bag guests take home.',
+    gallery: [
+      {
+        src: '/images/work/sealand/hero.webp',
+        alt: 'Sealand seafood restaurant brand identity: navy waist apron with a gold-embroidered crest and a wave-pattern pocket.',
+        width: 1200,
+        height: 1800,
+      },
+      {
+        src: '/images/work/sealand/gallery-1.webp',
+        alt: 'Sealand captain and waiter jackets with a gold-embroidered crest, part of the bilingual restaurant identity.',
+        width: 1600,
+        height: 900,
+      },
+      {
+        src: '/images/work/sealand/gallery-2.webp',
+        alt: 'Sealand branded paper bags in navy and cream, with the Arabic wordmark, gold crest and orange-and-navy wave motif.',
+        width: 1600,
+        height: 900,
+      },
+      {
+        src: '/images/work/sealand/gallery-3.webp',
+        alt: 'Sealand brand guideline color palette: Navy Blue, Indigo Dye, Tangerine, Earth Yellow and Alabaster swatches with CMYK values.',
+        width: 960,
+        height: 540,
+      },
+    ],
+    prev: 'clemson-porter-properties',
+    next: 'bnk-group',
+  },
+);
+
+export const bnkGroup = caseStudy(
+  'bnk-group',
+  'The BNK Group: Branding & Visual Identity',
+  'THE BNK GROUP: BRANDING & VISUAL IDENTITY',
+  'featured',
+  'Property & interiors',
+  'Case study: full bilingual (English/Arabic) brand identity and stationery system for a UAE luxury interior design-build studio.',
+  {
+    overview:
+      'A luxury design-build studio entering the UAE. We gave it one bilingual identity, from the logo to the letterhead.',
+    client: 'The BNK Group',
+    industry: 'Interior Design & Build',
+    heroImage: '/images/work/bnk-group/hero.webp',
+    scopeItems: [
+      'Logo design and complete brand identity: vertical, horizontal and mark-only lockups',
+      'Bilingual (English/Arabic) typography and brand voice',
+      'Brand colors and a supporting geometric pattern system',
+      'Stationery: business cards, letterhead and envelopes',
+      'Presentation folder and project-document templates',
+      'Staff ID badge and lanyard design',
+      'Social media application templates and video-thumbnail style',
+    ],
+    deliverables: [
+      'Logo and complete brand identity system',
+      'Bilingual (English/Arabic) typography and brand voice',
+      'Brand colors and pattern system',
+      'Stationery: business cards, letterhead and envelopes',
+      'Presentation folder and project-document templates',
+      'Staff ID badge and lanyard',
+      'Social media templates and video-thumbnail style',
+    ],
+    challenge:
+      'A boutique design-build studio expanding into the UAE. No consistent identity to match the ambition.',
+    approach:
+      'One bilingual system: mark, stationery, ID and social templates, built to travel from site visit to Instagram.',
+    outcome:
+      'Every touchpoint, in English or Arabic, now reads as one confident, camera-ready brand.',
+    gallery: [
+      {
+        src: '/images/work/bnk-group/hero.webp',
+        alt: 'The BNK Group business card mockup in navy with a red interlocking-K mark, on marble.',
+        width: 1920,
+        height: 1080,
+      },
+      {
+        src: '/images/work/bnk-group/gallery-1.webp',
+        alt: 'The BNK Group staff ID badge and lanyard in a navy-and-white geometric pattern.',
+        width: 764,
+        height: 1080,
+      },
+      {
+        src: '/images/work/bnk-group/gallery-2.webp',
+        alt: 'The BNK Group letterhead stationery mockup with the logo lockup and bilingual footer details.',
+        width: 1920,
+        height: 1080,
+      },
+      {
+        src: '/images/work/bnk-group/gallery-3.webp',
+        alt: 'The BNK Group social media before-and-after interior design carousel, in English and Arabic.',
+        width: 1920,
+        height: 1080,
+      },
+    ],
+    prev: 'sealand',
     next: 'sanapex-interiors',
   },
 );
@@ -292,7 +450,7 @@ export const emiratesAgro = caseStudy(
       author: 'Brand Lead, Emirates Agro',
     },
     gallery: [],
-    prev: 'zealerz',
+    prev: 'bil-events',
     next: 'zealerz',
   },
 );
@@ -347,6 +505,286 @@ export const zealerz = caseStudy(
       },
     ],
     prev: 'emirates-agro',
+    next: 'arabian-business-academy',
+  },
+);
+
+export const arabianBusinessAcademy = caseStudy(
+  'arabian-business-academy',
+  'Arabian Business Academy: Roll-Up Banner Campaign',
+  'ARABIAN BUSINESS ACADEMY: ROLL-UP BANNER CAMPAIGN',
+  'more',
+  'Finance',
+  'Case study: a bilingual roll-up banner campaign for a Dubai-based trading education and financial-markets brand.',
+  {
+    overview:
+      'A Dubai trading academy with offices across three countries. We gave its exhibition stands one consistent bilingual voice.',
+    client: 'Arabian Business Academy (ABA)',
+    industry: 'Financial Trading Education',
+    heroImage: '/images/work/arabian-business-academy/hero.webp',
+    scopeItems: [
+      'Bilingual (Arabic/English) roll-up banner design across five distinct messages',
+      'Consistent application of the existing navy-and-gold crest and color system',
+      'Layout for platform sign-up, expert-led courses, an investment fund, and an economic-news portal',
+      'Contact and social details for the UAE, Iraq and Turkey offices on every banner',
+    ],
+    deliverables: [
+      'Five roll-up/pull-up banner designs, print-ready',
+      'Consistent bilingual layout system across offers and audiences',
+      'Office and social-contact footer applied across the set',
+    ],
+    challenge:
+      'Five different messages, three offices, two languages. One stand had to carry all of it without looking improvised.',
+    approach:
+      'One recurring layout, the existing navy-and-gold crest, and a shared footer, applied consistently across trading, courses, the fund and the news portal.',
+    outcome:
+      'A consistent exhibition presence across sign-up, education, fund and media messaging, in Arabic and English.',
+    gallery: [
+      {
+        src: '/images/work/arabian-business-academy/hero.webp',
+        alt: 'Arabian Business Academy roll-up banner with the navy-and-gold shield crest and bilingual Arabic/English headline over a stock-chart background.',
+        width: 1911,
+        height: 1911,
+      },
+      {
+        src: '/images/work/arabian-business-academy/gallery-1.webp',
+        alt: 'Arabian Business Academy roll-up banner promoting round-the-clock trading access and a $35 deposit bonus, with UAE, Iraq and Turkey office details.',
+        width: 1911,
+        height: 1911,
+      },
+      {
+        src: '/images/work/arabian-business-academy/gallery-2.webp',
+        alt: 'Arabian Business Academy roll-up banner for its "Rotterdam Fund," listing projected annual and monthly returns and a minimum deposit.',
+        width: 1911,
+        height: 1911,
+      },
+      {
+        src: '/images/work/arabian-business-academy/gallery-3.webp',
+        alt: 'Arabian Business Academy roll-up banner promoting its Arabic economic-news and technical-analysis website, abacademyco.com.',
+        width: 1911,
+        height: 1911,
+      },
+      {
+        src: '/images/work/arabian-business-academy/gallery-4.webp',
+        alt: 'Arabian Business Academy roll-up banner featuring a financial analyst alongside the navy-and-gold shield crest.',
+        width: 1911,
+        height: 1911,
+      },
+    ],
+    prev: 'zealerz',
+    next: '2k-shopping',
+  },
+);
+
+export const twoKShopping = caseStudy(
+  '2k-shopping',
+  '2K Shopping: Branding & Visual Identity',
+  '2K SHOPPING: BRANDING & VISUAL IDENTITY',
+  'more',
+  'Healthcare & retail',
+  'Case study: full bilingual (English/Arabic) brand identity and application system for a UAE-based online grocery delivery platform.',
+  {
+    overview:
+      'A UAE online grocery platform. We gave it one bold identity, from the app splash screen to the delivery van.',
+    client: '2K Shopping',
+    industry: 'Online Grocery Delivery',
+    heroImage: '/images/work/2k-shopping/hero.webp',
+    scopeItems: [
+      'Brand strategy: positioning, target audience, value proposition, core values and tone of voice',
+      'Logo design and complete brand identity: construction, concept, and vertical/horizontal/simplified-mark variations',
+      'Bilingual (English/Arabic) typography system, color palette and icon style',
+      'Packaging and delivery collateral: shipping boxes, delivery bags/backpacks and branded tape',
+      'Fleet livery, billboard and staff uniform design',
+      'Stationery and office collateral: business cards, letterhead, presentation folder, staff ID badge and notebook',
+    ],
+    deliverables: [
+      'Full logo system: construction, concept, vertical, horizontal and simplified-mark variations',
+      'Brand strategy: positioning, value proposition, core values, personality and tone-of-voice guidelines',
+      'Bilingual (English/Arabic) typography system and color palette',
+      'Icon style, pattern and imagery guidelines',
+      'Delivery van livery, delivery bags/backpack and shipping box with branded tape',
+      'Billboard and social media style guide',
+      'Stationery and staff collateral: business cards, letterhead, presentation folder, staff ID badge, uniforms and notebook',
+    ],
+    challenge:
+      'A UAE grocery delivery app entering a crowded, low-differentiation category, with no visual system to carry it from the app icon to the delivery van.',
+    approach:
+      'A bilingual system built on a lime-and-teal palette and a shopping-cart-and-K mark, carried through the app, packaging, fleet and every application.',
+    outcome:
+      'One consistent identity now runs from the app splash screen to the delivery van and every piece of stationery.',
+    gallery: [
+      {
+        src: '/images/work/2k-shopping/hero.webp',
+        alt: '2K Shopping delivery van livery in teal, with the bilingual (English/Arabic) shopping-cart-and-K logo, app-store badges and a dotted wave pattern.',
+        width: 1920,
+        height: 1200,
+      },
+      {
+        src: '/images/work/2k-shopping/gallery-1.webp',
+        alt: '2K Shopping billboard mockup reading "Everyday things matter," with the wordmark, a QR code and app-store badges over a dark teal background.',
+        width: 1920,
+        height: 1080,
+      },
+      {
+        src: '/images/work/2k-shopping/gallery-2.webp',
+        alt: '2K Shopping insulated delivery bags and backpack in neon lime green, with the logo and bilingual tagline.',
+        width: 1920,
+        height: 1080,
+      },
+      {
+        src: '/images/work/2k-shopping/gallery-3.webp',
+        alt: '2K Shopping brand guideline color palette: black, dark teal, off-white, white, lime green and teal swatches with a reserved orange highlight color, RGB and CMYK values.',
+        width: 1920,
+        height: 1080,
+      },
+    ],
+    prev: 'arabian-business-academy',
+    next: 'alla-doresu',
+  },
+);
+
+export const allaDoresu = caseStudy(
+  'alla-doresu',
+  'Alla Doresu: Branding & Visual Identity',
+  'ALLA DORESU: BRANDING & VISUAL IDENTITY',
+  'more',
+  'Fashion & apparel',
+  "Case study: full brand identity and application system for a Dubai women's fashion label founded by designer Alaa Aldeeb.",
+  {
+    overview:
+      "A Dubai fashion label built around a pink-and-black identity and its founder's eye for detail. We carried it from hang tag to storefront.",
+    client: 'Alla Doresu',
+    industry: 'Fashion & Apparel',
+    heroImage: '/images/work/alla-doresu/hero.webp',
+    scopeItems: [
+      'Logo design and brand identity: monogram mark, wordmark and lockup construction',
+      'Brand colors, typography and a repeating monogram pattern',
+      'Packaging: branded paper bags in two colorways and a wax seal stamp',
+      'Retail merchandise: branded phone cases',
+      'Stationery: business cards, letterhead and envelopes',
+      'Staff ID badge and lanyard design',
+      'Product hang tags',
+    ],
+    deliverables: [
+      'Logo system: monogram mark, wordmark and lockup construction guidelines',
+      'Brand colors, typography and repeating monogram pattern',
+      'Packaging: paper bags in two colorways and a wax seal stamp',
+      'Branded phone cases',
+      'Stationery: business cards, letterhead and envelopes',
+      'Staff ID badge and lanyard',
+      'Product hang tags',
+    ],
+    challenge:
+      "A new Dubai fashion label needed one identity that could travel from a product hang tag to a shopping bag to the founder's own business card.",
+    approach:
+      'A pink-and-black system built on an interlocking U-and-N monogram, carried through packaging, stationery, staff ID and retail merchandise.',
+    outcome:
+      "One consistent brand mark now runs across the label's stationery, packaging and staff-facing collateral.",
+    gallery: [
+      {
+        src: '/images/work/alla-doresu/hero.webp',
+        alt: 'Alla Doresu business card mockup in black with the pink monogram and repeating logo pattern, beside a pink branding-guidelines book.',
+        width: 1920,
+        height: 1080,
+      },
+      {
+        src: '/images/work/alla-doresu/gallery-1.webp',
+        alt: 'Alla Doresu branded paper bags in pink and black, with the monogram mark and "Unique as you are" tagline.',
+        width: 1920,
+        height: 1080,
+      },
+      {
+        src: '/images/work/alla-doresu/gallery-2.webp',
+        alt: 'Alla Doresu branded phone cases in black and pink, each with the interlocking monogram mark and wordmark.',
+        width: 960,
+        height: 1080,
+      },
+      {
+        src: '/images/work/alla-doresu/gallery-3.webp',
+        alt: 'Alla Doresu letterhead stationery mockup with the pink-and-black logo lockup and Dubai, UAE contact details.',
+        width: 1920,
+        height: 1080,
+      },
+    ],
+    prev: '2k-shopping',
+    next: 'bil-events',
+  },
+);
+
+export const bilEvents = caseStudy(
+  'bil-events',
+  'BIL Events: Branding & Visual Identity',
+  'BIL EVENTS: BRANDING & VISUAL IDENTITY',
+  'more',
+  'Events',
+  'Case study: full brand identity and merchandise system for a Dubai media-and-events company launching a reality show and a super app.',
+  {
+    overview:
+      'A Dubai company built at the intersection of media and events. We gave it one identity built to run across a reality show, staff gear and a stationery suite.',
+    client: 'BIL Events',
+    industry: 'Media & Events',
+    heroImage: '/images/work/bil-events/hero.webp',
+    scopeItems: [
+      'Logo design and complete brand identity: primary "BIL / EVENTS" lockup and a secondary interlocking N monogram mark',
+      'Brand colors, typography and a repeating monogram pattern',
+      'Logo usage guidelines: construction, clear space, backgrounds and a secondary logo mark',
+      'Stationery: business cards, letterhead, envelopes and a presentation folder',
+      'Branded merchandise: caps, hoodies, T-shirts, silicone wristbands, phone cases and key chains',
+      'Staff ID badge and lanyard design',
+      'A wax-style rubber stamp',
+      'Roll-up banner design for the "Spectacular Chaos" reality-show campaign',
+      'Waiting-room / office signage application',
+    ],
+    deliverables: [
+      'Logo system: primary lockup and secondary interlocking N monogram',
+      'Brand colors, typography and repeating monogram pattern',
+      'Logo usage guidelines: construction, clear space, backgrounds and secondary mark',
+      'Stationery: business cards, letterhead, envelopes and presentation folder',
+      'Branded merchandise: caps, hoodies, T-shirts, wristbands, phone cases and key chains',
+      'Staff ID badge and lanyard',
+      'Rubber stamp',
+      'Roll-up banner for the "Spectacular Chaos" campaign',
+      'Waiting-room signage application',
+    ],
+    challenge:
+      'A new media-and-events company, founded on a background in event planning, PR and media, needed one identity that could carry a reality-show campaign, staff merchandise and a full stationery suite at once.',
+    approach:
+      'A grey-and-yellow system built on a stacked "BIL / EVENTS" wordmark and an interlocking N monogram, carried across stationery, staff gear, retail merchandise and campaign signage.',
+    outcome:
+      "One consistent brand mark now runs from the founder's business card to staff lanyards, merchandise and the roll-up banners for the company's reality-show campaign.",
+    gallery: [
+      {
+        src: '/images/work/bil-events/hero.webp',
+        alt: 'BIL Events grey-and-yellow "BIL / EVENTS" wordmark applied as wall signage in a waiting area with yellow armchairs.',
+        width: 1920,
+        height: 1080,
+      },
+      {
+        src: '/images/work/bil-events/gallery-1.webp',
+        alt: 'BIL Events roll-up banner mockup for the "Spectacular Chaos" reality-show campaign, listing the @bileventdxb social handle and bilevents.dxb website.',
+        width: 1920,
+        height: 1080,
+      },
+      {
+        src: '/images/work/bil-events/gallery-2.webp',
+        alt: 'BIL Events business card mockup for founder Layal Al Mais, in white with a yellow color-block and the interlocking N monogram.',
+        width: 1920,
+        height: 1080,
+      },
+      {
+        src: '/images/work/bil-events/gallery-3.webp',
+        alt: 'BIL Events staff ID badge and lanyard in yellow, grey and white with a repeating interlocking N monogram pattern.',
+        width: 960,
+        height: 1080,
+      },
+      {
+        src: '/images/work/bil-events/gallery-4.webp',
+        alt: 'BIL Events branded T-shirts in white with a yellow interlocking N monogram on the front and the "BIL / EVENTS" wordmark on the back.',
+        width: 1920,
+        height: 1080,
+      },
+    ],
+    prev: 'alla-doresu',
     next: 'emirates-agro',
   },
 );
@@ -356,8 +794,14 @@ export const allCaseStudies: CaseStudyRecord[] = [
   p2pMotors,
   dosePharmacy,
   clemsonPorterProperties,
+  sealand,
+  bnkGroup,
   emiratesAgro,
   zealerz,
+  arabianBusinessAcademy,
+  twoKShopping,
+  allaDoresu,
+  bilEvents,
 ];
 
 export const caseStudiesBySlug = Object.fromEntries(

@@ -15,6 +15,12 @@ export const WORK_SLUGS = [
   'clemson-porter-properties',
   'emirates-agro',
   'zealerz',
+  'arabian-business-academy',
+  'sealand',
+  '2k-shopping',
+  'bnk-group',
+  'alla-doresu',
+  'bil-events',
 ] as const;
 
 export type ServiceSlug = (typeof SERVICE_SLUGS)[number];

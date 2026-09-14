@@ -269,10 +269,10 @@ export function ContactCloser() {
                   placeholder={f.message.placeholder}
                   defaultValue={values.message}
                   required
-                  rows={5}
+                  rows={4}
                   className={cn(
                     contactControl,
-                    "h-auto min-h-36 resize-none py-4 leading-relaxed",
+                    "h-auto min-h-28 resize-none py-3 leading-relaxed",
                     errors.message && "border-error",
                   )}
                   aria-invalid={Boolean(errors.message)}

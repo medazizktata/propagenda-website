@@ -54,7 +54,7 @@ export function FormSelect({
           className={cn(
             contactControlSingle,
             'flex !w-full min-w-0 max-w-full items-center justify-between gap-3 text-left',
-            'rounded-2xl pr-5 pl-5 data-[size=default]:h-14 data-[size=default]:rounded-2xl',
+            'rounded-2xl pr-4 pl-4 data-[size=default]:h-12 data-[size=default]:rounded-2xl',
             'data-placeholder:text-white/45',
             '[&_svg]:text-white/50',
             error && 'border-error',

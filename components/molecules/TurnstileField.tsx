@@ -61,7 +61,12 @@ export const TurnstileField = forwardRef<
       sitekey,
       action: TURNSTILE_ACTION,
       theme: 'dark',
-      appearance: 'always',
+      // 'always' pinned Cloudflare's own branded success badge (white card, green
+      // check, orange logo) permanently in the form — it doesn't follow theme:
+      // 'dark' and read as a jarring, out-of-system element. 'interaction-only'
+      // still runs the challenge in the background for every visitor; the widget
+      // only becomes visible on the rare case Cloudflare needs real interaction.
+      appearance: 'interaction-only',
       callback: (token) => onToken(token),
       'expired-callback': () => onToken(null),
       'error-callback': () => onToken(null),

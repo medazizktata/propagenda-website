@@ -20,6 +20,9 @@ tsconfig.tsbuildinfo
 # Research / reference (not part of deployed site)
 reference/
 docs/
+
+# Backlog.md task tracking (local only, not part of the deployed site)
+backlog/
 prompts/
 scripts/.venv-ig/
 scripts/node_modules/

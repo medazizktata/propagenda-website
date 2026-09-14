@@ -450,7 +450,7 @@ export const emiratesAgro = caseStudy(
       author: 'Brand Lead, Emirates Agro',
     },
     gallery: [],
-    prev: 'sterling-cars',
+    prev: 'mm-event-management',
     next: 'zealerz',
   },
 );
@@ -2068,6 +2068,86 @@ export const sterlingCars = caseStudy(
       },
     ],
     prev: 'serr-el-oud',
+    next: 'mm-event-management',
+  },
+);
+
+export const mmEventManagement = caseStudy(
+  'mm-event-management',
+  'MM Event Management: Branding & Visual Identity',
+  'MM EVENT MANAGEMENT: BRANDING & VISUAL IDENTITY',
+  'more',
+  'Events',
+  'Case study: a full brand guideline system for MM Event Management, a Dubai-based event production company trading as Magic Music Event Management L.L.C., built around a teal ribbon "M" mark under the tagline "Spotlighting Good Times".',
+  {
+    overview:
+      'A Dubai event production company, legally Magic Music Event Management L.L.C. We gave it one documented identity, from the ribbon "M" mark to the festival banner.',
+    client: 'MM Event Management',
+    industry: 'Event Production & Management',
+    heroImage: '/images/work/mm-event-management/hero.webp',
+    scopeItems: [
+      'Full brand guidelines document: brand story, values, target audience, logo system, colors, typography, pattern, icons and applications',
+      'Logo design and construction: a black circle badge holding a teal-to-white ribbon "M" mark, with vertical, horizontal and logo-mark lockups',
+      'Logo usage guidelines: clear-space rule (one-third the logo mark on all sides), solid and photographic-background variations, and a logo misuse reference sheet',
+      'Brand colors: black, teal (#00CECB) and off-white (#F3F4F4), each documented with hex and CMYK values and a set of brand associations',
+      'Typography system built on a single sans-serif family, Montserrat',
+      'A repeating chevron pattern built from the logo mark, in teal-on-black and outline-on-white variations',
+      'A circular icon set for contact points and social platforms (phone, email, web, location, Instagram, Facebook, X, YouTube, TikTok) in outline and filled treatments',
+      'Stationery: business card, letterhead and envelope, plus an email signature',
+      'A bilingual (English/Arabic) rubber stamp for "Magic Music Event Management L.L.C."',
+      'Marketing and event applications: branded flags carrying the "Spotlighting Good Times" tagline, festival fence banners, a phone case and a staff ID badge and lanyard',
+    ],
+    deliverables: [
+      'Full brand guidelines document',
+      'Logo and construction system: ribbon "M" mark in a circle badge, with vertical, horizontal and logo-mark lockups',
+      'Logo usage guidelines: clear-space rule, background variations and a misuse reference sheet',
+      'Brand colors: black, teal and off-white, with hex/CMYK values',
+      'Typography system: Montserrat',
+      'Repeating chevron pattern built from the logo mark',
+      'Circular icon set across contact points and social platforms',
+      'Stationery: business card, letterhead, envelope and email signature',
+      'Bilingual (English/Arabic) rubber stamp',
+      'Flags, festival banners, phone case and staff ID badge and lanyard',
+    ],
+    challenge:
+      'A UAE event producer running weddings, festivals, corporate and educational events, needing one documented system to carry the same mark from a business card to a festival fence banner.',
+    approach:
+      'A teal ribbon "M" mark in a black circle badge, carried through a chevron pattern, a Montserrat-based type system, and a black/teal/off-white palette across stationery, a bilingual stamp, flags and event signage.',
+    outcome:
+      'One documented guidelines system now carries the MM Event Management mark, from the logo’s clear-space rule to the festival banner and staff lanyard.',
+    gallery: [
+      {
+        src: '/images/work/mm-event-management/hero.webp',
+        alt: 'MM Event Management branded flags on poles against a blue sky: a chevron-pattern flag, a white flag reading "Spotlighting Good Times" with the logo mark, and a teal chevron-pattern flag.',
+        width: 1920,
+        height: 1080,
+      },
+      {
+        src: '/images/work/mm-event-management/gallery-1.webp',
+        alt: 'MM Event Management logo variations: vertical lockup, horizontal lockup and standalone logo mark, each a teal ribbon "M" in a black circle badge.',
+        width: 1920,
+        height: 1080,
+      },
+      {
+        src: '/images/work/mm-event-management/gallery-2.webp',
+        alt: 'MM Event Management brand color palette: black, teal #00cecb and off-white #F3F4F4 circles with CMYK values and brand associations.',
+        width: 1920,
+        height: 1080,
+      },
+      {
+        src: '/images/work/mm-event-management/gallery-3.webp',
+        alt: 'MM Event Management bilingual rubber stamp reading "Magic Music Event Management L.L.C." in English and Arabic around the ribbon "M" mark.',
+        width: 1920,
+        height: 1080,
+      },
+      {
+        src: '/images/work/mm-event-management/gallery-4.webp',
+        alt: 'MM Event Management "Open Air Festival" fence banner in teal with the logo mark, set against a blurred festival stage.',
+        width: 1920,
+        height: 1080,
+      },
+    ],
+    prev: 'sterling-cars',
     next: 'emirates-agro',
   },
 );
@@ -2102,6 +2182,7 @@ export const allCaseStudies: CaseStudyRecord[] = [
   quickCars,
   serrElOud,
   sterlingCars,
+  mmEventManagement,
 ];
 
 export const caseStudiesBySlug = Object.fromEntries(

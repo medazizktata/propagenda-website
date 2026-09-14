@@ -38,6 +38,7 @@ export const WORK_SLUGS = [
   'quick-cars',
   'serr-el-oud',
   'sterling-cars',
+  'mm-event-management',
 ] as const;
 
 export type ServiceSlug = (typeof SERVICE_SLUGS)[number];

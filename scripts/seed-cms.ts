@@ -2,6 +2,18 @@ import { createClient } from '@supabase/supabase-js';
 import { buildContentSeedRows } from '@/lib/cms/seedData';
 import { resolveDefaultAdminCredentials, seedDefaultAdminUser } from '@/lib/cms/seedAdminUser';
 
+// Unlike `next dev`, a standalone tsx script doesn't auto-load .env files.
+// Load .env then .env.local (later call wins) so this works the same as the
+// app does, without requiring the vars to already be exported in the shell.
+for (const file of ['.env', '.env.local']) {
+  try {
+    process.loadEnvFile(file);
+  } catch {
+    // Missing file is fine (e.g. no .env.local in CI) — a real parse error
+    // will still surface below via the presence check.
+  }
+}
+
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 

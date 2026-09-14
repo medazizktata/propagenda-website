@@ -97,6 +97,13 @@ const CLIP_PATH_STYLE = {
 
 /** Foreground (headline, 3D mark, subtitle, scroll cue) — dissolves from first scroll. */
 const DISSOLVE_DURATION = 0.1;
+/**
+ * The reel dissolves out over this fraction of the pin's tail rather than cutting when the pin
+ * releases. Kept short and late — the text-wheel beat has to finish reading before the picture
+ * starts going, so the fade eats only the last stretch of scroll, not the beat itself.
+ */
+const REEL_FADE_OUT_DURATION = 0.16;
+const REEL_FADE_OUT_START = 1 - REEL_FADE_OUT_DURATION;
 
 /**
  * Scroll-scrubbed showreel. This is the home page's SECOND section, below BillboardHero.
@@ -346,6 +353,21 @@ export function Hero({ flat = false }: { flat?: boolean }) {
           { autoAlpha: 0 },
           { autoAlpha: 1, ease: 'power1.out', duration: 0.08, immediateRender: false },
           CLIP_EXPAND_END * 0.75,
+        )
+        // Tail-end dissolve: the whole reel panel (video, scrim, vignette, gloss all live
+        // inside videoRef) fades together as one surface, and the fullscreen control fades
+        // with it so it never floats over the next section on its own.
+        .fromTo(
+          videoRef.current,
+          { opacity: 1 },
+          { opacity: 0, ease: 'power1.in', duration: REEL_FADE_OUT_DURATION, immediateRender: false },
+          REEL_FADE_OUT_START,
+        )
+        .fromTo(
+          '.hero-fullscreen-btn',
+          { autoAlpha: 1 },
+          { autoAlpha: 0, ease: 'power1.in', duration: REEL_FADE_OUT_DURATION, immediateRender: false },
+          REEL_FADE_OUT_START,
         );
 
       ScrollTrigger.refresh();

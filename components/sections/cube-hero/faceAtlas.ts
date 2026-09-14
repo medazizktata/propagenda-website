@@ -12,10 +12,10 @@ import { ICON_GRID, ICON_STROKE, SERVICE_ICONS } from './serviceIcons';
  * in the frame.
  *
  * Every tile is drawn as a *mask*: pure white on transparent. The shader reads only the alpha
- * channel and picks the ink colour per face, which is what lets a single texture serve both
- * colourways the brand allows — white on charcoal for a dormant face, near-black (#141414) on
- * orange for the face turned to camera. Baking the colour in would need two atlases and would
- * make the cross-fade between them impossible.
+ * channel and picks the ink colour per face (see `inkRange` in cubeMaterial.ts) rather than the
+ * atlas baking it in, which is what would let a single texture cross-fade between two ink
+ * colourways if a preset ever needed one — no current preset does, so every face reads white ink
+ * at every facing angle, but the mask stays colour-agnostic either way.
  *
  * Nothing here touches the network: the type is drawn with the two families the app already
  * loaded through next/font, read back off the documentElement's CSS custom properties.

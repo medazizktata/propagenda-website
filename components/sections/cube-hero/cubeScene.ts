@@ -189,10 +189,12 @@ export function createCubeScene(options: CubeSceneOptions): CubeSceneHandle {
     stencil: false,
   });
   renderer.outputColorSpace = THREE.SRGBColorSpace;
-  // Khronos PBR Neutral, not ACES. The scene is HDR — the lit face emits past 1.0 and the key
-  // panel in the environment is brighter still — so it needs a curve, but ACES pulls saturated
-  // oranges toward yellow-white and cannot reproduce #f58b27, which is not negotiable here.
-  // Neutral is built to leave in-gamut colour alone and only roll off the highlights.
+  // Khronos PBR Neutral, not ACES. The scene is still HDR — the key panel in the environment
+  // blows well past 1.0 — so it needs a curve, and Neutral is built to leave in-gamut colour
+  // alone and only roll off the highlights rather than desaturating them the way ACES does.
+  // (This used to also be load-bearing for keeping the lit face's saturated orange on-hex, which
+  // ACES cannot reproduce; that colourway is gone, but Neutral is still the right call for the
+  // panel highlights alone.)
   renderer.toneMapping = THREE.NeutralToneMapping;
   renderer.toneMappingExposure = 1;
   renderer.setClearColor(0x000000, 1);
@@ -229,7 +231,9 @@ export function createCubeScene(options: CubeSceneOptions): CubeSceneHandle {
   // Fill: cool, and deliberately a different temperature from the key. This is the single
   // decision that stops the form dying — a shadow side lit in the same hue as the lit side just
   // reads as the same paint, darker, and the cube goes flat no matter how strong the key is.
-  const fill = new THREE.DirectionalLight(new THREE.Color(STUDIO.fill.color), 0.5);
+  // Intensity comes from STUDIO rather than a literal here, so raising the shadow side's ambient
+  // level is one number in studio.ts instead of a hunt through both this rig and the IBL panel.
+  const fill = new THREE.DirectionalLight(new THREE.Color(STUDIO.fill.color), STUDIO.fill.intensity);
   fill.position.set(-6.4, 3.6, 0.5);
   scene.add(fill);
 
@@ -364,10 +368,12 @@ export function createCubeScene(options: CubeSceneOptions): CubeSceneHandle {
 
   composer.addPass(new RenderPass(scene, camera));
 
-  // Bloom is deliberately starved: the threshold sits well above the orange face's luminance, so
-  // it catches only the brightest specular hits. Letting it touch the face would smear the type,
-  // which is the one thing this hero cannot afford — the first pass ran it three times hotter
-  // and put a white haze along every top edge.
+  // Bloom is deliberately starved: the threshold sits well above the panels' printed-type
+  // luminance, so it catches only the brightest specular hits off the key light. Letting it touch
+  // a face's type would smear it, which is the one thing this hero cannot afford — the first pass
+  // ran it three times hotter and put a white haze along every top edge. (Originally tuned to also
+  // sit above the lit face's emissive luminance, back when a face turned brand orange; that
+  // colourway is gone, but the type-legibility constraint the threshold protects is unchanged.)
   // Decided once, from the width at mount: a phone that is later rotated into landscape keeps
   // the cheaper chain, which is the right way round for a battery-powered device.
   if (width >= 768) {
@@ -582,7 +588,8 @@ export function createCubeScene(options: CubeSceneOptions): CubeSceneHandle {
     pointerX = damp(pointerX, pointerTargetX, 4.5, dt);
     pointerY = damp(pointerY, pointerTargetY, 4.5, dt);
     // Kept under 4deg: any more and the rest pose would swing far enough for the front face to
-    // slip out of the shader's "lit" window and the orange would flicker.
+    // slip out of the shader's "lit" window and the type-dim easing would flicker (this used to
+    // flicker the face's orange colourway; that's gone, but the same window still gates typeDim).
     parallax.rotation.y = pointerX * 0.055;
     parallax.rotation.x = -pointerY * 0.04;
 

@@ -46,10 +46,11 @@ import * as THREE from 'three';
  *    dozen instructions in the vertex shader, which is what lets one geometry serve the
  *    protagonist and every instance in the chorus while each shows different services.
  *  - `aFaceIndex` is 0..5 on a printed panel and NO_PRINT on the roll.
- *  - `aFaceNormal` is the *panel's* nominal normal, not the shading normal. The material colours
- *    a face by how squarely it is turned to camera, and that has to be constant across a panel or
- *    the orange vignettes toward its own corners — so the crown below must not reach it. On the
- *    roll the two are the same vector, which is what rolls the lit face's colour over the edge.
+ *  - `aFaceNormal` is the *panel's* nominal normal, not the shading normal. The material reads
+ *    how squarely a face is turned to camera off this vector, and that reading has to be constant
+ *    across a panel — a large near face's own type-dim or any future lit colourway would otherwise
+ *    vignette toward its corners — so the crown below must not reach it. On the roll the two
+ *    normals are the same vector, which is what rolls a lit colourway smoothly over the edge.
  *  - `aTangent` is the panel's u axis; the material crosses it with the face normal to deboss the
  *    type in texture space.
  */

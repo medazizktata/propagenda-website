@@ -11,7 +11,7 @@ import { STUDIO } from './studio';
  * painted. Lit only by direct lights, a MeshPhysicalMaterial's specular has nothing to reflect:
  * every highlight is a mathematical blob at the light's half-vector and the rest of the surface
  * is dead. Give it a room and the reflection has *shape* — a warm band across the top chamfers, a
- * cool one down the shadow side, an orange smear at the bottom where the floor bounce is. Those
+ * cool one down the shadow side, a warm stone smear at the bottom where the floor bounce is. Those
  * bands moving across the bevels as the cube turns are most of the sense of a solid object.
  *
  * The panels are deliberately few and large. A busy environment reads as noise at this roughness
@@ -34,7 +34,7 @@ interface Panel {
 
 /**
  * Positions mirror the backdrop shader's: the key is high and to the right (screen-right of the
- * subject), the cool rake is high and to the left, the orange bounce is low and in front. When a
+ * subject), the cool rake is high and to the left, the floor bounce is low and in front. When a
  * chamfer catches a warm line, the reason for it is visible in the background.
  */
 const PANELS: readonly Panel[] = [

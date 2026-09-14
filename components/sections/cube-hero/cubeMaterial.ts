@@ -13,19 +13,25 @@ import { NO_PRINT_FACE } from './roundedBox';
  *
  * What a stock material cannot do, and this one does:
  *
- * 1. **Facing-driven colourway.** A face earns the brand orange by turning toward camera and loses
- *    it by turning away. The reveal and the highlight are therefore the same event: there is no
- *    timeline to keep in sync with the rotation, and there cannot be a frame where the wrong face
- *    is lit. `vFacing` is computed per face, not per fragment — see the vertex chunk.
+ * 1. **Facing-driven legibility.** `vFacing` — how squarely a face has turned toward camera —
+ *    used to also drive an orange colourway; that flip is gone (see `PROTAGONIST_PRESET` below,
+ *    where `faceLit` now matches `faceDark` and `inkRange` never crosses), so every face keeps its
+ *    normal panel colour regardless of facing. What `vFacing` still drives is the type: dormant
+ *    faces carry dimmer type (`typeDim`) so the arriving face is legible before it has fully
+ *    turned. `vFacing` is computed per face, not per fragment — see the vertex chunk.
  *
  * 2. **The type as part of the material, not a decal.** The mask does four separate jobs: it picks
  *    the albedo, it makes the ink *matte* where the panel is satin, it debosses the surface so
  *    glyph edges catch a real highlight, and it punches a hole in the panel's emission so the ink
  *    reads as opaque on a backlit sign rather than glowing along with it.
  *
- * 3. **Emission that follows the reveal.** A lit face emits most of its own colour. That is what
- *    keeps #f58b27 on screen as #f58b27 through a tone-mapping curve, and it is also why there is
- *    an orange pool on the backdrop behind it — the face is a sign, and signs light the room.
+ * 3. **Emission, wired but currently unused.** The shader can still make a lit face emit its own
+ *    colour (`uEmissive`, masked by the type so ink stays opaque instead of glowing with the
+ *    panel) — that machinery existed only to carry #f58b27 intact through the tone-mapping curve
+ *    once a face turned orange. With the colourway flip gone, `PROTAGONIST_PRESET.emissive` is 0
+ *    and every face is shaded by the room's actual lights instead of a flat self-lit override.
+ *    Left in the shader rather than stripped out, in case a future preset wants a genuinely
+ *    self-lit panel again.
  *
  * 4. **A Fresnel rim keyed to the shadow side.** Faces turned away get a cool edge lift that the
  *    lit face does not, so the silhouette separates from a near-black backdrop without washing a
@@ -44,7 +50,7 @@ export interface CubeMaterialPreset {
   faceLit: string;
   /** Ink used while the face is dark. */
   inkLight: string;
-  /** Ink used once the face has gone orange — never white, which fails contrast on #f58b27. */
+  /** Ink used once facing crosses `inkRange` — for a preset whose lit colourway needs it. */
   inkDark: string;
   /** Opacity of the printed matter. The chorus whispers; the protagonist speaks. */
   typeAlpha: number;
@@ -75,27 +81,30 @@ export interface CubeMaterialPreset {
 
 export const PROTAGONIST_PRESET: CubeMaterialPreset = {
   faceDark: '#2b2a29',
-  // Pre-compensated, NOT the brand hex. What has to measure #f58b27 is the pixel on screen, and
-  // between here and there sit an 88% emissive weight, the lighting on the remaining 12%, and
-  // Khronos Neutral's black offset — which subtracts the same small constant from every channel
-  // and so eats proportionally far more of a saturated orange's blue than of its red. Feeding it
-  // the literal brand value rendered #ee811900; this lands the rendered face on #f58b27 +/- 2.
-  faceLit: '#fd963f',
+  // Equal to faceDark, on purpose: this used to be a pre-compensated brand orange that a face
+  // eased into as it turned toward camera. The panel now keeps its normal colourway at every
+  // facing angle, and `mix(faceDark, faceLit, lit)` — still evaluated below, still cheap — simply
+  // has nothing to mix toward. Left as its own field rather than deleted so a future preset can
+  // reintroduce a (non-orange) lit colourway without touching the shader.
+  faceLit: '#2b2a29',
   inkLight: '#ffffff',
   inkDark: '#141414',
   typeAlpha: 1,
-  // White type at full strength on the dark side faces reads almost as loudly as the orange one
+  // White type at full strength on the dark side faces reads almost as loudly as the arrived one
   // and splits the first read in two. At a third, the next service is still legible as it comes
   // round but never competes with the face that has arrived.
   typeDim: 0.34,
   // At rest the front face reads facing ~0.93 (it is yawed 30deg off axis for the three-quarter
   // view); the range closes below that with enough headroom that pointer parallax can swing the
-  // pose a few degrees without the orange flickering off.
+  // pose a few degrees without the type-dim easing flickering.
   fillRange: [0.62, 0.82],
-  // The ink flips late and fast, so the window where mid-grey type sits on a half-orange panel is
-  // a couple of degrees of rotation wide instead of a third of the turn.
-  inkRange: [0.77, 0.825],
-  emissive: 0.88,
+  // Never crosses (facing tops out around 0.97): the panel no longer has a lit colourway to
+  // flip ink against, so ink stays `inkLight` at every angle. Kept as a range, not a boolean, so
+  // a future preset that does give the panel a lit colourway only has to move these two numbers.
+  inkRange: [9, 10],
+  // 0: there is no lit colourway left to carry through the tone-mapping curve (see the file
+  // header). Every face is shaded by the room's actual lights instead of a flat self-lit override.
+  emissive: 0,
   roughness: 0.34,
   inkRoughness: 0.62,
   metalness: 0,
@@ -109,8 +118,9 @@ export const PROTAGONIST_PRESET: CubeMaterialPreset = {
 
 export const CHORUS_PRESET: CubeMaterialPreset = {
   faceDark: '#1c1b1a',
-  // Deliberately not brand orange: only one object in this composition gets to be #f58b27. A
-  // near-black warm brown keeps the field at the same temperature without competing.
+  // A near-black warm brown, not the protagonist's charcoal-on-charcoal: the chorus still gets a
+  // faint, per-cube warmth as an individual cube turns to face camera, which keeps the field
+  // reading as many small objects catching the same light rather than one flat backdrop.
   faceLit: '#32200f',
   inkLight: '#ffffff',
   // Never flips: a chorus face never gets bright enough to need dark ink.
@@ -229,11 +239,12 @@ vInstanceFaceDark = aFaceDark;`
  *
  * Measuring "how squarely is this turned toward me" from the object's centre keeps it constant
  * across a face, as it must be for a flat printed panel — measured per fragment, a large near face
- * fades toward its own corners and the orange vignettes across the type. Note that it reads
- * `aFaceNormal` and not the shading normal: the panel is now slightly crowned, and letting that
- * 2.5 degree dome into this term would reintroduce exactly the vignette the per-face measurement
- * exists to avoid. On the roll the two vectors are the same, which is what carries the lit face's
- * colour smoothly over the edge and mitres the orange frame out of geometry rather than texture.
+ * fades toward its own corners and the type-dim (or any future lit colourway) vignettes across the
+ * type. Note that it reads `aFaceNormal` and not the shading normal: the panel is now slightly
+ * crowned, and letting that 2.5 degree dome into this term would reintroduce exactly the vignette
+ * the per-face measurement exists to avoid. On the roll the two vectors are the same, which is
+ * what carries a lit colourway smoothly over the edge and mitres its frame out of geometry rather
+ * than texture.
  */
 function vertexChunk(instanced: boolean): string {
   return /* glsl */ `
@@ -311,9 +322,10 @@ const NORMAL_CHUNK = /* glsl */ `
 `;
 
 const EMISSIVE_CHUNK = /* glsl */ `
-// A face turned to camera is a lit sign, not a painted panel. Emitting most of its own colour is
-// what carries #f58b27 intact through the tone-mapping curve, and masking that emission by the
-// type keeps the ink opaque instead of glowing along with the panel behind it.
+// uEmissive is 0 on every current preset (see cubeMaterial.ts) — no face self-lights any more —
+// but the term is left wired: a preset that sets uEmissive > 0 makes that face a lit sign rather
+// than a painted panel, and masking the emission by the type is what would keep the ink opaque
+// instead of glowing along with the panel behind it.
 totalEmissiveRadiance += uFaceLit * (lit * uEmissive * (1.0 - typeAlpha));
 
 // Fresnel rim, weighted onto the shadow side only. A cool lift along an edge is what separates a

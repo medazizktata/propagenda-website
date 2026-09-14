@@ -18,17 +18,22 @@ import { CUBE_SERVICES } from './services';
  * smaller cubes receding behind it. Bottom edge: a rail that names whatever the cube is showing
  * and counts down to the next turn.
  *
- * One protagonist, one orange. The brand colour appears on exactly one surface — whichever face
- * is squarely turned to camera — so the eye always knows where to land, and the cube's rotation
- * and its highlight are the same event rather than two things kept in sync.
+ * One protagonist, no colour cue. The subject reads as the subject because it is the size of a
+ * room, holds the golden third, and is the only cube that turns — scale, position and motion do
+ * the work a colourway used to. (An earlier pass flipped the facing panel to brand orange; that
+ * read as a UI highlight rather than a lit object and is gone — see cubeMaterial.ts.)
  *
  * The DOM layer is not a caption on the canvas; it is the hero. Every word here is real text and
  * survives WebGL failing, reduced motion, or a crawler that never runs the scene at all.
  */
 
-/** Tailwind cannot express a gradient this specific without becoming unreadable. */
+/**
+ * Tailwind cannot express a gradient this specific without becoming unreadable. Colours mirror
+ * `STUDIO` in studio.ts — this is the same room's pool of warm floor bounce and cool rake, minus
+ * the geometry, for whoever never gets the WebGL scene.
+ */
 const FALLBACK_GROUND =
-  'radial-gradient(115% 85% at 71% 52%, rgba(245, 139, 39, 0.13), rgba(245, 139, 39, 0) 62%),' +
+  'radial-gradient(115% 85% at 71% 52%, rgba(169, 152, 132, 0.13), rgba(169, 152, 132, 0) 62%),' +
   'radial-gradient(90% 80% at 8% 4%, rgba(51, 80, 110, 0.16), rgba(51, 80, 110, 0) 55%),' +
   'radial-gradient(120% 120% at 50% 30%, #141417 0%, #040405 78%)';
 

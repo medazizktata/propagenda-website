@@ -17,6 +17,14 @@
   "images": {
     "binding": "IMAGES"
   },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "propagenda-cms",
+      "database_id": "c0fc231e-4c1e-4ac1-a354-4ed3d6646bb4",
+      "migrations_dir": "d1/migrations"
+    }
+  ],
   "observability": {
     "enabled": false,
     "head_sampling_rate": 1,

@@ -1,10 +1,15 @@
 import { usesDatabaseContent, getDefaultLocale } from '@/lib/cms/config';
 import { mapVideoRow } from '@/lib/cms/mappers';
 import { getDb } from '@/lib/d1/client';
+import { resolveMediaUrl } from '@/lib/r2/resolveMediaUrl';
 import { showreel, videoProjects } from '@/content/videoWork';
 import type { VideoProjectRow } from '@/types/cms';
 import type { VideoProject } from '@/types/content';
 import type { VideoWorkBundle } from '@/types/cms';
+
+function resolveVideoMedia(video: VideoProject): VideoProject {
+  return { ...video, src: resolveMediaUrl(video.src), poster: resolveMediaUrl(video.poster) };
+}
 
 /** Public video work — D1 when reachable, else `content/videoWork` seed. */
 export async function getVideoWork(): Promise<VideoWorkBundle> {
@@ -34,8 +39,8 @@ export async function getVideoWork(): Promise<VideoWorkBundle> {
   }
 
   return {
-    showreel: mapVideoRow(showreelRow),
-    projects: projectRows.map(mapVideoRow),
+    showreel: resolveVideoMedia(mapVideoRow(showreelRow)),
+    projects: projectRows.map((row) => resolveVideoMedia(mapVideoRow(row))),
   };
 }
 

@@ -2,10 +2,23 @@ import { usesDatabaseContent, getDefaultLocale } from '@/lib/cms/config';
 import { mapServiceHubCard, mapServiceRow } from '@/lib/cms/mappers';
 import { getDb } from '@/lib/d1/client';
 import { parseJsonColumns, SERVICE_JSON_COLUMNS } from '@/lib/d1/parseRow';
+import { resolveMediaUrl } from '@/lib/r2/resolveMediaUrl';
 import { allServices, servicesBySlug } from '@/content/services';
 import { serviceHubCards, type ServiceHubCard } from '@/content/servicesHub';
 import type { ServiceRow } from '@/types/cms';
 import type { ServiceRecord } from '@/types/content';
+
+function resolveServiceMedia(service: ServiceRecord): ServiceRecord {
+  return { ...service, gallery: service.gallery.map((item) => ({ ...item, src: resolveMediaUrl(item.src) })) };
+}
+
+function resolveHubCardMedia(card: ServiceHubCard): ServiceHubCard {
+  return {
+    ...card,
+    image: resolveMediaUrl(card.image),
+    ...(card.preview ? { preview: resolveMediaUrl(card.preview) } : {}),
+  };
+}
 
 /** Public service reads — D1 when reachable, else `content/services*` seed. */
 export async function getService(slug: string): Promise<ServiceRecord | undefined> {
@@ -21,7 +34,7 @@ export async function getService(slug: string): Promise<ServiceRecord | undefine
 
   if (!row) return undefined;
 
-  return mapServiceRow(parseJsonColumns<ServiceRow>(row, SERVICE_JSON_COLUMNS));
+  return resolveServiceMedia(mapServiceRow(parseJsonColumns<ServiceRow>(row, SERVICE_JSON_COLUMNS)));
 }
 
 export async function getAllServices(): Promise<ServiceRecord[]> {
@@ -33,7 +46,9 @@ export async function getAllServices(): Promise<ServiceRecord[]> {
     .bind(getDefaultLocale(), 'published')
     .all<Record<string, unknown>>();
 
-  return results.map((row) => mapServiceRow(parseJsonColumns<ServiceRow>(row, SERVICE_JSON_COLUMNS)));
+  return results.map((row) =>
+    resolveServiceMedia(mapServiceRow(parseJsonColumns<ServiceRow>(row, SERVICE_JSON_COLUMNS))),
+  );
 }
 
 export async function getServiceSlugs(): Promise<string[]> {
@@ -57,5 +72,7 @@ export async function getServiceHubCards(): Promise<ServiceHubCard[]> {
     .bind(getDefaultLocale(), 'published')
     .all<Record<string, unknown>>();
 
-  return results.map((row) => mapServiceHubCard(parseJsonColumns<ServiceRow>(row, SERVICE_JSON_COLUMNS)));
+  return results.map((row) =>
+    resolveHubCardMedia(mapServiceHubCard(parseJsonColumns<ServiceRow>(row, SERVICE_JSON_COLUMNS))),
+  );
 }

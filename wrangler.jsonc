@@ -25,6 +25,12 @@
       "migrations_dir": "d1/migrations"
     }
   ],
+  "r2_buckets": [
+    {
+      "binding": "MEDIA",
+      "bucket_name": "propagenda-media"
+    }
+  ],
   "observability": {
     "enabled": false,
     "head_sampling_rate": 1,

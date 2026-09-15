@@ -4,10 +4,10 @@ import {
   listAdminServiceHubCards,
   listAdminServices,
 } from '@/lib/cms/repositories/admin/services';
-import { isSupabaseConfigured } from '@/lib/supabase/env';
+import { hasD1 } from '@/lib/d1/client';
 
 export default async function NewServicePage() {
-  if (!isSupabaseConfigured()) {
+  if (!hasD1()) {
     return (
       <div className="space-y-4">
         <h1 className="text-2xl font-semibold tracking-tight">New service</h1>

@@ -36,7 +36,6 @@
     "supabase:reset": "supabase db reset",
     "supabase:typegen": "supabase gen types typescript --local > types/database.types.ts",
     "seed:sql": "tsx scripts/generate-seed-sql.ts",
-    "seed:cms": "tsx scripts/seed-cms.ts",
     "db:reset": "pnpm seed:sql && pnpm supabase:reset"
   },
   "dependencies": {

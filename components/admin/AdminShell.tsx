@@ -43,8 +43,8 @@ const links: Array<{
 }> = [
   { href: '/admin', label: 'Dashboard', icon: LayoutDashboard, exact: true },
   { href: '/admin/services', label: 'Services', icon: Layers },
-  { href: '/admin/case-studies', label: 'Case studies', icon: Briefcase, soon: true },
-  { href: '/admin/video', label: 'Video work', icon: Clapperboard, soon: true },
+  { href: '/admin/case-studies', label: 'Case studies', icon: Briefcase },
+  { href: '/admin/video', label: 'Video work', icon: Clapperboard },
 ];
 
 export function AdminShell({

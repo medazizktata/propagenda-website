@@ -4,16 +4,14 @@ import { revalidatePath } from 'next/cache';
 import { requireAdminIdentity } from '@/lib/cms/auth';
 import { getDefaultLocale } from '@/lib/cms/config';
 import { getDb } from '@/lib/d1/client';
-import { SERVICE_JSON_COLUMNS, stringifyJsonColumns } from '@/lib/d1/parseRow';
 import {
-  getAdminServiceById,
-  isServiceSlugTaken,
-} from '@/lib/cms/repositories/admin/services';
-import { buildServicePayload, serviceEditorSchema } from '@/lib/cms/services/schema';
-import { revalidatePublishedService } from '@/lib/cms/services/revalidate-service';
+  getAdminVideoProjectById,
+  isVideoSlugTaken,
+} from '@/lib/cms/repositories/admin/videoProjects';
+import { buildVideoPayload, videoEditorSchema } from '@/lib/cms/video/schema';
 import type { ContentStatus } from '@/types/cms';
 
-export type ServiceActionResult =
+export type VideoActionResult =
   | { ok: true; id: string; slug: string; status: ContentStatus }
   | { ok: false; error: string };
 
@@ -25,48 +23,22 @@ function formToObject(formData: FormData): Record<string, string> {
   return values;
 }
 
-function parseServiceForm(formData: FormData) {
-  const parsed = serviceEditorSchema.safeParse(formToObject(formData));
+function parseVideoForm(formData: FormData) {
+  const parsed = videoEditorSchema.safeParse(formToObject(formData));
   if (!parsed.success) {
     const message = parsed.error.issues.map((issue) => issue.message).join(', ');
     return { ok: false as const, error: message };
   }
 
-  try {
-    return { ok: true as const, input: parsed.data, payload: buildServicePayload(parsed.data) };
-  } catch (error) {
-    return {
-      ok: false as const,
-      error: error instanceof Error ? error.message : 'Invalid form data',
-    };
-  }
+  return { ok: true as const, payload: buildVideoPayload(parsed.data) };
 }
 
 function dbRowFromPayload(
-  payload: ReturnType<typeof buildServicePayload>,
+  payload: ReturnType<typeof buildVideoPayload>,
   status: ContentStatus,
   publishedAt: string | null,
 ) {
-  const row = {
-    slug: payload.slug,
-    locale: getDefaultLocale(),
-    status,
-    sort_order: payload.sort_order,
-    title: payload.title,
-    h1: payload.h1,
-    overview: payload.overview,
-    scope_items: payload.scope_items,
-    gallery: payload.gallery,
-    seo: payload.seo,
-    tiers: payload.tiers,
-    event_checklist: payload.event_checklist,
-    extended_bullets: payload.extended_bullets,
-    related_work: payload.related_work,
-    tertiary_cta: payload.tertiary_cta,
-    hub: payload.hub,
-    published_at: publishedAt,
-  };
-  return stringifyJsonColumns(row, SERVICE_JSON_COLUMNS);
+  return { ...payload, locale: getDefaultLocale(), status, published_at: publishedAt };
 }
 
 function resolveStatus(current: ContentStatus | null, intent: string | null): ContentStatus {
@@ -86,13 +58,17 @@ function resolvePublishedAt(
   return null;
 }
 
-export async function createService(formData: FormData): Promise<ServiceActionResult> {
+function revalidatePublished() {
+  revalidatePath('/work/video');
+}
+
+export async function createVideoProject(formData: FormData): Promise<VideoActionResult> {
   await requireAdminIdentity();
 
-  const parsed = parseServiceForm(formData);
+  const parsed = parseVideoForm(formData);
   if (!parsed.ok) return parsed;
 
-  if (await isServiceSlugTaken(parsed.payload.slug)) {
+  if (await isVideoSlugTaken(parsed.payload.slug)) {
     return { ok: false, error: 'Slug is already in use' };
   }
 
@@ -105,38 +81,38 @@ export async function createService(formData: FormData): Promise<ServiceActionRe
   const columns = Object.keys(row);
   const placeholders = columns.map((_, i) => `?${i + 1}`).join(', ');
   const result = await db
-    .prepare(`INSERT INTO services (${columns.join(', ')}) VALUES (${placeholders}) RETURNING id, slug, status`)
-    .bind(...columns.map((c) => row[c]))
+    .prepare(
+      `INSERT INTO video_projects (${columns.join(', ')}) VALUES (${placeholders}) RETURNING id, slug, status`,
+    )
+    .bind(...columns.map((c) => (row as Record<string, unknown>)[c]))
     .first<{ id: number; slug: string; status: string }>();
 
   if (!result) return { ok: false, error: 'Insert failed' };
 
-  revalidatePath('/admin/services');
-  if (status === 'published') {
-    await revalidatePublishedService(result.slug);
-  }
+  revalidatePath('/admin/video');
+  if (status === 'published') revalidatePublished();
 
   return { ok: true, id: String(result.id), slug: result.slug, status: result.status as ContentStatus };
 }
 
-export async function updateService(
+export async function updateVideoProject(
   id: string,
   previousSlug: string,
   formData: FormData,
-): Promise<ServiceActionResult> {
+): Promise<VideoActionResult> {
   await requireAdminIdentity();
 
-  const existing = await getAdminServiceById(id);
-  if (!existing) return { ok: false, error: 'Service not found' };
+  const existing = await getAdminVideoProjectById(id);
+  if (!existing) return { ok: false, error: 'Video project not found' };
 
-  const parsed = parseServiceForm(formData);
+  const parsed = parseVideoForm(formData);
   if (!parsed.ok) return parsed;
 
   if (parsed.payload.slug !== existing.slug && existing.status === 'published') {
     return { ok: false, error: 'Unpublish before changing the slug' };
   }
 
-  if (await isServiceSlugTaken(parsed.payload.slug, id)) {
+  if (await isVideoSlugTaken(parsed.payload.slug, id)) {
     return { ok: false, error: 'Slug is already in use' };
   }
 
@@ -150,25 +126,22 @@ export async function updateService(
   const assignments = columns.map((c, i) => `${c} = ?${i + 1}`).join(', ');
   const result = await db
     .prepare(
-      `UPDATE services SET ${assignments} WHERE id = ?${columns.length + 1} RETURNING id, slug, status`,
+      `UPDATE video_projects SET ${assignments} WHERE id = ?${columns.length + 1} RETURNING id, slug, status`,
     )
-    .bind(...columns.map((c) => row[c]), Number(id))
+    .bind(...columns.map((c) => (row as Record<string, unknown>)[c]), Number(id))
     .first<{ id: number; slug: string; status: string }>();
 
   if (!result) return { ok: false, error: 'Update failed' };
 
-  revalidatePath('/admin/services');
-  revalidatePath(`/admin/services/${previousSlug}`);
-  revalidatePath(`/admin/services/${result.slug}`);
-
-  if (status === 'published') {
-    await revalidatePublishedService(result.slug, previousSlug);
-  }
+  revalidatePath('/admin/video');
+  revalidatePath(`/admin/video/${previousSlug}`);
+  revalidatePath(`/admin/video/${result.slug}`);
+  if (status === 'published') revalidatePublished();
 
   return { ok: true, id: String(result.id), slug: result.slug, status: result.status as ContentStatus };
 }
 
-export async function deleteServices(ids: string[]) {
+export async function deleteVideoProjects(ids: string[]) {
   await requireAdminIdentity();
 
   if (ids.length === 0) return { ok: true as const };
@@ -178,25 +151,21 @@ export async function deleteServices(ids: string[]) {
   const placeholders = numericIds.map((_, i) => `?${i + 1}`).join(', ');
 
   const { results: rows } = await db
-    .prepare(`SELECT slug, status FROM services WHERE id IN (${placeholders})`)
+    .prepare(`SELECT slug, status FROM video_projects WHERE id IN (${placeholders})`)
     .bind(...numericIds)
     .all<{ slug: string; status: string }>();
 
   const { success } = await db
-    .prepare(`DELETE FROM services WHERE id IN (${placeholders})`)
+    .prepare(`DELETE FROM video_projects WHERE id IN (${placeholders})`)
     .bind(...numericIds)
     .run();
 
-  if (!success) {
-    return { ok: false as const, error: 'Delete failed' };
-  }
+  if (!success) return { ok: false as const, error: 'Delete failed' };
 
-  revalidatePath('/admin/services');
+  revalidatePath('/admin/video');
 
-  for (const row of rows ?? []) {
-    if (row.status === 'published') {
-      await revalidatePublishedService(row.slug);
-    }
+  if ((rows ?? []).some((row) => row.status === 'published')) {
+    revalidatePublished();
   }
 
   return { ok: true as const };

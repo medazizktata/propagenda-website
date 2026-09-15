@@ -1,4 +1,4 @@
-/** Seed for pnpm seed:cms; also SSG fallback when Supabase env is missing. */
+/** Seed data, also the runtime fallback when D1 isn't reachable. */
 import type { ServiceSlug } from '@/types/content';
 
 export const servicesHubHeading = 'EXPLORE OUR SERVICES';

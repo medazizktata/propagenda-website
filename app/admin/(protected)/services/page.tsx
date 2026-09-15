@@ -3,11 +3,11 @@ import { AdminPageHeader } from '@/components/admin/AdminSection';
 import { ServicesTable } from '@/components/admin/ServicesTable';
 import { buttonVariants } from '@/components/ui/button';
 import { listAdminServices } from '@/lib/cms/repositories/admin/services';
-import { isSupabaseConfigured } from '@/lib/supabase/env';
+import { hasD1 } from '@/lib/d1/client';
 import { cn } from '@/lib/utils';
 
 export default async function AdminServicesPage() {
-  if (!isSupabaseConfigured()) {
+  if (!hasD1()) {
     return (
       <div className="space-y-4">
         <h1 className="text-2xl font-semibold tracking-tight">Services</h1>

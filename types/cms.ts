@@ -26,3 +26,13 @@ export type ServiceListRow = Pick<
   ServiceRow,
   'id' | 'slug' | 'title' | 'status' | 'sort_order' | 'updated_at'
 >;
+
+export type CaseStudyListRow = Pick<
+  CaseStudyRow,
+  'id' | 'slug' | 'title' | 'status' | 'sort_order' | 'updated_at'
+>;
+
+export type VideoProjectListRow = Pick<
+  VideoProjectRow,
+  'id' | 'slug' | 'title' | 'status' | 'sort_order' | 'updated_at'
+>;

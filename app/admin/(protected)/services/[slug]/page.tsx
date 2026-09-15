@@ -5,7 +5,7 @@ import {
   listAdminServiceHubCards,
 } from '@/lib/cms/repositories/admin/services';
 import { serviceRowToEditorValues } from '@/lib/cms/services/form-state';
-import { isSupabaseConfigured } from '@/lib/supabase/env';
+import { hasD1 } from '@/lib/d1/client';
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -13,7 +13,7 @@ type Props = {
 };
 
 export default async function EditServicePage({ params, searchParams }: Props) {
-  if (!isSupabaseConfigured()) notFound();
+  if (!hasD1()) notFound();
 
   const { slug } = await params;
   const { saved } = await searchParams;

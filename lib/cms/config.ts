@@ -6,8 +6,10 @@ import { hasD1 } from '@/lib/d1/client';
  * build infra). Without it, public loaders fall back to `content/*` seed
  * modules so a build without Cloudflare context still succeeds.
  *
- * Content used to live in Supabase; TASK-11 migrated data to D1. Supabase Auth
- * still gates /admin until TASK-11.4 lands Cloudflare Access.
+ * Content used to live in Supabase; TASK-11 migrated public content to D1 and
+ * TASK-11.4 replaced Supabase Auth with Cloudflare Access for /admin. Admin
+ * CRUD's data (services/case_studies/video_projects) also now lives in D1
+ * (TASK-1) -- Supabase Postgres has no remaining code path in this app.
  */
 export function usesDatabaseContent(): boolean {
   return hasD1();

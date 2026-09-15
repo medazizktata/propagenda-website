@@ -2,20 +2,21 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { isFeatureUnlocked } from '@/lib/featureFlags';
 import { SOFT_LAUNCH_QUERY } from '@/lib/softLaunch';
-import { handleAdminAuth } from '@/lib/supabase/middleware';
 
 /**
  * Hard lock: unfinished / work-locked routes never reach the page — edge redirect
  * to home. OpenNext Cloudflare still requires Edge Middleware (middleware.ts);
  * Next 16's proxy.ts (Node) is not supported yet.
  *
- * Admin + auth routes run Supabase session refresh and login gating first.
+ * /admin is gated by Cloudflare Access at Cloudflare's own edge network (see
+ * TASK-11.4) -- an unauthenticated request never reaches this middleware at
+ * all, so there's nothing for it to do for that path.
  */
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  if (pathname.startsWith('/admin') || pathname.startsWith('/auth')) {
-    return handleAdminAuth(request);
+  if (pathname.startsWith('/admin')) {
+    return NextResponse.next();
   }
 
   if (isFeatureUnlocked(pathname)) {

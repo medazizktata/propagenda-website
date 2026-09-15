@@ -7,7 +7,7 @@ import type { CheckResult } from './lib/runner';
 const FORBIDDEN_IN_CONTENT = [
   {
     pattern: '@/lib/supabase/server',
-    hint: 'Use createSupabaseStaticClient from @/lib/supabase/static for build-safe public CMS reads.',
+    hint: 'That module was removed (TASK-11.4) -- public CMS reads come from D1 via lib/d1/client.ts, not a per-request Supabase session.',
   },
   {
     pattern: "from 'next/headers'",
@@ -51,7 +51,7 @@ export function checkStaticContent(): CheckResult {
       ...checkPatterns(file, [
         {
           pattern: '@/lib/supabase/server',
-          hint: 'generateStaticParams runs at build time — use static CMS clients instead.',
+          hint: 'That module was removed (TASK-11.4) -- generateStaticParams runs at build time, use D1 via lib/d1/client.ts instead.',
         },
         {
           pattern: "from 'next/headers'",

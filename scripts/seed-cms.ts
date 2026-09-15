@@ -1,6 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
 import { buildContentSeedRows } from '@/lib/cms/seedData';
-import { resolveDefaultAdminCredentials, seedDefaultAdminUser } from '@/lib/cms/seedAdminUser';
 
 // Unlike `next dev`, a standalone tsx script doesn't auto-load .env files.
 // Load .env then .env.local (later call wins) so this works the same as the
@@ -35,12 +34,6 @@ async function upsertTable<T extends Record<string, unknown>>(
 }
 
 async function main() {
-  const adminCredentials = resolveDefaultAdminCredentials();
-  const adminResult = await seedDefaultAdminUser(supabase, adminCredentials);
-  console.log(
-    `${adminResult === 'created' ? 'Created' : 'Updated'} CMS admin: ${adminCredentials.email}`,
-  );
-
   const { services, caseStudies, videos } = buildContentSeedRows();
 
   await upsertTable('services', services);

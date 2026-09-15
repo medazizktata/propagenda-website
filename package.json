@@ -37,12 +37,10 @@
     "supabase:typegen": "supabase gen types typescript --local > types/database.types.ts",
     "seed:sql": "tsx scripts/generate-seed-sql.ts",
     "seed:cms": "tsx scripts/seed-cms.ts",
-    "seed:admin": "tsx scripts/seed-admin-user.ts",
     "db:reset": "pnpm seed:sql && pnpm supabase:reset"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",
-    "@supabase/ssr": "^0.12.5",
     "@supabase/supabase-js": "^2.112.4",
     "@tailwindcss/postcss": "^4.3.2",
     "@types/node": "^26.1.1",

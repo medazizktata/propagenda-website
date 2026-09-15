@@ -1,10 +1,9 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
 
+/** Cloudflare Access owns the session now (TASK-11.4) -- its own logout
+    endpoint clears the CF_Authorization cookie and ends the Access session. */
 export async function signOut() {
-  const supabase = await createSupabaseServerClient();
-  await supabase.auth.signOut();
-  redirect('/admin/login');
+  redirect('/cdn-cgi/access/logout');
 }

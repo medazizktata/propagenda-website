@@ -1,9 +1,9 @@
 import type { ReactNode } from 'react';
 import { AdminShell } from '@/components/admin/AdminShell';
-import { requireAdminSession } from '@/lib/cms/auth';
+import { requireAdminIdentity } from '@/lib/cms/auth';
 
 export default async function AdminProtectedLayout({ children }: { children: ReactNode }) {
-  const { user } = await requireAdminSession();
+  const { email } = await requireAdminIdentity();
 
-  return <AdminShell userEmail={user.email ?? ''}>{children}</AdminShell>;
+  return <AdminShell userEmail={email}>{children}</AdminShell>;
 }

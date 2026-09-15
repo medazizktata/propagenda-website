@@ -1,7 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { requireAdminSession } from '@/lib/cms/auth';
+import { requireAdminIdentity } from '@/lib/cms/auth';
 import { getDefaultLocale } from '@/lib/cms/config';
 import {
   getAdminServiceById,
@@ -9,7 +9,7 @@ import {
 } from '@/lib/cms/repositories/admin/services';
 import { buildServicePayload, serviceEditorSchema } from '@/lib/cms/services/schema';
 import { revalidatePublishedService } from '@/lib/cms/services/revalidate-service';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { createSupabaseAdminClient } from '@/lib/supabase/admin';
 import type { Json } from '@/types/database.types';
 import type { ContentStatus } from '@/types/cms';
 
@@ -86,7 +86,7 @@ function resolvePublishedAt(
 }
 
 export async function createService(formData: FormData): Promise<ServiceActionResult> {
-  await requireAdminSession();
+  await requireAdminIdentity();
 
   const parsed = parseServiceForm(formData);
   if (!parsed.ok) return parsed;
@@ -99,7 +99,7 @@ export async function createService(formData: FormData): Promise<ServiceActionRe
   const status = resolveStatus(null, typeof intent === 'string' ? intent : null);
   const publishedAt = status === 'published' ? new Date().toISOString() : null;
 
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseAdminClient();
   const { data, error } = await supabase
     .from('services')
     .insert(dbRowFromPayload(parsed.payload, status, publishedAt))
@@ -121,7 +121,7 @@ export async function updateService(
   previousSlug: string,
   formData: FormData,
 ): Promise<ServiceActionResult> {
-  await requireAdminSession();
+  await requireAdminIdentity();
 
   const existing = await getAdminServiceById(id);
   if (!existing) return { ok: false, error: 'Service not found' };
@@ -141,7 +141,7 @@ export async function updateService(
   const status = resolveStatus(existing.status, typeof intent === 'string' ? intent : null);
   const publishedAt = resolvePublishedAt(status, existing.status, existing.published_at);
 
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseAdminClient();
   const { data, error } = await supabase
     .from('services')
     .update(dbRowFromPayload(parsed.payload, status, publishedAt))
@@ -163,11 +163,11 @@ export async function updateService(
 }
 
 export async function deleteServices(ids: string[]) {
-  await requireAdminSession();
+  await requireAdminIdentity();
 
   if (ids.length === 0) return { ok: true as const };
 
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseAdminClient();
   const { data: rows } = await supabase.from('services').select('slug, status').in('id', ids);
 
   const { error } = await supabase.from('services').delete().in('id', ids);

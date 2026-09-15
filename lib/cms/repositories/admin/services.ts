@@ -1,11 +1,11 @@
 import { getDefaultLocale } from '@/lib/cms/config';
 import { mapServiceHubCard } from '@/lib/cms/mappers';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { createSupabaseAdminClient } from '@/lib/supabase/admin';
 import type { ServiceHubCard } from '@/content/servicesHub';
 import type { ServiceListRow, ServiceRow } from '@/types/cms';
 
 export async function listAdminServices(): Promise<ServiceListRow[]> {
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseAdminClient();
   const { data, error } = await supabase
     .from('services')
     .select('id, slug, title, status, sort_order, updated_at')
@@ -17,7 +17,7 @@ export async function listAdminServices(): Promise<ServiceListRow[]> {
 }
 
 export async function listAdminServiceHubCards(): Promise<ServiceHubCard[]> {
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseAdminClient();
   const { data, error } = await supabase
     .from('services')
     .select('*')
@@ -32,7 +32,7 @@ export async function listAdminServiceHubCards(): Promise<ServiceHubCard[]> {
 }
 
 export async function getAdminServiceBySlug(slug: string): Promise<ServiceRow | null> {
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseAdminClient();
   const { data, error } = await supabase
     .from('services')
     .select('*')
@@ -45,7 +45,7 @@ export async function getAdminServiceBySlug(slug: string): Promise<ServiceRow | 
 }
 
 export async function getAdminServiceById(id: string): Promise<ServiceRow | null> {
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseAdminClient();
   const { data, error } = await supabase
     .from('services')
     .select('*')
@@ -57,7 +57,7 @@ export async function getAdminServiceById(id: string): Promise<ServiceRow | null
 }
 
 export async function isServiceSlugTaken(slug: string, excludeId?: string): Promise<boolean> {
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseAdminClient();
   let query = supabase
     .from('services')
     .select('id')

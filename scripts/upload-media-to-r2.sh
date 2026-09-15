@@ -33,9 +33,4 @@ upload_dir "public/videos" "videos"
 echo "=== video posters (public/images/video-posters) ==="
 upload_dir "public/images/video-posters" "video-posters"
 
-echo "=== loose Three Angles clip ==="
-npx wrangler r2 object put "${BUCKET}/videos/three-angles-website-launch.mp4" \
-  --file "We built what might be the best website in Egypt for one of the strongest OOH companies in the m.mp4" \
-  --remote 2>&1 | tail -1
-
 echo "Done."

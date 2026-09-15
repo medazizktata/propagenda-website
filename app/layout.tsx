@@ -1,11 +1,14 @@
 import type { Metadata, Viewport } from 'next';
 import type { ReactNode } from 'react';
+import Script from 'next/script';
 import { IBM_Plex_Mono, Poppins } from 'next/font/google';
 import { Providers } from './providers';
 import { SkipLink } from '@/components/ui/SkipLink';
 import { SiteShell } from '@/components/layout/SiteShell';
 import { getSiteUrl } from '@/lib/seo/site';
 import './globals.css';
+
+const GA_MEASUREMENT_ID = 'G-KS0FKS0NTF';
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -49,6 +52,18 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={`${poppins.variable} ${plexMono.variable}`}>
       <body>
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+          strategy="afterInteractive"
+        />
+        <Script id="ga-init" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '${GA_MEASUREMENT_ID}');
+          `}
+        </Script>
         <SkipLink />
         <Providers>
           <SiteShell>

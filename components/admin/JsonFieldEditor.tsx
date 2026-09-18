@@ -58,7 +58,7 @@ export function JsonFieldEditor({
         onChange={(e) => onChange(e.target.value)}
         spellCheck={false}
         className={cn(
-          'admin-field min-h-[120px] font-mono text-xs leading-relaxed',
+          'admin-field min-h-[120px] text-xs leading-relaxed',
           parseError && 'border-destructive/50 focus-visible:ring-destructive/30',
         )}
       />

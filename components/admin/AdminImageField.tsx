@@ -43,7 +43,7 @@ export function AdminImageField({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
-          className="admin-field h-10 min-w-0 flex-1 font-mono text-sm"
+          className="admin-field h-10 min-w-0 flex-1 text-sm"
         />
       </div>
     );
@@ -60,7 +60,7 @@ export function AdminImageField({
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
           className={cn(
-            'admin-field h-10 font-mono text-sm',
+            'admin-field h-10 text-sm',
             resolvedLayout === 'inline' && 'min-w-0 flex-1',
           )}
         />

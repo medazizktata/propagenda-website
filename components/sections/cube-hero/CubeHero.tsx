@@ -136,8 +136,8 @@ export function CubeHero() {
       }
     };
 
-    // Waiting on fonts matters: the face tiles are drawn with the same Poppins and IBM Plex Mono
-    // as the DOM, and building the atlas early would bake the fallback stack into a texture.
+    // Waiting on fonts matters: the face tiles are drawn with the same Poppins as the DOM,
+    // and building the atlas early would bake the fallback stack into a texture.
     const start = () => {
       const fonts: Promise<unknown> = document.fonts ? document.fonts.ready : Promise.resolve();
       void fonts.then(boot, boot);

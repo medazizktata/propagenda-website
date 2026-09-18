@@ -74,3 +74,12 @@ reports/lhci/
 .dev.vars
 .open-next
 .wrangler
+
+# Raw video source dump (personal footage archive / drive exports staged for editing,
+# not deployed site assets — the real served videos live under public/videos/).
+/videos/
+
+# Impeccable design-skill local scratch: review screenshots and the hook's own cache are
+# throwaway per-session artifacts, not durable project config.
+.impeccable/review/
+.impeccable/hook.cache.json

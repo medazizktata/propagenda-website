@@ -124,7 +124,7 @@ export function ServicePreviewDock({
 
               <div className="flex h-10 shrink-0 items-center justify-between gap-2 border-b border-white/12 px-3">
                 <p className="truncate text-xs text-white/65">
-                  <span className="text-backstage text-white">Preview</span>
+                  <span className="text-sm font-medium text-white">Preview</span>
                   <span className="mx-2 text-white/30">·</span>
                   updates as you edit
                 </p>

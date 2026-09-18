@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { Logo } from '@/components/ui/Logo';
 import { NavItemLink } from '@/components/molecules/NavItem';
 import { ServicesNavMenu } from '@/components/molecules/ServicesNavMenu';
+import { WorkNavMenu } from '@/components/molecules/WorkNavMenu';
 import { HeaderCTA } from '@/components/molecules/HeaderCTA';
 import { HamburgerButton } from '@/components/molecules/HamburgerButton';
 import { MobileMenu } from '@/components/layout/MobileMenu';
@@ -137,6 +138,8 @@ export function Header() {
           {getPrimaryNavigation().map((item) =>
             item.href === '/services' ? (
               <ServicesNavMenu key={item.href} />
+            ) : item.href === '/work' ? (
+              <WorkNavMenu key={item.href} />
             ) : (
               <NavItemLink key={item.href} item={item} />
             ),

@@ -287,7 +287,7 @@ export function EventsJourney() {
                   />
                 ))}
                 <div className="absolute inset-0 bg-gradient-to-t from-charcoal via-charcoal/25 to-transparent" />
-                <span className="absolute right-5 top-5 font-mono text-xs tabular-nums text-white/70">
+                <span className="absolute right-5 top-5 text-xs font-medium tabular-nums text-white/70">
                   {num(active)} / {num(n - 1)}
                 </span>
                 <div className="absolute inset-x-5 bottom-5">

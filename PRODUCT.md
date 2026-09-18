@@ -59,12 +59,21 @@ Brand line: "Where creativity meets strategy." Tagline: "Looking for the better 
 
 ## Brand Commitments
 
-- Poppins is brand law (brand PDF) — never swap the family; expression comes from weight/scale
-  and the mono backstage register, not new faces.
-- Mono register: **IBM Plex Mono — a decided choice, not a default** (2026-08-13). Rationale: at
-  the register's 10–13px caps sizes face character is marginal, and the Plex family's first-class
-  Arabic sibling (IBM Plex Sans Arabic) gives the confirmed Arabic milestone cross-script
-  coherence no alternative mono offers. Revisit only if the bilingual build changes direction.
+- Poppins is brand law (brand PDF) — never swap the family; expression comes from weight/scale,
+  not new faces.
+- Mono register retired (2026-09-15): IBM Plex Mono and the mono/uppercase/tracked "backstage"
+  eyebrow-and-metadata treatment (`.text-backstage`, `font-mono`) have been removed everywhere —
+  the public marketing site and the /admin dashboard alike — per explicit user direction ("no
+  mono look anywhere"). Every former mono usage (eyebrows, section numbers, deliverable labels,
+  scroll cues, admin table/field metadata) now renders in plain Poppins, sentence case, no
+  letter-spacing. The IBM Plex Mono font import, its `--font-mono` variable, and the Tailwind
+  `mono` font-family entry have all been deleted from the codebase (`app/layout.tsx`,
+  `tailwind.config.ts`, `app/globals.css`). Do not reintroduce a mono/tracked-caps register
+  without a fresh, explicit decision. Open item: three content labels ("Legal", "By the
+  numbers", "The run of show") were re-skinned to plain Poppins/sentence-case but still sit
+  above their heading as a structural kicker/eyebrow — out of scope for this typography-only
+  pass (would be a content-structure change); flagged for a follow-up decision, not yet
+  fixed.
 - Recurring type sizes must use tokens (`display-section`, `meta-sm/meta/meta-lg`, `control`);
   one-off display clamps on hero/statement acts are per-act art direction and may stay inline.
 - Black + orange (#f58b27) identity. Orange is punctuation (<5% of a screen: one CTA, terminal

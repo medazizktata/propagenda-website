@@ -218,7 +218,7 @@ export function ServiceEditorForm({
                       onChange={(e) => setField('slug', e.target.value)}
                       placeholder="branding-visual-identity"
                       disabled={mode === 'edit' && status === 'published'}
-                      className="admin-field h-10 font-mono"
+                      className="admin-field h-10"
                     />
                   </AdminFormField>
                   <AdminFormRow>

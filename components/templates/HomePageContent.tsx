@@ -5,7 +5,6 @@ import { ManifestoSection } from '@/components/sections/ManifestoSection';
 import { DesignPrintInstallPopup } from '@/components/sections/DesignPrintInstallPopup';
 import { GrowthStaircase } from '@/components/sections/GrowthStaircase';
 import { WorkSplitSection } from '@/components/sections/WorkSplitSection';
-import { ClientLogoGrid } from '@/components/sections/ClientLogoGrid';
 import { SeamlessActs } from '@/components/layout/SeamlessActs';
 import { heroVariant, isPageUnlocked } from '@/lib/featureFlags';
 
@@ -23,7 +22,6 @@ export function HomePageContent() {
       </SeamlessActs>
       <GrowthStaircase />
       {isPageUnlocked('work') ? <WorkSplitSection /> : null}
-      <ClientLogoGrid />
     </>
   );
 }

@@ -129,7 +129,7 @@ export function VideoEditorForm({
               onChange={(e) => setField('slug', e.target.value)}
               placeholder="showreel-marketing"
               disabled={mode === 'edit' && status === 'published'}
-              className="admin-field h-10 font-mono"
+              className="admin-field h-10"
             />
           </AdminFormField>
           <AdminFormRow>
@@ -141,7 +141,7 @@ export function VideoEditorForm({
             </AdminFormField>
           </AdminFormRow>
           <AdminFormField label="Video (R2 key or path)" htmlFor="src" hint="Relative R2 object key, e.g. videos/showreel.mp4 -- blank for image-only placeholder">
-            <Input id="src" value={values.src} onChange={(e) => setField('src', e.target.value)} className="admin-field h-10 font-mono" />
+            <Input id="src" value={values.src} onChange={(e) => setField('src', e.target.value)} className="admin-field h-10" />
           </AdminFormField>
           <AdminFormField label="Poster" htmlFor="poster">
             <AdminImageField id="poster" value={values.poster} onChange={(next) => setField('poster', next)} />

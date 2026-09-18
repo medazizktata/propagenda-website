@@ -124,7 +124,7 @@ function FilterRuleRow<T>({
           </SelectContent>
         </Select>
       ) : (
-        <span className="text-backstage px-1 text-white/40">WHERE</span>
+        <span className="px-1 text-sm font-medium text-white/40">Where</span>
       )}
 
       <Select

@@ -256,6 +256,24 @@ export const dosePharmacy = caseStudy(
         width: 1920,
         height: 1080,
       },
+      {
+        src: '/images/work/dose-pharmacy/gallery-6.webp',
+        alt: 'Dose Pharmacy staff ID badge and lanyard printed with a repeating leaf-and-wing pattern, beside a pharmacist in a branded lab coat holding a clipboard.',
+        width: 1920,
+        height: 1080,
+      },
+      {
+        src: '/images/work/dose-pharmacy/gallery-7.webp',
+        alt: 'Dose Pharmacy interior store-design concept render, with neon-lit product columns and "Your Daily Dose Of Happiness" wall signage above the checkout counter.',
+        width: 1920,
+        height: 1080,
+      },
+      {
+        src: '/images/work/dose-pharmacy/gallery-8.webp',
+        alt: 'Dose Pharmacy storefront signage concept on a street-level building facade, bilingual English/Arabic sign above glass display windows at sunset.',
+        width: 1920,
+        height: 1080,
+      },
     ],
     prev: 'p2p-motors',
     next: 'clemson-porter-properties',
@@ -590,7 +608,7 @@ export const zealerz = caseStudy(
         height: 1080,
       },
     ],
-    prev: 'emirates-agro',
+    prev: 'mm-event-management',
     next: 'arabian-business-academy',
   },
 );
@@ -723,6 +741,24 @@ export const twoKShopping = caseStudy(
         width: 1920,
         height: 1080,
       },
+      {
+        src: '/images/work/2k-shopping/gallery-4.webp',
+        alt: '2K Shopping product and app mockups: a branded energy-drink can held in hand, a shopping-app phone screen in front of branded paper bags, and a "Click. Bag. Delivered." door-hanger bag mockup.',
+        width: 1920,
+        height: 1080,
+      },
+      {
+        src: '/images/work/2k-shopping/gallery-5.webp',
+        alt: '2K Shopping letterhead stationery mockup, two sheets shown at an angle with the logo lockup and a dark teal footer bar with contact details.',
+        width: 1920,
+        height: 1080,
+      },
+      {
+        src: '/images/work/2k-shopping/gallery-6.webp',
+        alt: '2K Shopping branded notebook mockup in lime green with the logo on the cover, and the inside cover showing a QR code and app-store badges.',
+        width: 1920,
+        height: 1080,
+      },
     ],
     prev: 'arabian-business-academy',
     next: 'alla-doresu',
@@ -788,6 +824,24 @@ export const allaDoresu = caseStudy(
       {
         src: '/images/work/alla-doresu/gallery-3.webp',
         alt: 'Alla Doresu letterhead stationery mockup with the pink-and-black logo lockup and Dubai, UAE contact details.',
+        width: 1920,
+        height: 1080,
+      },
+      {
+        src: '/images/work/alla-doresu/gallery-4.webp',
+        alt: 'Alla Doresu wax seal stamp mockup: a wooden-handled stamp bearing the monogram mark beside a pressed pink wax seal.',
+        width: 1920,
+        height: 1080,
+      },
+      {
+        src: '/images/work/alla-doresu/gallery-5.webp',
+        alt: 'Alla Doresu branded phone cases beside a staff ID badge and pink lanyard printed with the repeating monogram pattern, for founder Alaa Aldeeb.',
+        width: 1920,
+        height: 1080,
+      },
+      {
+        src: '/images/work/alla-doresu/gallery-6.webp',
+        alt: 'Alla Doresu product hang tag mockup, held against a pink garment, printed with the monogram mark and "Unique as you are" tagline.',
         width: 1920,
         height: 1080,
       },
@@ -866,6 +920,24 @@ export const bilEvents = caseStudy(
       {
         src: '/images/work/bil-events/gallery-4.webp',
         alt: 'BIL Events branded T-shirts in white with a yellow interlocking N monogram on the front and the "BIL / EVENTS" wordmark on the back.',
+        width: 1920,
+        height: 1080,
+      },
+      {
+        src: '/images/work/bil-events/gallery-5.webp',
+        alt: 'BIL Events social media style grid: platform icon badges above a set of yellow-and-black Instagram post and reel templates for the "Spectacular Chaos" reality-show episodes.',
+        width: 1920,
+        height: 1080,
+      },
+      {
+        src: '/images/work/bil-events/gallery-6.webp',
+        alt: 'BIL Events envelope mockups, white with a yellow diagonal color-block and the "BIL / EVENTS" wordmark and interlocking N monogram.',
+        width: 1920,
+        height: 1080,
+      },
+      {
+        src: '/images/work/bil-events/gallery-7.webp',
+        alt: 'BIL Events branded merchandise: a white hoodie and a white cap, both printed with the yellow interlocking N monogram, modeled on a light sage sweatshirt.',
         width: 1920,
         height: 1080,
       },
@@ -1163,6 +1235,24 @@ export const alManazelAlHaditha = caseStudy(
         width: 1920,
         height: 1080,
       },
+      {
+        src: '/images/work/al-manazel-al-haditha/gallery-5.webp',
+        alt: 'Al Manazel Al Haditha Real Estate presentation folder mockup in teal with a property photograph, the "Guiding You Home" tagline, gold logo lockup and a back cover with contact details.',
+        width: 1920,
+        height: 1080,
+      },
+      {
+        src: '/images/work/al-manazel-al-haditha/gallery-6.webp',
+        alt: 'Al Manazel Al Haditha Real Estate envelope and presentation-folder-box mockup in deep teal to black, each with the gold logo lockup and "Guiding You Home" tagline.',
+        width: 1920,
+        height: 1080,
+      },
+      {
+        src: '/images/work/al-manazel-al-haditha/gallery-7.webp',
+        alt: 'Al Manazel Al Haditha Real Estate feather flag mockups: one with the gold wave-form monogram on teal, the other with a repeating gold monogram pattern on black.',
+        width: 1920,
+        height: 1080,
+      },
     ],
     prev: 'cu-optics',
     next: 'ayoub-and-co',
@@ -1231,6 +1321,30 @@ export const ayoubAndCo = caseStudy(
       {
         src: '/images/work/ayoub-and-co/gallery-4.webp',
         alt: 'Ayoub & Co. Real Estate company profile spread on furnishing and styling services, maroon-duotone interior photography.',
+        width: 1920,
+        height: 1080,
+      },
+      {
+        src: '/images/work/ayoub-and-co/gallery-5.webp',
+        alt: 'Ayoub & Co. Real Estate business card mockup for Eng. Mohamed Ayoub, Managing Director, black on black with an embossed ampersand monogram and a QR code.',
+        width: 1920,
+        height: 1080,
+      },
+      {
+        src: '/images/work/ayoub-and-co/gallery-6.webp',
+        alt: 'Ayoub & Co. Real Estate presentation folder mockup, white outer folder beside maroon-to-black covers with the ampersand monogram and "A Partnership You Can Trust" tagline.',
+        width: 1920,
+        height: 1080,
+      },
+      {
+        src: '/images/work/ayoub-and-co/gallery-7.webp',
+        alt: 'Ayoub & Co. Real Estate branded tissue box and napkins, white packaging printed with a repeating ampersand-and-wordmark pattern.',
+        width: 1920,
+        height: 1080,
+      },
+      {
+        src: '/images/work/ayoub-and-co/gallery-8.webp',
+        alt: 'Ayoub & Co. Real Estate branded gift box mockup, black with a maroon interior lining, shown open and closed with the ampersand monogram and "A Partnership You Can Trust" tagline.',
         width: 1920,
         height: 1080,
       },
@@ -1454,6 +1568,18 @@ export const layaInc = caseStudy(
       {
         src: '/images/work/laya-inc/gallery-5.webp',
         alt: 'Laya Inc black polo shirt mockup with a gold chevron-pattern band on the front and the logo lockup and contact details printed on the back.',
+        width: 1920,
+        height: 1080,
+      },
+      {
+        src: '/images/work/laya-inc/gallery-6.webp',
+        alt: 'Laya Inc envelope mockups in cream, one with a gold chevron-pattern watermark and the other with the logo lockup, both showing UAE contact details.',
+        width: 1920,
+        height: 1080,
+      },
+      {
+        src: '/images/work/laya-inc/gallery-7.webp',
+        alt: 'Laya Inc spiral-bound notebook mockup, closed cover with a gold chevron-pattern watermark and logo, and an open lined interior stamped with the logo mark.',
         width: 1920,
         height: 1080,
       },
@@ -1770,6 +1896,24 @@ export const dotAndDash = caseStudy(
         width: 1920,
         height: 1080,
       },
+      {
+        src: '/images/work/dot-and-dash/gallery-5.webp',
+        alt: 'Dot & Dash 3D wall-signage mockup, the "DOT & DASH" wordmark and coral ampersand accent rendered in white on a dark tiled wall.',
+        width: 1920,
+        height: 1080,
+      },
+      {
+        src: '/images/work/dot-and-dash/gallery-6.webp',
+        alt: 'Dot & Dash repeating dot-and-dash pattern swatches in coral, dark gray and light gray beside an outlined ampersand mark.',
+        width: 1920,
+        height: 1080,
+      },
+      {
+        src: '/images/work/dot-and-dash/gallery-7.webp',
+        alt: 'Dot & Dash envelope and business card mockup, the envelope flap lined with a coral dot-and-dash pattern and the card printed with the logo and Dubai, UAE contact details.',
+        width: 1920,
+        height: 1080,
+      },
     ],
     prev: 'jordanian-social-club',
     next: 'leoz',
@@ -1843,6 +1987,30 @@ export const leoz = caseStudy(
       {
         src: '/images/work/leoz/gallery-4.webp',
         alt: 'Leoz Gents Salon staff uniform application: a black polo shirt with the lion-head logo, and two staff tunics with the logo on the chest.',
+        width: 1920,
+        height: 1080,
+      },
+      {
+        src: '/images/work/leoz/gallery-5.webp',
+        alt: 'Leoz Gents Salon "Think Again" social media ad templates: three square Instagram posts of a barber shaving a client, styled in sepia-toned black-and-white with gold "THINK AGAIN" type and a booking phone number.',
+        width: 1920,
+        height: 1080,
+      },
+      {
+        src: '/images/work/leoz/gallery-6.webp',
+        alt: 'Leoz Gents Salon feather banner flags in black: one with the lion-head logo and both salon locations\' contact details, one reading "Sharp Style, Strong Confidence" over the logo.',
+        width: 1920,
+        height: 1080,
+      },
+      {
+        src: '/images/work/leoz/gallery-7.webp',
+        alt: 'Leoz Gents Salon branded price-list stands on a tabletop, listing manicure/pedicure, facial, body treatment and massage prices on one card and haircut/shaving prices on the other.',
+        width: 1920,
+        height: 1080,
+      },
+      {
+        src: '/images/work/leoz/gallery-8.webp',
+        alt: 'Leoz Gents Salon branded shopping bags in white: one with the gold lion-head logo, one reading "Sharp Style, Strong Confidence."',
         width: 1920,
         height: 1080,
       },
@@ -2234,10 +2402,14 @@ export const mmEventManagement = caseStudy(
       },
     ],
     prev: 'sterling-cars',
-    next: 'emirates-agro',
+    next: 'zealerz',
   },
 );
 
+// emiratesAgro is deliberately NOT listed below (2026-09-15, explicit user direction:
+// "remove emirate agro as a client, keep content, hide entry in website") — the case
+// study definition above stays intact, it's just excluded from what the site shows or
+// looks up by slug. Mirrored in D1 via status='draft' for the production/D1-backed path.
 export const allCaseStudies: CaseStudyRecord[] = [
   sanapexInteriors,
   p2pMotors,
@@ -2245,7 +2417,6 @@ export const allCaseStudies: CaseStudyRecord[] = [
   clemsonPorterProperties,
   sealand,
   bnkGroup,
-  emiratesAgro,
   zealerz,
   arabianBusinessAcademy,
   twoKShopping,

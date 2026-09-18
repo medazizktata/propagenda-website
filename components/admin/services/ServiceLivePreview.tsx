@@ -57,7 +57,7 @@ export function ServiceLivePreview({
     <div className={cn('relative flex h-full min-h-0 flex-col bg-black', className)}>
       {!hideHeader && (
         <div className="flex shrink-0 items-center justify-between border-b border-white/12 px-4 py-3">
-          <p className="text-backstage text-white">Live preview</p>
+          <p className="text-sm font-medium text-white">Live preview</p>
           {isStale && <span className="text-xs text-orange">Updating…</span>}
         </div>
       )}

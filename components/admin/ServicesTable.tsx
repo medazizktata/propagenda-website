@@ -86,7 +86,7 @@ export function ServicesTable({ rows }: { rows: ServiceListRow[] }) {
         sortable: true,
         filter: { kind: 'text' },
         render: (row) => (
-          <span className="font-mono text-xs text-muted-foreground">{row.slug}</span>
+          <span className="text-xs text-muted-foreground">{row.slug}</span>
         ),
       },
       {

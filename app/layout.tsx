@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import type { ReactNode } from 'react';
 import Script from 'next/script';
-import { IBM_Plex_Mono, Poppins } from 'next/font/google';
+import { Poppins } from 'next/font/google';
 import { Providers } from './providers';
 import { SkipLink } from '@/components/ui/SkipLink';
 import { SiteShell } from '@/components/layout/SiteShell';
@@ -14,15 +14,6 @@ const poppins = Poppins({
   subsets: ['latin'],
   weight: ['300', '400', '500', '600', '700', '800'],
   variable: '--font-poppins',
-  display: 'swap',
-});
-
-/** Backstage register (design DNA §2.3): mono caps for eyebrows, section numbers,
-    deliverable-label columns, metadata, scroll cues. 400 for meta, 500 for labels. */
-const plexMono = IBM_Plex_Mono({
-  subsets: ['latin'],
-  weight: ['400', '500'],
-  variable: '--font-mono',
   display: 'swap',
 });
 
@@ -50,7 +41,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className={`${poppins.variable} ${plexMono.variable}`}>
+    <html lang="en" className={poppins.variable}>
       <body>
         <Script
           src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}

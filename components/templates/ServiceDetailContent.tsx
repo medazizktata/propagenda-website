@@ -489,7 +489,7 @@ function ScopeFilmstrip({ items }: { items: string[] }) {
       {/* Light-table note — reads like the printing along the film rebate. */}
       <div className="mb-5 flex items-baseline justify-between gap-4">
         <span className="text-sm text-white/45">Hover a frame to rack it into focus.</span>
-        <span className="hidden font-mono text-xs tabular-nums text-white/30 sm:block">
+        <span className="hidden text-xs font-medium tabular-nums text-white/30 sm:block">
           Roll 01 · {items.length} frames · ISO 400
         </span>
       </div>
@@ -507,7 +507,7 @@ function ScopeFilmstrip({ items }: { items: string[] }) {
               return (
                 <div key={item} className="group/fr w-[13.5rem] shrink-0 pb-3 sm:w-[15rem]">
                   {/* Edge code — printed in the rebate above the frame. */}
-                  <div className="px-1 py-2 font-mono text-[0.62rem] tabular-nums text-orange/70">
+                  <div className="px-1 py-2 text-[0.62rem] font-semibold tabular-nums text-orange/70">
                     {frameCode(i)}
                   </div>
 
@@ -1142,7 +1142,7 @@ function ScopeTechSpec({ items }: { items: string[] }) {
             >
               <span
                 className={cn(
-                  'font-mono text-[0.65rem] font-semibold tabular-nums',
+                  'text-xs font-bold tabular-nums',
                   on ? 'text-navy/65 lg:text-orange' : 'text-orange/75',
                 )}
               >
@@ -1175,7 +1175,7 @@ function ScopeTechSpec({ items }: { items: string[] }) {
             </span>
           ))}
           {APP_SCOPE_TAG[item] && (
-            <span className="rounded-full border border-white/10 bg-charcoal/60 px-3 py-1 font-mono text-[0.68rem] text-white/45">
+            <span className="rounded-full border border-white/10 bg-charcoal/60 px-3 py-1 text-xs font-medium text-white/45">
               {APP_SCOPE_TAG[item]}
             </span>
           )}
@@ -2305,11 +2305,11 @@ function VideoTile({ src, label }: { src: string; label: string }) {
         className="pointer-events-none absolute inset-x-0 top-0 h-10 bg-gradient-to-b from-white/15 to-transparent opacity-0 group-hover/vt:opacity-100 group-hover/vt:motion-safe:animate-[video-scan_2.6s_linear_infinite]"
       />
       {/* REC + timecode. */}
-      <span className="pointer-events-none absolute left-3 top-3 z-10 flex items-center gap-1.5 font-mono text-meta-sm font-bold uppercase tracking-wider text-white opacity-0 transition-opacity duration-300 group-hover/vt:opacity-100">
+      <span className="pointer-events-none absolute left-3 top-3 z-10 flex items-center gap-1.5 text-meta-sm font-bold uppercase text-white opacity-0 transition-opacity duration-300 group-hover/vt:opacity-100">
         <span className="h-2 w-2 rounded-full bg-red-500 motion-safe:animate-pulse" />
         REC
       </span>
-      <span className="pointer-events-none absolute right-3 top-3 z-10 font-mono text-meta-sm tabular-nums text-white/75 opacity-0 transition-opacity duration-300 group-hover/vt:opacity-100">
+      <span className="pointer-events-none absolute right-3 top-3 z-10 text-meta-sm font-medium tabular-nums text-white/75 opacity-0 transition-opacity duration-300 group-hover/vt:opacity-100">
         00:00:24
       </span>
       {/* Play button — faint on touch (no hover), full on hover. */}

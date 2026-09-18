@@ -1,6 +1,35 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+/*
+ * THESIS: A tight, confident case-study read — asset-forward throughout, not just hero and
+ * a closing mosaic — that reaches its end without excessive scrolling. Density breathes
+ * (dense image, quiet type, dense again); scroll length tracks real content, not gimmicks.
+ * OWN-WORLD: inherits exactly — Poppins display and body voice throughout (no mono/tracked
+ * "backstage label" look anywhere in this file), black + #f58b27 orange as punctuation only,
+ * near-black `ink` on orange (never white-on-orange), no kicker labels, no same-size cards.
+ * VISUALS: the Mosaic is a justified-row layout (real aspect ratios pack rows that fill the
+ * container width exactly), not CSS-column masonry — columns gave a horizontal image far
+ * less height than a vertical neighbour in the column next to it, and also stranded unused
+ * column-width as dead space on short galleries (explicit user direction, 2026-09-15).
+ * STORY: gallery[0] duplicates heroImage by design (not a bug); Mosaic starts at gallery[1]
+ * (the single-image Feature Image stop was folded into the mosaic outright — one visuals
+ * grid, minimal text, per explicit user direction). "What we delivered" was removed
+ * entirely, same direction. Results dropped the hero-metric template: one uniform-scale
+ * flowing line, no giant figure over a small label. Quote grounds itself in the study's own
+ * heroImage, with --sd-accent-on used on the attribution tag.
+ * MOTION (2026-09-15, explicit user direction after a real scroll-jank investigation that
+ * ruled parallax itself in/out via A/B-disabling every scroll-linked effect on this page —
+ * see TASK notes): Hero is the ONLY section that carries scroll-linked parallax. Story's
+ * backdrop and the Mosaic's per-tile shift are both now plain static backgrounds/images —
+ * no GSAP ScrollTrigger, no sticky-tracked scale. Don't reintroduce scroll-linked motion to
+ * any section below the Hero without raising it again first.
+ * FIRST VIEWPORT: hero unchanged in content — full-bleed heroImage or pattern fallback.
+ * FORM: plain Poppins hierarchy and real accent color, not tracked-mono labels or filler.
+ * FINISH: unreviewed and undocumented is unfinished; this build ends with the finish
+ * review, the verdict, and DESIGN.md.
+ */
+
+import { useEffect, useRef, useState } from 'react';
 import type { CSSProperties } from 'react';
 import Link from 'next/link';
 import type {
@@ -13,7 +42,6 @@ import { gsap, registerGsap } from '@/lib/motion/gsap';
 import { useReducedMotion } from '@/lib/motion/useReducedMotion';
 import { cn } from '@/components/ui/cn';
 import { BrandPattern } from '@/components/ui/BrandPattern';
-import { PageCTA } from '@/components/sections/PageCTA';
 import { WorkNextPrev } from '@/components/sections/WorkNextPrev';
 import { ScrollCue } from '@/components/molecules/ScrollCue';
 import { PhotoSwipeLightbox } from '@/components/PhotoSwipeLightbox';
@@ -72,13 +100,7 @@ export function CaseStudyDetailContent({
     return () => ctx.revert();
   }, [reducedMotion]);
 
-  const meta = [study.client, study.industry, study.year].filter((v): v is string => Boolean(v));
-
-  const stages = [
-    { key: 'problem', name: 'The problem', body: study.challenge },
-    { key: 'approach', name: 'The approach', body: study.approach },
-    { key: 'result', name: 'The result', body: study.outcome },
-  ].filter((s): s is { key: string; name: string; body: string } => Boolean(s.body));
+  const meta = [study.industry, study.year].filter((v): v is string => Boolean(v));
 
   const prev = prevStudy;
   const next = nextStudy;
@@ -102,40 +124,31 @@ export function CaseStudyDetailContent({
     <div ref={rootRef} className="bg-charcoal" style={accentVars}>
       <CaseStudyHero study={study} meta={meta} reducedMotion={reducedMotion} />
 
-      {/* Immersive story — overview + narrative scroll over a pinned, parallaxing brand backdrop. */}
-      <CaseStudyStory
-        study={study}
-        overview={study.overview}
-        stages={stages}
-        reducedMotion={reducedMotion}
-      />
+      {/* Story — a single overview line over a static brand backdrop (Hero is the only
+          section that carries scroll-linked parallax). A short text beat before the
+          grid, not after (explicit user direction, 2026-09-15). */}
+      <CaseStudyStory study={study} overview={study.overview} />
 
-      {study.results && study.results.length > 0 && <CaseStudyResults results={study.results} />}
-
-      {gallery[1] && (
-        <CaseStudyFeatureImage image={gallery[1]} canOpen={canOpen} onOpen={() => openAt(1)} />
+      {/* Visuals grid — the dominant section of the whole page (explicit user direction,
+          2026-09-15: "make the grid the most dominant thing in a project showcase"),
+          expanded well past the old "More visuals" afterthought treatment. Comes right
+          after the one text beat above, not before it. */}
+      {gallery.length > 1 && (
+        <CaseStudyGalleryMosaic images={gallery.slice(1)} canOpen={canOpen} onOpenAt={(i) => openAt(i + 1)} />
       )}
 
-      {study.deliverables && study.deliverables.length > 0 && (
-        <CaseStudyDeliverables items={study.deliverables} />
-      )}
+      <CaseStudyResults results={study.results} />
 
-      {gallery.length > 2 && (
-        <CaseStudyGalleryMosaic images={gallery.slice(2)} canOpen={canOpen} onOpenAt={(i) => openAt(i + 2)} />
-      )}
-
-      {study.quote && <CaseStudyQuoteBlock quote={study.quote} />}
+      {study.quote && <CaseStudyQuoteBlock quote={study.quote} heroImage={study.heroImage} />}
 
       <WorkNextPrev prev={prev} next={next} />
-
-      <PageCTA line1="Ready to start" line2="something next." />
 
       {canOpen && <PhotoSwipeLightbox images={openable} isOpen={isOpen} initialIndex={index} onClose={close} />}
     </div>
   );
 }
 
-/* ───────────────────────── Hero (pinned, scaling) ───────────────────────── */
+/* ───────────────────────── Hero (scroll-linked scale) ───────────────────────── */
 
 function CaseStudyHero({
   study,
@@ -151,6 +164,15 @@ function CaseStudyHero({
   const imgRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
+  // Every study's title follows "Client Name: Category of work" (e.g. "Quick Cars:
+  // Branding & Visual Identity") — split on the first colon so the brand name can lead
+  // big and the category reads as a plain sub-line, instead of one long run-on heading.
+  // Split study.title (proper case), not study.h1 (already all-caps in the data) — the
+  // sub-line stays natural case rather than shouting.
+  const colonIndex = study.title.indexOf(':');
+  const titleName = colonIndex === -1 ? study.title : study.title.slice(0, colonIndex).trim();
+  const titleCategory = colonIndex === -1 ? null : study.title.slice(colonIndex + 1).trim();
+
   useEffect(() => {
     if (reducedMotion) return;
     const wrap = wrapRef.current;
@@ -158,10 +180,12 @@ function CaseStudyHero({
     if (!wrap || !pin) return;
     registerGsap();
     const ctx = gsap.context(() => {
+      // Scroll-linked, not pinned: the scale/fade rides the section's own natural height
+      // instead of locking the viewport and padding the page with extra scroll distance.
       const tl = gsap.timeline({
-        scrollTrigger: { trigger: wrap, start: 'top top', end: '+=55%', pin, scrub: true },
+        scrollTrigger: { trigger: wrap, start: 'top top', end: 'bottom top', scrub: true },
       });
-      tl.to(imgRef.current, { scale: 1.16, ease: 'none' }, 0).to(
+      tl.to(imgRef.current, { scale: 1.1, ease: 'none' }, 0).to(
         contentRef.current,
         { y: -48, autoAlpha: 0, ease: 'none' },
         0,
@@ -203,13 +227,24 @@ function CaseStudyHero({
               <span className="text-white">{study.client ?? study.title}</span>
             </nav>
 
+            {/* Brand name leads, big; the category of work follows as a plain sub-line —
+                simpler than one long run-on title (study.title stays "Name: Category" in
+                the data for SEO/lists; this is the only place it's split for display). */}
             <h1
               className="max-w-5xl text-balance font-sans font-bold uppercase leading-[0.94] tracking-tight text-white [text-shadow:0_2px_30px_rgba(0,0,0,0.6)]"
-              style={{ fontSize: 'clamp(2rem, 5.6vw, 5rem)' }}
+              style={{ fontSize: 'clamp(2.4rem, 7vw, 6rem)' }}
             >
-              {study.h1}
+              {titleName}
               <span className="text-[color:var(--sd-accent)]">.</span>
             </h1>
+            {titleCategory && (
+              <p
+                className="mt-3 max-w-2xl font-sans font-medium text-white/75"
+                style={{ fontSize: 'clamp(1.05rem, 2vw, 1.5rem)' }}
+              >
+                {titleCategory}
+              </p>
+            )}
 
             {meta.length > 0 && (
               <p className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-1 text-base font-medium text-white/85 md:text-lg">
@@ -235,244 +270,125 @@ function CaseStudyHero({
   );
 }
 
-/* ───────────── Immersive story (pinned backdrop, scrolling overview + beats) ───────────── */
+/* ───────────── Story (sticky backdrop, one compact editorial pass) ───────────── */
 
-// The centrepiece: a full-screen brand backdrop STAYS while the overview and each narrative
-// beat scroll up over it (type-over-imagery interplay). The backdrop slowly zooms on scroll.
-// Heavy scrim + text-shadow keep every word legible; content is normal-flow so it never blanks.
+// A full-screen brand backdrop stays sticky behind the overview and the narrative beats,
+// but the beats no longer each claim a near-full viewport of scroll: they sit together as
+// one dense editorial pass (overview, then a compact problem/approach/result row), so the
+// backdrop's parallax length tracks the real content instead of padding the page.
 // Text-only studies use the monogram + an orange glow as the backdrop instead of a photo.
 function CaseStudyStory({
   study,
   overview,
-  stages,
-  reducedMotion,
 }: {
   study: CaseStudyRecord;
   overview: string;
-  stages: { key: string; name: string; body: string }[];
-  reducedMotion: boolean;
 }) {
-  const sectionRef = useRef<HTMLElement>(null);
-  const imgRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (reducedMotion) return;
-    const section = sectionRef.current;
-    const img = imgRef.current;
-    if (!section || !img) return;
-    registerGsap();
-    const ctx = gsap.context(() => {
-      gsap.fromTo(
-        img,
-        { scale: 1.05, yPercent: -2 },
-        {
-          scale: 1.22,
-          yPercent: 4,
-          ease: 'none',
-          scrollTrigger: { trigger: section, start: 'top top', end: 'bottom bottom', scrub: true },
-        },
-      );
-    }, section);
-    return () => ctx.revert();
-  }, [reducedMotion]);
-
   return (
-    <section ref={sectionRef} className="relative bg-charcoal">
-      {/* Sticky, parallaxing backdrop. */}
-      <div aria-hidden className="pointer-events-none absolute inset-0">
-        <div className="sticky top-0 h-screen w-full overflow-hidden">
-          <div ref={imgRef} className="absolute inset-0 will-change-transform">
-            {study.heroImage ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={study.heroImage} alt="" className="h-full w-full object-cover object-center" />
-            ) : (
-              <BrandPattern variant="dense" half="right" className="opacity-[0.45]" />
-            )}
-          </div>
-          <div className="absolute inset-0 bg-charcoal/80" />
-          <div className="absolute inset-0 bg-gradient-to-t from-charcoal via-charcoal/45 to-charcoal/75" />
-          <div className="absolute -right-[8%] top-1/4 h-[55%] w-[45%] rounded-full bg-[color:var(--sd-accent)] opacity-[0.13] blur-[140px]" />
-        </div>
+    <section className="relative flex min-h-screen flex-col justify-center bg-charcoal">
+      {/* Normal (non-parallax) backdrop — the Hero above is the one section that carries
+          scroll-linked motion; every later section is a plain static background. */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+        {study.heroImage ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={study.heroImage} alt="" className="h-full w-full object-cover object-center" />
+        ) : (
+          <BrandPattern variant="dense" half="right" className="opacity-[0.45]" />
+        )}
+        <div className="absolute inset-0 bg-charcoal/80" />
+        <div className="absolute inset-0 bg-gradient-to-t from-charcoal via-charcoal/45 to-charcoal/75" />
+        <div className="absolute -right-[8%] top-1/4 h-[55%] w-[45%] rounded-full bg-[color:var(--sd-accent)] opacity-[0.13] blur-[140px]" />
       </div>
 
-      {/* Content scrolls over the backdrop. */}
-      <div className="relative z-content">
-        <div className="flex min-h-[92vh] items-center px-gutter-m lg:px-gutter-d">
-          <p
-            className="sd-reveal mx-auto w-full max-w-5xl font-sans font-semibold leading-[1.12] text-white [text-shadow:0_2px_40px_rgba(0,0,0,0.75)]"
-            style={{ fontSize: 'clamp(1.9rem, 4.4vw, 3.5rem)' }}
-          >
-            {overview}
-          </p>
-        </div>
-
-        {stages.map((s, i) => (
-          <div key={s.key} className="flex min-h-[88vh] items-center px-gutter-m lg:px-gutter-d">
-            <div className="sd-reveal mx-auto w-full max-w-4xl">
-              <span className="mb-7 flex items-center gap-4 font-sans text-xs font-bold uppercase tracking-[0.18em] text-[color:var(--sd-accent)] md:text-sm">
-                <span aria-hidden className="tabular-nums">{String(i + 1).padStart(2, '0')}</span>
-                <span aria-hidden className="h-px w-8 shrink-0 bg-[color:var(--sd-accent)]/60" />
-                {s.name}
-              </span>
-              <p
-                className="text-pretty font-sans font-medium leading-[1.25] text-white [text-shadow:0_2px_36px_rgba(0,0,0,0.7)]"
-                style={{ fontSize: 'clamp(1.6rem, 3.2vw, 2.75rem)' }}
-              >
-                {s.body}
-              </p>
-            </div>
-          </div>
-        ))}
+      {/* One hook line, nothing else — the challenge/approach/outcome breakdown was removed
+          outright (2026-09-15, explicit user direction: "reduce text drastically... very
+          minimal text across all projects"). The visuals carry the rest of the story now. */}
+      <div className="relative z-content px-gutter-m py-28 lg:px-gutter-d lg:py-36">
+        <p
+          className="sd-reveal mx-auto w-full max-w-5xl font-sans font-semibold leading-[1.15] text-white [text-shadow:0_2px_40px_rgba(0,0,0,0.75)]"
+          style={{ fontSize: 'clamp(1.6rem, 3.4vw, 2.9rem)' }}
+        >
+          {overview}
+        </p>
       </div>
     </section>
   );
 }
 
-/* ───────────────────────── Results / metrics band ───────────────────────── */
+/* ───────────── Results (only when a study has real numbers) ───────────── */
 
-function CaseStudyResults({ results }: { results: CaseStudyResult[] }) {
+// Deliverables removed outright (2026-09-15, explicit user direction: "too much text, remove
+// what we delivered completely") — a text list was never earning its section here. Results
+// keeps its own quiet beat when a study actually has real numbers.
+function CaseStudyResults({ results }: { results?: CaseStudyResult[] }) {
+  const hasResults = Boolean(results && results.length > 0);
+  if (!hasResults) return null;
+
+  // Uniform scale throughout, one flowing line — not the banned hero-metric template
+  // (a giant figure over a small label, plus a row of smaller supporting stat tiles).
+  // Real client numbers stay legible without a manufactured size hierarchy between them.
+  const list = results ?? [];
+
   return (
     <section className="relative border-y border-white/10 bg-black px-gutter-m py-20 lg:px-gutter-d lg:py-28">
       <div aria-hidden className="pointer-events-none absolute -left-[10%] top-1/2 h-[60%] w-[40%] -translate-y-1/2 rounded-full bg-[color:var(--sd-accent)] opacity-[0.08] blur-[130px]" />
       <div className="relative z-content mx-auto max-w-6xl">
         <SectionHeading>Results</SectionHeading>
-        <div className="grid grid-cols-1 md:grid-cols-3">
-          {results.map((r, i) => (
-            <div
-              key={r.label}
-              className={cn(
-                'sd-reveal py-6 md:px-8 md:py-2 lg:px-10 md:first:pl-0',
-                i > 0 && 'border-t border-white/10 md:border-l md:border-t-0',
-              )}
-            >
-              <div
-                className="font-sans font-extrabold leading-none text-[color:var(--sd-accent)]"
-                style={{ fontSize: 'clamp(3rem, 7vw, 5.5rem)' }}
-              >
-                {r.value}
-              </div>
-              <div className="mt-3 font-medium leading-relaxed text-white/75 md:text-lg">{r.label}</div>
-            </div>
+
+        <p className="sd-reveal max-w-2xl font-sans leading-relaxed text-white/85" style={{ fontSize: 'clamp(1.15rem, 1.8vw, 1.6rem)' }}>
+          {list.map((r, i) => (
+            <span key={r.label}>
+              <span className="font-extrabold text-[color:var(--sd-accent)]">{r.value}</span>{' '}
+              <span className="text-white/70">{r.label}</span>
+              {i < list.length - 1 ? <span aria-hidden className="text-white/30"> · </span> : null}
+            </span>
           ))}
-        </div>
+        </p>
       </div>
     </section>
   );
 }
 
-/* ───────────── Cinematic whole-board showcase (the real work, shown large) ───────────── */
+/* ───────────────────────── Visuals grid (real work, shown large, minimal text) ───────────────────────── */
 
-function CaseStudyFeatureImage({
-  image,
-  canOpen,
-  onOpen,
-}: {
-  image: GalleryImage;
-  canOpen: boolean;
-  onOpen: () => void;
-}) {
-  const ref = useRef<HTMLElement>(null);
-  const innerRef = useRef<HTMLDivElement>(null);
-  const reducedMotion = useReducedMotion();
+/** One packed row: the images it holds, plus the shared height every one of them renders at. */
+type JustifiedRow = { images: GalleryImage[]; height: number };
 
-  useEffect(() => {
-    if (reducedMotion) return;
-    const section = ref.current;
-    const inner = innerRef.current;
-    if (!section || !inner) return;
-    registerGsap();
-    const ctx = gsap.context(() => {
-      gsap.fromTo(
-        inner,
-        { yPercent: 8 },
-        {
-          yPercent: -8,
-          ease: 'none',
-          scrollTrigger: { trigger: section, start: 'top bottom', end: 'bottom top', scrub: true },
-        },
-      );
-    }, section);
-    return () => ctx.revert();
-  }, [reducedMotion]);
+/**
+ * Flickr/Google-Photos-style justified layout: pack images into rows at a target height, then
+ * stretch (or, capped, shrink) each row's height so its images' *own* aspect ratios exactly
+ * fill the container width — no cropping, because width and height both scale together from
+ * the real aspect ratio (unlike CSS-column masonry, where each column has one fixed width and
+ * a horizontal image in it renders far shorter than a vertical neighbour in the column next to
+ * it — explicit user direction, 2026-09-15: "horizontal images have less height than the
+ * vertical one, images should match the height and scale images dynamically"). The final,
+ * incomplete row is left at the target height rather than stretched, so a lone last image
+ * doesn't get blown up to fill the row by itself.
+ */
+function computeJustifiedRows(images: GalleryImage[], containerWidth: number, targetHeight: number, gap: number): JustifiedRow[] {
+  if (containerWidth <= 0) return [];
+  const rows: JustifiedRow[] = [];
+  let rowImages: GalleryImage[] = [];
+  let aspectSum = 0;
 
-  return (
-    <section ref={ref} className="relative overflow-hidden border-y border-white/10 bg-black px-gutter-m py-20 lg:px-gutter-d lg:py-28">
-      <div className="mx-auto flex max-w-6xl flex-col items-center gap-10 lg:flex-row lg:gap-16">
-        <button
-          type="button"
-          onClick={canOpen ? onOpen : undefined}
-          disabled={!canOpen}
-          aria-label={canOpen ? `Open image: ${image.alt}` : image.alt}
-          className={cn(
-            'sd-reveal group/fi relative block w-full max-w-md shrink-0 overflow-hidden rounded-2xl ring-1 ring-inset ring-white/10 lg:w-[46%]',
-            canOpen ? 'cursor-zoom-in' : 'cursor-default',
-          )}
-        >
-          <div ref={innerRef} className="will-change-transform">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={image.src}
-              alt={image.alt}
-              className="aspect-[1241/1754] w-full object-cover object-top transition-transform duration-[1200ms] ease-out hover-fine:group-hover/fi:scale-[1.04]"
-            />
-          </div>
-        </button>
-        <div className="sd-reveal lg:w-[54%]">
-          <span className="mb-5 flex items-center gap-4 font-sans text-xs font-bold uppercase tracking-[0.18em] text-[color:var(--sd-accent)]">
-            <span aria-hidden className="h-px w-8 shrink-0 bg-[color:var(--sd-accent)]/60" />
-            In focus
-          </span>
-          <p
-            className="max-w-[34ch] font-sans leading-relaxed text-white/85"
-            style={{ fontSize: 'clamp(1.25rem, 2vw, 1.75rem)' }}
-          >
-            {image.alt}
-          </p>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ───────────────────────── Deliverables (editorial list) ───────────────────────── */
-
-function CaseStudyDeliverables({ items }: { items: string[] }) {
-  return (
-    <section className="relative bg-charcoal px-gutter-m py-20 lg:px-gutter-d lg:py-28">
-      <div className="relative z-content mx-auto grid max-w-6xl gap-12 lg:grid-cols-[minmax(12rem,0.42fr)_1fr] lg:items-start lg:gap-20">
-        <SectionHeading className="mb-0 md:mb-0">What we delivered</SectionHeading>
-
-        <ul className="grid gap-x-14 gap-y-7 sm:grid-cols-2">
-          {items.map((item, i) => (
-            <li key={item} className="sd-reveal flex items-start gap-4">
-              <span
-                aria-hidden
-                className="mt-0.5 shrink-0 font-mono text-xs font-semibold tracking-[0.12em] text-[color:var(--sd-accent)]"
-              >
-                {String(i + 1).padStart(2, '0')}
-              </span>
-              <span className="font-sans text-base font-medium leading-snug text-white/90 md:text-lg">
-                {item}
-              </span>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </section>
-  );
-}
-
-/* ───────────────────────── Extra gallery (3+ images) ───────────────────────── */
-
-function spanClass(count: number, i: number) {
-  const desktop = [
-    'md:col-span-2 md:row-span-2',
-    'md:col-span-2 md:row-span-1',
-    'md:col-span-1 md:row-span-1',
-    'md:col-span-1 md:row-span-1',
-  ];
-  const mobile = i < 2 ? 'col-span-2' : 'col-span-1';
-  return cn(mobile, desktop[i % desktop.length], count <= 3 && i === 0 && 'md:row-span-2');
+  for (const image of images) {
+    const aspect = image.width / image.height || 1;
+    rowImages.push(image);
+    aspectSum += aspect;
+    const widthAtTarget = aspectSum * targetHeight + gap * (rowImages.length - 1);
+    if (widthAtTarget >= containerWidth) {
+      const rawHeight = (containerWidth - gap * (rowImages.length - 1)) / aspectSum;
+      // Clamp so one extreme-aspect image can't force a row absurdly short or tall.
+      const height = Math.min(Math.max(rawHeight, targetHeight * 0.55), targetHeight * 1.6);
+      rows.push({ images: rowImages, height });
+      rowImages = [];
+      aspectSum = 0;
+    }
+  }
+  if (rowImages.length > 0) {
+    rows.push({ images: rowImages, height: targetHeight });
+  }
+  return rows;
 }
 
 function CaseStudyGalleryMosaic({
@@ -484,67 +400,63 @@ function CaseStudyGalleryMosaic({
   canOpen: boolean;
   onOpenAt: (i: number) => void;
 }) {
-  const gridRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [width, setWidth] = useState(0);
 
   useEffect(() => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const grid = gridRef.current;
-    if (!grid) return;
-    const ctx = gsap.context(() => {
-      grid.querySelectorAll<HTMLElement>('[data-mosaic-img]').forEach((el) => {
-        gsap.fromTo(
-          el,
-          { yPercent: -8 },
-          {
-            yPercent: 8,
-            ease: 'none',
-            scrollTrigger: {
-              trigger: el.parentElement,
-              start: 'top bottom',
-              end: 'bottom top',
-              scrub: true,
-            },
-          },
-        );
-      });
-    }, grid);
-    return () => ctx.revert();
+    const el = containerRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver((entries) => {
+      const w = entries[0]?.contentRect.width;
+      if (w) setWidth(w);
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
   }, []);
 
+  const gap = width < 640 ? 12 : 16;
+  const targetHeight = width < 640 ? 200 : width < 1024 ? 260 : 340;
+  const rows = computeJustifiedRows(images, width, targetHeight, gap);
+
+  // A flat running index so PhotoSwipe indices (into the un-rowed `images` array) stay correct.
+  let flatIndex = 0;
+
   return (
-    <section className="relative bg-charcoal px-gutter-m py-16 lg:px-gutter-d lg:py-24">
-      <div className="mx-auto max-w-7xl">
-        <SectionHeading>More visuals</SectionHeading>
-        <div
-          ref={gridRef}
-          className="grid auto-rows-[9.5rem] grid-flow-dense grid-cols-2 gap-3 md:auto-rows-[12rem] md:grid-cols-4 md:gap-4"
-        >
-          {images.map((image, i) => (
-            <button
-              key={`${image.alt}-${i}`}
-              type="button"
-              onClick={canOpen ? () => onOpenAt(i) : undefined}
-              disabled={!canOpen}
-              aria-label={canOpen ? `Open image: ${image.alt}` : image.alt}
-              className={cn(
-                'group/tile sd-reveal relative overflow-hidden rounded-xl bg-white/[0.03] text-left',
-                canOpen ? 'cursor-zoom-in' : 'cursor-default',
-                spanClass(images.length, i),
-              )}
-            >
-              {/* Parallax layer — taller than the tile so the scroll shift never reveals an edge. */}
-              <div
-                data-mosaic-img
-                className="pointer-events-none absolute inset-x-0 top-[-14%] h-[128%] will-change-transform"
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={image.src}
-                  alt={image.alt}
-                  className="h-full w-full object-cover transition-transform duration-[1200ms] ease-out hover-fine:group-hover/tile:scale-[1.06]"
-                />
-              </div>
-            </button>
+    <section className="relative bg-charcoal px-gutter-m py-20 lg:px-gutter-d lg:py-28">
+      <div className="mx-auto max-w-[110rem]">
+        {/* No visible label — the grid is the page's dominant section and leads right after
+            the Hero (explicit user direction), it doesn't need to announce itself as
+            secondary "more" content. Kept as an sr-only heading for wayfinding/a11y. */}
+        <h2 className="sr-only">Project visuals</h2>
+        <div ref={containerRef} className="flex flex-col gap-3 md:gap-4">
+          {rows.map((row, ri) => (
+            <div key={ri} className="flex gap-3 md:gap-4">
+              {row.images.map((image) => {
+                const i = flatIndex++;
+                const tileWidth = row.height * ((image.width / image.height) || 1);
+                return (
+                  <button
+                    key={`${image.alt}-${i}`}
+                    type="button"
+                    onClick={canOpen ? () => onOpenAt(i) : undefined}
+                    disabled={!canOpen}
+                    aria-label={canOpen ? `Open image: ${image.alt}` : image.alt}
+                    style={{ flexGrow: tileWidth, flexBasis: 0, height: row.height }}
+                    className={cn(
+                      'group/tile sd-reveal block overflow-hidden rounded-xl bg-white/[0.03] text-left',
+                      canOpen ? 'cursor-zoom-in' : 'cursor-default',
+                    )}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={image.src}
+                      alt={image.alt}
+                      className="h-full w-full object-cover transition-transform duration-[1200ms] ease-out hover-fine:group-hover/tile:scale-[1.03]"
+                    />
+                  </button>
+                );
+              })}
+            </div>
           ))}
         </div>
       </div>
@@ -554,12 +466,22 @@ function CaseStudyGalleryMosaic({
 
 /* ───────────────────────── Cinematic pull quote ───────────────────────── */
 
-function CaseStudyQuoteBlock({ quote }: { quote: CaseStudyQuote }) {
+function CaseStudyQuoteBlock({ quote, heroImage }: { quote: CaseStudyQuote; heroImage?: string }) {
   return (
-    <section className="relative overflow-hidden border-y border-white/10 bg-black px-gutter-m py-28 lg:px-gutter-d lg:py-36">
-      <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.05]">
-        <BrandPattern variant="tiled" />
-      </div>
+    <section className="relative overflow-hidden border-y border-white/10 bg-black px-gutter-m py-20 lg:px-gutter-d lg:py-28">
+      {/* Ground the quote in the real work rather than a generic mark repeated on every
+          client's page — desaturated and dimmed so it stays a backdrop, not a picture. */}
+      {heroImage ? (
+        <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.16] grayscale">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={heroImage} alt="" className="h-full w-full object-cover object-center" />
+          <div className="absolute inset-0 bg-black/70" />
+        </div>
+      ) : (
+        <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.05]">
+          <BrandPattern variant="tiled" />
+        </div>
+      )}
       <div aria-hidden className="pointer-events-none absolute left-1/2 top-1/2 h-[70%] w-[60%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[color:var(--sd-accent)] opacity-[0.1] blur-[150px]" />
       <figure className="relative z-content mx-auto max-w-4xl text-center">
         <span
@@ -575,9 +497,14 @@ function CaseStudyQuoteBlock({ quote }: { quote: CaseStudyQuote }) {
         >
           {quote.text}
         </blockquote>
-        <figcaption className="sd-reveal mt-8 flex items-center gap-3 text-lg font-medium text-white/70">
-          <span aria-hidden className="h-px w-8 shrink-0 bg-orange" />
-          {quote.author}
+        <figcaption className="sd-reveal mt-8 flex items-center justify-center gap-3 text-base font-medium text-white/70">
+          <span
+            aria-hidden
+            className="rounded-full px-3 py-1 font-sans text-sm font-semibold text-[color:var(--sd-accent-on)]"
+            style={{ backgroundColor: 'var(--sd-accent)' }}
+          >
+            {quote.author}
+          </span>
         </figcaption>
       </figure>
     </section>

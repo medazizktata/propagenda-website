@@ -35,9 +35,8 @@ export function Measure({
 }
 
 /**
- * Backstage label — the IBM Plex Mono "file-label" register (design-DNA §2.3). This is the
- * monospace deliverable/section-label column the graphichunters services grammar hangs on.
- * Kept dim by default so it never competes with the Poppins display voice.
+ * Small deliverable/section-label column — plain Poppins, sentence case, dim by default
+ * so it never competes with the display voice.
  */
 export function MonoLabel({
   as: Tag = 'span',
@@ -55,7 +54,7 @@ export function MonoLabel({
   return (
     <Tag
       className={cn(
-        'font-mono text-[0.7rem] font-medium uppercase tracking-label',
+        'text-xs font-medium',
         toneClass,
         className,
       )}
@@ -66,8 +65,9 @@ export function MonoLabel({
 }
 
 /**
- * Small uppercase tracked eyebrow. Optionally prefixed with a zero-padded index and a
- * short accent rule — the editorial "section marker" seen across both references.
+ * Small section marker. Optionally prefixed with a zero-padded index and a short accent
+ * rule — the editorial "section marker" seen across both references. Plain Poppins,
+ * sentence case — no mono, no letter-spacing, no uppercase (retired 2026-09-15).
  */
 export function Eyebrow({
   index,
@@ -87,7 +87,7 @@ export function Eyebrow({
   return (
     <Tag
       className={cn(
-        'flex items-center gap-3 text-xs font-semibold uppercase tracking-label',
+        'flex items-center gap-3 text-xs font-semibold',
         className,
       )}
     >
@@ -130,7 +130,7 @@ export function EditorialSectionHeader({
             <span className="tabular-nums text-sm font-bold text-orange">{pad2(index)}</span>
           )}
           {eyebrow && (
-            <span className="text-xs font-semibold uppercase tracking-label text-white/55">
+            <span className="text-xs font-semibold text-white/55">
               {eyebrow}
             </span>
           )}

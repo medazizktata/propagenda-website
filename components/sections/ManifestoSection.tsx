@@ -88,7 +88,7 @@ export function ManifestoSection({ flat = false }: { flat?: boolean }) {
               brighten in right after the quote finishes. */}
           <footer className="mt-12 flex items-center gap-4">
             <span aria-hidden className="mf-word h-0.5 w-14 bg-orange" />
-            <cite className="mf-word text-backstage not-italic text-white/70 md:text-sm">
+            <cite className="mf-word text-sm not-italic font-medium text-white/70">
               {manifestoAttribution}
             </cite>
           </footer>

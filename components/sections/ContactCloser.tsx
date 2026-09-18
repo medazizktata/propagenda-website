@@ -92,7 +92,7 @@ export function ContactCloser() {
       <div className="relative z-content mx-auto max-w-[1920px] px-gutter-m py-20 lg:px-gutter-d lg:py-28">
         <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16 xl:gap-20">
           <div data-closer-in>
-            <p className="text-backstage mb-6 text-white/55">
+            <p className="mb-6 text-sm font-medium text-white/55">
               {contactCloser.kicker}
             </p>
 
@@ -137,7 +137,7 @@ export function ContactCloser() {
                 href={whatsapp.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-backstage inline-flex items-center gap-2 text-white/65 transition-colors hover-fine:hover:text-white"
+                className="inline-flex items-center gap-2 text-sm font-medium text-white/65 transition-colors hover-fine:hover:text-white"
               >
                 <WhatsAppGlyph />
                 WhatsApp {whatsapp.number} <span aria-hidden>↗</span>
@@ -149,7 +149,7 @@ export function ContactCloser() {
                   href={bookCall.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-backstage inline-flex items-center gap-2 text-white/65 transition-colors hover-fine:hover:text-white"
+                  className="inline-flex items-center gap-2 text-sm font-medium text-white/65 transition-colors hover-fine:hover:text-white"
                 >
                   <CalendarGlyph />
                   {bookCall.label} <span aria-hidden>↗</span>
@@ -157,7 +157,7 @@ export function ContactCloser() {
               ) : null}
             </div>
 
-            <p className="text-backstage mt-8 text-white/35">
+            <p className="mt-8 text-sm text-white/35">
               <StudioTime /> GST · replies within a day
             </p>
           </div>
@@ -167,7 +167,7 @@ export function ContactCloser() {
             className="relative w-full rounded-[2rem] border border-white/16 bg-[#1a1a1a] p-8 shadow-[0_40px_80px_-40px_rgba(0,0,0,0.55)] sm:p-10 lg:p-12"
           >
             <div className="mb-8">
-              <p className="text-backstage text-white/50">{contactCloser.formEyebrow}</p>
+              <p className="text-sm font-medium text-white/50">{contactCloser.formEyebrow}</p>
               <h3 className="mt-2 font-sans text-2xl font-bold tracking-tight text-white lg:text-3xl">
                 {contactCloser.formTitle}
               </h3>

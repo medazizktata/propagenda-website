@@ -37,11 +37,20 @@ export function WorkPageContent({ caseStudies }: { caseStudies: CaseStudyRecord[
     }
   }
 
-  const categoryGroups = orderedCategories.map((label) => ({
+  const rawGroups = orderedCategories.map((label) => ({
     id: toGroupId(label),
     label,
     items: caseStudies.filter((study) => study.category === label),
   })).filter((group) => group.items.length > 0);
+
+  // A category with exactly one study earns its own full section heading nowhere else on
+  // the site — visually it reads as an orphan, not a group. Fold every singleton into one
+  // shared "More work" group instead of giving each a lonely standalone section.
+  const multiItemGroups = rawGroups.filter((group) => group.items.length > 1);
+  const singletonItems = rawGroups.filter((group) => group.items.length === 1).flatMap((g) => g.items);
+  const categoryGroups = singletonItems.length > 0
+    ? [...multiItemGroups, { id: 'more-work', label: 'More work', items: singletonItems }]
+    : multiItemGroups;
 
   return (
     <>

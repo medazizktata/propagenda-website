@@ -163,7 +163,7 @@ export function CaseStudyEditorForm({
                   onChange={(e) => setField('slug', e.target.value)}
                   placeholder="sealand"
                   disabled={mode === 'edit' && status === 'published'}
-                  className="admin-field h-10 font-mono"
+                  className="admin-field h-10"
                 />
               </AdminFormField>
               <AdminFormRow>
@@ -266,18 +266,18 @@ export function CaseStudyEditorForm({
             <>
               <AdminFormRow>
                 <AdminFormField label="Accent color" htmlFor="accentColor" hint="Hex, e.g. #baa58d">
-                  <Input id="accentColor" value={values.accentColor} onChange={(e) => setField('accentColor', e.target.value)} className="admin-field h-10 font-mono" />
+                  <Input id="accentColor" value={values.accentColor} onChange={(e) => setField('accentColor', e.target.value)} className="admin-field h-10" />
                 </AdminFormField>
                 <AdminFormField label="Accent on-color" htmlFor="accentOnColor" hint="Text/marks on the accent fill">
-                  <Input id="accentOnColor" value={values.accentOnColor} onChange={(e) => setField('accentOnColor', e.target.value)} className="admin-field h-10 font-mono" />
+                  <Input id="accentOnColor" value={values.accentOnColor} onChange={(e) => setField('accentOnColor', e.target.value)} className="admin-field h-10" />
                 </AdminFormField>
               </AdminFormRow>
               <AdminFormRow>
                 <AdminFormField label="Prev slug" htmlFor="prevSlug">
-                  <Input id="prevSlug" value={values.prevSlug} onChange={(e) => setField('prevSlug', e.target.value)} className="admin-field h-10 font-mono" />
+                  <Input id="prevSlug" value={values.prevSlug} onChange={(e) => setField('prevSlug', e.target.value)} className="admin-field h-10" />
                 </AdminFormField>
                 <AdminFormField label="Next slug" htmlFor="nextSlug">
-                  <Input id="nextSlug" value={values.nextSlug} onChange={(e) => setField('nextSlug', e.target.value)} className="admin-field h-10 font-mono" />
+                  <Input id="nextSlug" value={values.nextSlug} onChange={(e) => setField('nextSlug', e.target.value)} className="admin-field h-10" />
                 </AdminFormField>
               </AdminFormRow>
               <JsonFieldEditor

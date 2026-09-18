@@ -21,10 +21,10 @@ const mailHref = (v: string) => `mailto:${v.trim()}`;
 const telHref = (v: string) => `tel:${v.replace(/\s+/g, '')}`;
 const hoverLink = 'transition-hover hover-fine:hover:text-orange';
 
-/** Small "backstage" label — the site's mono eyebrow voice; orange used sparingly. */
+/** Small section label — plain Poppins, sentence case; orange used sparingly. */
 function Backstage({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
-    <p className={cn('font-mono text-xs uppercase tracking-[0.2em] text-orange', className)}>
+    <p className={cn('text-sm font-semibold text-orange', className)}>
       {children}
     </p>
   );
@@ -204,7 +204,7 @@ function PolicyView({ legal }: { legal: LegalRecord }) {
             {leadParas.join(' ')}
           </p>
         )}
-        <p className="mt-8 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-xs uppercase tracking-[0.16em] text-white/55">
+        <p className="mt-8 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-white/55">
           {updated && (
             <>
               <span>Updated {updated}</span>
@@ -221,7 +221,7 @@ function PolicyView({ legal }: { legal: LegalRecord }) {
       <div className="mt-16 lg:mt-24 lg:grid lg:grid-cols-[13rem_minmax(0,1fr)] lg:gap-x-16 xl:gap-x-24">
         <aside className="hidden lg:block">
           <nav aria-label="On this page" className="sticky top-28">
-            <p className="mb-5 font-mono text-xs uppercase tracking-[0.2em] text-white/50">
+            <p className="mb-5 text-sm font-semibold text-white/50">
               On this page
             </p>
             <ol className="space-y-1">
@@ -240,7 +240,7 @@ function PolicyView({ legal }: { legal: LegalRecord }) {
                     >
                       <span
                         className={cn(
-                          'font-mono text-xs tabular-nums',
+                          'text-sm font-semibold tabular-nums',
                           isActive ? 'text-orange' : 'text-white/45',
                         )}
                       >
@@ -260,7 +260,7 @@ function PolicyView({ legal }: { legal: LegalRecord }) {
             <section key={item.id} id={item.id} className="scroll-mt-28">
               <header className="border-t border-white/10 pt-6">
                 <h2 className="flex items-center gap-4 font-sans text-2xl font-bold leading-tight tracking-tight text-white md:text-[1.7rem]">
-                  <span className="shrink-0 font-mono text-3xl font-semibold tabular-nums leading-none text-orange md:text-4xl">
+                  <span className="shrink-0 text-3xl font-bold tabular-nums leading-none text-orange md:text-4xl">
                     {pad2(item.index)}
                   </span>
                   <span>{item.heading}</span>

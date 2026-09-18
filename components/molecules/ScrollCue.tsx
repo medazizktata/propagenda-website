@@ -12,7 +12,7 @@ interface ScrollCueProps {
 }
 
 /**
- * Quiet backstage scroll affordance — bottom-right, low contrast, label + hairline.
+ * Quiet scroll affordance — bottom-right, low contrast, label + hairline.
  * Prefer this over centred bounce chrome so the hero composition stays primary.
  */
 export function ScrollCue({
@@ -23,7 +23,7 @@ export function ScrollCue({
 }: ScrollCueProps) {
   const body = (
     <>
-      <span className="text-backstage text-white/25">Scroll</span>
+      <span className="text-xs font-medium text-white/25">Scroll</span>
       <span aria-hidden className="relative h-9 w-px overflow-hidden bg-white/10">
         <span
           className={cn(

@@ -27,7 +27,7 @@ function prefersReducedMotion(reduced: boolean) {
  * numbers count). Under reduced motion nothing animates; the final values render static.
  *
  * Design (docs/rework/06): charcoal ground, no wallpaper, one protagonist (the numbers).
- * Poppins 800 numbers on a token display size, IBM Plex Mono labels (backstage register),
+ * Poppins 800 numbers on a token display size, plain Poppins captions for the labels,
  * orange used only as the unit punctuation (+, ×, M+). No CTA here — the orange CTA follows.
  *
  * memo'd so the parent's `launched` state changes never re-render this band (which would
@@ -98,7 +98,7 @@ export const AboutStats = memo(function AboutStats() {
     >
       <div className="px-gutter-m lg:px-gutter-d">
         <div className="mx-auto max-w-[1920px]">
-          <p className="mb-12 flex items-center gap-3 font-mono text-xs font-medium uppercase tracking-label text-white/45 md:mb-16">
+          <p className="mb-12 flex items-center gap-3 text-sm font-medium text-white/45 md:mb-16">
             <span aria-hidden className="inline-block h-px w-8 bg-orange/70" />
             {stats.eyebrow}
           </p>
@@ -123,7 +123,7 @@ export const AboutStats = memo(function AboutStats() {
 
                 <span
                   aria-hidden
-                  className="font-mono text-xs font-medium uppercase tracking-label text-white/50 sm:text-sm"
+                  className="text-xs font-medium text-white/50 sm:text-sm"
                 >
                   {s.label}
                 </span>

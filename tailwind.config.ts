@@ -44,17 +44,6 @@ const config: Config = {
       },
       fontFamily: {
         sans: ['var(--font-poppins)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-        /** Backstage register — IBM Plex Mono (design DNA §2.3): eyebrows, section numbers,
-            deliverable labels, metadata, scroll cues. Never CTAs. Falls back to the system
-            monospace stack so `font-mono` still reads if the webfont is absent. */
-        mono: [
-          'var(--font-mono)',
-          'ui-monospace',
-          'SFMono-Regular',
-          'Menlo',
-          'Consolas',
-          'monospace',
-        ],
         arabic: ['Cairo', 'Tajawal', 'var(--font-poppins)', 'sans-serif'],
       },
       fontSize: {

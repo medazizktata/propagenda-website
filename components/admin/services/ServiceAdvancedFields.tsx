@@ -322,7 +322,7 @@ export function RelatedWorkEditor({
                   value={link.href}
                   onChange={(e) => updateLink(index, { href: e.target.value })}
                   placeholder="/work/slug"
-                  className="admin-field h-9 font-mono text-sm"
+                  className="admin-field h-9 text-sm"
                 />
               </div>
             </div>
@@ -396,7 +396,7 @@ export function TertiaryCtaEditor({
               value={cta.href}
               onChange={(e) => update({ ...cta, href: e.target.value })}
               placeholder="/work or /contact"
-              className="admin-field h-9 font-mono text-sm"
+              className="admin-field h-9 text-sm"
             />
           </div>
         </div>

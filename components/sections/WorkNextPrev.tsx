@@ -57,13 +57,18 @@ function NavPanel({
             alt=""
             className="h-full w-full scale-105 object-cover object-top transition-transform duration-700 ease-out group-hover/panel:scale-110"
           />
-          <div className="absolute inset-0 bg-charcoal/75" />
+          {/* Darkening was heavy enough (75% flat tint + a gradient that only cleared past its
+              own midpoint) that real image content effectively disappeared well before it
+              reached the centre divider — the photo needs to stay visible all the way to that
+              line, not fade to black partway there (explicit user direction, 2026-09-15). Both
+              layers now clear up much sooner, concentrated at the outer edge only. */}
+          <div className="absolute inset-0 bg-charcoal/40" />
           <div
             className={cn(
               'absolute inset-0',
               isNext
-                ? 'bg-gradient-to-l from-charcoal via-charcoal/50 to-transparent'
-                : 'bg-gradient-to-r from-charcoal via-charcoal/50 to-transparent',
+                ? 'bg-gradient-to-l from-charcoal from-0% via-charcoal/15 via-25% to-transparent to-55%'
+                : 'bg-gradient-to-r from-charcoal from-0% via-charcoal/15 via-25% to-transparent to-55%',
             )}
           />
         </div>
@@ -127,21 +132,27 @@ export function WorkNextPrev({
       <div
         className={cn(
           'relative mx-auto grid max-w-[1700px] grid-cols-1 lg:items-stretch',
-          prev && next
-            ? 'lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]'
-            : 'lg:grid-cols-1',
+          prev && next ? 'lg:grid-cols-2' : 'lg:grid-cols-1',
         )}
       >
         {prev && (
           <NavPanel study={prev} side="prev" hovered={hovered} onHover={setHovered} />
         )}
 
+        {next && (
+          <NavPanel study={next} side="next" hovered={hovered} onHover={setHovered} />
+        )}
+
+        {/* The divider used to be its own w-12 grid column, which clipped each panel's
+            (full-bleed, inset-0) image a full 1.5rem short of this line — no overlay tuning
+            could ever get the image to reach it. Panels now sit edge-to-edge with zero gap,
+            so this line sits exactly on the boundary the images already touch, and it's an
+            overlay rather than a layout column (explicit user direction, 2026-09-15). */}
         {prev && next && (
           <div
             aria-hidden
-            className="pointer-events-none relative z-20 hidden w-12 shrink-0 self-stretch py-8 lg:block"
+            className="pointer-events-none absolute inset-y-8 left-1/2 z-20 hidden w-px -translate-x-1/2 bg-white/15 lg:block"
           >
-            <span className="absolute inset-y-8 left-1/2 w-px -translate-x-1/2 bg-white/15" />
             <span
               className={cn(
                 'absolute left-1/2 top-1/2 flex h-11 w-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-charcoal transition-[transform,border-color] duration-300 ease-out',
@@ -157,10 +168,6 @@ export function WorkNextPrev({
               />
             </span>
           </div>
-        )}
-
-        {next && (
-          <NavPanel study={next} side="next" hovered={hovered} onHover={setHovered} />
         )}
       </div>
     </section>

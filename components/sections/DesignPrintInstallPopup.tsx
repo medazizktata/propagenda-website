@@ -5,14 +5,17 @@ import { designPrintInstall } from '@/content/home';
 import { gsap } from '@/lib/motion/gsap';
 import { useReducedMotion } from '@/lib/motion/useReducedMotion';
 
-// The pool of real work samples a visitor can cycle through by clicking a card.
+// The pool of real work samples a visitor can cycle through by clicking a card. Real
+// published case-study hero images, not the old generic /images/portfolio/work-*.webp stock
+// pool — swapped once more of these existed (explicit user direction, 2026-09-15). Picked to
+// not fully overlap WorkSplitSection's own pool, so the two openers show different work.
 const WORK_IMAGES = [
-  '/images/portfolio/work-sanapex.webp',
-  '/images/portfolio/work-quickcars.webp',
-  '/images/portfolio/work-food.webp',
-  '/images/portfolio/work-events.webp',
-  '/images/portfolio/work-ghaftree.webp',
-  '/images/portfolio/work-restaurant.webp',
+  '/images/work/bnk-group/hero.webp',
+  '/images/work/zealerz/hero.webp',
+  '/images/work/al-rowad-international/hero.webp',
+  '/images/work/cu-optics/hero.webp',
+  '/images/work/ayoub-and-co/hero.webp',
+  '/images/work/vid/hero.webp',
 ];
 
 // A clickable work-sample image: clicking it CROSSFADES to the next sample (two stacked
@@ -75,12 +78,12 @@ function WorkCardImage({ initial }: { initial: string }) {
 // size; `grad` is a neutral charcoal→black tint (never navy).
 type ScatterCard = { x: number; y: number; rot: number; w: number; grad: string; img: string };
 const CARDS: ScatterCard[] = [
-  { x: -33, y: -25, rot: 0, w: 15, grad: 'from-charcoal to-black', img: '/images/portfolio/work-sanapex.webp' },
-  { x: -33, y: 0, rot: 0, w: 15, grad: 'from-black to-charcoal', img: '/images/portfolio/work-quickcars.webp' },
-  { x: -33, y: 25, rot: 0, w: 15, grad: 'from-charcoal to-black', img: '/images/portfolio/work-events.webp' },
-  { x: 33, y: -25, rot: 0, w: 15, grad: 'from-black to-charcoal', img: '/images/portfolio/work-food.webp' },
-  { x: 33, y: 0, rot: 0, w: 15, grad: 'from-charcoal to-black', img: '/images/portfolio/work-restaurant.webp' },
-  { x: 33, y: 25, rot: 0, w: 15, grad: 'from-black to-charcoal', img: '/images/portfolio/work-sanapex.webp' },
+  { x: -33, y: -25, rot: 0, w: 15, grad: 'from-charcoal to-black', img: WORK_IMAGES[0] },
+  { x: -33, y: 0, rot: 0, w: 15, grad: 'from-black to-charcoal', img: WORK_IMAGES[1] },
+  { x: -33, y: 25, rot: 0, w: 15, grad: 'from-charcoal to-black', img: WORK_IMAGES[2] },
+  { x: 33, y: -25, rot: 0, w: 15, grad: 'from-black to-charcoal', img: WORK_IMAGES[3] },
+  { x: 33, y: 0, rot: 0, w: 15, grad: 'from-charcoal to-black', img: WORK_IMAGES[4] },
+  { x: 33, y: 25, rot: 0, w: 15, grad: 'from-black to-charcoal', img: WORK_IMAGES[5] },
 ];
 
 // The opening frame (SMV step 9): the cards begin STACKED like a deck near the centre —

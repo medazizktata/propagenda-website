@@ -72,7 +72,7 @@ export function AdminRepeaterItem({
   return (
     <div className={cn('space-y-3 py-4 first:pt-0 last:pb-0', className)}>
       <div className="flex items-center justify-between gap-2">
-        <p className="text-backstage text-white/65">{label}</p>
+        <p className="text-sm font-medium text-white/65">{label}</p>
         {actions}
       </div>
       {children}

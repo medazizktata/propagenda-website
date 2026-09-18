@@ -1,0 +1,242 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-15T00:00:00Z",
+  "title": "Design System: Propagenda",
+  "extensions": {
+    "colorMeta": {
+      "orange": {
+        "role": "primary",
+        "displayName": "Signal Orange",
+        "canonical": "#f58b27",
+        "tonalRamp": [
+          "#3a2007",
+          "#5c320c",
+          "#804611",
+          "#a35a16",
+          "#c66d1c",
+          "#f58b27",
+          "#f8a854",
+          "#fcd2a8"
+        ]
+      },
+      "charcoal": {
+        "role": "neutral",
+        "displayName": "Charcoal",
+        "canonical": "#121212",
+        "tonalRamp": [
+          "#000000",
+          "#0a0a0a",
+          "#121212",
+          "#1c1c1c",
+          "#2e2e2e",
+          "#4a4a4a",
+          "#7a7a7a",
+          "#c4c4c4"
+        ]
+      },
+      "black": {
+        "role": "neutral",
+        "displayName": "Black",
+        "canonical": "#000000",
+        "tonalRamp": [
+          "#000000",
+          "#080808",
+          "#101010",
+          "#181818",
+          "#242424",
+          "#3a3a3a",
+          "#5c5c5c",
+          "#8f8f8f"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink (text-on-orange)",
+        "canonical": "#141414",
+        "tonalRamp": [
+          "#000000",
+          "#0a0a0a",
+          "#141414",
+          "#202020",
+          "#333333",
+          "#4d4d4d",
+          "#7a7a7a",
+          "#bdbdbd"
+        ]
+      },
+      "white": {
+        "role": "neutral",
+        "displayName": "White (opacity-modulated)",
+        "canonical": "#ffffff",
+        "tonalRamp": [
+          "#ffffff",
+          "#ffffff",
+          "#ffffff",
+          "#ffffff",
+          "#ffffff",
+          "#ffffff",
+          "#ffffff",
+          "#ffffff"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Case-study H1 only; uppercase, ends in orange period."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Story overview single-sentence statement."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Section headings, paired with the orange accent bar."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Deliverables, stage copy, captions."
+      }
+    },
+    "shadows": [],
+    "motion": [
+      {
+        "name": "scroll-linked-scrub",
+        "value": "gsap ScrollTrigger scrub:true, start 'top top' end 'bottom top'",
+        "purpose": "Hero/backdrop scale-fade tied to the section's own height, not a pinned viewport."
+      },
+      {
+        "name": "reveal-settle",
+        "value": "gsap.from y:56 duration:0.9 ease:expo.out, ScrollTrigger start 'top 88%' once:true",
+        "purpose": "Translate-only content reveal; never blanks content, only nudges it in."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      },
+      {
+        "name": "xl",
+        "value": "1280px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Section Heading",
+      "kind": "custom",
+      "refersTo": "section-heading",
+      "description": "Vertical orange accent bar beside a bold title; marks every named section, no eyebrow.",
+      "html": "<h2 class=\"ds-section-heading\"><span aria-hidden class=\"ds-section-heading-bar\"></span>Results</h2>",
+      "css": ".ds-section-heading { display: flex; align-items: center; gap: 1rem; font-family: Poppins, sans-serif; font-weight: 700; font-size: 1.5rem; color: #ffffff; } .ds-section-heading-bar { height: 1.5rem; width: 0.375rem; flex-shrink: 0; border-radius: 9999px; background: #f58b27; }"
+    },
+    {
+      "name": "Deliverable List Item",
+      "kind": "custom",
+      "refersTo": "body",
+      "description": "Numbered deliverable row: orange tabular numeral, plain body text.",
+      "html": "<ul class=\"ds-deliverables\"><li class=\"ds-deliverable-item\"><span aria-hidden class=\"ds-deliverable-num\">01</span><span class=\"ds-deliverable-text\">Brand identity system</span></li></ul>",
+      "css": ".ds-deliverables { display: grid; gap: 1.75rem 2.5rem; } .ds-deliverable-item { display: flex; align-items: flex-start; gap: 1rem; } .ds-deliverable-num { font-family: Poppins, sans-serif; font-size: 0.75rem; font-weight: 600; font-variant-numeric: tabular-nums; color: #f58b27; margin-top: 0.125rem; } .ds-deliverable-text { font-family: Poppins, sans-serif; font-size: 1.125rem; font-weight: 500; line-height: 1.375; color: rgba(255,255,255,0.9); }"
+    },
+    {
+      "name": "Results Line",
+      "kind": "custom",
+      "refersTo": "body",
+      "description": "Uniform-scale flowing line of value/label result pairs \u2014 the non-hero-metric result treatment.",
+      "html": "<p class=\"ds-results-line\"><span class=\"ds-results-value\">3.2x</span> <span class=\"ds-results-label\">ROI in 6 months</span><span aria-hidden class=\"ds-results-sep\"> \u00b7 </span><span class=\"ds-results-value\">40%</span> <span class=\"ds-results-label\">lower CAC</span></p>",
+      "css": ".ds-results-line { font-family: Poppins, sans-serif; line-height: 1.5; color: rgba(255,255,255,0.85); font-size: clamp(1.15rem, 1.8vw, 1.6rem); } .ds-results-value { font-weight: 800; color: #f58b27; } .ds-results-label { color: rgba(255,255,255,0.7); } .ds-results-sep { color: rgba(255,255,255,0.3); }"
+    },
+    {
+      "name": "Quote Block",
+      "kind": "custom",
+      "refersTo": "body",
+      "description": "Cinematic pull quote grounded in the subject's own dimmed/desaturated hero image, orange attribution chip.",
+      "html": "<figure class=\"ds-quote\"><span aria-hidden class=\"ds-quote-mark\">&ldquo;</span><blockquote class=\"ds-quote-text\">They didn't just deliver a campaign \u2014 they delivered a result.</blockquote><figcaption class=\"ds-quote-chip\">Client Name, Founder</figcaption></figure>",
+      "css": ".ds-quote { text-align: center; max-width: 56rem; margin: 0 auto; } .ds-quote-mark { display: block; font-family: Poppins, sans-serif; font-weight: 800; line-height: 1; color: #f58b27; font-size: clamp(5rem, 12vw, 9rem); } .ds-quote-text { margin-top: -2rem; font-family: Poppins, sans-serif; font-weight: 600; line-height: 1.12; color: #ffffff; font-size: clamp(1.75rem, 4.5vw, 3.5rem); } .ds-quote-chip { display: inline-flex; margin-top: 2rem; border-radius: 9999px; padding: 0.25rem 0.75rem; font-family: Poppins, sans-serif; font-size: 0.875rem; font-weight: 600; color: #141414; background: #f58b27; }"
+    },
+    {
+      "name": "Work Grid Card",
+      "kind": "card",
+      "refersTo": "body",
+      "description": "Contact-sheet tile: real cover image visible at rest on every device; hover/focus only lifts an already-visible cover.",
+      "html": "<a class=\"ds-work-card\" href=\"#\"><div class=\"ds-work-card-frame\"><img class=\"ds-work-card-img\" src=\"cover.jpg\" alt=\"Client Name \u2014 Industry\"/></div><p class=\"ds-work-card-cap\"><span class=\"ds-work-card-name\" title=\"Client Name\">Client Name<span class=\"ds-work-card-dot\">.</span></span><span class=\"ds-work-card-meta\" title=\"Industry \u00b7 2026\">Industry \u00b7 2026</span></p></a>",
+      "css": ".ds-work-card { display: flex; flex-direction: column; gap: 1rem; text-decoration: none; } .ds-work-card-frame { position: relative; aspect-ratio: 4/5; overflow: hidden; border-radius: 1.5rem; background: #1a1a1a; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.1); } .ds-work-card-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 0.7s cubic-bezier(0.22,1,0.36,1), filter 0.7s cubic-bezier(0.22,1,0.36,1); } .ds-work-card:hover .ds-work-card-img, .ds-work-card:focus-visible .ds-work-card-img { transform: scale(1.05); filter: brightness(1.06); } .ds-work-card:focus-visible .ds-work-card-frame { box-shadow: inset 0 0 0 2px #f58b27; } .ds-work-card-name { display: block; font-family: Poppins, sans-serif; font-weight: 700; font-size: 1rem; color: rgba(255,255,255,0.9); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .ds-work-card-dot { color: #f58b27; } .ds-work-card-meta { display: block; font-family: Poppins, sans-serif; font-weight: 500; font-size: 0.875rem; color: rgba(255,255,255,0.65); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Dense Newsroom Reel",
+    "overview": "Propagenda's surfaces read as a black-and-orange proof reel for an agency, not a portfolio brochure: dark charcoal/black grounds, real client imagery pushed forward, and a single orange accent used the way a wire-service editor uses a terminal period \u2014 rarely, and only to close a thought. Density breathes in alternating beats (a dense image beat, a quiet type beat, dense again) rather than holding one register for the whole scroll. Scroll length tracks the amount of real content a page has; nothing is padded out with a locked-viewport pin or an extra full-screen stop just to look expensive.",
+    "keyCharacteristics": [
+      "Black/charcoal ground, one orange accent, near-black text on orange",
+      "Poppins throughout, plain sentence case, no second/mono voice",
+      "Depth via gradient scrims, blurred color glows, and opacity layering \u2014 no drop shadows",
+      "Sections alternate image-dense and type-quiet; scroll length matches real content",
+      "Real client assets (photos, logos, quotes) are the differentiator, never placeholder art"
+    ],
+    "rules": [
+      {
+        "name": "The Ink-on-Orange Rule",
+        "body": "Any text sitting on the orange accent surface uses ink (#141414), never white. White-on-orange measures 2.44:1 and is banned outright.",
+        "section": "colors"
+      },
+      {
+        "name": "The Punctuation Rule",
+        "body": "Orange marks a single terminal point per composition (a period, an accent bar, one numeral, one glow) \u2014 it is never the dominant color of a screen in this template.",
+        "section": "colors"
+      },
+      {
+        "name": "The One-Face Rule",
+        "body": "Poppins is brand law; expression is weight and scale only, never a second family or a mono/tracked-caps register (retired site-wide 2026-09-15).",
+        "section": "typography"
+      },
+      {
+        "name": "The No-Eyebrow Rule",
+        "body": "No label sits above its content as a separate small-caps or tracked line \u2014 this is a structural ban, not just a styling one. A stage or figure's name folds inline into its own sentence or heading instead.",
+        "section": "typography"
+      },
+      {
+        "name": "The No-Hero-Metric Rule",
+        "body": "Results never render as one giant figure over a small label, nor as a grid of smaller supporting stat tiles. Every value/label pair reads at the same scale.",
+        "section": "components"
+      },
+      {
+        "name": "The No-Shadow Rule",
+        "body": "Depth comes from light (scrims, blurred glows) and translucency (bordered dividers), never from a cast box-shadow.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Cover-Never-Gated Rule",
+        "body": "A cover image, once a project has one, is visible at rest at every breakpoint including touch. Hover/focus states may only lift or brighten an already-visible cover; they may never be the sole mechanism that reveals it.",
+        "section": "components"
+      },
+      {
+        "name": "The Auto-Fit Density Rule",
+        "body": "A dense card wall uses grid-template-columns: repeat(auto-fit, minmax(min,max)) with justify-content: center, not a fixed grid-cols-N, so column count adapts to viewport width and a short group centers its row instead of stranding empty track.",
+        "section": "layout"
+      }
+    ],
+    "dos": [
+      "Do keep Poppins as the only family across every register; vary weight and size, never the face.",
+      "Do use ink (#141414) for any text on an orange surface.",
+      "Do fold a stage or figure's name inline into its own sentence instead of stacking a label above content.",
+      "Do let scroll-linked motion ride a section's natural height (scrub against the section's own start/end) rather than pinning the viewport to extend page length.",
+      "Do ground recurring backdrop moments (like the pull quote) in the subject's own real asset before falling back to a generic brand pattern."
+    ],
+    "donts": [
+      "Don't use a kicker/eyebrow label above content anywhere on the public site \u2014 the ban is structural (no label-above-content composition), not only a styling rule about mono.",
+      "Don't render a stat/result as one giant figure over a small label, or as a row of smaller stat tiles \u2014 this is the banned hero-metric template.",
+      "Don't put white text on the orange accent surface (2.44:1, fails contrast).",
+      "Don't reintroduce font-mono or an uppercase/tracked \"backstage\" register anywhere (site-wide directive, 2026-09-15) without a fresh, explicit decision.",
+      "Don't add a cast box-shadow for depth; use scrims, blurred glow blooms, or translucent borders instead."
+    ]
+  }
+}

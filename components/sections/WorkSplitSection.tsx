@@ -24,12 +24,22 @@ type Panel = {
   side: 'left' | 'right';
 };
 
+// Real published case-study hero images, not the old generic /images/portfolio/work-*.webp
+// stock pool — that pool predates this session's case-study asset-extraction work, and the
+// home page's own "Design Work" showcase should lead with real, business-specific client
+// imagery now that far more of it exists (explicit user direction, 2026-09-15: "since u have
+// more assets than last time update the other pages use of assets especially home page").
+// Spans varied industries deliberately (interiors, automotive, pharmacy, real estate, F&B,
+// events) rather than repeating one vertical.
 const DESIGN_SLIDES = [
-  '/images/portfolio/work-sanapex.webp',
-  '/images/portfolio/work-food.webp',
-  '/images/portfolio/work-restaurant.webp',
-  '/images/portfolio/work-ghaftree.webp',
-  '/images/portfolio/work-events.webp',
+  '/images/work/sanapex-interiors/hero.webp',
+  '/images/work/p2p-motors/hero.webp',
+  '/images/work/dose-pharmacy/hero.webp',
+  '/images/work/clemson-porter-properties/hero.webp',
+  '/images/work/alateeq-cafe/hero.webp',
+  '/images/work/dhc-luxury-real-estate/hero.webp',
+  '/images/work/mm-event-management/hero.webp',
+  '/images/work/quick-cars/hero.webp',
 ] as const;
 
 const PANELS: Panel[] = [

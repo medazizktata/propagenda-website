@@ -462,17 +462,6 @@ html.lenis body {
   }
 }
 
-/* Backstage register — the site's second typographic voice (mono caps, dim, letterspaced).
-   Owns eyebrows, section numbers, metadata, scroll cues, trust lines. Never CTAs. */
-@utility text-backstage {
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-weight: 500;
-  font-size: 0.75rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  line-height: 1.4;
-}
-
 /* Smooth hover in/out — prefer the Tailwind class `transition-hover` in components.
    Kept here as an alias for non-JS / ad-hoc markup. Cursor is required with hover. */
 @utility transition-hover {

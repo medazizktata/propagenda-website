@@ -80,7 +80,7 @@ export function VideoProjectsTable({ rows }: { rows: VideoProjectListRow[] }) {
         label: 'Slug',
         sortable: true,
         filter: { kind: 'text' },
-        render: (row) => <span className="font-mono text-xs text-muted-foreground">{row.slug}</span>,
+        render: (row) => <span className="text-xs text-muted-foreground">{row.slug}</span>,
       },
       {
         key: 'status',

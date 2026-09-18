@@ -1,11 +1,10 @@
 'use client';
 
-import { useRef, useState } from 'react';
-import { cn } from '@/components/ui/cn';
+import { useMemo, useRef, useState } from 'react';
+import { SlidersHorizontal } from 'lucide-react';
 import { useFadeUpOnEnter } from '@/hooks/useFadeUpOnEnter';
-import { useReducedMotion } from '@/lib/motion/useReducedMotion';
-import { WorkIndexRow } from '@/components/sections/WorkIndexRow';
-import { BrandPattern } from '@/components/ui/BrandPattern';
+import { WorkCard } from '@/components/sections/WorkCard';
+import { cn } from '@/components/ui/cn';
 import type { CaseStudyRecord } from '@/types/content';
 
 export interface WorkIndexGroup {
@@ -20,106 +19,116 @@ interface WorkIndexProps {
 }
 
 /**
- * The Work hub centrepiece: an oversized, full-width "famous work" index. Case studies are
- * split into broad category sections (Automotive, Property & interiors, …); each study is
- * one giant type row; hover/focus blooms its REAL heroImage full-bleed behind the names
- * (fast fade layered over a slow 5s Ken-Burns zoom), siblings dim, and its industry/year
- * caption appears. Every category section shares one bloom panel and one running active index.
- * At rest the flagship hero sits softly behind the names so the section is image-forward,
- * never a void. Reduced-motion: instant swaps, a single fixed scale, no zoom.
+ * The Work hub centrepiece: a contact-sheet grid of real project covers, grouped by category.
+ * Every card shows its actual heroImage (or first gallery frame) at rest, on every device —
+ * hover/focus only lifts a cover that was already visible. See the direction comment below.
  */
 export function WorkIndex({ groups }: WorkIndexProps) {
   const ref = useRef<HTMLElement>(null);
-  const [active, setActive] = useState<number | null>(null);
-  const reducedMotion = useReducedMotion();
-  useFadeUpOnEnter(ref, '.work-index-reveal', { translateOnly: true });
+  useFadeUpOnEnter(ref, '.work-card-reveal', { translateOnly: true });
 
-  // Flatten so the bloom panel + active index span both groups with one running index.
-  const flat = groups.flatMap((g) => g.items);
-  // Text-only studies (held, no imagery) show a subtle brand-pattern wash on hover
-  // instead of a dark void, so the mixed index reads intentionally.
-  const activeItem = active !== null ? flat[active] : null;
-  const showPattern = activeItem != null && !activeItem.heroImage;
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+
+  const visibleGroups = useMemo(
+    () => (activeCategory ? groups.filter((g) => g.id === activeCategory) : groups),
+    [groups, activeCategory],
+  );
 
   return (
     <section
       ref={ref}
-      onMouseLeave={() => setActive(null)}
-      className="relative overflow-hidden bg-charcoal px-gutter-m py-24 lg:px-gutter-d lg:py-32"
+      className="relative bg-charcoal px-gutter-m py-16 lg:px-gutter-d lg:py-20"
     >
-      {/* Bloom panel — the active project's real hero fills the whole section (Ken-Burns). */}
-      <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-        {flat.map((item, i) =>
-          item.heroImage ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              key={item.slug}
-              src={item.heroImage}
-              alt=""
-              className="absolute inset-0 h-full w-full object-cover object-center will-change-transform"
-              style={{
-                opacity: active === i ? 1 : i === 0 && active === null ? 0.4 : 0,
-                transitionProperty: 'opacity, transform',
-                transitionDuration: reducedMotion ? '200ms, 0ms' : '450ms, 5000ms',
-                transitionTimingFunction: 'cubic-bezier(0.215,0.61,0.355,1), ease-out',
-                transform: reducedMotion
-                  ? 'scale(1.02)'
-                  : active === i
-                    ? 'scale(1.16)'
-                    : 'scale(1.04)',
-              }}
-            />
-          ) : null,
-        )}
-        {/* Held (text-only) studies: a subtle brand-pattern wash instead of a photo. */}
-        <div
-          className={cn(
-            'absolute inset-0 transition-opacity duration-500 ease-out',
-            showPattern ? 'opacity-100' : 'opacity-0',
-          )}
-        >
-          <div className="absolute inset-0 opacity-[0.10]">
-            <BrandPattern variant="tiled" />
-          </div>
+      {/*
+        THESIS: the work index reads like a working studio's contact sheet — every project's
+        real cover visible at rest, not gated behind hover — so scale and range of real client
+        work are legible before anyone clicks anything.
+        OWN-WORLD: Poppins carries every label here (no mono/tracked-caps kicker voice — that
+        register is retired site-wide); black+orange (#f58b27) as punctuation only — the
+        terminal period stays orange, never the whole name; white-on-orange banned; one
+        protagonist per screen; no kicker labels, no section numbers.
+        STORY: land on real, generously-sized covers grouped by category, scan the breadth of
+        the portfolio in a few unhurried screens, hover only lifts and brightens a cover
+        already legible. An optional filter (closed by default) narrows to one category
+        without cluttering the default view with controls nobody asked for.
+        FIRST VIEWPORT: a spacious multi-column grid inside the site's own editorial gutter
+        (matching every other section), cards large enough to read as real work, not thumbnails
+        — a lonely single-study category is folded into one shared "More work" group upstream
+        in WorkPageContent.tsx rather than getting its own orphan section.
+        FORM: WorkIndex.tsx + WorkCard.tsx, kept inside the same category-grouping contract
+        WorkPageContent.tsx provides.
+        unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md
+      */}
+      <div className="mx-auto flex w-full max-w-[110rem] flex-col gap-9 md:gap-11">
+        <div className="flex flex-wrap items-center justify-end gap-3">
+          <button
+            type="button"
+            onClick={() => setFiltersOpen((v) => !v)}
+            aria-expanded={filtersOpen}
+            aria-pressed={filtersOpen}
+            className={cn(
+              'flex items-center gap-2 rounded-full border border-white/15 px-4 py-2 font-sans text-sm font-medium text-white/70 transition-colors duration-300',
+              'hover-fine:hover:border-white/30 hover-fine:hover:text-white',
+              filtersOpen && 'border-white/30 text-white',
+            )}
+          >
+            <SlidersHorizontal className="size-4" aria-hidden />
+            Filter
+          </button>
         </div>
-        {/* Scrims — names stay legible but the work is the protagonist: keep it bright,
-            weight the shade toward the left column where the names sit. */}
-        <div className="absolute inset-0 bg-charcoal/25" />
-        <div className="absolute inset-0 bg-gradient-to-b from-charcoal via-charcoal/10 to-charcoal/45" />
-      </div>
 
-      <div className="relative z-content mx-auto flex w-full max-w-6xl flex-col gap-16 md:gap-24">
-        {groups.map((group, gi) => {
-          // Running offset so each row's index is unique across all groups.
-          const offset = groups.slice(0, gi).reduce((n, g) => n + g.items.length, 0);
-          return (
-            <div key={group.id} id={group.id}>
-              <div className="work-index-reveal mb-6 md:mb-8">
-                <h2 className="text-backstage text-white/60 md:text-sm">
-                  {group.label}
-                </h2>
-              </div>
-              <ul className="flex flex-col gap-1 md:gap-2">
-                {group.items.map((item, i) => {
-                  const caption = [item.industry, item.year].filter(Boolean).join('  ·  ');
-                  return (
-                    <li key={item.slug} className="work-index-reveal">
-                      <WorkIndexRow
-                        index={offset + i}
-                        href={`/work/${item.slug}`}
-                        name={item.client ?? item.title}
-                        caption={caption}
-                        isActive={active === offset + i}
-                        isDimmed={active !== null && active !== offset + i}
-                        onActivate={setActive}
-                      />
-                    </li>
-                  );
-                })}
-              </ul>
+        {filtersOpen ? (
+          <div className="-mt-4 flex flex-wrap gap-2 md:-mt-6">
+            <button
+              type="button"
+              onClick={() => setActiveCategory(null)}
+              className={cn(
+                'rounded-full border px-4 py-1.5 font-sans text-sm font-medium transition-colors duration-300',
+                activeCategory === null
+                  ? 'border-orange bg-orange text-ink'
+                  : 'border-white/15 text-white/70 hover-fine:hover:border-white/30 hover-fine:hover:text-white',
+              )}
+            >
+              All
+            </button>
+            {groups.map((group) => (
+              <button
+                key={group.id}
+                type="button"
+                onClick={() => setActiveCategory(group.id)}
+                className={cn(
+                  'rounded-full border px-4 py-1.5 font-sans text-sm font-medium transition-colors duration-300',
+                  activeCategory === group.id
+                    ? 'border-orange bg-orange text-ink'
+                    : 'border-white/15 text-white/70 hover-fine:hover:border-white/30 hover-fine:hover:text-white',
+                )}
+              >
+                {group.label}
+              </button>
+            ))}
+          </div>
+        ) : null}
+
+        {visibleGroups.map((group) => (
+          <div key={group.id} id={group.id}>
+            <div className="work-card-reveal mb-5 md:mb-6">
+              <h2 className="font-sans text-base font-semibold text-white/70 md:text-lg">
+                {group.label}
+              </h2>
             </div>
-          );
-        })}
+            {/*
+              auto-fit + a fixed max (not 1fr) + justify-center: column count adapts to the
+              viewport on its own and a short category centers its row instead of stranding a
+              slab of empty track to the right, which a fixed grid-cols-N would do.
+            */}
+            <ul className="grid justify-center gap-x-6 gap-y-12 [grid-template-columns:repeat(auto-fit,minmax(15rem,18rem))] sm:gap-x-8 sm:[grid-template-columns:repeat(auto-fit,minmax(17rem,21rem))] xl:[grid-template-columns:repeat(auto-fit,minmax(19rem,24rem))]">
+              {group.items.map((item) => (
+                <WorkCard key={item.slug} item={item} />
+              ))}
+            </ul>
+          </div>
+        ))}
       </div>
     </section>
   );

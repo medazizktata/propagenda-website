@@ -1,0 +1,35 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "design-system-font-size",
+        "value": "0.7rem",
+        "files": [
+          "components/molecules/WorkNavMenu.tsx"
+        ],
+        "createdAt": "2026-09-15T20:36:31.180Z",
+        "reason": "matches ServicesNavMenu.tsx's existing sanctioned nav-trigger label size, intentional consistency between the two dropdowns"
+      },
+      {
+        "rule": "design-system-font-size",
+        "value": "0.9rem",
+        "files": [
+          "components/molecules/WorkNavMenu.tsx"
+        ],
+        "createdAt": "2026-09-15T20:36:31.440Z",
+        "reason": "matches ServicesNavMenu.tsx's existing sanctioned menu-item label size, intentional consistency between the two dropdowns"
+      },
+      {
+        "rule": "design-system-font-size",
+        "value": "0.82rem",
+        "files": [
+          "components/molecules/WorkNavMenu.tsx"
+        ],
+        "createdAt": "2026-09-15T20:36:31.694Z",
+        "reason": "matches ServicesNavMenu.tsx's existing sanctioned preview-blurb/CTA size, intentional consistency between the two dropdowns"
+      }
+    ]
+  }
+}

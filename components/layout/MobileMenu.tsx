@@ -234,7 +234,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
                                   >
                                     <span
                                       className={cn(
-                                        'font-mono text-[0.7rem] font-medium tabular-nums transition-colors duration-300',
+                                        'text-xs font-semibold tabular-nums transition-colors duration-300',
                                         sActive ? 'text-orange' : 'text-white/30 group-hover/svc:text-orange',
                                       )}
                                     >

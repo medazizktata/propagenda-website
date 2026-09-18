@@ -2,8 +2,7 @@ import { SectionLabel } from '@/components/ui/SectionLabel';
 import { BrandPattern } from '@/components/ui/BrandPattern';
 
 /**
- * Services hub — a second act beyond the index: why brands consolidate with the studio, plus a
- * client-logo marquee for proof. Static (CSS marquee), so it works as a server component.
+ * Services hub — a second act beyond the index: why brands consolidate with the studio.
  */
 const VALUES = [
   {
@@ -41,23 +40,6 @@ const VALUES = [
   },
 ];
 
-// Audited against public/images/clients/ (TASK-10): dropped Centralhub (a rotated,
-// multi-corner-cropped image that reads as broken), Ghaf Tree (a photo of physical
-// signage — doesn't sit as a flat mark on a white card), and Dr. Shifa (the "logo" is
-// plain rendered text, no mark). "OU Optics" was a mislabel — the file is the real
-// C U Optics logo (see content/work/index.ts's cu-optics case study). Added real,
-// clean logos that weren't in this marquee yet.
-const CLIENTS = [
-  { name: 'Sanapex Interiors', src: '/images/clients/sanapex-interiors.png' },
-  { name: 'P2P Motors', src: '/images/clients/p2p-motors.webp' },
-  { name: 'C U Optics', src: '/images/clients/ou-optics.png' },
-  { name: 'Al Rowad International', src: '/images/clients/al-rowad-international.png' },
-  { name: 'Chez Moda', src: '/images/clients/chez-moda.png' },
-  { name: 'Sarrazar', src: '/images/clients/sarrazar.png' },
-  { name: 'Sealand', src: '/images/clients/sealand.png' },
-  { name: 'Global Space Finder', src: '/images/clients/global-space-finder.png' },
-];
-
 export function ServicesWhy() {
   return (
     <section className="relative overflow-hidden bg-charcoal px-gutter-m py-20 lg:px-gutter-d lg:py-28">
@@ -83,23 +65,6 @@ export function ServicesWhy() {
               <p className="mt-2 leading-relaxed text-white/60">{v.desc}</p>
             </div>
           ))}
-        </div>
-
-        <div className="mt-16 border-t border-white/10 pt-12">
-          <SectionLabel className="mb-8">Trusted by</SectionLabel>
-          <div className="relative overflow-hidden [mask-image:linear-gradient(to_right,transparent,#000_7%,#000_93%,transparent)] [-webkit-mask-image:linear-gradient(to_right,transparent,#000_7%,#000_93%,transparent)]">
-            <div className="flex w-max animate-[marquee_32s_linear_infinite] motion-reduce:animate-none">
-              {[...CLIENTS, ...CLIENTS].map((logo, i) => (
-                <span
-                  key={`${logo.name}-${i}`}
-                  className="mx-2 flex h-20 w-40 shrink-0 items-center justify-center rounded-xl bg-white/90 px-6 py-4"
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={logo.src} alt={logo.name} className="max-h-full max-w-full object-contain" />
-                </span>
-              ))}
-            </div>
-          </div>
         </div>
       </div>
     </section>

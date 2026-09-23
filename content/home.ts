@@ -1,3 +1,4 @@
+import type { WorkSlug } from '@/types/content';
 export const manifestoQuote =
   "If you don't give the market the story to talk about, they'll define your brand's story for you.";
 export const manifestoAttribution = 'Seth Godin';
@@ -103,38 +104,57 @@ export const moreWork = [
   },
 ] as const;
 
-// Client brands. `url` links the name out to the brand's site/social where we could confirm
-// it (see content/clients-research.md); brands still awaiting a confirmed link have no `url`
-// and render as plain (non-clickable) names. `logo` is the extracted PNG in
-// public/images/clients/ (omitted where extraction hasn't produced one yet).
-export type ClientBrand = { name: string; url?: string; logo?: string };
-export const clientLogos: ClientBrand[] = [
-  { name: 'Sanapex Interiors', url: 'https://sanapexinteriors.com/', logo: 'sanapex-interiors.png' },
-  { name: 'P2P Motors', url: 'https://p2pmotors.com/', logo: 'p2p-motors.webp' },
-  { name: 'Dose Pharmacy' },
-  { name: 'Clemson Porter Properties', url: 'https://clemsonporter.com/' },
-  { name: 'Emirates Agro', url: 'https://emiratesagro.ae/' },
-  { name: 'Zealerz', logo: 'zealerz.png' },
-  { name: 'Al Rowad International', logo: 'al-rowad-international.png' },
-  { name: 'Lava Inc', logo: 'lava-inc.png' },
-  { name: 'C U Optics', logo: 'ou-optics.png' },
-  { name: 'MM Event Management', url: 'https://magicmusicevents.com/', logo: 'mm-event-management.png' },
+// Client brands, listed by name on the home page (ClientList). `url` links the name out to the
+// brand's site/social where we could confirm it (see content/clients-research.md); brands without
+// a confirmed link render as plain names. Names follow each published case study's own client
+// name (content/work/index.ts), shortened only by legal/descriptor tails (LLC, "Intellectual
+// Property", "Brokers", "(ABA)"). `logo` is the extracted file in public/images/clients/ — kept
+// as data but NOT rendered: the hover-to-reveal-logo swap was switched off (explicit user
+// direction, 2026-09-24: "remove the hover to reveal logo behavior... disable it").
+//
+// 2026-09-24 corrections, each checked against the logo file itself: "Lava Inc" was the Laya Inc
+// logo misread; "3L Events" was BIL Events' logo (duplicate, merged); "Wing Car Q&C" was Quick
+// Cars' winged QC mark (duplicate, merged); "Ghaf Tree" is "Ghaf Lounge" per its own logo (the
+// portfolio poster explains the name comes from the Ghaf tree) — confirm with the client.
+// Emirates Agro removed: hidden from the site at explicit user direction (2026-09-15).
+// `slug`: the client's published case study — the name links there (takes priority over `url`).
+export type ClientBrand = { name: string; slug?: WorkSlug; url?: string; logo?: string };
+export const clients: ClientBrand[] = [
+  { name: 'Sanapex Interiors', slug: 'sanapex-interiors', url: 'https://sanapexinteriors.com/', logo: 'sanapex-interiors.png' },
+  { name: 'P2P Motors', slug: 'p2p-motors', url: 'https://p2pmotors.com/', logo: 'p2p-motors.webp' },
+  { name: 'Dose Pharmacy', slug: 'dose-pharmacy' },
+  { name: 'Clemson Porter Properties', slug: 'clemson-porter-properties', url: 'https://clemsonporter.com/' },
+  { name: 'Zealerz', slug: 'zealerz', logo: 'zealerz.png' },
+  { name: 'Al Rowad International', slug: 'al-rowad-international', logo: 'al-rowad-international.png' },
+  { name: 'Laya Inc', slug: 'laya-inc', logo: 'lava-inc.png' },
+  { name: 'C U Optics', slug: 'cu-optics', logo: 'ou-optics.png' },
+  { name: 'MM Event Management', slug: 'mm-event-management', url: 'https://magicmusicevents.com/', logo: 'mm-event-management.png' },
   { name: 'Sarrazar', logo: 'sarrazar.png' },
   { name: 'Phantom Protection', url: 'https://www.ppfphantom.com/', logo: 'phantom-protection.png' },
   { name: 'Global Space Finder', logo: 'global-space-finder.png' },
   { name: 'Chez Moda', logo: 'chez-moda.png' },
   { name: 'centralhub', url: 'https://centralhub.ae/', logo: 'centralhub.webp' },
-  { name: '3L Events', logo: '3l-events.png' },
-  { name: 'Alla Doresu', logo: 'alla-doresu.png' },
-  { name: 'Quick Car', url: 'https://www.instagram.com/quick_cars_dxb/', logo: 'quick-car.png' },
+  { name: 'Alla Doresu', slug: 'alla-doresu', logo: 'alla-doresu.png' },
+  { name: 'Quick Cars', slug: 'quick-cars', url: 'https://www.instagram.com/quick_cars_dxb/', logo: 'quick-car.png' },
   { name: 'Drive Zone' },
-  { name: 'BIL Events' },
-  { name: 'Ghaf Tree', logo: 'ghaf-tree.png' },
+  { name: 'BIL Events', slug: 'bil-events', logo: '3l-events.png' },
+  { name: 'Ghaf Lounge', logo: 'ghaf-tree.png' },
   { name: 'Dr. Shifa', logo: 'dr-shifa.png' },
-  { name: 'Wing Car Q&C', logo: 'wing-car-qc.png' },
-  { name: 'Sealand', logo: 'sealand.png' },
-  { name: 'The BNK Group' },
-  { name: 'Arabian Business Academy' },
-  { name: '2K Shopping' },
-  { name: 'Chicky Fighter' },
+  { name: 'Sealand', slug: 'sealand', logo: 'sealand.png' },
+  { name: 'The BNK Group', slug: 'bnk-group' },
+  { name: 'Arabian Business Academy', slug: 'arabian-business-academy' },
+  { name: '2K Shopping', slug: '2k-shopping' },
+  { name: 'Chicky Fighter', slug: 'chicky-fighter' },
+  { name: 'Ayoub & Co', slug: 'ayoub-and-co' },
+  { name: 'Al Manazel Al Haditha', slug: 'al-manazel-al-haditha' },
+  { name: 'DHC Luxury Real Estate', slug: 'dhc-luxury-real-estate' },
+  { name: 'VID', slug: 'vid' },
+  { name: 'Alateeq Cafe', slug: 'alateeq-cafe' },
+  { name: 'Jordanian Social Club', slug: 'jordanian-social-club', logo: 'jsc.png' },
+  { name: 'Dot & Dash', slug: 'dot-and-dash' },
+  { name: 'Leoz', slug: 'leoz' },
+  { name: "Let's Ad", slug: 'lets-ad' },
+  { name: 'Serr El Oud', slug: 'serr-el-oud' },
+  { name: 'Sterling Cars', slug: 'sterling-cars' },
+  { name: "Shawerma A'saj", slug: 'shawarma-asaj' },
 ];

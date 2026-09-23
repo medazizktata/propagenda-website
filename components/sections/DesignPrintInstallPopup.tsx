@@ -5,30 +5,37 @@ import { designPrintInstall } from '@/content/home';
 import { gsap } from '@/lib/motion/gsap';
 import { useReducedMotion } from '@/lib/motion/useReducedMotion';
 
-// The pool of real work samples a visitor can cycle through by clicking a card. Real
-// published case-study hero images, not the old generic /images/portfolio/work-*.webp stock
-// pool — swapped once more of these existed (explicit user direction, 2026-09-15). Picked to
-// not fully overlap WorkSplitSection's own pool, so the two openers show different work.
-const WORK_IMAGES = [
-  '/images/work/bnk-group/hero.webp',
-  '/images/work/zealerz/hero.webp',
-  '/images/work/al-rowad-international/hero.webp',
-  '/images/work/cu-optics/hero.webp',
-  '/images/work/ayoub-and-co/hero.webp',
-  '/images/work/vid/hero.webp',
-];
+// One real work sample. `pos` is the object-position for the 3:4 card crop — set only where a
+// centred crop of a 16:9 shot would cut the brand's own wordmark or mark.
+type WorkShot = { src: string; pos?: string };
+
+const shot = (path: string, pos?: string): WorkShot => ({ src: `/images/work/${path}.webp`, pos });
+
+// The headline stacks DESIGN / PRINT / INSTALL, and the cards sit in three rows beside those
+// words — so each row shows that word's kind of work: identity marks and stationery, then
+// printed packaging and collateral, then work installed out in the world (vehicles, signage,
+// storefronts, flags). Each card cycles on click through its own three shots. 18 shots from
+// 18 different published brands; WorkSplitSection covers the other 11, so no image or brand
+// repeats between the two (explicit user direction, 2026-09-23: "update the home page with
+// those assets, and diversify their use").
+const DESIGN_LEFT = [shot('serr-el-oud/hero'), shot('dot-and-dash/hero', 'right'), shot('alateeq-cafe/hero')];
+const DESIGN_RIGHT = [shot('bnk-group/hero'), shot('laya-inc/gallery-4'), shot('lets-ad/gallery-4')];
+const PRINT_LEFT = [shot('chicky-fighter/gallery-2'), shot('alla-doresu/gallery-1', 'right'), shot('ayoub-and-co/gallery-3')];
+const PRINT_RIGHT = [shot('shawarma-asaj/gallery-4'), shot('sealand/gallery-2'), shot('dhc-luxury-real-estate/gallery-3')];
+const INSTALL_LEFT = [shot('2k-shopping/hero'), shot('clemson-porter-properties/gallery-1'), shot('mm-event-management/hero')];
+const INSTALL_RIGHT = [shot('zealerz/gallery-4', 'right'), shot('dose-pharmacy/gallery-8'), shot('arabian-business-academy/hero')];
 
 // A clickable work-sample image: clicking it CROSSFADES to the next sample (two stacked
 // layers whose opacity we toggle), so the placeholder content can be swapped smoothly.
 // Quality-of-life touch; independent of the scatter/break GSAP transforms on the card.
-function WorkCardImage({ initial }: { initial: string }) {
-  const [layers, setLayers] = useState<[string, string]>([initial, initial]);
+function WorkCardImage({ pool }: { pool: WorkShot[] }) {
+  const [layers, setLayers] = useState<[WorkShot, WorkShot]>([pool[0], pool[0]]);
   const [top, setTop] = useState<0 | 1>(0);
-  const idxRef = useRef(Math.max(0, WORK_IMAGES.indexOf(initial)));
+  const idxRef = useRef(0);
 
   const cycle = () => {
-    idxRef.current = (idxRef.current + 1) % WORK_IMAGES.length;
-    const next = WORK_IMAGES[idxRef.current];
+    idxRef.current = (idxRef.current + 1) % pool.length;
+    const next = pool[idxRef.current];
     const hidden = top === 0 ? 1 : 0;
     setLayers((prev) => (hidden === 0 ? [next, prev[1]] : [prev[0], next]));
     setTop(hidden);
@@ -47,18 +54,22 @@ function WorkCardImage({ initial }: { initial: string }) {
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src={layers[0]}
+        src={layers[0].src}
         alt=""
         aria-hidden
         loading="lazy"
+        decoding="async"
+        style={{ objectPosition: layers[0].pos }}
         className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${top === 0 ? 'opacity-100' : 'opacity-0'}`}
       />
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src={layers[1]}
+        src={layers[1].src}
         alt=""
         aria-hidden
         loading="lazy"
+        decoding="async"
+        style={{ objectPosition: layers[1].pos }}
         className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${top === 1 ? 'opacity-100' : 'opacity-0'}`}
       />
     </button>
@@ -76,14 +87,14 @@ function WorkCardImage({ initial }: { initial: string }) {
 // scattered — it reads as a deliberate, put-together team.
 // Offsets are a fraction of the viewport (x → vw, y → vh) so it stays proportional at any
 // size; `grad` is a neutral charcoal→black tint (never navy).
-type ScatterCard = { x: number; y: number; rot: number; w: number; grad: string; img: string };
+type ScatterCard = { x: number; y: number; rot: number; w: number; grad: string; pool: WorkShot[] };
 const CARDS: ScatterCard[] = [
-  { x: -33, y: -25, rot: 0, w: 15, grad: 'from-charcoal to-black', img: WORK_IMAGES[0] },
-  { x: -33, y: 0, rot: 0, w: 15, grad: 'from-black to-charcoal', img: WORK_IMAGES[1] },
-  { x: -33, y: 25, rot: 0, w: 15, grad: 'from-charcoal to-black', img: WORK_IMAGES[2] },
-  { x: 33, y: -25, rot: 0, w: 15, grad: 'from-black to-charcoal', img: WORK_IMAGES[3] },
-  { x: 33, y: 0, rot: 0, w: 15, grad: 'from-charcoal to-black', img: WORK_IMAGES[4] },
-  { x: 33, y: 25, rot: 0, w: 15, grad: 'from-black to-charcoal', img: WORK_IMAGES[5] },
+  { x: -33, y: -25, rot: 0, w: 15, grad: 'from-charcoal to-black', pool: DESIGN_LEFT },
+  { x: -33, y: 0, rot: 0, w: 15, grad: 'from-black to-charcoal', pool: PRINT_LEFT },
+  { x: -33, y: 25, rot: 0, w: 15, grad: 'from-charcoal to-black', pool: INSTALL_LEFT },
+  { x: 33, y: -25, rot: 0, w: 15, grad: 'from-black to-charcoal', pool: DESIGN_RIGHT },
+  { x: 33, y: 0, rot: 0, w: 15, grad: 'from-charcoal to-black', pool: PRINT_RIGHT },
+  { x: 33, y: 25, rot: 0, w: 15, grad: 'from-black to-charcoal', pool: INSTALL_RIGHT },
 ];
 
 // The opening frame (SMV step 9): the cards begin STACKED like a deck near the centre —
@@ -308,7 +319,7 @@ export function DesignPrintInstallPopup({ flat = false }: { flat?: boolean }) {
               }}
             >
               <div className={`absolute inset-0 bg-gradient-to-br ${card.grad}`} />
-              <WorkCardImage initial={card.img} />
+              <WorkCardImage pool={card.pool} />
               {/* Type is this act's protagonist — the deck reads as supporting cast, so every
                   card carries a quiet scrim that keeps the statement legible over it. */}
               <div aria-hidden className="pointer-events-none absolute inset-0 bg-charcoal/40" />

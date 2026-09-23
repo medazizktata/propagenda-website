@@ -24,23 +24,33 @@ type Panel = {
   side: 'left' | 'right';
 };
 
-// Real published case-study hero images, not the old generic /images/portfolio/work-*.webp
-// stock pool — that pool predates this session's case-study asset-extraction work, and the
-// home page's own "Design Work" showcase should lead with real, business-specific client
-// imagery now that far more of it exists (explicit user direction, 2026-09-15: "since u have
-// more assets than last time update the other pages use of assets especially home page").
-// Spans varied industries deliberately (interiors, automotive, pharmacy, real estate, F&B,
-// events) rather than repeating one vertical.
+// Real extracted case-study imagery — one shot from each of the 11 published brands that
+// DesignPrintInstallPopup doesn't show, so between them the home page covers all 29 with no
+// image repeated (explicit user direction, 2026-09-23: "update the home page with those
+// assets, and diversify their use"). Mixed deliberately by kind — a car, apparel, a crest,
+// stationery, a storefront, a catalogue, merch, social, a brand board — not 11 cover shots.
+// slides[0] is the panel's resting frame; [1]–[3] flash past in the curtain wipe.
 const DESIGN_SLIDES = [
-  '/images/work/sanapex-interiors/hero.webp',
-  '/images/work/p2p-motors/hero.webp',
-  '/images/work/dose-pharmacy/hero.webp',
-  '/images/work/clemson-porter-properties/hero.webp',
-  '/images/work/alateeq-cafe/hero.webp',
-  '/images/work/dhc-luxury-real-estate/hero.webp',
-  '/images/work/mm-event-management/hero.webp',
   '/images/work/quick-cars/hero.webp',
+  '/images/work/bil-events/gallery-4.webp',
+  '/images/work/jordanian-social-club/hero.webp',
+  '/images/work/sterling-cars/hero.webp',
+  '/images/work/al-manazel-al-haditha/hero.webp',
+  '/images/work/leoz/hero.webp',
+  '/images/work/vid/gallery-2.webp',
+  '/images/work/al-rowad-international/gallery-4.webp',
+  '/images/work/cu-optics/hero.webp',
+  '/images/work/sanapex-interiors/hero.webp',
+  '/images/work/p2p-motors/gallery-2.webp',
 ] as const;
+
+// object-position overrides for the ~square panel crop. quick-cars is the resting frame, so it
+// sits directly behind the DESIGN WORK. headline: anchored left it's all car, with none of the
+// brand's own wordmark/tagline competing with that headline (centred, it leaves clipped
+// letter fragments at the panel's edge).
+const FOCAL: Partial<Record<string, string>> = {
+  '/images/work/quick-cars/hero.webp': 'left',
+};
 
 const PANELS: Panel[] = [
   {
@@ -95,6 +105,9 @@ function FrontSlideshow({ slides, active }: { slides: string[]; active: boolean 
       <img
         src={slides[0]}
         alt=""
+        loading="lazy"
+        decoding="async"
+        style={{ objectPosition: FOCAL[slides[0]] }}
         className={cn(
           'absolute inset-0 h-full w-full object-cover transition-hover',
           active ? 'opacity-0' : 'opacity-100',
@@ -106,6 +119,9 @@ function FrontSlideshow({ slides, active }: { slides: string[]; active: boolean 
           key={src}
           src={src}
           alt=""
+          loading="lazy"
+          decoding="async"
+          style={{ objectPosition: FOCAL[src] }}
           className={cn(
             'absolute inset-0 h-full w-full object-cover transition-opacity duration-500',
             active && i === index ? 'opacity-100' : 'opacity-0',
@@ -187,6 +203,9 @@ function FrameStack({
                 src={frames[i]}
                 alt=""
                 aria-hidden
+                loading="lazy"
+                decoding="async"
+                style={{ objectPosition: FOCAL[frames[i]] }}
                 className="block h-full w-full object-cover"
               />
             )}

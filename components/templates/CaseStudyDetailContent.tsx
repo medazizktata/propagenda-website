@@ -91,6 +91,18 @@ export function CaseStudyDetailContent({
     registerGsap();
     const ctx = gsap.context(() => {
       gsap.utils.toArray<HTMLElement>('.sd-reveal').forEach((item) => {
+        // Composited from the moment the reveal is armed, and left that way. Unpromoted, every
+        // frame of the move repaints the element — and the Story overview line carries a 40px
+        // text-shadow over four lines of display type, so each frame the GPU re-rasterised
+        // that blur (80 device px at DPR 2). That was the stutter scrolling from the Hero into
+        // the overview on every case study: measured on a 120Hz display, ~23 dropped frames /
+        // ~940ms of hitching per pass, all of it GPU-process time (the renderer main thread
+        // had no long tasks at all). Promoted, the compositor just moves an already-rastered
+        // texture: 1 drop / ~17ms. Promoting only at onStart left ~4 drops (the new layer's
+        // first raster landed in the frame the motion began); clearing it on complete left ~2
+        // (the demotion re-rasters the shadow into the page mid-scroll). Keeping it costs
+        // ~3.3MB of GPU memory for the one overview line — cheap next to a visible stutter.
+        item.style.willChange = 'transform';
         gsap.from(item, {
           // Cuberto-style long settle (translate-only stays anti-blank).
           y: 56,
@@ -426,12 +438,12 @@ function CaseStudyGalleryMosaic({
   // visitor's first scroll off the Hero: it drove a re-render that rewrote flexGrow/height
   // inline styles on every tile below the fold, and that style write colliding with GSAP's
   // own per-tick getBoundingClientRect reads for the Hero's scrub animation is a textbook
-  // layout-thrash pattern (write, then a forced synchronous read, then a dropped frame) —
-  // the actual cause of the visible stutter scrolling from the Hero into the overview text,
-  // on every project (explicit user direction, 2026-09-18: "clear visual stuttering on
-  // scrolling to main text... after hero section, in all instances"). A plain `resize`
-  // listener only fires on a real viewport change, never on its own schedule, so it can't
-  // land in that window by chance the way the observer did.
+  // layout-thrash pattern (write, then a forced synchronous read, then a dropped frame). It was
+  // suspected as the Hero-into-overview stutter (2026-09-18) but was NOT it: that stutter was
+  // measured (2026-09-23) as pure GPU cost from the overview line's reveal repainting its 40px
+  // text-shadow every frame — see the .sd-reveal effect at the top of this file. Kept anyway:
+  // a plain `resize` listener only fires on a real viewport change, never on its own schedule,
+  // so it can't land mid-scroll by chance the way the observer could.
   const didMountRef = useRef(false);
   useLayoutEffect(() => {
     const el = containerRef.current;

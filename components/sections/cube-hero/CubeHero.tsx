@@ -181,7 +181,7 @@ export function CubeHero() {
         )}
       />
 
-      <div className="relative z-content mx-auto flex h-full w-full max-w-[1800px] flex-col px-6 sm:px-10 lg:px-14">
+      <div className="relative z-content mx-auto flex h-full w-full max-w-[1920px] flex-col px-gutter-m lg:px-gutter-d">
         {/* Sits off the bottom rather than on it. Flush against the edge put the call to action
             under the dock or the browser's own chrome in a short window, and the copy read as
             having fallen to the floor of the frame. */}

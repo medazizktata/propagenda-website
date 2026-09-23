@@ -3,7 +3,11 @@ packages:
 
 allowBuilds:
   msw: true
-  sharp: true
+  # sharp ships a prebuilt binary (@img/sharp-<platform>) with its own libvips.
+  # Its install script prefers a *global* libvips when pkg-config finds one >= 8.17.3
+  # (Homebrew `vips`), then rebuilds from source and fails for want of node-addon-api.
+  # The prebuilt binary is already installed and working, so skip the script entirely.
+  sharp: false
   unrs-resolver: true
   esbuild: true
   workerd: true

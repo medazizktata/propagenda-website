@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useLayoutEffect, useRef } from 'react';
+import { usePathname } from 'next/navigation';
 import Lenis from 'lenis';
 import { useIsAdminRoute } from '@/hooks/useIsAdminRoute';
 import { gsap, ScrollTrigger } from '@/lib/motion/gsap';
@@ -22,6 +23,37 @@ declare global {
  */
 export function SmoothScroll() {
   const isAdminRoute = useIsAdminRoute();
+  const pathname = usePathname();
+  const prevPathnameRef = useRef(pathname);
+  const poppedRef = useRef(false);
+
+  // Back/forward is left to the browser's own scroll restoration — only link-driven
+  // navigations get reset to the top below.
+  useEffect(() => {
+    const onPop = () => {
+      poppedRef.current = true;
+    };
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+  }, []);
+
+  // A new page opens at the top. Next resets the window scroll on navigation, but this Lenis
+  // instance outlives the route: clicking a link while it was still gliding (the normal case —
+  // a flick, then a click) left its animation targeting the OLD page's position, and its next
+  // tick drove the new page straight back down there (measured: /work -> /work/bnk-group
+  // opened at 2754px and stayed). Stopping it at 0 here — a layout effect, and SmoothScroll
+  // renders before the page, so this lands before any page creates its ScrollTriggers. Hash
+  // links keep landing on their target.
+  useLayoutEffect(() => {
+    if (prevPathnameRef.current === pathname) return;
+    prevPathnameRef.current = pathname;
+    if (poppedRef.current) {
+      poppedRef.current = false;
+      return;
+    }
+    if (window.location.hash) return;
+    window.__lenis?.scrollTo(0, { immediate: true, force: true });
+  }, [pathname]);
 
   useEffect(() => {
     if (isAdminRoute) return;

@@ -10,7 +10,9 @@
  * VISUALS: the Mosaic is a justified-row layout (real aspect ratios pack rows that fill the
  * container width exactly), not CSS-column masonry — columns gave a horizontal image far
  * less height than a vertical neighbour in the column next to it, and also stranded unused
- * column-width as dead space on short galleries (explicit user direction, 2026-09-15).
+ * column-width as dead space on short galleries (explicit user direction, 2026-09-15). It's
+ * also visitor-toggleable between that contained grid and a full-viewport "immersive" mode
+ * (explicit user direction, 2026-09-18) — see the Expand/Compact view button.
  * STORY: gallery[0] duplicates heroImage by design (not a bug); Mosaic starts at gallery[1]
  * (the single-image Feature Image stop was folded into the mosaic outright — one visuals
  * grid, minimal text, per explicit user direction). "What we delivered" was removed
@@ -29,16 +31,17 @@
  * review, the verdict, and DESIGN.md.
  */
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { CSSProperties } from 'react';
 import Link from 'next/link';
+import { Maximize2, Minimize2 } from 'lucide-react';
 import type {
   CaseStudyRecord,
   CaseStudyQuote,
   CaseStudyResult,
   GalleryImage,
 } from '@/types/content';
-import { gsap, registerGsap } from '@/lib/motion/gsap';
+import { gsap, registerGsap, ScrollTrigger } from '@/lib/motion/gsap';
 import { useReducedMotion } from '@/lib/motion/useReducedMotion';
 import { cn } from '@/components/ui/cn';
 import { BrandPattern } from '@/components/ui/BrandPattern';
@@ -134,7 +137,12 @@ export function CaseStudyDetailContent({
           expanded well past the old "More visuals" afterthought treatment. Comes right
           after the one text beat above, not before it. */}
       {gallery.length > 1 && (
-        <CaseStudyGalleryMosaic images={gallery.slice(1)} canOpen={canOpen} onOpenAt={(i) => openAt(i + 1)} />
+        <CaseStudyGalleryMosaic
+          images={gallery.slice(1)}
+          canOpen={canOpen}
+          onOpenAt={(i) => openAt(i + 1)}
+          reducedMotion={reducedMotion}
+        />
       )}
 
       <CaseStudyResults results={study.results} />
@@ -352,41 +360,41 @@ function CaseStudyResults({ results }: { results?: CaseStudyResult[] }) {
 /* ───────────────────────── Visuals grid (real work, shown large, minimal text) ───────────────────────── */
 
 /** One packed row: the images it holds, plus the shared height every one of them renders at. */
-type JustifiedRow = { images: GalleryImage[]; height: number };
+type EditorialRow = { images: GalleryImage[]; height: number; offsetLast: boolean };
+
+// Not a uniform justified grid — a repeating editorial rhythm (one dominant shot, then a
+// pair, then a triptych, then a pair, repeat) so the sequence reads as a curated spread
+// instead of a conventional evenly-packed gallery (explicit user direction, 2026-09-18:
+// "make the grid not conventional layout wise"). The count-per-row is fixed by the pattern,
+// not by however many images happen to fit a target height — that's what makes it
+// deliberate rather than incidental.
+const ROW_PATTERN = [1, 2, 3, 2] as const;
 
 /**
- * Flickr/Google-Photos-style justified layout: pack images into rows at a target height, then
- * stretch (or, capped, shrink) each row's height so its images' *own* aspect ratios exactly
- * fill the container width — no cropping, because width and height both scale together from
- * the real aspect ratio (unlike CSS-column masonry, where each column has one fixed width and
- * a horizontal image in it renders far shorter than a vertical neighbour in the column next to
- * it — explicit user direction, 2026-09-15: "horizontal images have less height than the
- * vertical one, images should match the height and scale images dynamically"). The final,
- * incomplete row is left at the target height rather than stretched, so a lone last image
- * doesn't get blown up to fill the row by itself.
+ * Each row's height is *solved*, not chosen from a target: given the row's fixed image
+ * count and every one of those images' real aspect ratios, height is the one value that
+ * makes them sum to exactly the container width. So a row never needs to crop or distort to
+ * fit — width and height both fall out of the real aspect ratio together (explicit user
+ * direction, 2026-09-15 or "not stretch the images inside", 2026-09-18). Height is clamped
+ * against the viewport only as an outlier guard for one extreme-aspect image, not as the
+ * normal case the way the old target-height masonry needed.
  */
-function computeJustifiedRows(images: GalleryImage[], containerWidth: number, targetHeight: number, gap: number): JustifiedRow[] {
+function buildEditorialRows(images: GalleryImage[], containerWidth: number, gap: number, minH: number, maxH: number): EditorialRow[] {
   if (containerWidth <= 0) return [];
-  const rows: JustifiedRow[] = [];
-  let rowImages: GalleryImage[] = [];
-  let aspectSum = 0;
-
-  for (const image of images) {
-    const aspect = image.width / image.height || 1;
-    rowImages.push(image);
-    aspectSum += aspect;
-    const widthAtTarget = aspectSum * targetHeight + gap * (rowImages.length - 1);
-    if (widthAtTarget >= containerWidth) {
-      const rawHeight = (containerWidth - gap * (rowImages.length - 1)) / aspectSum;
-      // Clamp so one extreme-aspect image can't force a row absurdly short or tall.
-      const height = Math.min(Math.max(rawHeight, targetHeight * 0.55), targetHeight * 1.6);
-      rows.push({ images: rowImages, height });
-      rowImages = [];
-      aspectSum = 0;
-    }
-  }
-  if (rowImages.length > 0) {
-    rows.push({ images: rowImages, height: targetHeight });
+  const rows: EditorialRow[] = [];
+  let i = 0;
+  let patternIndex = 0;
+  while (i < images.length) {
+    const count = Math.min(ROW_PATTERN[patternIndex % ROW_PATTERN.length], images.length - i);
+    const rowImages = images.slice(i, i + count);
+    const aspectSum = rowImages.reduce((sum, img) => sum + (img.width / img.height || 1), 0);
+    const rawHeight = (containerWidth - gap * (count - 1)) / aspectSum;
+    const height = Math.min(Math.max(rawHeight, minH), maxH);
+    // Broken-grid feel on multi-image rows: nudge every other tile down instead of a clean
+    // top-aligned strip.
+    rows.push({ images: rowImages, height, offsetLast: count > 1 && patternIndex % 2 === 1 });
+    i += count;
+    patternIndex += 1;
   }
   return rows;
 }
@@ -395,70 +403,242 @@ function CaseStudyGalleryMosaic({
   images,
   canOpen,
   onOpenAt,
+  reducedMotion,
 }: {
   images: GalleryImage[];
   canOpen: boolean;
   onOpenAt: (i: number) => void;
+  reducedMotion: boolean;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const rowRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [width, setWidth] = useState(0);
+  const [vh, setVh] = useState(0);
+  // Immersive is the default (explicit user direction, 2026-09-18: "for expand view, make
+  // it default") — contained (page gutters, capped width) is the opt-out. Per-view state,
+  // not persisted — a page reload always starts back at immersive.
+  const [mode, setMode] = useState<'contained' | 'immersive'>('immersive');
+  const immersive = mode === 'immersive';
 
-  useEffect(() => {
+  // Measured synchronously during commit (useLayoutEffect), before the browser's first
+  // paint — not via ResizeObserver. A ResizeObserver's first callback fires on its own
+  // async schedule shortly after mount, which on a case-study page landed right around the
+  // visitor's first scroll off the Hero: it drove a re-render that rewrote flexGrow/height
+  // inline styles on every tile below the fold, and that style write colliding with GSAP's
+  // own per-tick getBoundingClientRect reads for the Hero's scrub animation is a textbook
+  // layout-thrash pattern (write, then a forced synchronous read, then a dropped frame) —
+  // the actual cause of the visible stutter scrolling from the Hero into the overview text,
+  // on every project (explicit user direction, 2026-09-18: "clear visual stuttering on
+  // scrolling to main text... after hero section, in all instances"). A plain `resize`
+  // listener only fires on a real viewport change, never on its own schedule, so it can't
+  // land in that window by chance the way the observer did.
+  const didMountRef = useRef(false);
+  useLayoutEffect(() => {
     const el = containerRef.current;
     if (!el) return;
-    const ro = new ResizeObserver((entries) => {
-      const w = entries[0]?.contentRect.width;
-      if (w) setWidth(w);
-    });
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, []);
+    const measure = () => {
+      setWidth(el.getBoundingClientRect().width);
+      setVh(window.innerHeight);
+      // Row heights change substantially between contained and immersive (and on real
+      // resizes) — the parallax ScrollTriggers below cache pixel start/end positions, so
+      // they need telling the layout moved. But NOT on the very first (mount) call: a
+      // page-wide ScrollTrigger.refresh() re-measures every trigger on the page (Hero's
+      // scrub, every sd-reveal element, every parallax row) by reading real layout for each
+      // one, and calling it unconditionally on mount put that one-time, genuinely expensive
+      // synchronous pass right in the window where the visitor's first scroll off the Hero
+      // was landing — a self-inflicted stutter, confirmed via a real frame-timing capture
+      // (a ~950ms stall) that only showed up in a headed browser, not headless (explicit
+      // user direction, 2026-09-18: "performance hit still happens... around scrolling to
+      // this section"). On mount there's nothing stale to refresh yet — the triggers below
+      // are freshly created with correct positions in the same pass. Deferred one frame so a
+      // later refresh (an actual resize or mode toggle) reads the DOM after new heights
+      // have committed and painted.
+      if (didMountRef.current) {
+        requestAnimationFrame(() => ScrollTrigger.refresh());
+      }
+      didMountRef.current = true;
+    };
+    measure();
+
+    let raf = 0;
+    const onResize = () => {
+      if (raf) return;
+      raf = window.requestAnimationFrame(() => {
+        raf = 0;
+        measure();
+      });
+    };
+    window.addEventListener('resize', onResize, { passive: true });
+    return () => {
+      window.removeEventListener('resize', onResize);
+      if (raf) cancelAnimationFrame(raf);
+    };
+    // Re-measures on `mode` too — toggling contained/immersive changes the container's own
+    // width (it un-caps and drops the page gutters), and that new width needs picking up
+    // immediately, not on the next incidental window resize.
+  }, [mode]);
 
   const gap = width < 640 ? 12 : 16;
-  const targetHeight = width < 640 ? 200 : width < 1024 ? 260 : 340;
-  const rows = computeJustifiedRows(images, width, targetHeight, gap);
+  // Contained keeps the old width-tier floor/ceiling; immersive's floor/ceiling key off
+  // viewport height instead, so "fill the screen" actually means big, tall rows, not just
+  // wider ones — a one-image row can run nearly the full viewport height.
+  const minH = immersive ? Math.max(220, Math.round(vh * 0.32)) : width < 640 ? 140 : 200;
+  const maxH = immersive ? Math.round(vh * 0.92) : width < 640 ? 260 : 460;
+  const rows = buildEditorialRows(images, width, gap, minH, maxH);
+
+  // One ScrollTrigger per ROW (not per tile) drives a contained parallax — each image is
+  // rendered taller than its own clipped box and shifts within it as the row crosses the
+  // viewport. This is the same shape of animation the Hero already uses safely (a plain
+  // scrub tied to an element's own natural scroll range): no position:sticky, no pinned
+  // wrapper, nothing structural — that combination was the actual root cause the last time
+  // this page had real scroll jank, not scrub-linked motion itself. Grouping by row instead
+  // of by tile also keeps the total trigger count low on a large gallery (added per explicit
+  // user direction, 2026-09-18: "add parallax effect").
+  //
+  // `will-change: transform` is applied and removed on enter/leave (a generous +/-400px
+  // margin so it lands before the row is actually visible), NOT set as a permanent class —
+  // a real frame-timing capture (headed browser; headless didn't show it, since headless
+  // rendering skips the real compositor cost) found a large, longtask-free stall here, which
+  // is the signature of GPU/compositor cost rather than blocked JS. With immersive as the
+  // new default, a gallery of 6-9 real photos each promoted to `will-change-transform`
+  // unconditionally on mount means that many large GPU layers allocated at once, most of
+  // them off-screen — exactly that cost. Scoping the promotion to only the row(s) actually
+  // near the viewport keeps the concurrently-promoted layer count small regardless of how
+  // many images the gallery has (explicit user direction, 2026-09-18).
+  useEffect(() => {
+    if (reducedMotion) return;
+    const root = containerRef.current;
+    if (!root) return;
+    registerGsap();
+    const ctx = gsap.context(() => {
+      rowRefs.current.forEach((rowEl) => {
+        if (!rowEl) return;
+        const imgs = rowEl.querySelectorAll<HTMLElement>('[data-parallax-img]');
+        if (!imgs.length) return;
+        const promote = () => imgs.forEach((img) => { img.style.willChange = 'transform'; });
+        const demote = () => imgs.forEach((img) => { img.style.willChange = 'auto'; });
+        gsap.fromTo(
+          imgs,
+          { yPercent: -9 },
+          {
+            yPercent: 9,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: rowEl,
+              start: 'top bottom+=400',
+              end: 'bottom top-=400',
+              scrub: true,
+              onEnter: promote,
+              onEnterBack: promote,
+              onLeave: demote,
+              onLeaveBack: demote,
+            },
+          },
+        );
+      });
+    }, root);
+    return () => ctx.revert();
+    // Row *count* is stable across contained/immersive and across resizes (the editorial
+    // pattern depends only on how many images there are, never on container width), so this
+    // only needs to re-run when the actual image set changes.
+  }, [reducedMotion, images]);
 
   // A flat running index so PhotoSwipe indices (into the un-rowed `images` array) stay correct.
   let flatIndex = 0;
 
   return (
-    <section className="relative bg-charcoal px-gutter-m py-20 lg:px-gutter-d lg:py-28">
-      <div className="mx-auto max-w-[110rem]">
+    <section className="relative bg-charcoal py-20 lg:py-28">
+      <div className="mx-auto mb-6 flex max-w-[110rem] items-center justify-end px-gutter-m lg:px-gutter-d">
         {/* No visible label — the grid is the page's dominant section and leads right after
             the Hero (explicit user direction), it doesn't need to announce itself as
             secondary "more" content. Kept as an sr-only heading for wayfinding/a11y. */}
         <h2 className="sr-only">Project visuals</h2>
-        <div ref={containerRef} className="flex flex-col gap-3 md:gap-4">
-          {rows.map((row, ri) => (
-            <div key={ri} className="flex gap-3 md:gap-4">
-              {row.images.map((image) => {
-                const i = flatIndex++;
-                const tileWidth = row.height * ((image.width / image.height) || 1);
-                return (
-                  <button
-                    key={`${image.alt}-${i}`}
-                    type="button"
-                    onClick={canOpen ? () => onOpenAt(i) : undefined}
-                    disabled={!canOpen}
-                    aria-label={canOpen ? `Open image: ${image.alt}` : image.alt}
-                    style={{ flexGrow: tileWidth, flexBasis: 0, height: row.height }}
-                    className={cn(
-                      'group/tile sd-reveal block overflow-hidden rounded-xl bg-white/[0.03] text-left',
-                      canOpen ? 'cursor-zoom-in' : 'cursor-default',
-                    )}
-                  >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={image.src}
-                      alt={image.alt}
-                      className="h-full w-full object-cover transition-transform duration-[1200ms] ease-out hover-fine:group-hover/tile:scale-[1.03]"
-                    />
-                  </button>
-                );
-              })}
-            </div>
-          ))}
-        </div>
+        {/* Immersive (full viewport, big rows) is the default; contained is the opt-out back
+            to the page-gutter grid — a visitor-toggleable choice, not a fixed layout
+            (explicit user direction, 2026-09-18). */}
+        <button
+          type="button"
+          onClick={() => setMode((m) => (m === 'contained' ? 'immersive' : 'contained'))}
+          aria-pressed={immersive}
+          className={cn(
+            'flex items-center gap-2 rounded-full border border-white/15 px-4 py-2 font-sans text-sm font-medium text-white/70 transition-colors duration-300',
+            'hover-fine:hover:border-white/30 hover-fine:hover:text-white',
+            immersive && 'border-white/30 text-white',
+          )}
+        >
+          {immersive ? <Minimize2 className="size-4" aria-hidden /> : <Maximize2 className="size-4" aria-hidden />}
+          {immersive ? 'Compact view' : 'Expand view'}
+        </button>
+      </div>
+      <div
+        ref={containerRef}
+        className={cn(
+          'flex flex-col gap-3 transition-[padding] duration-300 md:gap-5',
+          // True edge-to-edge in immersive mode — "fill out the entire screen", not a
+          // slightly-wider contained grid, so no side padding at all here. w-full (not
+          // w-screen) is enough and avoids w-screen's classic scrollbar-width overflow bug:
+          // this section carries no horizontal padding of its own (unlike the header row
+          // above it), so its full width already reaches the true viewport edges, same as
+          // the Hero/Story sections' own full-bleed backgrounds.
+          immersive ? 'w-full px-0' : 'mx-auto max-w-[110rem] px-gutter-m lg:px-gutter-d',
+        )}
+      >
+        {rows.map((row, ri) => (
+          <div
+            key={ri}
+            ref={(el) => {
+              rowRefs.current[ri] = el;
+            }}
+            className="flex gap-3 md:gap-5"
+          >
+            {row.images.map((image, ii) => {
+              const i = flatIndex++;
+              const tileWidth = row.height * ((image.width / image.height) || 1);
+              // Every other tile on a multi-image row sits lower than its neighbours — a
+              // broken, editorial skyline instead of a clean top-aligned strip (explicit
+              // user direction, 2026-09-18: "make the grid not conventional layout wise").
+              const dropped = row.offsetLast && ii % 2 === 1;
+              return (
+                <button
+                  key={`${image.alt}-${i}`}
+                  type="button"
+                  onClick={canOpen ? () => onOpenAt(i) : undefined}
+                  disabled={!canOpen}
+                  aria-label={canOpen ? `Open image: ${image.alt}` : image.alt}
+                  style={{
+                    flexGrow: tileWidth,
+                    flexBasis: 0,
+                    height: row.height,
+                    marginTop: dropped ? row.height * 0.08 : undefined,
+                  }}
+                  className={cn(
+                    'group/tile relative block overflow-hidden rounded-xl bg-white/[0.03] text-left',
+                    canOpen ? 'cursor-zoom-in' : 'cursor-default',
+                  )}
+                >
+                  {/* Rendered ~26% taller than its own box and shifted by the parallax tween
+                      above — the box itself is always sized to the image's real aspect
+                      ratio (never stretched or distorted), the extra height is overscan so
+                      the shift never reveals a gap at the top or bottom edge, the same
+                      trade-off every parallax image on the web makes (explicit user
+                      direction, 2026-09-18: "make sure to not stretch the images inside" —
+                      read as never distort, not zero-crop, since a *contained* shift is
+                      mechanically impossible without a little overscan).
+                      No static will-change class here on purpose — it's toggled on the
+                      element by the row's ScrollTrigger enter/leave callbacks above, only
+                      while the row is actually near the viewport. */}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={image.src}
+                    alt={image.alt}
+                    data-parallax-img
+                    className="absolute inset-x-0 -top-[13%] h-[126%] w-full object-cover"
+                  />
+                </button>
+              );
+            })}
+          </div>
+        ))}
       </div>
     </section>
   );

@@ -196,7 +196,7 @@ export function createCubeScene(options: CubeSceneOptions): CubeSceneHandle {
   // ACES cannot reproduce; that colourway is gone, but Neutral is still the right call for the
   // panel highlights alone.)
   renderer.toneMapping = THREE.NeutralToneMapping;
-  renderer.toneMappingExposure = 1;
+  renderer.toneMappingExposure = 1.9;
   renderer.setClearColor(0x000000, 1);
 
   let width = Math.max(1, container.clientWidth);

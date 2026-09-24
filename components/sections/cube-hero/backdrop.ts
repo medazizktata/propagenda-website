@@ -123,7 +123,7 @@ export function createBackdrop(): Backdrop {
         // subject occupies far more of a phone frame, so the same spill turns the whole page
         // brown instead of pooling under one object.
         float warmScale = mix(0.55, 1.0, smoothstep(0.6, 1.2, uAspect));
-        color += uGlow * (pool * 0.06 + spill * 0.05) * warmScale;
+        color += uGlow * (pool * 0.024 + spill * 0.022) * warmScale;
 
         // ── The cool rake, upper left. Same source as the environment's fill panel, so the blue
         // edge on a cube's shadow side has something visible to have come from.

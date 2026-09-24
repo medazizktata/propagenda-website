@@ -37,8 +37,8 @@ export const STUDIO = {
 
   /** Screen fraction where the cyclorama curves from wall to floor. */
   horizon: 0.27,
-  wallTop: '#262523',
-  wallBase: '#1c1b1a',
-  floorNear: '#0e0d0c',
-  floorBase: '#171615',
+  wallTop: '#121216',
+  wallBase: '#0d0d11',
+  floorNear: '#040405',
+  floorBase: '#0a0a0d',
 } as const;

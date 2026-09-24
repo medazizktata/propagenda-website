@@ -26,12 +26,13 @@ export interface ServiceDetailConfig {
 /**
  * Per-service presentation for the detail pages. Content (copy, scope, tiers, etc.) lives in
  * `content/services`; this is only art-direction + the authored signature data for services
- * whose record carries no built-in module. Hero images are TEMPORARY portfolio maps until
- * real /images/services assets land.
+ * whose record carries no built-in module. Hero images are real, watermarked work (case-study
+ * images in /images/work, film frames in /images/about and /images/services), except websites,
+ * which uses a stock laptop photo (credited inline). Public Relations keeps the pattern hero.
  */
 export const serviceDetailConfig: Record<ServiceSlug, ServiceDetailConfig> = {
   'branding-visual-identity': {
-    heroImage: '/images/portfolio/work-sanapex.webp',
+    heroImage: '/images/work/serr-el-oud/hero.webp',
     ctaLine1: 'Ready to build',
     ctaLine2: 'your identity.',
     approach: [
@@ -106,7 +107,7 @@ export const serviceDetailConfig: Record<ServiceSlug, ServiceDetailConfig> = {
     ],
   },
   'online-offline-marketing': {
-    heroImage: '/images/portfolio/work-ghaftree.webp',
+    heroImage: '/images/work/al-manazel-al-haditha/gallery-7.webp',
     ctaLine1: 'Ready to',
     ctaLine2: 'grow.',
     faqs: [
@@ -137,7 +138,9 @@ export const serviceDetailConfig: Record<ServiceSlug, ServiceDetailConfig> = {
     ],
   },
   websites: {
-    heroImage: '/images/portfolio/work-quickcars.webp',
+    // Stock (no text to fight the H1; our site screenshots are all type): Unsplash License, photo
+    // by Carlos Muza (unsplash.com/photos/hpjSkU2UYSU).
+    heroImage: '/images/about/performance-2.webp',
     ctaLine1: 'Ready to',
     ctaLine2: 'launch.',
     process: [
@@ -175,7 +178,7 @@ export const serviceDetailConfig: Record<ServiceSlug, ServiceDetailConfig> = {
     ],
   },
   'mobile-applications': {
-    heroImage: '/images/portfolio/work-food.webp',
+    heroImage: '/images/services/mobile-applications/zealerz-app-splash.webp',
     ctaLine1: 'Ready to ship',
     ctaLine2: 'your app.',
     process: [
@@ -213,7 +216,7 @@ export const serviceDetailConfig: Record<ServiceSlug, ServiceDetailConfig> = {
     ],
   },
   events: {
-    heroImage: '/images/portfolio/work-events.webp',
+    heroImage: '/images/about/events-1.webp',
     ctaLine1: 'Planning an',
     ctaLine2: 'event?',
     faqs: [
@@ -244,7 +247,7 @@ export const serviceDetailConfig: Record<ServiceSlug, ServiceDetailConfig> = {
     ],
   },
   'photography-videography': {
-    heroImage: '/images/portfolio/work-food.webp',
+    heroImage: '/images/services/photography-videography/bts-camera-check.webp',
     ctaLine1: 'Ready to',
     ctaLine2: 'shoot.',
     disciplines: [

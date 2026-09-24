@@ -56,6 +56,12 @@ export interface GalleryImage {
   alt: string;
   width: number;
   height: number;
+  /** Optional tile caption (e.g. the client name) — service "Selected work" grids. */
+  caption?: string;
+  /** Optional link target for the tile (a case study or the film library). */
+  href?: string;
+  /** Optional CSS object-position for the tile crop, e.g. "50% 100%". */
+  position?: string;
 }
 
 export interface BrandingTier {
@@ -66,6 +72,8 @@ export interface BrandingTier {
 export interface RelatedLink {
   label: string;
   href: string;
+  /** Optional card image; defaults to the case study's hero (/images/work/<slug>/hero.webp). */
+  image?: string;
 }
 
 export interface ServiceCta {

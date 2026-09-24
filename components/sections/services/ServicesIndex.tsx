@@ -99,6 +99,8 @@ export function ServicesIndex({ hubCards }: { hubCards: ServiceHubCard[] }) {
                   key={card.slug}
                   src={card.preview}
                   alt=""
+                  loading="lazy"
+                  decoding="async"
                   className={cn(
                     'absolute inset-0 h-full w-full object-cover will-change-transform',
                     active === i ? 'opacity-100' : 'opacity-0',

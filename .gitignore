@@ -83,3 +83,6 @@ reports/lhci/
 # throwaway per-session artifacts, not durable project config.
 .impeccable/review/
 .impeccable/hook.cache.json
+
+# watermark pipeline build output (tools/watermark/process-inbox.cjs)
+/.watermark-out/

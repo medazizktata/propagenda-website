@@ -155,6 +155,13 @@ export const aboutContent = {
   ],
 
   /** OLD look — service rows with swappable image collages. */
+  // Service collages (updated 2026-09-24, explicit user direction: "update assets in here, use
+  // pics from web if needs to be"). Real work first: Branding / Marketing use the watermarked
+  // case-study images in /images/work; Photo & Video (and Influencer marketing) are frames from the
+  // films, watermarked; Website design, Landing pages and UX/UI are screenshots of this site.
+  // Stock only where no genuine work exists — free under the Unsplash License
+  // (unsplash.com/license): Performance optimization by Luke Chesser, Carlos Muza, Stephen Dawson;
+  // Ongoing management by Christopher Gower, Nubelson Fernandes, Compagnons.
   services: {
     label: "Our services",
     items: [
@@ -167,49 +174,49 @@ export const aboutContent = {
           {
             label: "Logo design",
             images: [
-              "/images/portfolio/work-sanapex.webp",
-              "/images/portfolio/work-ghaftree.webp",
-              "/images/portfolio/work-restaurant.webp",
+              "/images/work/alateeq-cafe/hero.webp",
+              "/images/work/serr-el-oud/hero.webp",
+              "/images/work/lets-ad/hero.webp",
             ],
           },
           {
             label: "Visual identity systems",
             images: [
-              "/images/portfolio/work-ghaftree.webp",
-              "/images/portfolio/work-sanapex.webp",
-              "/images/portfolio/work-quickcars.webp",
+              "/images/work/2k-shopping/gallery-4.webp",
+              "/images/work/laya-inc/gallery-3.webp",
+              "/images/work/jordanian-social-club/gallery-4.webp",
             ],
           },
           {
             label: "Brand colors & typography",
             images: [
-              "/images/portfolio/work-restaurant.webp",
-              "/images/portfolio/work-food.webp",
-              "/images/portfolio/work-sanapex.webp",
+              "/images/work/sealand/gallery-3.webp",
+              "/images/work/leoz/gallery-2.webp",
+              "/images/work/lets-ad/gallery-2.webp",
             ],
           },
           {
             label: "Company profiles",
             images: [
-              "/images/portfolio/work-quickcars.webp",
-              "/images/portfolio/work-events.webp",
-              "/images/portfolio/work-ghaftree.webp",
+              "/images/work/ayoub-and-co/gallery-3.webp",
+              "/images/work/dhc-luxury-real-estate/gallery-1.webp",
+              "/images/work/vid/gallery-2.webp",
             ],
           },
           {
             label: "Brand guidelines",
             images: [
-              "/images/portfolio/work-sanapex.webp",
-              "/images/portfolio/work-events.webp",
-              "/images/portfolio/work-food.webp",
+              "/images/work/al-manazel-al-haditha/gallery-1.webp",
+              "/images/work/zealerz/gallery-1.webp",
+              "/images/work/sterling-cars/gallery-2.webp",
             ],
           },
           {
             label: "Stationery",
             images: [
-              "/images/portfolio/work-ghaftree.webp",
-              "/images/portfolio/work-restaurant.webp",
-              "/images/portfolio/work-events.webp",
+              "/images/work/clemson-porter-properties/hero.webp",
+              "/images/work/bnk-group/gallery-2.webp",
+              "/images/work/laya-inc/gallery-1.webp",
             ],
           },
         ],
@@ -223,41 +230,41 @@ export const aboutContent = {
           {
             label: "Website design & development",
             images: [
-              "/images/portfolio/work-quickcars.webp",
-              "/images/portfolio/work-sanapex.webp",
-              "/images/portfolio/work-ghaftree.webp",
+              "/images/about/web-design-1.webp",
+              "/images/about/web-design-2.webp",
+              "/images/about/web-design-3.webp",
             ],
           },
           {
             label: "Landing pages",
             images: [
-              "/images/portfolio/work-sanapex.webp",
-              "/images/portfolio/work-quickcars.webp",
-              "/images/portfolio/work-food.webp",
+              "/images/about/landing-1.webp",
+              "/images/about/landing-2.webp",
+              "/images/about/landing-3.webp",
             ],
           },
           {
             label: "UX/UI",
             images: [
-              "/images/portfolio/work-ghaftree.webp",
-              "/images/portfolio/work-quickcars.webp",
-              "/images/portfolio/work-restaurant.webp",
+              "/images/about/ux-ui-1.webp",
+              "/images/about/ux-ui-2.webp",
+              "/images/about/ux-ui-3.webp",
             ],
           },
           {
             label: "Performance optimization",
             images: [
-              "/images/portfolio/work-quickcars.webp",
-              "/images/portfolio/work-events.webp",
-              "/images/portfolio/work-sanapex.webp",
+              "/images/about/performance-1.webp",
+              "/images/about/performance-2.webp",
+              "/images/about/performance-3.webp",
             ],
           },
           {
             label: "Ongoing management",
             images: [
-              "/images/portfolio/work-food.webp",
-              "/images/portfolio/work-ghaftree.webp",
-              "/images/portfolio/work-quickcars.webp",
+              "/images/about/management-1.webp",
+              "/images/about/management-2.webp",
+              "/images/about/management-3.webp",
             ],
           },
         ],
@@ -271,49 +278,49 @@ export const aboutContent = {
           {
             label: "Brand strategy",
             images: [
-              "/images/portfolio/work-food.webp",
-              "/images/portfolio/work-restaurant.webp",
-              "/images/portfolio/work-events.webp",
+              "/images/work/2k-shopping/gallery-1.webp",
+              "/images/work/leoz/hero.webp",
+              "/images/work/clemson-porter-properties/gallery-1.webp",
             ],
           },
           {
             label: "Digital campaigns",
             images: [
-              "/images/portfolio/work-restaurant.webp",
-              "/images/portfolio/work-food.webp",
-              "/images/portfolio/work-quickcars.webp",
+              "/images/work/dose-pharmacy/gallery-1.webp",
+              "/images/work/cu-optics/gallery-1.webp",
+              "/images/work/bil-events/gallery-5.webp",
             ],
           },
           {
             label: "Social media management",
             images: [
-              "/images/portfolio/work-events.webp",
-              "/images/portfolio/work-food.webp",
-              "/images/portfolio/work-sanapex.webp",
+              "/images/work/vid/gallery-4.webp",
+              "/images/work/zealerz/gallery-3.webp",
+              "/images/work/leoz/gallery-5.webp",
             ],
           },
           {
             label: "Content marketing",
             images: [
-              "/images/portfolio/work-ghaftree.webp",
-              "/images/portfolio/work-restaurant.webp",
-              "/images/portfolio/work-food.webp",
+              "/images/work/bnk-group/gallery-3.webp",
+              "/images/work/sterling-cars/gallery-5.webp",
+              "/images/work/alla-doresu/gallery-5.webp",
             ],
           },
           {
             label: "Influencer marketing",
             images: [
-              "/images/portfolio/work-events.webp",
-              "/images/portfolio/work-sanapex.webp",
-              "/images/portfolio/work-restaurant.webp",
+              "/images/about/influencer-1.webp",
+              "/images/about/influencer-2.webp",
+              "/images/about/influencer-3.webp",
             ],
           },
           {
             label: "Digital ads",
             images: [
-              "/images/portfolio/work-quickcars.webp",
-              "/images/portfolio/work-food.webp",
-              "/images/portfolio/work-events.webp",
+              "/images/work/mm-event-management/gallery-4.webp",
+              "/images/work/arabian-business-academy/gallery-1.webp",
+              "/images/work/2k-shopping/hero.webp",
             ],
           },
         ],
@@ -327,49 +334,49 @@ export const aboutContent = {
           {
             label: "Product photography",
             images: [
-              "/images/portfolio/work-food.webp",
-              "/images/portfolio/work-restaurant.webp",
-              "/images/portfolio/work-ghaftree.webp",
+              "/images/about/product-1.webp",
+              "/images/about/product-2.webp",
+              "/images/about/product-3.webp",
             ],
           },
           {
             label: "Lifestyle & editorial",
             images: [
-              "/images/portfolio/work-sanapex.webp",
-              "/images/portfolio/work-ghaftree.webp",
-              "/images/portfolio/work-food.webp",
+              "/images/about/lifestyle-1.webp",
+              "/images/about/lifestyle-2.webp",
+              "/images/about/lifestyle-3.webp",
             ],
           },
           {
             label: "Event coverage",
             images: [
-              "/images/portfolio/work-events.webp",
-              "/images/portfolio/work-restaurant.webp",
-              "/images/portfolio/work-sanapex.webp",
+              "/images/about/events-1.webp",
+              "/images/about/events-2.webp",
+              "/images/about/events-3.webp",
             ],
           },
           {
             label: "Cinematic video",
             images: [
-              "/images/portfolio/work-quickcars.webp",
-              "/images/portfolio/work-events.webp",
-              "/images/portfolio/work-food.webp",
+              "/images/about/cinematic-1.webp",
+              "/images/about/cinematic-2.webp",
+              "/images/about/cinematic-3.webp",
             ],
           },
           {
             label: "Motion graphics",
             images: [
-              "/images/portfolio/work-ghaftree.webp",
-              "/images/portfolio/work-quickcars.webp",
-              "/images/portfolio/work-sanapex.webp",
+              "/images/about/motion-1.webp",
+              "/images/about/motion-2.webp",
+              "/images/about/motion-3.webp",
             ],
           },
           {
             label: "Live streaming",
             images: [
-              "/images/portfolio/work-events.webp",
-              "/images/portfolio/work-food.webp",
-              "/images/portfolio/work-quickcars.webp",
+              "/images/about/live-1.webp",
+              "/images/about/live-2.webp",
+              "/images/about/live-3.webp",
             ],
           },
         ],
@@ -378,6 +385,11 @@ export const aboutContent = {
   },
 
   /** OLD look — testimonial marquee. */
+  // Only brands with a published case study on /work (explicit user direction, 2026-09-24): the
+  // Ghaf Tree card was removed (no case study). `logo` must be a transparent file — the card
+  // renders it as a silhouette, so an opaque logo becomes a solid block; omit it to hide the logo
+  // (Quick Cars has no clean transparent logo). p2p-motors-mark.webp is the P2P logo cropped
+  // clear of a stray fragment in the original file.
   testimonials: {
     label: "What clients say",
     items: [
@@ -387,32 +399,19 @@ export const aboutContent = {
         name: "Omar Al Rashid",
         role: "Founder, Sanapex Interiors",
         logo: "/images/clients/sanapex-interiors.png",
-        accent: "orange",
-      },
-      {
-        quote:
-          "Clear strategy, sharp execution. From identity to campaigns, everything stayed coherent, and people actually noticed.",
-        name: "Sara Mansoor",
-        role: "Marketing Lead, Ghaf Tree",
-        logo: "/images/clients/ghaf-tree.png",
-        accent: "white",
-        featured: true,
       },
       {
         quote:
           "They don't do filler. Briefs get answered with work that performs, online and offline, without the agency theatre.",
         name: "Khalid Farouk",
-        role: "Operations, Quick Car",
-        logo: "/images/clients/quick-car.png",
-        accent: "muted",
+        role: "Operations, Quick Cars",
       },
       {
         quote:
           "End-to-end partners. Brand, content, and launches handled with the same standard: honest, invested, and on time.",
         name: "Nour Haddad",
         role: "Brand Manager, P2P Motors",
-        logo: "/images/clients/p2p-motors.webp",
-        accent: "orange",
+        logo: "/images/clients/p2p-motors-mark.webp",
       },
       {
         quote:
@@ -420,7 +419,6 @@ export const aboutContent = {
         name: "Lina Kassem",
         role: "Director, Zealerz",
         logo: "/images/clients/zealerz.png",
-        accent: "white",
       },
     ],
   },

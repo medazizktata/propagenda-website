@@ -1,4 +1,10 @@
-/** Seed data, also the runtime fallback when D1 isn't reachable. */
+/**
+ * Seed data, also the runtime fallback when D1 isn't reachable.
+ *
+ * `gallery` feeds each service page's "Selected work" grid and `relatedWork` its related-work
+ * cards: real, watermarked client work (public/images/work, public/images/services, and film
+ * frames in public/images/about). Kept in sync with d1/pending/2026-09-24-service-media.sql.
+ */
 import type { ServiceRecord } from '@/types/content';
 
 function service(
@@ -52,16 +58,17 @@ export const brandingVisualIdentity = service(
       },
     ],
     gallery: [
-      { src: '/images/services/branding/gallery-01.jpg', alt: 'Brand identity showcase', width: 1600, height: 1200 },
-      { src: '/images/services/branding/gallery-02.jpg', alt: 'Business card design', width: 1600, height: 1200 },
-      { src: '/images/services/branding/gallery-03.jpg', alt: 'Letterhead stationery', width: 1600, height: 1200 },
-      { src: '/images/services/branding/gallery-04.jpg', alt: 'Brand guidelines document', width: 1600, height: 1200 },
-      { src: '/images/services/branding/gallery-05.jpg', alt: 'Logo applications', width: 1600, height: 1200 },
-      { src: '/images/services/branding/gallery-06.jpg', alt: 'Visual identity system', width: 1600, height: 1200 },
+      { src: '/images/work/chicky-fighter/gallery-2.webp', alt: 'Chicky Fighter takeaway meal boxes in red and yellow with the Chicky logo', width: 2000, height: 1500, caption: 'Chicky Fighter', href: '/work/chicky-fighter' },
+      { src: '/images/work/2k-shopping/gallery-2.webp', alt: '2K Shopping insulated delivery bags and backpack in lime green with the logo', width: 1920, height: 1080, caption: '2K Shopping', href: '/work/2k-shopping' },
+      { src: '/images/work/leoz/hero.webp', alt: 'Leoz Gents Salon storefront sign at night with the gold lion-head mark', width: 1920, height: 1080, caption: 'Leoz Gents Salon', href: '/work/leoz' },
+      { src: '/images/work/dose-pharmacy/gallery-5.webp', alt: 'Dose Pharmacy branded bottles in charcoal and pink with the Dose mark', width: 1920, height: 1080, caption: 'Dose Pharmacy', href: '/work/dose-pharmacy' },
+      { src: '/images/work/shawarma-asaj/hero.webp', alt: 'Shawerma A\'saj takeaway box in red and kraft with the brand wordmark', width: 1600, height: 1067, caption: 'Shawerma A\'saj', href: '/work/shawarma-asaj' },
+      { src: '/images/work/laya-inc/gallery-5.webp', alt: 'Laya Inc black staff polo shirts with the logo and brand pattern', width: 1920, height: 1080, caption: 'Laya Inc', href: '/work/laya-inc' },
     ],
     relatedWork: [
       { label: 'Sanapex Interiors', href: '/work/sanapex-interiors' },
       { label: 'P2P Motors', href: '/work/p2p-motors' },
+      { label: 'Clemson Porter Properties', href: '/work/clemson-porter-properties' },
     ],
   },
 );
@@ -82,12 +89,17 @@ export const publicRelations = service(
       'Credibility campaigns',
     ],
     gallery: [
-      { src: '/images/services/pr/gallery-01.jpg', alt: 'Influencer collaboration', width: 1600, height: 1200 },
-      { src: '/images/services/pr/gallery-02.jpg', alt: 'Celebrity brand partnership', width: 1600, height: 1200 },
-      { src: '/images/services/pr/gallery-03.jpg', alt: 'Blogger outreach campaign', width: 1600, height: 1200 },
-      { src: '/images/services/pr/gallery-04.jpg', alt: 'Social media PR samples', width: 1600, height: 1200 },
-      { src: '/images/services/pr/gallery-05.jpg', alt: 'BIL Events PR coverage', width: 1600, height: 1200 },
-      { src: '/images/services/pr/gallery-06.jpg', alt: 'Dr. Shifa media campaign', width: 1600, height: 1200 },
+      { src: '/images/work/cu-optics/gallery-1.webp', alt: 'C U Optics Instagram campaign grid with model close-ups and sunglasses product shots', width: 1600, height: 1600, caption: 'C U Optics', href: '/work/cu-optics' },
+      { src: '/images/work/leoz/gallery-5.webp', alt: 'Leoz Gents Salon "Think Again" social ad templates showing a barber at work', width: 1920, height: 1080, caption: 'Leoz Gents Salon', href: '/work/leoz', position: '50% 100%' },
+      { src: '/images/work/sterling-cars/gallery-5.webp', alt: 'Sterling Cars socials imagery style guide with cinematic luxury-car photography', width: 1920, height: 1080, caption: 'Sterling Cars', href: '/work/sterling-cars' },
+      { src: '/images/work/cu-optics/gallery-2.webp', alt: 'C U Optics Instagram story: a model in aviator-style sunglasses in a cyan duotone', width: 1000, height: 1790, caption: 'C U Optics', href: '/work/cu-optics', position: '50% 15%' },
+      { src: '/images/work/vid/gallery-4.webp', alt: 'VID Instagram post and story templates featuring interior projects', width: 1920, height: 1080, caption: 'VID', href: '/work/vid', position: '100% 50%' },
+      { src: '/images/work/bnk-group/gallery-3.webp', alt: 'The BNK Group social posts presenting luxury interior designs', width: 1920, height: 1080, caption: 'The BNK Group', href: '/work/bnk-group' },
+    ],
+    relatedWork: [
+      { label: 'The BNK Group', href: '/work/bnk-group' },
+      { label: 'C U Optics', href: '/work/cu-optics' },
+      { label: 'BIL Events', href: '/work/bil-events' },
     ],
   },
 );
@@ -117,12 +129,17 @@ export const onlineOfflineMarketing = service(
       'Digital Ads',
     ],
     gallery: [
-      { src: '/images/services/marketing/gallery-01.jpg', alt: 'Social media campaign', width: 1600, height: 1200 },
-      { src: '/images/services/marketing/gallery-02.jpg', alt: 'Digital marketing creative', width: 1600, height: 1200 },
-      { src: '/images/services/marketing/gallery-03.jpg', alt: 'Content marketing assets', width: 1600, height: 1200 },
-      { src: '/images/services/marketing/gallery-04.jpg', alt: 'Influencer collaboration', width: 1600, height: 1200 },
-      { src: '/images/services/marketing/gallery-05.jpg', alt: 'Offline marketing materials', width: 1600, height: 1200 },
-      { src: '/images/services/marketing/gallery-06.jpg', alt: 'Campaign performance overview', width: 1600, height: 1200 },
+      { src: '/images/work/dose-pharmacy/gallery-8.webp', alt: 'Dose Pharmacy storefront with illuminated signage on a two-storey building', width: 1920, height: 1080, caption: 'Dose Pharmacy', href: '/work/dose-pharmacy' },
+      { src: '/images/work/clemson-porter-properties/gallery-1.webp', alt: 'Clemson Porter Properties rooftop billboard reading "Invest smart, live fine"', width: 1920, height: 1080, caption: 'Clemson Porter Properties', href: '/work/clemson-porter-properties' },
+      { src: '/images/work/arabian-business-academy/gallery-3.webp', alt: 'Arabian Business Academy roll-up banner in navy and gold', width: 1911, height: 1911, caption: 'Arabian Business Academy', href: '/work/arabian-business-academy' },
+      { src: '/images/work/zealerz/gallery-3.webp', alt: 'Zealerz social media style guide: Instagram post templates for LPG delivery', width: 3840, height: 2160, caption: 'Zealerz', href: '/work/zealerz' },
+      { src: '/images/work/leoz/gallery-6.webp', alt: 'Leoz Gents Salon black feather banner flags with the lion-head logo', width: 1920, height: 1080, caption: 'Leoz Gents Salon', href: '/work/leoz' },
+      { src: '/images/work/cu-optics/gallery-1.webp', alt: 'C U Optics Instagram grid campaign in a cyan palette', width: 1600, height: 1600, caption: 'C U Optics', href: '/work/cu-optics' },
+    ],
+    relatedWork: [
+      { label: '2K Shopping', href: '/work/2k-shopping' },
+      { label: 'Arabian Business Academy', href: '/work/arabian-business-academy' },
+      { label: 'C U Optics', href: '/work/cu-optics' },
     ],
   },
 );
@@ -143,14 +160,17 @@ export const websites = service(
       'Ongoing management',
     ],
     gallery: [
-      { src: '/images/services/websites/gallery-01.jpg', alt: 'Website homepage design', width: 1600, height: 1200 },
-      { src: '/images/services/websites/gallery-02.jpg', alt: 'Landing page layout', width: 1600, height: 1200 },
-      { src: '/images/services/websites/gallery-03.jpg', alt: 'UX/UI interface', width: 1600, height: 1200 },
-      { src: '/images/services/websites/gallery-04.jpg', alt: 'Sanapex web deliverables', width: 1600, height: 1200 },
-      { src: '/images/services/websites/gallery-05.jpg', alt: 'Mobile responsive views', width: 1600, height: 1200 },
-      { src: '/images/services/websites/gallery-06.jpg', alt: 'Web performance optimization', width: 1600, height: 1200 },
+      { src: '/images/about/landing-3.webp', alt: 'Propagenda website: the work page hero reading "We make it move"', width: 1200, height: 900, caption: 'Propagenda.com', href: '/' },
+      { src: '/images/about/web-design-3.webp', alt: 'Propagenda website: the Sealand case study page', width: 1200, height: 900, caption: 'Propagenda.com', href: '/', position: '50% 15%' },
+      { src: '/images/about/web-design-1.webp', alt: 'Propagenda website: the home page hero', width: 1600, height: 1000, caption: 'Propagenda.com', href: '/' },
+      { src: '/images/about/ux-ui-3.webp', alt: 'Propagenda website mobile layout: the contact page', width: 1200, height: 900, caption: 'Propagenda.com', href: '/' },
+      { src: '/images/about/landing-1.webp', alt: 'Propagenda website: the services hero reading "The whole brand, one studio"', width: 1600, height: 1000, caption: 'Propagenda.com', href: '/' },
+      { src: '/images/about/ux-ui-2.webp', alt: 'Propagenda website on phones: the work grid and a case study', width: 1200, height: 900, caption: 'Propagenda.com', href: '/' },
     ],
-    relatedWork: [{ label: 'Zealerz App & Web', href: '/work/zealerz' }],
+    relatedWork: [
+      { label: 'Sanapex Interiors', href: '/work/sanapex-interiors' },
+      { label: 'Zealerz', href: '/work/zealerz' },
+    ],
   },
 );
 
@@ -169,6 +189,16 @@ export const mobileApplications = service(
       'API & backend integration',
       'App Store & Play Store launch',
       'Maintenance & updates',
+    ],
+    gallery: [
+      { src: '/images/work/zealerz/hero.webp', alt: 'Zealerz brand board with the LPG delivery app screens on two phones', width: 1241, height: 1754, caption: 'Zealerz', href: '/work/zealerz', position: '50% 100%' },
+      { src: '/images/services/mobile-applications/zealerz-app-launch-trailer.webp', alt: 'Zealerz mobile billboard trailer promoting the LPG delivery app with App Store and Google Play badges', width: 1600, height: 1000, caption: 'Zealerz', href: '/work/zealerz' },
+      { src: '/images/work/zealerz/gallery-3.webp', alt: 'Zealerz Instagram templates promoting the delivery app', width: 3840, height: 2160, caption: 'Zealerz', href: '/work/zealerz' },
+      { src: '/images/work/2k-shopping/gallery-4.webp', alt: '2K Shopping app screen on a phone beside branded paper bags', width: 1920, height: 1080, caption: '2K Shopping', href: '/work/2k-shopping' },
+    ],
+    relatedWork: [
+      { label: 'Zealerz', href: '/work/zealerz', image: '/images/work/zealerz/gallery-4.webp' },
+      { label: '2K Shopping', href: '/work/2k-shopping' },
     ],
   },
 );
@@ -197,14 +227,17 @@ export const events = service(
       'Social media marketing',
     ],
     gallery: [
-      { src: '/images/services/events/gallery-01.jpg', alt: 'Conference event branding', width: 1600, height: 1200 },
-      { src: '/images/services/events/gallery-02.jpg', alt: 'BIL Events campaign', width: 1600, height: 1200 },
-      { src: '/images/services/events/gallery-03.jpg', alt: '3L Events branding', width: 1600, height: 1200 },
-      { src: '/images/services/events/gallery-04.jpg', alt: 'Event marketing materials', width: 1600, height: 1200 },
-      { src: '/images/services/events/gallery-05.jpg', alt: 'Live event coverage', width: 1600, height: 1200 },
-      { src: '/images/services/events/gallery-06.jpg', alt: 'Event social activation', width: 1600, height: 1200 },
+      { src: '/images/services/events/farij-marsa-oud.webp', alt: 'An oud player performing on stage at the Farij Marsa event, Marsa Ajman', width: 1080, height: 675, caption: 'Marsa Ajman', href: '/work/video' },
+      { src: '/images/work/bil-events/gallery-4.webp', alt: 'BIL Events staff T-shirts with the yellow monogram and wordmark', width: 1920, height: 1080, caption: 'BIL Events', href: '/work/bil-events' },
+      { src: '/images/work/bil-events/gallery-7.webp', alt: 'BIL Events hoodie and cap printed with the yellow monogram', width: 1920, height: 1080, caption: 'BIL Events', href: '/work/bil-events' },
+      { src: '/images/services/events/farij-marsa-hospitality.webp', alt: 'Arabic coffee being served to guests at the Farij Marsa event', width: 1080, height: 675, caption: 'Marsa Ajman', href: '/work/video' },
+      { src: '/images/services/events/marsa-eid-stage.webp', alt: 'Brass performers on stage for the Eid celebration at Marsa Ajman', width: 1080, height: 608, caption: 'Marsa Ajman', href: '/work/video' },
+      { src: '/images/services/events/farij-marsa-teaser-sign.webp', alt: 'The Marsa Ajman sign at sunset, from the Farij Marsa teaser', width: 1080, height: 720, caption: 'Marsa Ajman', href: '/work/video', position: '50% 0%' },
     ],
-    relatedWork: [{ label: 'View Event Work', href: '/work' }],
+    relatedWork: [
+      { label: 'BIL Events', href: '/work/bil-events', image: '/images/work/bil-events/gallery-6.webp' },
+      { label: 'MM Event Management', href: '/work/mm-event-management', image: '/images/work/mm-event-management/gallery-3.webp' },
+    ],
   },
 );
 
@@ -225,14 +258,18 @@ export const photographyVideography = service(
       'Motion graphics',
     ],
     gallery: [
-      { src: '/images/services/photography/gallery-01.jpg', alt: 'Product photography', width: 1600, height: 1200 },
-      { src: '/images/services/photography/gallery-02.jpg', alt: 'Lifestyle editorial shoot', width: 1600, height: 1200 },
-      { src: '/images/services/photography/gallery-03.jpg', alt: 'Event coverage', width: 1600, height: 1200 },
-      { src: '/images/services/photography/gallery-04.jpg', alt: 'Real estate photography', width: 1600, height: 1200 },
-      { src: '/images/services/photography/gallery-05.jpg', alt: 'Brand video production', width: 1600, height: 1200 },
-      { src: '/images/services/photography/gallery-06.jpg', alt: 'Motion graphics reel', width: 1600, height: 1200 },
+      { src: '/images/services/photography-videography/food-shot-print.webp', alt: 'A finished food shot from a Propagenda photoshoot: kebab over rice, styled on white', width: 1080, height: 675, caption: 'Food photoshoot', href: '/work/video' },
+      { src: '/images/services/photography-videography/kitchen-the-view.webp', alt: 'Sauce poured over mushrooms in a pan, from The View restaurant reel', width: 1080, height: 675, caption: 'The View', href: '/work/video' },
+      { src: '/images/about/lifestyle-1.webp', alt: 'Woven pendant lamps glowing over the dining room, from the Sultan Saray reel', width: 1080, height: 674, caption: 'Sultan Saray', href: '/work/video' },
+      { src: '/images/about/live-3.webp', alt: 'The illuminated Marsa Ajman sign at night', width: 1080, height: 810, caption: 'Marsa Ajman', href: '/work/video', position: '80% 50%' },
+      { src: '/images/about/motion-3.webp', alt: 'Clemson Porter Properties logo animation', width: 1200, height: 900, caption: 'Clemson Porter Properties', href: '/work/video' },
+      { src: '/images/about/influencer-3.webp', alt: 'Behind the scenes on a Propagenda photoshoot: lighting a set with a large softbox', width: 1080, height: 810, caption: 'Propagenda photoshoot', href: '/work/video' },
     ],
-    relatedWork: [{ label: 'Clemson Porter Properties', href: '/work/clemson-porter-properties' }],
+    relatedWork: [
+      { label: 'Clemson Porter Properties', href: '/work/clemson-porter-properties' },
+      { label: 'P2P Motors', href: '/work/p2p-motors' },
+      { label: 'The BNK Group', href: '/work/bnk-group' },
+    ],
     tertiaryCta: { label: 'Book your shoot today', href: '/contact' },
   },
 );

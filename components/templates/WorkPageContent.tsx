@@ -55,7 +55,7 @@ export function WorkPageContent({ caseStudies }: { caseStudies: CaseStudyRecord[
   return (
     <>
       <WorkHero caseStudies={caseStudies} />
-      <WorkIndex groups={categoryGroups} />
+      <WorkIndex groups={categoryGroups} sectors={orderedCategories} />
       <ClosingCTABand />
     </>
   );

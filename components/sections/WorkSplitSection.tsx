@@ -66,16 +66,18 @@ const PANELS: Panel[] = [
     title: 'Video Work',
     cta: 'See film & photo',
     href: '/work/video',
+    // Stills from our own films (watermarked), replacing the old generic A4 posters; the poster
+    // shows while the reel loads.
     frames: [
-      '/images/portfolio/work-events.webp',
-      '/images/portfolio/work-quickcars.webp',
-      '/images/portfolio/work-ghaftree.webp',
-      '/images/portfolio/work-restaurant.webp',
+      '/images/about/cinematic-2.webp',
+      '/images/about/events-2.webp',
+      '/images/about/lifestyle-2.webp',
+      '/images/about/cinematic-2.webp',
     ],
     media: {
       kind: 'video',
       src: '/videos/propagenda-marketing.mp4',
-      poster: '/images/portfolio/work-events.webp',
+      poster: '/images/about/events-2.webp',
     },
     tone: 'orange',
     side: 'right',

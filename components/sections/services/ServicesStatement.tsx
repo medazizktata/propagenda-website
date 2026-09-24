@@ -13,7 +13,7 @@ import { useReducedMotion } from '@/lib/motion/useReducedMotion';
 export function ServicesStatement() {
   const sectionRef = useRef<HTMLElement>(null);
   const reducedMotion = useReducedMotion();
-  const { headingLead, headingAccent, body } = servicesBanner;
+  const { headingLead, headingAccent } = servicesBanner;
 
   useEffect(() => {
     const el = sectionRef.current;
@@ -45,28 +45,34 @@ export function ServicesStatement() {
     return () => ctx.revert();
   }, [reducedMotion]);
 
+  // Explicit user direction (2026-09-24): drop the "Seven capabilities" line, keep "The whole
+  // brand," on ONE line, bigger 3D logo — then: text on the side, with the single line 1 set
+  // smaller than line 2. The text column is its own containment context, so both lines are sized
+  // in cqw: line 1 measures 10.0x its font size, so 9.4cqw holds it at ~94% of the column at every
+  // width; line 2 is the loud one. Browsers without container units fall back to the vw sizes.
+  // The two visual lines are aria-hidden; the real h1 is one sr-only sentence.
+  const lineClass =
+    'svc-stmt-line block whitespace-nowrap font-sans font-bold uppercase leading-[0.95] tracking-display';
   return (
     <section
       ref={sectionRef}
       className="relative flex min-h-[min(100svh,920px)] items-center overflow-hidden bg-charcoal"
     >
-      <div className="svc-hero-content relative z-content mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-12 px-gutter-m py-20 lg:grid-cols-[minmax(0,1fr)_minmax(320px,1.1fr)] lg:gap-16 lg:px-gutter-d lg:py-28">
-        <div className="max-w-2xl">
+      <div className="svc-hero-content relative z-content mx-auto grid w-full max-w-[1920px] grid-cols-1 items-center gap-10 px-gutter-m py-20 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:gap-6 lg:px-gutter-d lg:py-24">
+        <div className="min-w-0" style={{ containerType: 'inline-size' }}>
           <SectionLabel className="svc-stmt-line mb-6">Services</SectionLabel>
-          <h1
-            className="font-sans font-bold uppercase leading-[0.92] tracking-display text-white"
-            style={{ fontSize: 'clamp(2.6rem, 7vw, 6.5rem)' }}
-          >
-            <span className="svc-stmt-line block">{headingLead}</span>
-            <span className="svc-stmt-line block text-orange">{headingAccent}</span>
+          <h1 className="sr-only">
+            {headingLead} {headingAccent}
           </h1>
-          <p className="svc-stmt-line mt-8 max-w-sm text-base leading-relaxed text-white/70 md:text-lg">
-            {body}
+          <p aria-hidden className={`${lineClass} text-[8vw] text-white`} style={{ fontSize: '9.4cqw' }}>
+            {headingLead}
+          </p>
+          <p aria-hidden className={`${lineClass} mt-[0.1em] text-[12vw] text-orange`} style={{ fontSize: '15cqw' }}>
+            {headingAccent}
           </p>
         </div>
-
-        <div className="svc-stmt-line">
-          <ServicesHeroLogo />
+        <div className="svc-stmt-line min-w-0">
+          <ServicesHeroLogo size="large" />
         </div>
       </div>
     </section>

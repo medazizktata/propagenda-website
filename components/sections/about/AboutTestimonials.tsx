@@ -5,12 +5,6 @@ import { aboutContent } from "@/content/about";
 import { cn } from "@/components/ui/cn";
 import { useReducedMotion } from "@/lib/motion/useReducedMotion";
 
-const accentClass = {
-  orange: "text-orange",
-  white: "text-white/80",
-  muted: "text-white/35",
-} as const;
-
 /* Idle auto-scroll cadence (px/s, leftward). Drag yields to the pointer 1:1; on
    release a manual inertia tween decays the flick velocity back to this cadence. */
 const AUTO_V = -46;
@@ -196,38 +190,37 @@ export function AboutTestimonials() {
           )}
         >
           {loop.map((item, i) => {
-            const featured = Boolean(item.featured);
+            const duplicate = i >= testimonials.items.length;
+            // Every card is grey at rest; orange only while hovered (fine pointers) or focused
+            // (keyboard Tab, or a tap on touch screens where hover doesn't exist) — explicit user
+            // direction, 2026-09-24: "all colors in grey, only focused on or hover we switch to
+            // orange". The loop's duplicate copies are aria-hidden, so they stay out of the Tab
+            // order (tabIndex -1) but still respond to a tap. (Class names are written out in
+            // full on purpose: Tailwind only generates classes that appear literally in source.)
             return (
               <article
                 key={`${item.name}-${i}`}
-                aria-hidden={i >= testimonials.items.length}
+                aria-hidden={duplicate}
+                tabIndex={duplicate ? -1 : 0}
                 className={cn(
-                  "t-card relative flex w-[min(85vw,22rem)] shrink-0 flex-col overflow-hidden rounded-[1.75rem] p-7 sm:w-[24rem] sm:p-8",
+                  "group/t t-card relative flex w-[min(85vw,22rem)] shrink-0 flex-col overflow-hidden rounded-[1.75rem] p-7 outline-none sm:w-[24rem] sm:p-8",
                   // Tailwind v4 lifts via the `translate` property, so transition it.
-                  "border border-transparent transition-[translate,box-shadow,border-color,filter] duration-[180ms] ease-out",
-                  featured
-                    ? "bg-orange text-black hover-fine:hover:-translate-y-1 hover-fine:hover:brightness-[1.04]"
-                    // Shadow sized to fit within the viewport's ~40px vertical padding
-                    // (extends ~36px below the card), so it's never clipped.
-                    : "bg-[#2a2a2a] text-white ring-1 ring-white/8 hover-fine:hover:-translate-y-1.5 hover-fine:hover:border-orange/45 hover-fine:hover:shadow-[0_16px_36px_-16px_rgb(0_0_0_/_0.55)]",
+                  "bg-[#2a2a2a] text-white ring-1 ring-white/8 transition-[translate,box-shadow,background-color] duration-[180ms] ease-out",
+                  "hover-fine:hover:-translate-y-1.5 hover-fine:hover:bg-orange hover-fine:hover:ring-transparent hover-fine:hover:shadow-[0_16px_36px_-16px_rgb(0_0_0_/_0.55)]",
+                  "focus:bg-orange focus:ring-transparent focus-visible:ring-2 focus-visible:ring-white/70",
                 )}
               >
                 <span
                   aria-hidden
-                  className={cn(
-                    "font-serif text-5xl leading-none",
-                    featured
-                      ? "text-black/35"
-                      : accentClass[(item.accent ?? "orange") as keyof typeof accentClass],
-                  )}
+                  className={cn("font-serif text-5xl leading-none text-white/35 transition-colors duration-[180ms]", "group-focus/t:text-black/35 hover-fine:group-hover/t:text-black/35")}
                 >
                   &ldquo;
                 </span>
 
                 <p
                   className={cn(
-                    "mt-3 flex-1 text-control leading-relaxed sm:text-base",
-                    featured ? "text-black/90" : "text-white/80",
+                    "mt-3 flex-1 text-control leading-relaxed text-white/80 transition-colors duration-[180ms] sm:text-base",
+                    "group-focus/t:text-black/90 hover-fine:group-hover/t:text-black/90",
                   )}
                 >
                   {item.quote}
@@ -235,23 +228,22 @@ export function AboutTestimonials() {
 
                 <div className="mt-10 flex items-end justify-between gap-4">
                   <div className="min-w-0">
-                    <p className={cn("font-sans text-sm font-semibold", featured ? "text-black" : "text-white")}>
+                    <p className={cn("font-sans text-sm font-semibold text-white transition-colors duration-[180ms]", "group-focus/t:text-black hover-fine:group-hover/t:text-black")}>
                       {item.name}
                     </p>
-                    <p className={cn("mt-0.5 text-xs leading-snug", featured ? "text-black/55" : "text-white/40")}>
+                    <p className={cn("mt-0.5 text-xs leading-snug text-white/40 transition-colors duration-[180ms]", "group-focus/t:text-black/55 hover-fine:group-hover/t:text-black/55")}>
                       {item.role}
                     </p>
                   </div>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={item.logo}
-                    alt=""
-                    draggable={false}
-                    className={cn(
-                      "h-8 w-auto max-w-[5.5rem] object-contain opacity-80",
-                      featured ? "brightness-0" : "brightness-0 invert",
-                    )}
-                  />
+                  {"logo" in item && item.logo ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={item.logo}
+                      alt=""
+                      draggable={false}
+                      className={cn("h-8 w-auto max-w-[5.5rem] object-contain opacity-80 brightness-0 invert", "group-focus/t:invert-0 hover-fine:group-hover/t:invert-0")}
+                    />
+                  ) : null}
                 </div>
               </article>
             );

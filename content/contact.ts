@@ -11,7 +11,9 @@ export const contactCloser = {
   kicker: "Start a project",
   lines: [
     [{ text: "HAVE AN IDEA?", accent: false }],
-    [{ text: "LET'S MAKE IT", accent: false }],
+    // `small`: a smaller connecting line held on one line (explicit user direction, 2026-09-24:
+    // "make LET'S MAKE IT smaller and single line", to cut the headline's height).
+    [{ text: "LET'S MAKE IT", accent: false, small: true }],
     [{ text: "IMPOSSIBLE", accent: true, hero: true }],
     [
       { text: "TO ", accent: false },
@@ -90,6 +92,8 @@ export const bookCall = {
     "Live scheduling isn't live yet. Drop your brief below and we'll set up the call within a day.",
 };
 
+// Panel photos: frames from our own photoshoot reel (the team setting up and shooting),
+// watermarked. "Everyone else" keeps its original office photo.
 export const contactRequests = [
   {
     rows: ["NEW BUSINESS", "BRANDS", "FOUNDERS"],
@@ -98,21 +102,21 @@ export const contactRequests = [
     // The panel promises a call — honor it with the scheduling link; without one
     // configured, degrade honestly to the brief form instead of a dead link.
     href: bookCall.url || "#contact-form",
-    image: "/images/contact/new-business.jpg",
+    image: "/images/contact/studio-shoot-setup.webp",
   },
   {
     rows: ["PARTNERS", "AGENCIES", "STUDIOS"],
     cta: "LET'S COLLABORATE",
     button: "GET IN TOUCH",
     href: `mailto:${PUBLIC_CONTACT_EMAIL}`,
-    image: "/images/contact/partners.jpg",
+    image: "/images/contact/studio-softbox-rig.webp",
   },
   {
     rows: ["PRESS", "MEDIA", "PODCASTS"],
     cta: "TELL OUR STORY",
     button: "MEDIA INQUIRY",
     href: `mailto:${PUBLIC_CONTACT_EMAIL}?subject=Media%20inquiry`,
-    image: "/images/contact/press-media.jpg",
+    image: "/images/contact/studio-camera-check.webp",
   },
   {
     rows: ["EVERYONE", "ELSE", "HELLO"],

@@ -2,18 +2,13 @@ import Link from 'next/link';
 import { SectionLabel } from '@/components/ui/SectionLabel';
 import { cn } from '@/components/ui/cn';
 import { isPageUnlocked } from '@/lib/featureFlags';
+import type { GalleryImage } from '@/types/content';
 
-// SMV project pages are carried by a dense image grid. Until real per-service galleries exist,
-// show a "selected work" mosaic from the real portfolio renders — an asymmetric editorial
-// layout (feature tile + varied sizes), hover Ken-Burns zoom + caption reveal. Links to /work.
-const WORK = [
-  { img: '/images/portfolio/work-sanapex.webp', title: 'Sanapex Interiors' },
-  { img: '/images/portfolio/work-restaurant.webp', title: 'Darabzeen Al Ward' },
-  { img: '/images/portfolio/work-quickcars.webp', title: 'Quick Cars' },
-  { img: '/images/portfolio/work-ghaftree.webp', title: 'Ghaf Tree' },
-  { img: '/images/portfolio/work-events.webp', title: 'BIL Events' },
-  { img: '/images/portfolio/work-food.webp', title: 'Food & Lifestyle' },
-];
+// SMV project pages are carried by a dense image grid. Each service shows its own "selected work"
+// mosaic, driven by the service's CMS gallery (services.gallery in D1, seed in content/services):
+// real, watermarked client work chosen for that service. Asymmetric editorial layout (feature tile
+// + varied sizes), hover Ken-Burns zoom + caption reveal. Tiles link to the case study (or the film
+// library) named in the item's `href`.
 
 // Asymmetric spans — one big feature, one wide, two small, two wide.
 const SPANS = [
@@ -25,8 +20,15 @@ const SPANS = [
   'col-span-2',
 ];
 
-export function ServiceWorkGrid() {
-  if (!isPageUnlocked('work')) return null;
+/** Units each span fills on the 4-column desktop grid. */
+const UNITS = [4, 2, 1, 1, 2, 2];
+
+export function ServiceWorkGrid({ items }: { items: GalleryImage[] }) {
+  if (!isPageUnlocked('work') || items.length === 0) return null;
+
+  // If the item count leaves a hole in the last row, stretch the last tile to close it.
+  const used = items.reduce((sum, _, i) => sum + UNITS[i % UNITS.length], 0);
+  const stretchLast = used % 4 !== 0;
 
   return (
     <section className="relative px-gutter-m py-12 lg:px-gutter-d lg:py-16">
@@ -41,25 +43,33 @@ export function ServiceWorkGrid() {
           </Link>
         </div>
         <div className="grid auto-rows-[9.5rem] grid-cols-2 gap-3 md:auto-rows-[11.5rem] md:grid-cols-4 md:gap-4">
-          {WORK.map((w, i) => (
+          {items.map((w, i) => (
             <Link
-              key={w.img}
-              href="/work"
+              key={w.src}
+              href={w.href ?? '/work'}
               className={cn(
                 'group/tile sd-reveal relative overflow-hidden rounded-xl bg-white/[0.03]',
                 SPANS[i % SPANS.length],
+                stretchLast && i === items.length - 1 && 'col-span-2 md:col-span-4',
               )}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={w.img}
-                alt={w.title}
+                src={w.src}
+                alt={w.alt}
+                width={w.width}
+                height={w.height}
+                loading="lazy"
+                decoding="async"
+                style={w.position ? { objectPosition: w.position } : undefined}
                 className="h-full w-full object-cover transition-transform duration-[1200ms] ease-out group-hover/tile:scale-[1.06]"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-charcoal/95 via-charcoal/10 to-transparent opacity-0 transition-opacity duration-300 group-hover/tile:opacity-100" />
-              <span className="absolute inset-x-4 bottom-4 translate-y-2 font-sans text-sm font-bold uppercase tracking-tight text-white opacity-0 transition-all duration-300 group-hover/tile:translate-y-0 group-hover/tile:opacity-100">
-                {w.title}
-              </span>
+              {w.caption && (
+                <span className="absolute inset-x-4 bottom-4 translate-y-2 font-sans text-sm font-bold uppercase tracking-tight text-white opacity-0 transition-all duration-300 group-hover/tile:translate-y-0 group-hover/tile:opacity-100">
+                  {w.caption}
+                </span>
+              )}
             </Link>
           ))}
         </div>

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import type { ServiceRecord, ServiceSlug } from '@/types/content';
+import type { RelatedLink, ServiceRecord, ServiceSlug } from '@/types/content';
 import { gsap, ScrollTrigger } from '@/lib/motion/gsap';
 import { useReducedMotion } from '@/lib/motion/useReducedMotion';
 import { cn } from '@/components/ui/cn';
@@ -25,6 +25,7 @@ import { MobileAppShowcase } from '@/components/sections/services/MobileAppShowc
 import { EventsJourney } from '@/components/sections/services/EventsJourney';
 import { serviceDetailConfig, getServiceDetailConfig } from '@/components/sections/services/serviceDetailConfig';
 import type { ServiceHubCard } from '@/content/servicesHub';
+import { resolveMediaUrl } from '@/lib/r2/resolveMediaUrl';
 
 
 const num = (i: number) => String(i + 1).padStart(2, '0');
@@ -50,15 +51,25 @@ const SCOPE_VARIANT: Record<ServiceSlug, ScopeVariant> = {
   'photography-videography': 'filmstrip',
 };
 
-// Temporary imagery for the visual discipline tiles (photography/videography types).
-const DISCIPLINE_IMAGES = [
-  '/images/portfolio/work-food.webp',
-  '/images/portfolio/work-restaurant.webp',
-  '/images/portfolio/work-events.webp',
-  '/images/portfolio/work-sanapex.webp',
-  '/images/portfolio/work-quickcars.webp',
-  '/images/portfolio/work-ghaftree.webp',
-];
+// Imagery for the photography/videography discipline tiles, keyed by item label. All frames from
+// the studio's own watermarked films (public/images/about, public/images/services) except "Drone":
+// no genuine drone footage exists yet, so that tile uses a stock aerial, free under the Unsplash
+// License (unsplash.com/license): photo by Tahamie Farooqui (unsplash.com/photos/e94PdLIwSJc).
+const DISCIPLINE_IMAGES: Record<string, string> = {
+  'Products & brand': '/images/about/cinematic-3.webp',
+  'Lifestyle & editorial': '/images/about/lifestyle-2.webp',
+  'Real estate & interiors': '/images/services/photography-videography/interior-the-view.webp',
+  Food: '/images/about/product-2.webp',
+  Events: '/images/about/live-1.webp',
+  Portraits: '/images/about/influencer-1.webp',
+  Campaigns: '/images/about/cinematic-2.webp',
+  Drone: '/images/services/stock/photo-aerial-coast.webp',
+  'Short brand films': '/images/services/public-relations/bnk-founder-film.webp',
+  'Product & testimonial clips': '/images/services/photography-videography/p2p-maybach-desert.webp',
+  'Motion graphics': '/images/about/motion-2.webp',
+  'Social cut-downs': '/images/about/product-3.webp',
+};
+const DISCIPLINE_FALLBACK = '/images/about/lifestyle-3.webp';
 
 export function ServiceDetailContent({
   service,
@@ -75,17 +86,11 @@ export function ServiceDetailContent({
   const motionSafe = reducedMotion || preview;
   const cfg = getServiceDetailConfig(service.slug);
 
-  // Always show exactly 3 related-work cards: the service's own related work first, padded
-  // from a safe pool (links to the work hub), de-duped by label.
+  // Up to 3 related-work cards, straight from the service's own related work (real case studies,
+  // services.related_work in D1). No padding with unrelated projects.
   const relatedThree = isPageUnlocked('work')
-    ? [
-        ...(service.relatedWork ?? []),
-        { label: 'Sanapex Interiors', href: '/work' },
-        { label: 'Quick Cars', href: '/work' },
-        { label: 'Darabzeen Al Ward', href: '/work' },
-        { label: 'BIL Events', href: '/work' },
-      ]
-        .filter((v, i, a) => a.findIndex((x) => x.label === v.label) === i)
+    ? (service.relatedWork ?? [])
+        .filter((v, i, a) => a.findIndex((x) => x.href === v.href) === i)
         .slice(0, 3)
     : [];
 
@@ -189,11 +194,11 @@ export function ServiceDetailContent({
            list on its own; others the variant grid ── */}
       {service.slug === 'branding-visual-identity' ? (
         <>
-          <ScopeReveal items={service.scopeItems} />
+          <ScopeReveal items={service.scopeItems} images={BRANDING_SCOPE_IMAGES} />
           <ScopeBento items={service.scopeItems} />
         </>
       ) : service.slug === 'public-relations' ? (
-        <ScopeReveal items={service.scopeItems} />
+        <ScopeReveal items={service.scopeItems} images={PR_SCOPE_IMAGES} />
       ) : (
         <ServiceScope service={service} />
       )}
@@ -205,7 +210,7 @@ export function ServiceDetailContent({
       <SignatureModule service={service} />
 
       {/* ── SELECTED WORK (SMV-style image grid) ─────────────────────────── */}
-      <ServiceWorkGrid />
+      <ServiceWorkGrid items={service.gallery} />
 
       {/* ── FAQ (services with authored questions) ───────────────────────── */}
       {cfg.faqs && cfg.faqs.length > 0 && <ServiceFAQ faqs={cfg.faqs} />}
@@ -228,16 +233,46 @@ export function ServiceDetailContent({
 
 /* ───────────────────────── Scope ("What's included") ───────────────────────── */
 
-// Branding "What's included" — supplementary icons + preview imagery, by scope-item index.
+// Branding "What's included" — supplementary icons, by scope-item index.
 const SCOPE_ICONS = ['shapes', 'layers', 'type', 'file', 'book', 'mail'];
-const SCOPE_IMAGES = [
-  '/images/portfolio/work-sanapex.webp',
-  '/images/portfolio/work-ghaftree.webp',
-  '/images/portfolio/work-restaurant.webp',
-  '/images/portfolio/work-quickcars.webp',
-  '/images/portfolio/work-events.webp',
-  '/images/portfolio/work-food.webp',
-];
+
+type ScopeImage = { src: string; alt: string; position?: string };
+
+// Preview imagery for the hover-reveal list, keyed by scope item. Branding: real, watermarked
+// case-study work that shows each deliverable.
+const BRANDING_SCOPE_IMAGES: Record<string, ScopeImage> = {
+  'Logo design': { src: '/images/work/alateeq-cafe/hero.webp', alt: 'Alateeq Cafe calligraphic logo in gold foil' },
+  'Visual identity systems': {
+    src: '/images/work/zealerz/hero.webp',
+    alt: 'Zealerz identity system: stationery, vehicles, icons, type and app screens',
+    position: '50% 100%',
+  },
+  'Brand colors & typography': {
+    src: '/images/work/quick-cars/gallery-2.webp',
+    alt: 'Quick Cars brand colour page: the Auburn swatch on a red branded car',
+    position: '0% 50%',
+  },
+  'Company profiles': { src: '/images/work/ayoub-and-co/hero.webp', alt: 'Ayoub & Co. company profile cover' },
+  'Brand guidelines': { src: '/images/work/jordanian-social-club/hero.webp', alt: 'Jordanian Social Club brand guidelines cover with the crest' },
+  Stationery: { src: '/images/work/laya-inc/gallery-2.webp', alt: 'Laya Inc letterhead' },
+};
+
+// PR has no campaign imagery of its own yet: only "Credibility campaigns" is real work (a frame
+// from the BNK Group founder film we produced). The rest illustrate the kind of partner with stock, free under the Unsplash License (unsplash.com/license): Influencer
+// partnerships by Timek Life (unsplash.com/photos/2JBBrp9k5O0), Media relations by Thiago
+// Zanutigh (unsplash.com/photos/NKpRyt8ABRw), Celebrity collaborations by nicola dowie
+// (unsplash.com/photos/op-q_FGm118), Blogger outreach by Afffect (unsplash.com/photos/3FTq0q3QZc8).
+const PR_SCOPE_IMAGES: Record<string, ScopeImage> = {
+  'Influencer partnerships': { src: '/images/services/stock/pr-creator-phone-shoot.webp', alt: 'A creator being filmed, framed on a camera monitor' },
+  'Media relations': { src: '/images/services/stock/pr-street-interview.webp', alt: 'A reporter interviewing a man on camera with a microphone' },
+  'Celebrity collaborations': { src: '/images/services/stock/pr-red-carpet.webp', alt: 'A guest posing on a red carpet' },
+  'Blogger outreach': { src: '/images/services/stock/pr-creator-recording.webp', alt: 'A creator recording herself on a phone tripod' },
+  'Credibility campaigns': {
+    src: '/images/services/public-relations/bnk-founder-film.webp',
+    alt: 'The BNK Group founder speaking to camera, from the presentation film we produced',
+    position: '85% 50%',
+  },
+};
 const SCOPE_BLURBS = [
   'A distinctive primary mark, built to last.',
   'Colour, type and graphics as one connected system.',
@@ -248,7 +283,7 @@ const SCOPE_BLURBS = [
 ];
 
 // Option 1 — editorial hover-reveal list: hover a deliverable, its preview fades in (SMV-style).
-function ScopeReveal({ items }: { items: string[] }) {
+function ScopeReveal({ items, images }: { items: string[]; images: Record<string, ScopeImage> }) {
   const [active, setActive] = useState(0);
   return (
     <section className="relative overflow-hidden px-gutter-m py-12 lg:px-gutter-d lg:py-16">
@@ -295,18 +330,25 @@ function ScopeReveal({ items }: { items: string[] }) {
             })}
           </ul>
           <div className="sd-reveal relative hidden aspect-[4/5] w-full overflow-hidden rounded-2xl ring-1 ring-white/10 md:block md:w-[20rem] lg:w-[24rem]">
-            {items.map((item, i) => (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                key={item}
-                src={SCOPE_IMAGES[i % SCOPE_IMAGES.length]}
-                alt=""
-                className={cn(
-                  'absolute inset-0 h-full w-full object-cover transition-all duration-500 ease-out',
-                  active === i ? 'scale-100 opacity-100' : 'scale-105 opacity-0',
-                )}
-              />
-            ))}
+            {items.map((item, i) => {
+              const img = images[item];
+              if (!img) return null;
+              return (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  key={item}
+                  src={img.src}
+                  alt={active === i ? img.alt : ''}
+                  loading="lazy"
+                  decoding="async"
+                  style={img.position ? { objectPosition: img.position } : undefined}
+                  className={cn(
+                    'absolute inset-0 h-full w-full object-cover transition-all duration-500 ease-out',
+                    active === i ? 'scale-100 opacity-100' : 'scale-105 opacity-0',
+                  )}
+                />
+              );
+            })}
             <div className="absolute inset-0 bg-gradient-to-t from-charcoal/70 to-transparent" />
             <span className="absolute inset-x-5 bottom-5 font-sans text-lg font-bold text-white [text-shadow:0_1px_8px_rgba(0,0,0,0.85)]">
               {items[active]}
@@ -456,22 +498,19 @@ function ScopeEditorial({ items }: { items: string[] }) {
 // background (frames are windows punched into the strip, not cards), slid horizontally like a strip
 // across a light table — distinct from the ghost-number rows and every other scope variant. Touch
 // devices see the frames already in colour; reduced motion keeps everything still (no scale).
+// Frames from the studio's own shoots and films (watermarked), keyed by the scope items in D1.
 const PHOTO_SCOPE_IMG: Record<string, string> = {
-  'Product photography': '/images/portfolio/work-food.webp',
-  'Lifestyle & editorial': '/images/portfolio/work-restaurant.webp',
-  'Event coverage': '/images/portfolio/work-events.webp',
-  'Real estate': '/images/portfolio/work-sanapex.webp',
-  'Cinematic video': '/images/portfolio/work-quickcars.webp',
-  'Motion graphics': '/images/portfolio/work-ghaftree.webp',
-  'Live streaming': '/images/portfolio/work-events.webp',
+  'Product & brand photography': '/images/services/photography-videography/product-shot-print.webp',
+  'Lifestyle & editorial': '/images/about/lifestyle-3.webp',
+  'Real estate & interiors': '/images/services/photography-videography/interior-sultan-saray.webp',
+  'Event coverage': '/images/about/events-1.webp',
+  'Supporting brand video': '/images/about/cinematic-1.webp',
+  'Motion graphics': '/images/about/motion-1.webp',
 };
 const PHOTO_FRAME_FALLBACK = [
-  '/images/portfolio/work-food.webp',
-  '/images/portfolio/work-restaurant.webp',
-  '/images/portfolio/work-events.webp',
-  '/images/portfolio/work-sanapex.webp',
-  '/images/portfolio/work-quickcars.webp',
-  '/images/portfolio/work-ghaftree.webp',
+  '/images/about/product-1.webp',
+  '/images/about/live-2.webp',
+  '/images/about/lifestyle-1.webp',
 ];
 // Plausible 35mm edge numbering (…23, 24A, 25, 26A…) so the strip reads as a real roll.
 const frameCode = (i: number) => `${21 + i}${i % 2 === 0 ? '' : 'A'}`;
@@ -518,6 +557,8 @@ function ScopeFilmstrip({ items }: { items: string[] }) {
                     <img
                       src={src}
                       alt=""
+                      loading="lazy"
+                      decoding="async"
                       className="h-full w-full object-cover opacity-[0.72] grayscale-[0.5] transition-all duration-500 ease-out group-hover/fr:opacity-100 group-hover/fr:grayscale-0 motion-safe:group-hover/fr:scale-[1.04] touch-coarse:opacity-100 touch-coarse:grayscale-0"
                     />
                     {/* Proof wash — the dim exposure that lifts as the frame is selected. */}
@@ -761,7 +802,11 @@ const WEB_LAYER_KIND: Record<string, string> = {
 };
 
 // Click-to-reveal detail for each website layer — body copy, a few key points, and an
-// on-theme image. Edit all of it in this one map.
+// on-theme image. Edit all of it in this one map. The first three images are screenshots of this
+// site (our own web work, as on the About page). No genuine performance or maintenance imagery
+// exists, so those two use stock, free under the Unsplash License (unsplash.com/license):
+// Performance optimization by Luke Chesser (unsplash.com/photos/JKUTrJ4vK00), Ongoing management by
+// Nubelson Fernandes (unsplash.com/photos/UcYBL5V0xWQ).
 const WEB_SCOPE_DETAIL: Record<
   string,
   { body: string; points: string[]; image?: string; alt?: string }
@@ -773,8 +818,8 @@ const WEB_SCOPE_DETAIL: Record<
       'Responsive across every screen size',
       'A CMS your team can actually use',
     ],
-    image: '/images/portfolio/work-quickcars.webp',
-    alt: 'Custom website and brand work by Propagenda',
+    image: '/images/about/web-design-2.webp',
+    alt: 'Propagenda website: the P2P Motors and Quick Cars work tiles, designed and built in-house',
   },
   'Landing pages': {
     body: 'Focused pages built to convert, one goal, one message, zero distraction. Ideal for launches, ads, and campaigns where every click has to earn its place.',
@@ -783,8 +828,8 @@ const WEB_SCOPE_DETAIL: Record<
       'Copy and layout tuned to the offer',
       'Built to load in under two seconds',
     ],
-    image: '/images/portfolio/work-restaurant.webp',
-    alt: 'High-converting landing page work',
+    image: '/images/about/landing-2.webp',
+    alt: 'Propagenda website: the contact landing page with two focused calls to action',
   },
   'UX/UI': {
     body: 'Interfaces that are intuitive to navigate and quick to grasp. We map the journey, prototype the flow, and pressure-test it with real people before a line of production code.',
@@ -793,8 +838,8 @@ const WEB_SCOPE_DETAIL: Record<
       'A design system with reusable components',
       'Usability passes before anything ships',
     ],
-    image: '/images/portfolio/work-sanapex.webp',
-    alt: 'UX and UI design system work',
+    image: '/images/about/ux-ui-1.webp',
+    alt: 'Propagenda website: mobile navigation and case-study layouts',
   },
   'Performance optimization': {
     body: 'Fast loads, clean code, and healthy Core Web Vitals. We tune images, scripts, and delivery so the site feels instant, which users reward and search engines rank.',
@@ -803,8 +848,8 @@ const WEB_SCOPE_DETAIL: Record<
       'Image and asset optimization',
       'CDN and caching dialed in',
     ],
-    image: '/images/portfolio/work-ghaftree.webp',
-    alt: 'Performance-optimized website work',
+    image: '/images/about/performance-1.webp',
+    alt: 'Performance analytics dashboard on a laptop screen',
   },
   'Ongoing management': {
     body: 'Hosting, updates, security, and steady improvement. We keep the site healthy long after launch, so it never goes stale and never catches you off guard.',
@@ -813,8 +858,8 @@ const WEB_SCOPE_DETAIL: Record<
       'Security patches and uptime monitoring',
       'Iterative improvements every month',
     ],
-    image: '/images/portfolio/work-food.webp',
-    alt: 'Ongoing website management and improvement',
+    image: '/images/about/management-2.webp',
+    alt: 'A developer maintaining code on a laptop',
   },
 };
 
@@ -1220,14 +1265,45 @@ const EVENT_SCOPE_PHASE: Record<string, string> = {
 };
 
 // Events "What's included" — run-of-show checklist left-aligned with the section label,
-// sticky media on the right that crossfades as each deliverable scrolls into view.
-const EVENT_SCOPE_MEDIA: Record<string, { src: string; kind: 'image' | 'video' }> = {
-  'Event branding & identity': { src: '/images/portfolio/work-events.webp', kind: 'image' },
-  'Marketing materials': { src: '/images/portfolio/work-ghaftree.webp', kind: 'image' },
-  'Full organisation & logistics': { src: '/images/portfolio/work-restaurant.webp', kind: 'image' },
-  'Photography & videography': { src: '/videos/propagenda-marketing.mp4', kind: 'video' },
-  'Social media coverage': { src: '/images/portfolio/work-food.webp', kind: 'image' },
-  'Post-event evaluation': { src: '/images/portfolio/work-sanapex.webp', kind: 'image' },
+// sticky media on the right that crossfades as each deliverable scrolls into view. Real,
+// watermarked event work (BIL Events, MM Event Management, Marsa Ajman films); the video is the
+// 8-second muted preview of the Farij Marsa event film (R2 key, resolved at render) and only
+// loads when its row is active. "Post-event evaluation" has no genuine artefact to show, so it
+// uses stock, free under the Unsplash License (unsplash.com/license): photo by Stephen Dawson
+// (unsplash.com/photos/qwtCeJ5cLYs).
+type EventMedia = { src: string; kind: 'image' | 'video'; alt?: string; poster?: string; position?: string };
+const EVENT_SCOPE_MEDIA: Record<string, EventMedia> = {
+  'Event branding & identity': {
+    src: '/images/work/mm-event-management/hero.webp',
+    kind: 'image',
+    alt: 'MM Event Management branded flags reading "Spotlighting Good Times"',
+  },
+  'Marketing materials': {
+    src: '/images/work/bil-events/gallery-1.webp',
+    kind: 'image',
+    alt: 'BIL Events roll-up banner for the "Spectacular Chaos" campaign',
+    position: '38% 50%',
+  },
+  'Full organisation & logistics': {
+    src: '/images/work/bil-events/gallery-3.webp',
+    kind: 'image',
+    alt: 'BIL Events staff ID badge and lanyard',
+  },
+  'Photography & videography': {
+    src: 'videos/previews/marsa-farij-marsa-event.mp4',
+    poster: 'video-posters/work/marsa-farij-marsa-event.jpg',
+    kind: 'video',
+  },
+  'Social media coverage': {
+    src: '/images/services/events/marsa-eid-social-reel.webp',
+    kind: 'image',
+    alt: 'Guests at the Marsa Ajman sign, from the Eid social reel',
+  },
+  'Post-event evaluation': {
+    src: '/images/about/performance-3.webp',
+    kind: 'image',
+    alt: 'Campaign results on an analytics dashboard',
+  },
 };
 
 function ScopeCoverage({ items }: { items: string[] }) {
@@ -1258,6 +1334,9 @@ function ScopeCoverage({ items }: { items: string[] }) {
 
   const activeItem = items[active] ?? items[0];
   const activeMedia = EVENT_SCOPE_MEDIA[activeItem] ?? EVENT_SCOPE_MEDIA[items[0]];
+  // Once the video row has been active, keep its src so it resumes instead of re-downloading.
+  const [videoArmed, setVideoArmed] = useState(false);
+  if (activeMedia?.kind === 'video' && !videoArmed) setVideoArmed(true);
 
   return (
     <div className="sd-reveal grid items-start gap-10 lg:grid-cols-[minmax(0,0.85fr)_minmax(28rem,1.35fr)] lg:gap-12 xl:gap-16">
@@ -1339,15 +1418,18 @@ function ScopeCoverage({ items }: { items: string[] }) {
                 return (
                   <video
                     key={item}
-                    src={media.src}
+                    // No src until the row is first active, so the preview never downloads eagerly.
+                    src={show || videoArmed ? resolveMediaUrl(media.src) : undefined}
+                    poster={media.poster ? resolveMediaUrl(media.poster) : undefined}
+                    preload="none"
                     muted
                     loop
                     playsInline
-                    autoPlay={show}
                     aria-hidden
                     ref={(el) => {
                       if (!el) return;
-                      if (show) void el.play().catch(() => {});
+                      // Hidden below lg (display:none) — never start a download there.
+                      if (show && el.offsetParent !== null) void el.play().catch(() => {});
                       else el.pause();
                     }}
                     className={cn(
@@ -1362,7 +1444,10 @@ function ScopeCoverage({ items }: { items: string[] }) {
                 <img
                   key={item}
                   src={media.src}
-                  alt=""
+                  alt={show ? (media.alt ?? '') : ''}
+                  loading="lazy"
+                  decoding="async"
+                  style={media.position ? { objectPosition: media.position } : undefined}
                   className={cn(
                     'absolute inset-0 h-full w-full object-cover transition-all duration-500 ease-out',
                     show ? 'scale-100 opacity-100' : 'scale-105 opacity-0',
@@ -1541,18 +1626,15 @@ function ServiceApproach({ phases }: { phases: { title: string; body: string }[]
   );
 }
 
-// Temporary thumbnails for related-work cards (until real per-project images land).
-const RELATED_IMAGES = [
-  '/images/portfolio/work-sanapex.webp',
-  '/images/portfolio/work-quickcars.webp',
-  '/images/portfolio/work-ghaftree.webp',
-  '/images/portfolio/work-events.webp',
-  '/images/portfolio/work-restaurant.webp',
-  '/images/portfolio/work-food.webp',
-];
+// Related-work card image: the item's own image, else the linked case study's hero.
+function relatedImage(rw: RelatedLink): string | undefined {
+  if (rw.image) return rw.image;
+  const m = rw.href.match(/^\/work\/([a-z0-9-]+)$/);
+  return m ? `/images/work/${m[1]}/hero.webp` : undefined;
+}
 
 // Related work — visual thumbnail cards (image + title), grayscale→colour on hover.
-function ServiceRelatedWork({ items }: { items: { label: string; href: string }[] }) {
+function ServiceRelatedWork({ items }: { items: RelatedLink[] }) {
   if (items.length === 0) return null;
   return (
     <section className="relative overflow-hidden px-gutter-m py-12 lg:px-gutter-d lg:py-16">
@@ -1568,12 +1650,16 @@ function ServiceRelatedWork({ items }: { items: { label: string; href: string }[
               href={rw.href}
               className="group/rw sd-reveal relative aspect-[4/3] overflow-hidden rounded-xl ring-1 ring-white/10 transition-all duration-300 hover-fine:hover:ring-orange/50"
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={RELATED_IMAGES[i % RELATED_IMAGES.length]}
-                alt=""
-                className="h-full w-full object-cover grayscale-[0.35] transition-all duration-500 ease-out group-hover/rw:scale-105 group-hover/rw:grayscale-0"
-              />
+              {relatedImage(rw) && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={relatedImage(rw)}
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                  className="h-full w-full object-cover grayscale-[0.35] transition-all duration-500 ease-out group-hover/rw:scale-105 group-hover/rw:grayscale-0"
+                />
+              )}
               <div className="absolute inset-0 bg-gradient-to-t from-charcoal via-charcoal/40 to-transparent" />
               <span className="absolute inset-x-4 bottom-4 font-sans text-base font-bold tracking-tight text-white [text-shadow:0_1px_8px_rgba(0,0,0,0.85)]">
                 {rw.label}
@@ -2042,10 +2128,11 @@ function TypeSpecimen() {
 
 // Orange → neutral tint/shade ramp for the extended colour system.
 const COLOUR_TINTS = ['#FBD1AD', '#F9BA80', '#F7A253', '#F58B27', '#606773', '#454C58', '#2A3240', '#0F151F'];
-const TEMPLATE_MOCKS = [
-  '/images/portfolio/work-events.webp',
-  '/images/portfolio/work-ghaftree.webp',
-  '/images/portfolio/work-restaurant.webp',
+// Real social templates from the portfolio (watermarked case-study images).
+const TEMPLATE_MOCKS: { src: string; alt: string; position?: string }[] = [
+  { src: '/images/work/cu-optics/hero.webp', alt: 'C U Optics Instagram grid templates' },
+  { src: '/images/work/leoz/gallery-5.webp', alt: 'Leoz Gents Salon social ad templates' },
+  { src: '/images/work/vid/gallery-4.webp', alt: 'VID Instagram post and story templates', position: '100% 50%' },
 ];
 
 function DevelopedKit() {
@@ -2108,10 +2195,17 @@ function DevelopedKit() {
 
       <BrandModule label="Templates & collateral" desc="Social, presentation and ad templates, ready to run.">
         <div className="grid grid-cols-3 gap-3">
-          {TEMPLATE_MOCKS.map((src) => (
-            <div key={src} className="aspect-[4/3] overflow-hidden rounded-lg ring-1 ring-white/10">
+          {TEMPLATE_MOCKS.map((m) => (
+            <div key={m.src} className="aspect-[4/3] overflow-hidden rounded-lg ring-1 ring-white/10">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={src} alt="" className="h-full w-full object-cover" />
+              <img
+                src={m.src}
+                alt={m.alt}
+                loading="lazy"
+                decoding="async"
+                style={m.position ? { objectPosition: m.position } : undefined}
+                className="h-full w-full object-cover"
+              />
             </div>
           ))}
         </div>
@@ -2233,8 +2327,8 @@ function DisciplineSplit({ disciplines }: { disciplines: { label: string; items:
                   isVideo ? 'sm:grid-cols-2' : 'grid-cols-2 sm:grid-cols-3',
                 )}
               >
-                {d.items.map((item, i) => {
-                  const src = DISCIPLINE_IMAGES[(di * 3 + i) % DISCIPLINE_IMAGES.length];
+                {d.items.map((item) => {
+                  const src = DISCIPLINE_IMAGES[item] ?? DISCIPLINE_FALLBACK;
                   return isVideo ? (
                     <VideoTile key={item} src={src} label={item} />
                   ) : (
@@ -2260,6 +2354,8 @@ function PhotoTile({ src, label }: { src: string; label: string }) {
       <img
         src={src}
         alt=""
+        loading="lazy"
+        decoding="async"
         className="pf-focus-img h-full w-full object-cover will-change-[filter,transform]"
       />
       {/* Shutter flash — fires at the focus-lock moment (delayed to the end of the hunt). */}
@@ -2294,6 +2390,8 @@ function VideoTile({ src, label }: { src: string; label: string }) {
       <img
         src={src}
         alt=""
+        loading="lazy"
+        decoding="async"
         className="h-full w-full object-cover brightness-95 grayscale-[0.35] transition-all duration-500 ease-out group-hover/vt:scale-105 group-hover/vt:brightness-100 group-hover/vt:grayscale-0"
       />
       {/* Cinematic letterbox bars. */}

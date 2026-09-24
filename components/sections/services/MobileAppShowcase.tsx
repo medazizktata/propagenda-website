@@ -16,7 +16,7 @@ import { useReducedMotion } from '@/lib/motion/useReducedMotion';
 // Android toggle swaps the native chrome (status-bar clock side, header alignment, tab bar, home
 // indicator vs system nav, the Android FAB) so the same screens prove they feel at home on both.
 // Reduced motion falls back to a static, fully readable version — every stage listed, the phone on
-// one finished screen. App content and imagery are illustrative placeholders from the portfolio.
+// one finished screen. App content and imagery are illustrative (stock dish photos, see DISHES).
 
 type Platform = 'ios' | 'android';
 type ScreenId = 'onboarding' | 'home' | 'detail' | 'order';
@@ -61,12 +61,18 @@ const STAGES: Stage[] = [
 ];
 
 const CATEGORIES = ['Popular', 'Grills', 'Healthy', 'Dessert'];
+// Illustrative app content (a fictional food-delivery app, not a client project). Dish photos are
+// stock, free under the Unsplash License (unsplash.com/license): Truffle burger by Eiliv Aceron
+// (unsplash.com/photos/pu6b4yIlQF4), Sunday roast by Salman Sidheek
+// (unsplash.com/photos/wmwcKGjrNwI), Garden bowl by Elena Leya (unsplash.com/photos/_vy3L5n8VnI),
+// Spiced lamb wrap by Alexander Mils (unsplash.com/photos/SNLfVYmL8os), Grilled sea bass by Farhad
+// Ibrahimzade (unsplash.com/photos/asQ6VI-pL2k).
 const DISHES = [
-  { img: '/images/portfolio/work-food.webp', name: 'Truffle burger', place: 'Grill House', time: '25 min', rating: '4.9' },
-  { img: '/images/portfolio/work-restaurant.webp', name: 'Sunday roast', place: 'The Table', time: '35 min', rating: '4.8' },
-  { img: '/images/portfolio/work-ghaftree.webp', name: 'Garden bowl', place: 'Ghaf Tree', time: '20 min', rating: '4.7' },
-  { img: '/images/portfolio/work-food.webp', name: 'Spiced lamb wrap', place: 'Souk Kitchen', time: '22 min', rating: '4.8' },
-  { img: '/images/portfolio/work-restaurant.webp', name: 'Sea bass ceviche', place: 'The Table', time: '28 min', rating: '4.6' },
+  { img: '/images/services/stock/app-burger.webp', name: 'Truffle burger', place: 'Grill House', time: '25 min', rating: '4.9' },
+  { img: '/images/services/stock/app-roast.webp', name: 'Sunday roast', place: 'The Table', time: '35 min', rating: '4.8' },
+  { img: '/images/services/stock/app-salad-bowl.webp', name: 'Garden bowl', place: 'Green Room', time: '20 min', rating: '4.7' },
+  { img: '/images/services/stock/app-shawarma-wrap.webp', name: 'Spiced lamb wrap', place: 'Souk Kitchen', time: '22 min', rating: '4.8' },
+  { img: '/images/services/stock/app-sea-bass.webp', name: 'Grilled sea bass', place: 'The Table', time: '28 min', rating: '4.6' },
 ];
 
 function scrollAmountForStage(stage: Stage, frac: number) {
@@ -371,7 +377,7 @@ function OnboardingScreen({ platform }: { platform: Platform }) {
   return (
     <div className="relative flex-1 overflow-hidden">
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={FEATURE.img} alt="" className="absolute inset-0 h-full w-full object-cover" />
+      <img src={FEATURE.img} alt="" loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover" />
       <div className="absolute inset-0 bg-gradient-to-t from-navy via-navy/55 to-navy/10" />
       <div className="relative flex h-full flex-col justify-end p-6">
         <span className="font-sans text-3xl font-bold tracking-tight text-white">Sufra</span>
@@ -425,7 +431,7 @@ function HomeScreen({ platform }: { platform: Platform }) {
             >
               <span className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={d.img} alt="" className="h-full w-full object-cover" />
+                <img src={d.img} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover" />
               </span>
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-[13px] font-semibold text-navy">{d.name}</span>
@@ -460,7 +466,7 @@ function DetailScreen({ platform }: { platform: Platform }) {
       <div className="flex min-h-full flex-col">
         <div className="relative h-40 shrink-0 overflow-hidden">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={FEATURE.img} alt="" className="h-full w-full object-cover" />
+          <img src={FEATURE.img} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover" />
         </div>
         <div className="px-4 pt-3.5 pb-4">
           <h4 className="font-sans text-[17px] font-bold text-navy">{FEATURE.name}</h4>

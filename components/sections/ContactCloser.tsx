@@ -102,12 +102,16 @@ export function ContactCloser() {
             >
               {contactCloser.lines.map((line, i) => {
                 const hero = line.some((s) => "hero" in s && s.hero);
+                // 0.72em: measured, the line fits its column on one line up to ~0.975em at
+                // every width (tightest at 1024 and 1280px), so this holds with room to spare.
+                const small = line.some((s) => "small" in s && s.small);
                 return (
                   <span
                     key={i}
                     className={cn(
                       "block",
                       hero && "text-[1.06em] text-orange",
+                      small && "whitespace-nowrap text-[0.72em]",
                     )}
                   >
                     {line.map((seg, j) => (

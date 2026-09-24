@@ -7,50 +7,51 @@ import { AppLink } from '@/components/ui/Link';
 import { cn } from '@/components/ui/cn';
 
 /**
- * Enriched services menu data — label, route, a preview image (temporary portfolio maps until
- * real service assets land) and a one-line pitch. Drives the mega-menu preview pane.
+ * Enriched services menu data — label, route, a preview image (the same real, watermarked work
+ * as each service's hub preview in content/servicesHub.ts) and a one-line pitch. Drives the
+ * mega-menu preview pane.
  */
 const SERVICE_MENU = [
   {
     label: 'Branding',
     href: '/services/branding-visual-identity',
-    image: '/images/portfolio/work-sanapex.webp',
+    image: '/images/work/laya-inc/hero.webp',
     blurb: 'Logos, identity systems, and guidelines that make you unmistakable.',
   },
   {
     label: 'Public Relations',
     href: '/services/public-relations',
-    image: '/images/portfolio/work-ghaftree.webp',
+    image: '/images/services/public-relations/bnk-founder-film.webp',
     blurb: 'Influencers, media, and celebrity reach that get you noticed.',
   },
   {
     label: 'Online & Offline Marketing',
     href: '/services/online-offline-marketing',
-    image: '/images/portfolio/work-events.webp',
+    image: '/images/work/dose-pharmacy/gallery-1.webp',
     blurb: 'Full-funnel campaigns, content, and ads that grow you.',
   },
   {
     label: 'Websites',
     href: '/services/websites',
-    image: '/images/portfolio/work-quickcars.webp',
+    image: '/images/about/landing-1.webp',
     blurb: 'High-performing sites and landing pages, concept to launch.',
   },
   {
     label: 'Mobile Applications',
     href: '/services/mobile-applications',
-    image: '/images/portfolio/work-food.webp',
+    image: '/images/work/2k-shopping/gallery-4.webp',
     blurb: 'Native-feeling iOS & Android apps, first sketch to store.',
   },
   {
     label: 'Events',
     href: '/services/events',
-    image: '/images/portfolio/work-events.webp',
+    image: '/images/work/mm-event-management/gallery-4.webp',
     blurb: 'End-to-end event branding, production, and coverage.',
   },
   {
     label: 'Photography & Videography',
     href: '/services/photography-videography',
-    image: '/images/portfolio/work-food.webp',
+    image: '/images/services/photography-videography/bts-lighting-setup.webp',
     blurb: 'Product, lifestyle, and cinematic video that sells.',
   },
 ] as const;
@@ -300,6 +301,8 @@ export function ServicesNavMenu() {
                   key={s.href}
                   src={s.image}
                   alt=""
+                  loading="lazy"
+                  decoding="async"
                   className={cn(
                     'absolute inset-0 h-full w-full object-cover',
                     'transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]',

@@ -12,7 +12,13 @@ import { SectionLabel } from '@/components/ui/SectionLabel';
 // The two columns are matched to equal height: the ledger stretches to the spotlight's height and
 // its rows distribute to fill, so the last hairline aligns with the panel's bottom edge at every
 // breakpoint. Reach/engagement figures are TEMPORARY placeholders until real campaign data lands.
-// Imagery is borrowed from the portfolio pool as stand-ins.
+// Imagery illustrates each partner type (not a client or a specific partner): stock, free under
+// the Unsplash License (unsplash.com/license). A-list celebrities by Matthias Blonski
+// (unsplash.com/photos/EAYkeJ0zc4w), Bloggers & creators by Priscilla Du Preez
+// (unsplash.com/photos/m8pYWJQnRs0), Gamers & streamers by Florian Olivo
+// (unsplash.com/photos/Mf23RF8xArY), Actors & artists by Chris Zhang
+// (unsplash.com/photos/uGh-hHVPRYI), Press & media by Tim Mossholder
+// (unsplash.com/photos/H6eaxcGNQbU).
 type Partner = {
   name: string;
   blurb: string;
@@ -35,7 +41,7 @@ const PARTNERS: Partner[] = [
       { value: '4.8%', label: 'Avg. engagement' },
       { value: '40+', label: 'Campaigns run' },
     ],
-    image: '/images/portfolio/work-events.webp',
+    image: '/images/services/stock/pr-photographers-flash.webp',
   },
   {
     name: 'Bloggers & creators',
@@ -48,7 +54,7 @@ const PARTNERS: Partner[] = [
       { value: '6.2%', label: 'Avg. engagement' },
       { value: '150+', label: 'Creators on roster' },
     ],
-    image: '/images/portfolio/work-food.webp',
+    image: '/images/services/stock/pr-creator-food-phone.webp',
   },
   {
     name: 'Gamers & streamers',
@@ -61,7 +67,7 @@ const PARTNERS: Partner[] = [
       { value: '35 min', label: 'Avg. watch time' },
       { value: '20+', label: 'Streamers' },
     ],
-    image: '/images/portfolio/work-quickcars.webp',
+    image: '/images/services/stock/pr-gaming-setup.webp',
   },
   {
     name: 'Actors & artists',
@@ -74,7 +80,7 @@ const PARTNERS: Partner[] = [
       { value: '5.1%', label: 'Avg. engagement' },
       { value: '30+', label: 'Collaborations' },
     ],
-    image: '/images/portfolio/work-restaurant.webp',
+    image: '/images/services/stock/pr-singer-on-stage.webp',
   },
   {
     name: 'Press & media',
@@ -87,7 +93,7 @@ const PARTNERS: Partner[] = [
       { value: '200+', label: 'Placements secured' },
       { value: '3×', label: 'Avg. reach lift' },
     ],
-    image: '/images/portfolio/work-ghaftree.webp',
+    image: '/images/services/stock/pr-newspapers.webp',
   },
 ];
 
@@ -140,6 +146,8 @@ export function PrInfluenceRoster() {
                       <img
                         src={partner.image}
                         alt=""
+                        loading="lazy"
+                        decoding="async"
                         className={cn(
                           'h-full w-full object-cover transition-all duration-500 ease-out',
                           on ? 'scale-100 grayscale-0' : 'scale-105 opacity-70 grayscale',
@@ -181,6 +189,8 @@ export function PrInfluenceRoster() {
                   key={partner.name}
                   src={partner.image}
                   alt=""
+                  loading="lazy"
+                  decoding="async"
                   className={cn(
                     'absolute inset-0 h-full w-full object-cover transition-all duration-500 ease-out',
                     active === i ? 'scale-100 opacity-100' : 'scale-105 opacity-0',

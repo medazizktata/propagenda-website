@@ -13,13 +13,16 @@ import { SectionLabel } from '@/components/ui/SectionLabel';
 // rail fills, the active marker advances phase by phase, and the show panel on the right crossfades
 // a real event frame (the one bold focal element) with its copy. Reduced-motion / no-scrub falls
 // back to a plain, fully readable static programme with a single anchor image.
-// Event imagery is TEMPORARY portfolio placeholder until real /images/services/events assets land.
+// Event imagery is real, watermarked work: frames from the Farij Marsa and Eid films for Marsa
+// Ajman (public/images/services/events, public/images/about) and BIL Events / MM Event Management
+// case-study images.
 type Phase = {
   name: string;
   marker: string;
   lead: string;
   body: string;
   image: string;
+  alt: string;
 };
 
 const PHASES: Phase[] = [
@@ -28,42 +31,48 @@ const PHASES: Phase[] = [
     marker: '6 weeks out',
     lead: 'Where it starts',
     body: 'We sit down with you to shape the idea, the goal, the audience, the format, the budget, and the feeling people should leave with. Everything downstream is built on this brief.',
-    image: '/images/portfolio/work-events.webp',
+    image: '/images/services/events/farij-marsa-heritage-lane.webp',
+    alt: 'A lantern-lit heritage lane of red tents at the Farij Marsa event',
   },
   {
     name: 'Branding & identity',
     marker: '5 weeks out',
     lead: 'A look of its own',
     body: 'The event gets an identity of its own, a name treatment, colour, and key visual that tie the room, the screens, and the socials into one recognisable through-line.',
-    image: '/images/portfolio/work-ghaftree.webp',
+    image: '/images/work/bil-events/hero.webp',
+    alt: 'BIL Events wordmark applied as wall signage in a waiting area',
   },
   {
     name: 'Production & build',
     marker: '3 weeks out',
     lead: 'Into the room',
     body: 'Stage, signage, print, and every physical touchpoint are designed, produced, and readied, alongside the run-of-show that keeps the day on rails.',
-    image: '/images/portfolio/work-restaurant.webp',
+    image: '/images/work/mm-event-management/gallery-4.webp',
+    alt: 'MM Event Management "Open Air Festival" fence banner',
   },
   {
     name: 'Promotion',
     marker: '2 weeks out',
     lead: 'Filling the room',
     body: 'The build-up: teasers, invites, and a social countdown that gets the right people talking, and turning up on the day.',
-    image: '/images/portfolio/work-quickcars.webp',
+    image: '/images/work/bil-events/gallery-5.webp',
+    alt: 'BIL Events social media templates announcing new episodes',
   },
   {
     name: 'Show day',
     marker: 'Event day',
     lead: 'The day itself',
     body: 'We run the floor end to end, logistics, timings, and on-site coordination, while our team captures every moment on camera and posts it as it happens.',
-    image: '/images/portfolio/work-sanapex.webp',
+    image: '/images/about/events-2.webp',
+    alt: 'A crowd gathered around the stage at a Marsa Ajman night event',
   },
   {
     name: 'Wrap & evaluation',
     marker: 'Afterwards',
     lead: 'What we learned',
     body: 'Edited photo and video delivered, a recap posted, and an honest read on what worked, measured against the goals we set on day one.',
-    image: '/images/portfolio/work-food.webp',
+    image: '/images/about/events-3.webp',
+    alt: 'A certificate being presented at the Farij Marsa event, Marsa Ajman',
   },
 ];
 
@@ -138,7 +147,13 @@ export function EventsJourney() {
             {/* Single anchor frame — one bold focal image for the whole programme. */}
             <div className="relative aspect-[4/3] overflow-hidden rounded-2xl ring-1 ring-white/10 sm:aspect-[16/10] lg:sticky lg:top-24 lg:self-start">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={PHASES[0].image} alt="" className="h-full w-full object-cover" />
+              <img
+                src={PHASES[0].image}
+                alt={PHASES[0].alt}
+                loading="lazy"
+                decoding="async"
+                className="h-full w-full object-cover"
+              />
               <div className="absolute inset-0 bg-gradient-to-t from-charcoal via-charcoal/25 to-transparent" />
             </div>
 
@@ -279,7 +294,9 @@ export function EventsJourney() {
                   <img
                     key={p.name}
                     src={p.image}
-                    alt=""
+                    alt={active === i ? p.alt : ''}
+                    loading="lazy"
+                    decoding="async"
                     className={cn(
                       'absolute inset-0 h-full w-full object-cover transition-all duration-700 ease-out',
                       active === i ? 'scale-100 opacity-100' : 'scale-105 opacity-0',

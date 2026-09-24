@@ -1,10 +1,11 @@
 'use client';
 
 import { useMemo, useRef, useState } from 'react';
-import { SlidersHorizontal } from 'lucide-react';
 import { useFadeUpOnEnter } from '@/hooks/useFadeUpOnEnter';
+import { usePagination } from '@/hooks/usePagination';
 import { WorkCard } from '@/components/sections/WorkCard';
-import { cn } from '@/components/ui/cn';
+import { WorkFilter, filterKey, matchesFilters, type FilterValues } from '@/components/molecules/WorkFilter';
+import { Pagination } from '@/components/molecules/Pagination';
 import type { CaseStudyRecord } from '@/types/content';
 
 export interface WorkIndexGroup {
@@ -16,24 +17,50 @@ export interface WorkIndexGroup {
 
 interface WorkIndexProps {
   groups: WorkIndexGroup[];
+  /** Every real category (sector) in display order — the filter's options. */
+  sectors: readonly string[];
 }
+
+const PAGE_SIZE = 12;
 
 /**
  * The Work hub centrepiece: a contact-sheet grid of real project covers, grouped by category.
  * Every card shows its actual heroImage (or first gallery frame) at rest, on every device —
  * hover/focus only lifts a cover that was already visible. See the direction comment below.
+ * Filtering and paging are the shared WorkFilter + Pagination used by the film archive too: the
+ * groups are flattened into one ordered list, filtered, paged, then regrouped per page.
  */
-export function WorkIndex({ groups }: WorkIndexProps) {
+export function WorkIndex({ groups, sectors }: WorkIndexProps) {
   const ref = useRef<HTMLElement>(null);
+  const headRef = useRef<HTMLDivElement>(null);
   useFadeUpOnEnter(ref, '.work-card-reveal', { translateOnly: true });
 
-  const [filtersOpen, setFiltersOpen] = useState(false);
-  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [filters, setFilters] = useState<FilterValues>({ sector: null });
+  const axes = useMemo(() => [{ id: 'sector', label: 'Sector', options: sectors }], [sectors]);
 
-  const visibleGroups = useMemo(
-    () => (activeCategory ? groups.filter((g) => g.id === activeCategory) : groups),
-    [groups, activeCategory],
+  const flat = useMemo(
+    () => groups.flatMap((group) => group.items.map((item) => ({ item, group }))),
+    [groups],
   );
+  const filtered = useMemo(
+    () => flat.filter(({ item }) => matchesFilters(item, filters, (study) => study.category)),
+    [flat, filters],
+  );
+  const fKey = filterKey(filters);
+  const pager = usePagination(filtered, PAGE_SIZE, fKey);
+
+  // Regroup the current page, keeping list order. Unfiltered, the page keeps the upstream groups
+  // (so singletons stay folded into "More work"); filtered to one sector, its heading is the sector.
+  const pageGroups = useMemo(() => {
+    const out: WorkIndexGroup[] = [];
+    for (const { item, group } of pager.pageItems) {
+      const label = filters.sector ? item.category : group.label;
+      const last = out[out.length - 1];
+      if (last && last.label === label) last.items.push(item);
+      else out.push({ id: filters.sector ? `sector-${group.id}` : group.id, label, items: [item] });
+    }
+    return out;
+  }, [pager.pageItems, filters.sector]);
 
   return (
     <section
@@ -61,56 +88,19 @@ export function WorkIndex({ groups }: WorkIndexProps) {
         unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md
       */}
       <div className="mx-auto flex w-full max-w-[110rem] flex-col gap-9 md:gap-11">
-        <div className="flex flex-wrap items-center justify-end gap-3">
-          <button
-            type="button"
-            onClick={() => setFiltersOpen((v) => !v)}
-            aria-expanded={filtersOpen}
-            aria-pressed={filtersOpen}
-            className={cn(
-              'flex items-center gap-2 rounded-full border border-white/15 px-4 py-2 font-sans text-sm font-medium text-white/70 transition-colors duration-300',
-              'hover-fine:hover:border-white/30 hover-fine:hover:text-white',
-              filtersOpen && 'border-white/30 text-white',
-            )}
-          >
-            <SlidersHorizontal className="size-4" aria-hidden />
-            Filter
-          </button>
+        <div ref={headRef} className="relative z-30 flex flex-wrap items-center justify-end gap-3">
+          <WorkFilter
+            axes={axes}
+            values={filters}
+            onChange={(axis, value) => setFilters((f) => ({ ...f, [axis]: value }))}
+            onReset={() => setFilters({ sector: null })}
+            resultCount={filtered.length}
+            noun={['project', 'projects']}
+            dialogLabel="Filter projects"
+          />
         </div>
 
-        {filtersOpen ? (
-          <div className="-mt-4 flex flex-wrap gap-2 md:-mt-6">
-            <button
-              type="button"
-              onClick={() => setActiveCategory(null)}
-              className={cn(
-                'rounded-full border px-4 py-1.5 font-sans text-sm font-medium transition-colors duration-300',
-                activeCategory === null
-                  ? 'border-orange bg-orange text-ink'
-                  : 'border-white/15 text-white/70 hover-fine:hover:border-white/30 hover-fine:hover:text-white',
-              )}
-            >
-              All
-            </button>
-            {groups.map((group) => (
-              <button
-                key={group.id}
-                type="button"
-                onClick={() => setActiveCategory(group.id)}
-                className={cn(
-                  'rounded-full border px-4 py-1.5 font-sans text-sm font-medium transition-colors duration-300',
-                  activeCategory === group.id
-                    ? 'border-orange bg-orange text-ink'
-                    : 'border-white/15 text-white/70 hover-fine:hover:border-white/30 hover-fine:hover:text-white',
-                )}
-              >
-                {group.label}
-              </button>
-            ))}
-          </div>
-        ) : null}
-
-        {visibleGroups.map((group) => (
+        {pageGroups.map((group) => (
           <div key={group.id} id={group.id}>
             <div className="work-card-reveal mb-5 md:mb-6">
               <h2 className="font-sans text-base font-semibold text-white/70 md:text-lg">
@@ -129,6 +119,14 @@ export function WorkIndex({ groups }: WorkIndexProps) {
             </ul>
           </div>
         ))}
+
+        <Pagination
+          {...pager}
+          onPageChange={pager.setPage}
+          noun="projects"
+          scrollTargetRef={headRef}
+          className="mt-4"
+        />
       </div>
     </section>
   );

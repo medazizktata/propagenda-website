@@ -52,6 +52,8 @@ function NavPanel({
         <img
           src={preview}
           alt=""
+          loading="lazy"
+          decoding="async"
           className="h-full w-full scale-105 object-cover transition-transform duration-700 ease-out group-hover/panel:scale-110"
         />
         <div className="absolute inset-0 bg-charcoal/75" />

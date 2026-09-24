@@ -35,10 +35,24 @@ export function VideoCard({ project, onOpen }: { project: VideoProject; onOpen?:
         )}
       >
         {playable ? (
-          <video
+          <>
+            {/* Poster as a lazy <img> under the video, not a `poster` attribute: `<video poster>`
+                is fetched eagerly, so every card's poster downloaded at page load (measured: 53
+                posters / 6.2MB before any scroll). The video paints over it once it plays. */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={project.poster}
+              alt=""
+              loading="lazy"
+              decoding="async"
+              aria-hidden
+              className="absolute inset-0 h-full w-full object-cover transition-[transform,filter] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover/card:scale-[1.04] group-hover/card:brightness-[1.08]"
+            />
+            {/* The light preview clip, not the full film: a hover used to pull the whole file
+                (~12MB average) within ~1.5s. The lightbox plays `src`. */}
+            <video
             ref={videoRef}
-            src={project.src}
-            poster={project.poster}
+            src={project.previewSrc ?? project.src}
             muted
             loop
             playsInline
@@ -46,6 +60,7 @@ export function VideoCard({ project, onOpen }: { project: VideoProject; onOpen?:
             aria-hidden
             className="absolute inset-0 h-full w-full object-cover transition-[transform,filter] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform group-hover/card:scale-[1.04] group-hover/card:brightness-[1.08]"
           />
+          </>
         ) : (
           <>
             {/* eslint-disable-next-line @next/next/no-img-element */}

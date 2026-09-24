@@ -8,7 +8,12 @@ import type { VideoProject } from '@/types/content';
 import type { VideoWorkBundle } from '@/types/cms';
 
 function resolveVideoMedia(video: VideoProject): VideoProject {
-  return { ...video, src: resolveMediaUrl(video.src), poster: resolveMediaUrl(video.poster) };
+  return {
+    ...video,
+    src: resolveMediaUrl(video.src),
+    poster: resolveMediaUrl(video.poster),
+    ...(video.previewSrc ? { previewSrc: resolveMediaUrl(video.previewSrc) } : {}),
+  };
 }
 
 /** Public video work — D1 when reachable, else `content/videoWork` seed. */

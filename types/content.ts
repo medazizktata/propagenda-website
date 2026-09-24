@@ -164,6 +164,8 @@ export interface VideoProject {
   category: string;
   src: string;
   poster: string;
+  /** Light muted clip for grid hover/in-view autoplay; the lightbox always plays `src`. */
+  previewSrc?: string;
   orientation: VideoOrientation;
   width: number;
   height: number;

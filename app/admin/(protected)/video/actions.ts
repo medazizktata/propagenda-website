@@ -119,7 +119,10 @@ export async function updateVideoProject(
   const intent = formData.get('intent');
   const status = resolveStatus(existing.status, typeof intent === 'string' ? intent : null);
   const publishedAt = resolvePublishedAt(status, existing.status, existing.published_at);
-  const row = dbRowFromPayload(parsed.payload, status, publishedAt);
+  const row: Record<string, unknown> = { ...dbRowFromPayload(parsed.payload, status, publishedAt) };
+  // A new film makes the old grid preview wrong; clear it so the card falls back to `src` until a
+  // matching preview is uploaded.
+  if (row.src !== existing.src) row.preview_src = null;
 
   const db = getDb()!;
   const columns = Object.keys(row);

@@ -160,6 +160,7 @@ export function videoToRow(
     client: video.client ?? null,
     description: video.description ?? null,
     placeholder: video.placeholder ?? false,
+    preview_src: video.previewSrc ?? null,
   };
 }
 
@@ -177,5 +178,6 @@ export function mapVideoRow(row: VideoProjectRow): VideoProject {
     ...(row.client ? { client: row.client } : {}),
     ...(row.description ? { description: row.description } : {}),
     ...(row.placeholder ? { placeholder: row.placeholder } : {}),
+    ...(row.preview_src ? { previewSrc: row.preview_src } : {}),
   };
 }

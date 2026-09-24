@@ -188,6 +188,7 @@ export type Database = {
           orientation: string;
           placeholder: boolean;
           poster: string;
+          preview_src: string | null;
           published_at: string | null;
           slug: string;
           sort_order: number;
@@ -210,6 +211,7 @@ export type Database = {
           orientation?: string;
           placeholder?: boolean;
           poster: string;
+          preview_src?: string | null;
           published_at?: string | null;
           slug: string;
           sort_order?: number;
@@ -232,6 +234,7 @@ export type Database = {
           orientation?: string;
           placeholder?: boolean;
           poster?: string;
+          preview_src?: string | null;
           published_at?: string | null;
           slug?: string;
           sort_order?: number;

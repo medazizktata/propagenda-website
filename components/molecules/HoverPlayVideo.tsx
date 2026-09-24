@@ -37,7 +37,7 @@ export function HoverPlayVideo({
         <>
           <video
             ref={videoRef}
-            src={project.src}
+            src={project.previewSrc ?? project.src}
             poster={project.poster}
             muted
             loop

@@ -83,10 +83,17 @@ export function VideoLightbox({ video, isOpen, onClose }: VideoLightboxProps) {
     return () => window.clearTimeout(t);
   }, [isOpen]);
 
-  // Buffer remote src as a blob so seeking works without HTTP 206 from Workers assets.
+  // Buffer same-origin src as a blob so seeking works without HTTP 206 from Workers assets. R2
+  // (absolute URLs) serves byte ranges itself, so stream it directly: buffering there would make
+  // the visitor wait for the whole file before the first frame. (It only worked by accident before:
+  // r2.dev sends no CORS headers, so the fetch failed fast and fell back to streaming.)
   useEffect(() => {
     if (!isOpen || !video?.src) {
       setBlobSrc(null);
+      return;
+    }
+    if (!video.src.startsWith('/')) {
+      setBlobSrc(video.src);
       return;
     }
 

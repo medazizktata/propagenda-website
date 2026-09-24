@@ -119,6 +119,23 @@ export function VideoLightbox({ video, isOpen, onClose }: VideoLightboxProps) {
     };
   }, [isOpen, video?.src]);
 
+  // Opening a film is a click, so it plays WITH sound (explicit user direction, 2026-09-25: "make
+  // sure sound is on when user click on video"). Driven here rather than by `autoPlay`, so a
+  // browser that still refuses unmuted playback (iOS Safari can) falls back to playing muted with
+  // the unmute control showing, instead of not playing at all. The `muted` state follows the
+  // element via onPlay / onVolumeChange.
+  useEffect(() => {
+    const el = videoRef.current;
+    // `mounted` is a dependency because the <video> only exists once the dialog has mounted —
+    // which can be a render AFTER the source is ready.
+    if (!isOpen || !mounted || !blobSrc || !el) return;
+    el.muted = false;
+    void el.play().catch(() => {
+      el.muted = true;
+      void el.play().catch(() => {});
+    });
+  }, [isOpen, mounted, blobSrc]);
+
   useEffect(() => {
     if (!mounted || !isOpen) return;
 
@@ -243,9 +260,17 @@ export function VideoLightbox({ video, isOpen, onClose }: VideoLightboxProps) {
               src={blobSrc ?? undefined}
               poster={video.poster}
               playsInline
-              autoPlay
-              muted={muted}
-              onPlay={() => setPlaying(true)}
+              controlsList="nodownload noremoteplayback noplaybackrate"
+              disablePictureInPicture
+              disableRemotePlayback
+              onContextMenu={(e) => e.preventDefault()}
+              onPlay={() => {
+                setPlaying(true);
+                if (videoRef.current) setMuted(videoRef.current.muted);
+              }}
+              onVolumeChange={() => {
+                if (videoRef.current) setMuted(videoRef.current.muted);
+              }}
               onPause={() => setPlaying(false)}
               onTimeUpdate={() => {
                 if (!scrubbing && videoRef.current) setCurrent(videoRef.current.currentTime);

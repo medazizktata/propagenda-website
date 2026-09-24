@@ -563,3 +563,11 @@ html.lenis body {
   --sidebar-border: rgba(255, 255, 255, 0.12);
   --sidebar-ring: #f58b27;
 }
+/* Download deterrent for the work (see components/ui/MediaProtection.tsx): no drag-out, no iOS
+   long-press "Save Image", no accidental selection highlight on media. */
+img,
+video {
+  -webkit-user-drag: none;
+  -webkit-touch-callout: none;
+  user-select: none;
+}

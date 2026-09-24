@@ -54,8 +54,10 @@
     "CONTACT_DELIVER_TO": "propagendamarketing@gmail.com",
     "NEXT_PUBLIC_CONTACT_EMAIL": "contact@thepropagenda.com",
     "NEXT_PUBLIC_FF_COMPLEX_CURTAIN": "false",
-    // Home page opener: "billboard" (default) or "cubes".
-    "NEXT_PUBLIC_HERO_VARIANT": "billboard",
+    // Home page opener: "billboard" (default) or "cubes". NOTE: NEXT_PUBLIC_* values are inlined
+    // at BUILD time from the build machine's .env files, so this runtime var does not switch the
+    // hero on its own; keep it matching what the build uses (cubes since 2026-09-24).
+    "NEXT_PUBLIC_HERO_VARIANT": "cubes",
     "NEXT_PUBLIC_TURNSTILE_SITE_KEY": "0x4AAAAAAEXndoVcXl1or5zJ",
     "TURNSTILE_HOSTNAMES": "thepropagenda.com,www.thepropagenda.com"
   }

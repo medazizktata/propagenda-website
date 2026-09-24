@@ -76,8 +76,8 @@ const PANELS: Panel[] = [
     ],
     media: {
       kind: 'video',
-      // An 8s muted preview cut from the watermarked showreel (~100 KB), not the 8 MB film:
-      // the panel only ever loops it on hover.
+      // An 8s muted preview cut from the showreel (~120 KB), not the 6.4 MB film: the panel
+      // only ever loops it on hover. The showreel is deliberately NOT watermarked (owner call).
       src: '/videos/previews/showreel-panel.mp4',
       poster: '/images/about/events-2.webp',
     },

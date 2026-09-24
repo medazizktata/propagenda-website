@@ -49,16 +49,21 @@ jobs:
         run: |
           if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ] && [ "$ALL" = "true" ]; then
             echo "mode=all" >> "$GITHUB_OUTPUT"
+            echo "has_media=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
           if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ] || [ -z "$BEFORE" ] || ! git cat-file -e "$BEFORE^{commit}" 2>/dev/null; then
             BEFORE="$(git rev-parse HEAD~1)"
           fi
-          git diff --name-only --diff-filter=AMR -z "$BEFORE" HEAD -- media-inbox > "$RUNNER_TEMP/changed.z"
+          # Media files only: a README or other note in the inbox is not work to process.
+          git diff --name-only --diff-filter=AMR -z "$BEFORE" HEAD -- media-inbox \
+            | grep -z -i -E '\.(webp|jpe?g|png|mp4|mov|m4v|webm)$' > "$RUNNER_TEMP/changed.z" || true
           echo "mode=list" >> "$GITHUB_OUTPUT"
+          if [ -s "$RUNNER_TEMP/changed.z" ]; then echo "has_media=true" >> "$GITHUB_OUTPUT"; fi
           tr '\0' '\n' < "$RUNNER_TEMP/changed.z"
 
       - name: Fetch the changed files from LFS
+        if: steps.changed.outputs.has_media == 'true'
         run: |
           if [ "${{ steps.changed.outputs.mode }}" = "all" ]; then
             git lfs pull --include="media-inbox/**"
@@ -67,6 +72,7 @@ jobs:
           fi
 
       - name: Check the Cloudflare secrets are set
+        if: steps.changed.outputs.has_media == 'true'
         run: |
           if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
             echo "::error::Set the CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID repository secrets."
@@ -74,18 +80,23 @@ jobs:
           fi
 
       - uses: pnpm/action-setup@v4
+        if: steps.changed.outputs.has_media == 'true'
       - uses: actions/setup-node@v4
+        if: steps.changed.outputs.has_media == 'true'
         with:
           node-version: 22
           cache: pnpm
 
       - name: Install ffmpeg
+        if: steps.changed.outputs.has_media == 'true'
         run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
 
       - name: Install dependencies
+        if: steps.changed.outputs.has_media == 'true'
         run: pnpm install --frozen-lockfile
 
       - name: Watermark, verify and upload
+        if: steps.changed.outputs.has_media == 'true'
         run: |
           if [ "${{ steps.changed.outputs.mode }}" = "all" ]; then
             node tools/watermark/process-inbox.cjs --upload --all
@@ -94,7 +105,7 @@ jobs:
           fi
 
       - name: Keep the build for inspection
-        if: always()
+        if: always() && steps.changed.outputs.has_media == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: watermarked-media

@@ -19,6 +19,9 @@ const HERO_VIDEO_SRC = '/videos/propagenda-marketing.mp4';
  * The lightbox still uses the higher-quality master above.
  */
 const HERO_VIDEO_SCRUB_SRC = '/videos/propagenda-marketing-scrub.mp4';
+// The embedded /preview (flat) only autoplays a loop, so it takes the 8s preview cut from the
+// same watermarked reel (~120 KB) instead of the 6.6 MB scrub proxy.
+const HERO_VIDEO_FLAT_SRC = '/videos/previews/showreel-panel.mp4';
 const HERO_VIDEO_POSTER = '/images/hero-video-poster.jpg';
 /** Opening frames are black; scrub range starts here so scroll reveals visible content. */
 const HERO_VIDEO_SCRUB_START = 0.5;
@@ -145,7 +148,7 @@ export function Hero({ flat = false }: { flat?: boolean }) {
 
     (async () => {
       try {
-        const res = await fetch(HERO_VIDEO_SCRUB_SRC, { cache: 'force-cache' });
+        const res = await fetch(flat ? HERO_VIDEO_FLAT_SRC : HERO_VIDEO_SCRUB_SRC, { cache: 'force-cache' });
         if (!res.ok) throw new Error(`scrub fetch ${res.status}`);
         const blob = await res.blob();
         if (cancelled) return;
@@ -160,7 +163,7 @@ export function Hero({ flat = false }: { flat?: boolean }) {
       cancelled = true;
       if (objectUrl) URL.revokeObjectURL(objectUrl);
     };
-  }, []);
+  }, [flat]);
 
   // Client-side bailout: no playable frame in time → don't leave a multi-viewport pin.
   useEffect(() => {

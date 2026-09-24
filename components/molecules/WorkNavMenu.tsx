@@ -8,19 +8,20 @@ import { cn } from '@/components/ui/cn';
 
 /**
  * The two halves of the portfolio — same enriched-menu pattern as ServicesNavMenu
- * (label, route, preview image, one-line pitch) driving the same mega-menu shape.
+ * (label, route, preview image, one-line pitch) driving the same mega-menu shape. Previews are
+ * real, watermarked work: a case-study hero for Design, a still from our films for Video Work.
  */
 const WORK_MENU = [
   {
     label: 'Design',
     href: '/work',
-    image: '/images/portfolio/work-sanapex.webp',
+    image: '/images/work/sanapex-interiors/hero.webp',
     blurb: 'Branding and identity case studies, real client work start to finish.',
   },
   {
     label: 'Video Work',
     href: '/work/video',
-    image: '/images/portfolio/work-events.webp',
+    image: '/images/about/cinematic-2.webp',
     blurb: 'The showreel and video projects — motion, edits, and production work.',
   },
 ] as const;

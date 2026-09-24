@@ -76,7 +76,9 @@ const PANELS: Panel[] = [
     ],
     media: {
       kind: 'video',
-      src: '/videos/propagenda-marketing.mp4',
+      // An 8s muted preview cut from the watermarked showreel (~100 KB), not the 8 MB film:
+      // the panel only ever loops it on hover.
+      src: '/videos/previews/showreel-panel.mp4',
       poster: '/images/about/events-2.webp',
     },
     tone: 'orange',
@@ -89,11 +91,9 @@ const LAYER_IDS = ['main', 'dup1', 'dup2', 'dup3'] as const;
 function FrontSlideshow({ slides, active }: { slides: string[]; active: boolean }) {
   const [index, setIndex] = useState(0);
 
+  // The parent remounts this per hover (key), so each hover starts back at slide 0.
   useEffect(() => {
-    if (!active) {
-      setIndex(0);
-      return;
-    }
+    if (!active) return;
     const id = window.setInterval(() => {
       setIndex((i) => (i + 1) % slides.length);
     }, 900);
@@ -198,7 +198,7 @@ function FrameStack({
                 aria-hidden
               />
             ) : isFront ? (
-              <FrontSlideshow slides={media.slides} active={hovered} />
+              <FrontSlideshow key={hovered ? 'on' : 'off'} slides={media.slides} active={hovered} />
             ) : (
               // eslint-disable-next-line @next/next/no-img-element
               <img

@@ -110,7 +110,10 @@ const ALWAYS_OPEN_PREFIXES = [
 
 // Exact-path escape hatches through the soft-launch gate. Empty: /api/contact is
 // already covered by the '/api/' prefix above, so an exact entry was redundant.
-const ALWAYS_OPEN_EXACT: readonly string[] = [];
+// /preview is the noindex "minified home" the Websites showcase embeds; it shows only home
+// sections (always public). Gated, it redirected to /?soon=1 and the iframe loaded the full
+// home page, heavy hero included.
+const ALWAYS_OPEN_EXACT: readonly string[] = ['/preview'];
 
 /** Section-level gate — use for UI (nav, CTAs, whole blocks). */
 export function isPageUnlocked(key: PageFlagKey): boolean {

@@ -86,3 +86,6 @@ reports/lhci/
 
 # watermark pipeline build output (tools/watermark/process-inbox.cjs)
 /.watermark-out/
+
+# committed on purpose: public build flags only (see the file header)
+!.env.production

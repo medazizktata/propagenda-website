@@ -62,6 +62,12 @@ export interface CubeMaterialPreset {
   inkRange: [number, number];
   /** Fraction of its own colour a fully lit face emits. */
   emissive: number;
+  /**
+   * How much of the ink colour the printed matter emits on its own, on top of being lit. Lit by
+   * the studio alone, brand-orange ink shades to a muddy brown; this carries it back to the brand
+   * value on screen. Masked by the type, so the panel around it never glows.
+   */
+  inkGlow: number;
   /** Satin panel. */
   roughness: number;
   /** Matte ink. The gap between the two is what says "printed on" rather than "printed in". */
@@ -87,8 +93,10 @@ export const PROTAGONIST_PRESET: CubeMaterialPreset = {
   // has nothing to mix toward. Left as its own field rather than deleted so a future preset can
   // reintroduce a (non-orange) lit colourway without touching the shader.
   faceLit: '#2b2a29',
-  inkLight: '#ffffff',
-  inkDark: '#141414',
+  // Owner direction (2026-09-25): the printed icons and service names are brand orange (#f58b27,
+  // --color-orange), not white. inkDark matches because the ink never flips (see inkRange).
+  inkLight: '#f58b27',
+  inkDark: '#f58b27',
   typeAlpha: 1,
   // White type at full strength on the dark side faces reads almost as loudly as the arrived one
   // and splits the first read in two. At a third, the next service is still legible as it comes
@@ -105,6 +113,7 @@ export const PROTAGONIST_PRESET: CubeMaterialPreset = {
   // 0: there is no lit colourway left to carry through the tone-mapping curve (see the file
   // header). Every face is shaded by the room's actual lights instead of a flat self-lit override.
   emissive: 0,
+  inkGlow: 1.1,
   roughness: 0.34,
   inkRoughness: 0.62,
   metalness: 0,
@@ -122,14 +131,17 @@ export const CHORUS_PRESET: CubeMaterialPreset = {
   // faint, per-cube warmth as an individual cube turns to face camera, which keeps the field
   // reading as many small objects catching the same light rather than one flat backdrop.
   faceLit: '#32200f',
-  inkLight: '#ffffff',
+  // Brand orange like the protagonist's (owner direction 2026-09-25); at typeAlpha 0.22 it reads
+  // as a warm whisper in the field rather than a second protagonist.
+  inkLight: '#f58b27',
   // Never flips: a chorus face never gets bright enough to need dark ink.
-  inkDark: '#ffffff',
+  inkDark: '#f58b27',
   typeAlpha: 0.22,
   typeDim: 0.32,
   fillRange: [0.84, 0.995],
   inkRange: [9, 10],
   emissive: 0,
+  inkGlow: 1.1,
   // Rougher and less reflective than the subject, and not only for cost. At 0.44 a chorus face
   // that happened to line up with the key panel mirrored it almost directly and flashed up as a
   // pale card floating in a charcoal field — the one thing the background cast must never do.
@@ -165,6 +177,7 @@ uniform vec2 uAtlasTexel;
 uniform float uTypeAlpha;
 uniform float uTypeDim;
 uniform float uEmissive;
+uniform float uInkGlow;
 uniform float uInkRoughness;
 uniform float uDeboss;
 uniform float uRim;
@@ -328,6 +341,10 @@ const EMISSIVE_CHUNK = /* glsl */ `
 // instead of glowing along with the panel behind it.
 totalEmissiveRadiance += uFaceLit * (lit * uEmissive * (1.0 - typeAlpha));
 
+// The ink's own light (\`ink\` and \`typeAlpha\` come from the map chunk above): brand-orange type
+// stays brand orange on screen instead of shading to brown under a dim studio key.
+totalEmissiveRadiance += ink * (typeAlpha * uInkGlow);
+
 // Fresnel rim, weighted onto the shadow side only. A cool lift along an edge is what separates a
 // silhouette from a near-black ground; putting it on the lit face too would drag a blue cast
 // across the one surface that has to stay brand-accurate.
@@ -405,6 +422,7 @@ export function createCubeMaterial(
     shader.uniforms.uTypeAlpha = { value: preset.typeAlpha };
     shader.uniforms.uTypeDim = { value: preset.typeDim };
     shader.uniforms.uEmissive = { value: preset.emissive };
+    shader.uniforms.uInkGlow = { value: preset.inkGlow };
     shader.uniforms.uInkRoughness = { value: preset.inkRoughness };
     shader.uniforms.uDeboss = { value: preset.deboss };
     shader.uniforms.uRim = { value: preset.rim };

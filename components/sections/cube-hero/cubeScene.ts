@@ -63,14 +63,16 @@ const CHORUS_GEOMETRY: RoundedBoxOptions = {
   crown: 0.013,
 };
 
-const BEAT_SECONDS = 3.4;
+// Shortened from 3.4s (owner direction 2026-09-25): the seven-service loop runs ~17s, not ~24s.
+const BEAT_SECONDS = 2.4;
 /**
- * Critically-ish damped spring, omega = 9 rad/s and zeta = 0.72: the quarter turn lands in about
- * a second and settles with a ~4% overshoot. A spring rather than a tween because the follow-
- * through then comes out of the physics instead of being drawn on top of it.
+ * Critically-ish damped spring, omega = 11 rad/s and zeta = 0.72 (C = 2 * zeta * omega): the
+ * quarter turn lands in about 0.8s and settles with a ~4% overshoot, leaving a ~1.6s dwell per
+ * face. A spring rather than a tween because the follow-through then comes out of the physics
+ * instead of being drawn on top of it.
  */
-const SPRING_K = 81;
-const SPRING_C = 12.96;
+const SPRING_K = 121;
+const SPRING_C = 15.84;
 /** A kick against the direction of travel — the anticipation dip before the cube commits. */
 const ANTICIPATION = 0.8;
 /** Hand the new service name to the DOM once the turn is this far along. */
@@ -527,7 +529,7 @@ export function createCubeScene(options: CubeSceneOptions): CubeSceneHandle {
 
   function updateProtagonist(): void {
     spinQuat.setFromAxisAngle(spinAxis, spinAngle);
-    // A slow breath on the pitch so the two-and-a-half second dwell is never actually still.
+    // A slow breath on the pitch so the dwell between turns is never actually still.
     tiltEuler.set(TILT_X + Math.sin(elapsed * 0.42) * 0.012, 0, 0);
     tiltQuat.setFromEuler(tiltEuler);
     protagonist.quaternion.copy(tiltQuat).multiply(spinQuat);

@@ -1,7 +1,6 @@
 'use client';
 
 import { useRef, useState, type FormEvent } from 'react';
-import { contactSchema, fieldErrorsFromZod } from '@/lib/forms/contactSchema';
 import { contactValuesFromFormData } from '@/lib/forms/contactValues';
 import type { ContactFieldErrors, ContactFormData, ContactFormResult } from '@/types/forms';
 import type { TurnstileFieldHandle } from '@/components/molecules/TurnstileField';
@@ -28,6 +27,9 @@ export function useContactForm() {
     e.preventDefault();
     const form = e.currentTarget;
     const values = contactValuesFromFormData(new FormData(form));
+    // zod (~65 KB gzipped) is only needed once someone submits, so it loads then instead of
+    // shipping in the contact page's initial JavaScript. The server validates again anyway.
+    const { contactSchema, fieldErrorsFromZod } = await import('@/lib/forms/contactSchema');
     const parsed = contactSchema.safeParse(values);
 
     if (!parsed.success) {

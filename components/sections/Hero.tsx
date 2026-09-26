@@ -142,8 +142,45 @@ export function Hero({ flat = false }: { flat?: boolean }) {
   const [scrubSrc, setScrubSrc] = useState<string | null>(null);
   const { ready: initReady } = useInitLoader();
   const noScrub = flat || reducedMotion || videoFailed;
+  /**
+   * The scrub proxy is 6.6 MB and this section sits below the fold, so it must not compete with
+   * the first paint: fetched at mount, it was ~83% of the home page's bytes and shared the
+   * network with the headline. It starts on whichever comes first: this section becoming
+   * visible, or the visitor's first scroll/touch/key/press. No timer: a visitor who never
+   * scrolls never pays for it, and until it arrives the section shows its poster (the same
+   * path a slow connection already takes). The embedded /preview (flat) loads its small
+   * preview straight away: there it is the first thing on screen.
+   */
+  const [loadVideo, setLoadVideo] = useState(flat);
 
   useEffect(() => {
+    if (loadVideo) return;
+    const el = containerRef.current;
+    let settled = false;
+    const events = ['wheel', 'touchstart', 'keydown', 'pointerdown'] as const;
+    const cleanup = () => {
+      settled = true;
+      io?.disconnect();
+      for (const type of events) window.removeEventListener(type, go);
+    };
+    function go() {
+      if (settled) return;
+      cleanup();
+      setLoadVideo(true);
+    }
+    // threshold > 0: at load this section's top sits exactly on the fold, which must not count.
+    const io = el
+      ? new IntersectionObserver((entries) => {
+          if (entries.some((entry) => entry.isIntersecting)) go();
+        }, { threshold: 0.01 })
+      : null;
+    if (el) io?.observe(el);
+    for (const type of events) window.addEventListener(type, go, { passive: true });
+    return cleanup;
+  }, [loadVideo]);
+
+  useEffect(() => {
+    if (!loadVideo) return;
     let cancelled = false;
     let objectUrl: string | null = null;
 
@@ -164,14 +201,15 @@ export function Hero({ flat = false }: { flat?: boolean }) {
       cancelled = true;
       if (objectUrl) URL.revokeObjectURL(objectUrl);
     };
-  }, [flat]);
+  }, [flat, loadVideo]);
 
-  // Client-side bailout: no playable frame in time → don't leave a multi-viewport pin.
+  // Client-side bailout: no playable frame in time → don't leave a multi-viewport pin. The clock
+  // starts when the download does, not at mount (the download is deferred, see above).
   useEffect(() => {
-    if (noScrub || videoReady || videoFailed) return;
+    if (noScrub || videoReady || videoFailed || !loadVideo) return;
     const t = window.setTimeout(() => setVideoFailed(true), VIDEO_LOAD_TIMEOUT_MS);
     return () => window.clearTimeout(t);
-  }, [noScrub, videoReady, videoFailed]);
+  }, [noScrub, videoReady, videoFailed, loadVideo]);
 
   useEffect(() => {
     if (!videoFailed) return;

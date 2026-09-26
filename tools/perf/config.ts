@@ -4,7 +4,11 @@ import budgets from './budgets.json';
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://thepropagenda.com';
 export const SITE_NAME = 'Propagenda';
 
-/** Local URL for Lighthouse / manual audits. */
+/**
+ * Local URL for Lighthouse / manual audits. Point it at the production Worker preview
+ * (`pnpm exec opennextjs-cloudflare preview --port 8791` → PERF_LOCAL_URL=http://localhost:8791)
+ * for numbers that mean anything: the dev server is unminified and hot-reloading.
+ */
 export const LOCAL_URL = process.env.PERF_LOCAL_URL ?? 'http://localhost:4000';
 
 export const PATHS = {
@@ -16,7 +20,15 @@ export const PATHS = {
 } as const;
 
 /** Routes audited by Lighthouse (relative paths). */
-export const LIGHTHOUSE_ROUTES = ['/', '/about', '/services', '/work', '/contact'] as const;
+export const LIGHTHOUSE_ROUTES = [
+  '/',
+  '/about',
+  '/services',
+  '/services/events',
+  '/work',
+  '/work/video',
+  '/contact',
+] as const;
 
 /** Hero / marketing video referenced in code. */
 export const HERO_VIDEO = 'propagenda-marketing.mp4';

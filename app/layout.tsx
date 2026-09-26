@@ -43,9 +43,13 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={poppins.variable}>
       <body>
+        {/* gtag.js (~170 KB, plus its follow-up requests to google-analytics/doubleclick) loads
+            after window load so it never competes with first paint. The inline init below still
+            runs early: it only queues into dataLayer, and gtag replays the queue (including the
+            page_view from `config`) when it arrives. */}
         <Script
           src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
-          strategy="afterInteractive"
+          strategy="lazyOnload"
         />
         <Script id="ga-init" strategy="afterInteractive">
           {`

@@ -6,6 +6,7 @@ import { useReducedMotion } from '@/lib/motion/useReducedMotion';
 import { cn } from '@/components/ui/cn';
 import { ScrollCue } from '@/components/molecules/ScrollCue';
 import type { CaseStudyRecord } from '@/types/content';
+import workThumbs from '@/content/workThumbs.json';
 
 /**
  * Work hub hero — an immersive, image-forward opener that replaces the generic PageHero.
@@ -30,26 +31,64 @@ const projectImages = (caseStudies: CaseStudyRecord[]) =>
     ),
   ).filter((src): src is string => Boolean(src));
 
+// The wall is a dimmed background of quarter-width tiles, so it draws the 640px thumbs made by
+// `pnpm perf:thumbs` (public/images/work-thumbs, ~12 KB each) instead of the 1920px originals
+// (100-500 KB each). An image with no thumb — e.g. one added later through the CMS — falls back
+// to its full-size file.
+const THUMBS = new Set<string>(workThumbs);
+function wallSrc(src: string): string {
+  const key = src.match(/(?:case-study-media|\/images\/work)\/(.+)$/)?.[1];
+  return key && THUMBS.has(key) ? `/images/work-thumbs/${key.replace(/\.(jpe?g|png)$/i, '.webp')}` : src;
+}
+
+/**
+ * Tiles per strip. Every strip used to carry every project image (~175, doubled for the loop:
+ * ~1,400 <img> in the page and 495 KB of HTML) though each only ever shows three or four at once.
+ * Each strip now takes its own slice of the set, and its cycle is shortened in proportion (see
+ * the drift effect), so the wall moves exactly as fast as before.
+ */
+const TILES_PER_STRIP = 32;
+/** Tiles each strip shows at rest: loaded eagerly, since one of them is the page's LCP image. */
+const EAGER_TILES = 5;
+
 // Four drifting strips — alternating direction + speed for a parallax wall. The last two
-// reveal on wider screens so the wall stays full without crowding small viewports.
+// reveal on wider screens so the wall stays full without crowding small viewports. They reveal
+// as `block`, like the first two: as `flex` the strip stretched to the column's height instead of
+// its content's, so its "yPercent -50" travel was ~1% of the strip and those two never drifted.
 const COLUMNS = [
   { dir: 'up', dur: 42, show: '' },
   { dir: 'down', dur: 53, show: '' },
-  { dir: 'up', dur: 36, show: 'hidden md:flex' },
-  { dir: 'down', dur: 48, show: 'hidden xl:flex' },
+  { dir: 'up', dur: 36, show: 'hidden md:block' },
+  { dir: 'down', dur: 48, show: 'hidden xl:block' },
 ] as const;
 
-// Rotate the sequence per strip so no two columns march in lockstep.
-function stripImages(caseStudies: CaseStudyRecord[], offset: number): string[] {
+// Each strip starts a quarter of the way further through the set, so the four strips show
+// different work and no two march in lockstep.
+function stripImages(caseStudies: CaseStudyRecord[], colIndex: number): string[] {
   const images = projectImages(caseStudies);
   if (images.length === 0) return [];
-  const start = offset % images.length;
-  const seq = [...images.slice(start), ...images.slice(0, start)];
-  return offset % 2 === 1 ? [...seq].reverse() : seq;
+  const start = Math.floor((colIndex * images.length) / COLUMNS.length) % images.length;
+  const seq = [...images.slice(start), ...images.slice(0, start)].slice(0, TILES_PER_STRIP);
+  return (colIndex % 2 === 1 ? [...seq].reverse() : seq).map(wallSrc);
+}
+
+/**
+ * A strip's cycle, scaled to its length: `dur` was tuned for a strip of every project image, so
+ * a shorter strip covers proportionally less ground per cycle at the same speed.
+ */
+function stripDuration(caseStudies: CaseStudyRecord[], dur: number): number {
+  const total = projectImages(caseStudies).length;
+  const tiles = Math.min(TILES_PER_STRIP, total);
+  return total > 0 ? (dur * tiles) / total : dur;
 }
 
 export function WorkHero({ caseStudies }: { caseStudies: CaseStudyRecord[] }) {
   const sectionRef = useRef<HTMLElement>(null);
+  // Doubled so yPercent 0 and -50 show the same tiles: the seamless loop.
+  const strips = COLUMNS.map((_, colIndex) => {
+    const seq = stripImages(caseStudies, colIndex);
+    return [...seq, ...seq];
+  });
   const parallaxRef = useRef<HTMLDivElement>(null);
   const reducedMotion = useReducedMotion();
 
@@ -141,16 +180,20 @@ export function WorkHero({ caseStudies }: { caseStudies: CaseStudyRecord[] }) {
               <div
                 className="wh-col flex flex-col will-change-transform"
                 data-dir={column.dir}
-                data-dur={column.dur}
+                data-dur={stripDuration(caseStudies, column.dur)}
               >
-                {[...stripImages(caseStudies, colIndex * 2), ...stripImages(caseStudies, colIndex * 2)].map((src, i) => (
+                {strips[colIndex].map((src, i) => (
                   <div key={i} className="relative aspect-[4/5] w-full">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={src}
                       alt=""
                       className="h-full w-full object-cover"
-                      loading="lazy"
+                      // The first tiles of each copy are on screen at load ('up' strips start at
+                      // the first copy, 'down' strips at the second); both copies share URLs, so
+                      // the browser fetches each once.
+                      loading={i % (strips[colIndex].length / 2) < EAGER_TILES ? 'eager' : 'lazy'}
+                      decoding="async"
                     />
                   </div>
                 ))}

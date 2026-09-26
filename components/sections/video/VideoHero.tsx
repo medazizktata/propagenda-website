@@ -49,9 +49,12 @@ export function VideoHero({ showreel, onPlay }: { showreel: VideoProject; onPlay
       className="relative flex min-h-[100svh] items-end overflow-hidden bg-charcoal"
     >
       <div ref={mediaRef} aria-hidden className="absolute inset-0 will-change-transform">
+        {/* The background only ever plays silent behind a 45% scrim, so it takes the showreel's
+            light loop (previewSrc: 1280px, no audio, ~1.5 MB) when one is set; the full film
+            (6.4 MB) is what Play opens, with sound, in the lightbox. */}
         <video
           className="h-full w-full object-cover"
-          src={showreel.src}
+          src={showreel.previewSrc ?? showreel.src}
           poster={showreel.poster}
           autoPlay
           muted

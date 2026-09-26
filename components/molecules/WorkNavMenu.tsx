@@ -98,6 +98,11 @@ export function WorkNavMenu() {
   }, [pathname, currentIndex]);
 
   const dismissMenu = () => setMenuSuppressed(true);
+  // The menu is only hidden with CSS, so its preview images would otherwise download on every
+  // page for a panel most visitors never open. They mount on the first sign of intent (hover or
+  // keyboard focus on the Work item), which still lands them before the 400ms fade-in ends.
+  const [primed, setPrimed] = useState(false);
+  const prime = () => setPrimed(true);
 
   const onKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Escape') {
@@ -111,8 +116,12 @@ export function WorkNavMenu() {
     <div
       ref={rootRef}
       className="group relative"
-      onMouseEnter={() => setMenuSuppressed(false)}
+      onMouseEnter={() => {
+        setMenuSuppressed(false);
+        prime();
+      }}
       onMouseLeave={() => setMenuSuppressed(false)}
+      onFocus={prime}
       onKeyDown={onKeyDown}
     >
       <AppLink
@@ -217,7 +226,7 @@ export function WorkNavMenu() {
               onClick={dismissMenu}
               className="group/pv relative flex min-h-[16rem] flex-col justify-end overflow-hidden no-underline"
             >
-              {WORK_MENU.map((w, i) => (
+              {primed && WORK_MENU.map((w, i) => (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   key={w.href}

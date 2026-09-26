@@ -100,7 +100,7 @@ export function VideoCapabilities({ items }: { items: Capability[] }) {
                 />
               ) : (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={item.poster} alt="" className="h-full w-full object-cover" />
+                <img src={item.poster} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover" />
               )}
               <div className="absolute inset-0 bg-charcoal/78" />
               <div className="absolute inset-0 bg-gradient-to-r from-charcoal via-charcoal/70 to-charcoal/45" />

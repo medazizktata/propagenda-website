@@ -22,6 +22,16 @@ const ROUTES = [
   '/contact',
 ];
 
+const COMMON = {
+  'categories:performance': ['warn', { minScore: 0.85 }],
+  'categories:accessibility': ['error', { minScore: 0.9 }],
+  'categories:best-practices': ['warn', { minScore: 0.9 }],
+  'categories:seo': ['warn', { minScore: 0.9 }],
+  'largest-contentful-paint': ['warn', { maxNumericValue: 2500 }],
+  'cumulative-layout-shift': ['error', { maxNumericValue: 0.1 }],
+  'total-blocking-time': ['warn', { maxNumericValue: 300 }],
+};
+
 /** @type {import('@lhci/cli/src/config').LHCI.ServerCommandOptions} */
 module.exports = {
   ci: {
@@ -40,18 +50,27 @@ module.exports = {
       },
     },
     assert: {
-      assertions: {
-        'categories:performance': ['warn', { minScore: 0.85 }],
-        'categories:accessibility': ['error', { minScore: 0.9 }],
-        'categories:best-practices': ['warn', { minScore: 0.9 }],
-        'categories:seo': ['warn', { minScore: 0.9 }],
-        'largest-contentful-paint': ['warn', { maxNumericValue: 2500 }],
-        'cumulative-layout-shift': ['error', { maxNumericValue: 0.1 }],
-        'total-blocking-time': ['warn', { maxNumericValue: 300 }],
-        // Bytes fetched during load. Every route sits well under this after the 2026-09-26 pass;
-        // a large media file slipping back into the load path trips it.
-        'total-byte-weight': ['error', { maxNumericValue: 3 * 1024 * 1024 }],
-      },
+      // Two disjoint URL groups so each route gets exactly one byte budget.
+      assertMatrix: [
+        {
+          matchingUrlPattern: '^(?!.*/work/video$).*$',
+          assertions: {
+            ...COMMON,
+            // Bytes fetched during load. Every route sits well under this after the 2026-09-26
+            // pass; a large media file slipping back into the load path trips it.
+            'total-byte-weight': ['error', { maxNumericValue: 3 * 1024 * 1024 }],
+          },
+        },
+        {
+          // The film page's hero deliberately plays a ~1.4 MB silent loop of the showreel. It used
+          // to stream the 6.4 MB film instead (5.6 MB on load), which this still catches.
+          matchingUrlPattern: '/work/video$',
+          assertions: {
+            ...COMMON,
+            'total-byte-weight': ['error', { maxNumericValue: 4 * 1024 * 1024 }],
+          },
+        },
+      ],
     },
     upload: {
       target: 'filesystem',

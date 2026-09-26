@@ -89,3 +89,8 @@ reports/lhci/
 
 # committed on purpose: public build flags only (see the file header)
 !.env.production
+
+# perf tooling output (pnpm perf:lhci / perf:lighthouse)
+/.lighthouseci/
+/reports/*
+!/reports/README.md

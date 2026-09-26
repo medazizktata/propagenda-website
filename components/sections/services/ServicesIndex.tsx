@@ -78,6 +78,28 @@ export function ServicesIndex({ hubCards }: { hubCards: ServiceHubCard[] }) {
 
   const activeCard = active != null ? hubCards[active] : null;
 
+  // Every row's preview is stacked in the same on-screen panel, so `loading="lazy"` could not
+  // defer any of them: the page fetched all seven (~1.1 MB, one of them 536 KB) during load.
+  // They mount when this section first comes into view — the first scroll, well before a row
+  // can be hovered — so previews are still ready on hover but no longer compete with the load.
+  const [previewsArmed, setPreviewsArmed] = useState(false);
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el || previewsArmed) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          setPreviewsArmed(true);
+          io.disconnect();
+        }
+      },
+      // threshold > 0: at load this section's top can sit exactly on the fold.
+      { threshold: 0.01 },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [previewsArmed]);
+
   return (
     <section ref={sectionRef} className="relative h-[170vh] bg-charcoal md:h-[185vh]">
       {/* Full-bleed on purpose: rails + preview reach the viewport edges (no gutter). */}
@@ -92,7 +114,7 @@ export function ServicesIndex({ hubCards }: { hubCards: ServiceHubCard[] }) {
             className="pointer-events-none absolute inset-y-0 overflow-hidden"
             style={{ left: 'var(--rail)', right: 'var(--rail)' }}
           >
-            {hubCards.map((card, i) =>
+            {previewsArmed && hubCards.map((card, i) =>
               card.preview ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img

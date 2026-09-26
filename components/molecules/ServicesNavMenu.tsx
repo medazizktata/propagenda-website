@@ -170,6 +170,11 @@ export function ServicesNavMenu() {
   }, [pathname, currentIndex]);
 
   const dismissMenu = () => setMenuSuppressed(true);
+  // Same as WorkNavMenu: the panel is only hidden with CSS, so its seven previews (~1.1 MB) were
+  // fetched on pages where nobody opened it. They mount on the first hover or keyboard focus on
+  // the Services item, which still lands them before the 400ms fade-in ends.
+  const [primed, setPrimed] = useState(false);
+  const prime = () => setPrimed(true);
 
   // Keyboard: Escape closes the menu and returns focus to the trigger, so keyboard
   // users aren't forced to Tab through all eight links to get out.
@@ -185,8 +190,12 @@ export function ServicesNavMenu() {
     <div
       ref={rootRef}
       className="group relative"
-      onMouseEnter={() => setMenuSuppressed(false)}
+      onMouseEnter={() => {
+        setMenuSuppressed(false);
+        prime();
+      }}
       onMouseLeave={() => setMenuSuppressed(false)}
+      onFocus={prime}
       onKeyDown={onKeyDown}
     >
       <AppLink
@@ -295,7 +304,7 @@ export function ServicesNavMenu() {
               onClick={dismissMenu}
               className="group/pv relative flex min-h-[22rem] flex-col justify-end overflow-hidden no-underline"
             >
-              {SERVICE_MENU.map((s, i) => (
+              {primed && SERVICE_MENU.map((s, i) => (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   key={s.href}
